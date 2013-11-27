@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope>
+
+    <!-- Not really used at the moment -->
+	<KPISection/>
+    <!-- Not really used at the moment -->
+	<PerformanceObjectiveSection/>
+
+    <!-- NEW FEATURE: note the entrypoint attribute  -->
+	<VirtualSystemCollection id="Test" entrypoint="frontend">
+    
+		<StartupSection>
+          <Item id="frontend" order="0" />
+          <Item id="backend" order="1" />
+          <Item id="appserver" order="2" />
+          <Item id="controller" order="3" />
+		</StartupSection>
+        
+
+		<VirtualSystem id="frontend" min="1" max="1" initial="1">
+        <!-- NOTE THAT THE CONTROLLER WILL NOT WORK WITHOUT EUCALYPTUS CLASS -->
+		<!-- <ProductSection class="Eucalyptus"> -->
+           	<ProductSection>
+				<Product>Front End Server</Product>
+				<Version>1.0</Version>
+
+				<!-- VM Configuration -->
+				<Property key="BASE_EMI" value="ami-00000272" />
+				<Property key="INSTANCE_TYPE" value="m1.micro" />
+
+				<!-- Security settings for the VM  -->
+				<Property key="SSH_KEY" value="doodle-service" />
+				<Property key="SECURITY_GROUP" value="default" />
+
+				<!-- User data for customizing the VM -->
+				<!-- Components to start -->
+				<Property key="STARTUP" type="string" value="controlinterface,monitoringendpoint,loadbalancer,monitoringgui,ganglia,mela" />
+				<!-- Other configurations -->
+				<!-- VM Level -->
+				<Property key="USERDATA:INJECTED_HOSTNAME" cloudConfigurable="true" value="frontend@replicaNum" />
+    
+        <Property key="USERDATA:mela.startup.port" type="string" value="8085" />
+        <Property key="USERDATA:mela.env.compositionrulesurl" value="http://www.inf.usi.ch/phd/gambi/attachments/mela/compositionRules.xml" />
+        <Property key="USERDATA:mela.env.servicedescription" value="http://www.inf.usi.ch/phd/gambi/attachments/mela/serviceDescription.xml" />
+
+        <Property key="USERDATA:ganglia.env.servicefqn" type="string" value="@serviceId" />
+        <Property key="USERDATA:ganglia.env.deployid" type="string" value="@UUID" />
+        <Property key="USERDATA:ganglia.env.serviceunit" type="string" value="frontend" />
+        
+                <Property key="USERDATA:loadbalancer.startup.port" type="string" value="8081" />
+
+                    
+				<Property key="USERDATA:loadbalancer.startup.port" type="string" value="8081" />
+
+				<Property key="USERDATA:monitoringendpoint.startup.servicefqn" type="string" value="@serviceId" />
+                <Property key="USERDATA:monitoringendpoint.startup.kpis" type="string" value="AvgCPU,GET_POLLS_RC,CREATE_POLL_RC,GET_POLL_RC,VOTE_RC,DELETE_POLL_RC,GET_POLLS_RD,CREATE_POLL_RD,GET_POLL_RD,VOTE_RD,DELETE_POLL_RD,GET_POLLS_AvgTX,CREATE_POLL_AvgTX,GET_POLL_AvgTX,VOTE_AvgTX,DELETE_POLL_AvgTX,GET_POLLS_AvgRT,CREATE_POLL_AvgRT,GET_POLL_AvgRT,VOTE_AvgRT,DELETE_POLL_AvgRT,GET_POLLS_QL,CREATE_POLL_QL,GET_POLL_QL,VOTE_QL,DELETE_POLL_QL" />
+                <Property key="USERDATA:monitoringendpoint.startup.listener" type="string" value="ch.usi.monitoring.aggregation.AggregatorListener" />
+                
+                    <!-- New version of the monitoringendpoint - start -->
+                <Property key="USERDATA:monitoringendpoint.env.servicefqn" type="string" value="@serviceId" />
+                <Property key="USERDATA:monitoringendpoint.env.deployid" type="string" value="@UUID" />
+                <Property key="USERDATA:monitoringendpoint.env.melaurlport" type="string" value="8085" />
+                <Property key="USERDATA:monitoringendpoint.env.doodleregistryurlport" type="string" value="8081" />
+                <Property key="USERDATA:monitoringendpoint.env.manifesturl" type="string" value="@manifestURL" />
+                <Property key="USERDATA:monitoringendpoint.env.ossecretkey" value="@secretKey" />
+				<Property key="USERDATA:monitoringendpoint.env.osaccesskey" value="@accessKey" />
+				<Property key="USERDATA:monitoringendpoint.env.osccport" value="@ccPort" />
+				<Property key="USERDATA:monitoringendpoint.env.osccaddress" value="@ccAddress" />
+                <!-- New version of the monitoringendpoint - end -->
+
+                <Property key="USERDATA:monitoringgui.startup.port" type="string" value="8080" />
+                <Property key="USERDATA:monitoringgui.startup.servicefqn" type="string" value="@serviceId" />
+                <Property key="USERDATA:monitoringgui.startup.system" type="string" value="#(privateIp)" />
+
+            <Property key="USERDATA:monitoringgui.register.with" type="string" value="memcached" />
+            
+            <Property key="USERDATA:monitoringgui.register.ip" type="string" value="#(privateIp)" />
+            <Property key="USERDATA:monitoringgui.register.port" type="string" value="8080" />
+            
+            <Property key="USERDATA:monitoringgui.register.on.role" type="string" value="service" />
+            <Property key="USERDATA:monitoringgui.register.on.ip" type="string" value="@memcachedIp" />
+            <Property key="USERDATA:monitoringgui.register.on.port" type="string" value="@memcachedPort" />
+            <Property key="USERDATA:monitoringgui.register.on.experiment.id" type="string" value="@experimentId" />
+            
+            <Property key="USERDATA:monitoringgui.publish.to.ip" type="string" value="@memcachedIp" />
+            <Property key="USERDATA:monitoringgui.publish.to.port" type="string" value="@memcachedPort" />
+            <Property key="USERDATA:monitoringgui.publish.objectKey" type="string" value="@experimentId-serviceResults" />
+
+			</ProductSection>
+
+		</VirtualSystem>
+
+		<VirtualSystem id="backend" min="1" max="1" initial="1">
+			<ProductSection>
+				<Product>Database Server</Product>
+				<Version>1.0</Version>
+
+				<!-- VM Configuration -->
+				<Property key="BASE_EMI" value="ami-00000272" />
+				<Property key="INSTANCE_TYPE" value="m1.small" />
+
+				<!-- Security settings for the VM  -->
+				<Property key="SSH_KEY" value="doodle-service" />
+				<Property key="SECURITY_GROUP" value="default" />
+
+				<!-- User data for customizing the VM -->
+				<!-- Components to start -->
+				<Property key="STARTUP" type="string" value="controlinterface,doodledb,ganglia" />
+				<!-- Other configurations -->
+				<!-- VM Level -->
+				<Property key="USERDATA:INJECTED_HOSTNAME"
+					cloudConfigurable="true" value="backend@replicaNum" />
+        <Property key="USERDATA:ganglia.env.servicefqn" type="string" value="@serviceId" />
+        <Property key="USERDATA:ganglia.env.deployid" type="string" value="@UUID" />
+                <Property key="USERDATA:ganglia.env.serviceunit" type="string" value="backend" />
+
+			</ProductSection>
+
+		</VirtualSystem>
+
+		<VirtualSystem id="appserver" min="1" max="10" initial="1">
+			<ProductSection>
+				<Product>Web Server</Product>
+				<Version>1.0</Version>
+				<!-- VM Configuration -->
+				<Property key="BASE_EMI" value="ami-00000272" />
+                	<Property key="INSTANCE_TYPE" value="m1.micro" />
+
+				<!-- Security settings for the VM  -->
+				<Property key="SSH_KEY" value="doodle-service" />
+				<Property key="SECURITY_GROUP" value="default" />
+
+				<!-- User data for customizing the VM -->
+				<!-- Components to start -->
+				<Property key="STARTUP" type="string" value="controlinterface,doodleas,ganglia" />
+				<!-- Other configurations -->
+				<!-- VM Level -->
+				<Property key="USERDATA:INJECTED_HOSTNAME"
+					cloudConfigurable="true" value="appserver@replicaNum" />
+				<!-- Component Level -->
+        <Property key="USERDATA:ganglia.env.servicefqn" type="string" value="@serviceId" />
+        <Property key="USERDATA:ganglia.env.deployid" type="string" value="@UUID" />
+          <Property key="USERDATA:ganglia.env.serviceunit" type="string" value="appserver" />
+                
+                
+                
+				<Property key="USERDATA:doodleas.env.doodledb.ip" cloudConfigurable="true" 
+					type="string" value="@(backend, 0, privateIp)" />
+                    
+            <Property key="USERDATA:doodleas.startup.port" type="string" value="8081" />
+            
+            <Property key="USERDATA:doodleas.startup.brokerip" type="string" value="@(frontend, 0, privateIp)" />
+                    <Property key="USERDATA:doodleas.startup.replicafqn" type="string" value="@replicaFQN" />
+                                                
+                <Property key="USERDATA:doodleas.register.with" type="string" value="loadbalancer" />
+                <Property key="USERDATA:doodleas.register.ip" cloudConfigurable="true" type="string" value="#(privateIp)" />
+                <Property key="USERDATA:doodleas.register.port" type="string" value="8081" />
+                <Property key="USERDATA:doodleas.register.on.ip" type="string" value="@(frontend, 0, privateIp)" />
+                <Property key="USERDATA:doodleas.register.on.port" type="string" value="8081" />
+                
+                
+
+			</ProductSection>
+		</VirtualSystem>
+        
+        <VirtualSystem id="controller" min="1" max="1" initial="1">
+			<ProductSection>
+				<Product>Controller</Product>
+				<Version>1.0</Version>
+				<!-- VM Configuration -->
+				<Property key="BASE_EMI" value="ami-00000272" />
+				<Property key="INSTANCE_TYPE" value="m1.micro" />
+
+				<!-- Security settings for the VM  -->
+				<Property key="SSH_KEY" value="doodle-service" />
+				<Property key="SECURITY_GROUP" value="default" />
+
+				<!-- User data for customizing the VM -->
+				<!-- Components to start. Note we do not start ganglia on the controller -->
+				<Property key="STARTUP" type="string" value="controlinterface,monitoringgui,doodlecontroller,ganglia" />
+				<!-- Other configurations -->
+				<!-- VM Level -->
+				<Property key="USERDATA:INJECTED_HOSTNAME" cloudConfigurable="true" value="controller" />
+
+        <Property key="USERDATA:ganglia.env.servicefqn" type="string" value="@serviceId" />
+        <Property key="USERDATA:ganglia.env.deployid" type="string" value="@UUID" />
+        <Property key="USERDATA:ganglia.env.serviceunit" type="string" value="controller" />
+
+                <!-- When deployed with JOpera this is inserted on the fly, downloaded in a local file and used from there -->
+
+				<Property key="USERDATA:doodlecontroller.env.ossecretkey" value="@secretKey" />
+				<Property key="USERDATA:doodlecontroller.env.osaccesskey" value="@accessKey" />
+				<Property key="USERDATA:doodlecontroller.env.osccport" value="@ccPort" />
+				<Property key="USERDATA:doodlecontroller.env.osccaddress" value="@ccAddress" />
+
+				<Property key="USERDATA:doodlecontroller.startup.servicefqn" type="string" value="@serviceId" />
+				<Property key="USERDATA:doodlecontroller.startup.deployid" type="string" value="@UUID" />
+				<Property key="USERDATA:doodlecontroller.startup.controller" type="string" value="fixed-rules" />
+				<Property key="USERDATA:doodlecontroller.startup.manifesturl" type="string" value="@manifestURL" />
+				<Property key="USERDATA:doodlecontroller.startup.monitoringip" cloudConfigurable="true"  type="string" value="@(frontend, 0, privateIp)" />
+
+
+
+               <Property key="USERDATA:monitoringgui.startup.port" type="string" value="8080" />
+                <Property key="USERDATA:monitoringgui.startup.servicefqn" type="string" value="@serviceId" />
+                <Property key="USERDATA:monitoringgui.startup.controller" type="string" value="doodlecontroller" />
+
+            <Property key="USERDATA:monitoringgui.register.with" type="string" value="memcached" />
+            
+            <Property key="USERDATA:monitoringgui.register.ip" type="string" value="#(privateIp)" />
+            <Property key="USERDATA:monitoringgui.register.port" type="string" value="8080" />
+            
+            <Property key="USERDATA:monitoringgui.register.on.role" type="string" value="controller" />
+            <Property key="USERDATA:monitoringgui.register.on.ip" type="string" value="@memcachedIp" />
+            <Property key="USERDATA:monitoringgui.register.on.port" type="string" value="@memcachedPort" />
+            <Property key="USERDATA:monitoringgui.register.on.experiment.id" type="string" value="@experimentId" />
+
+            <Property key="USERDATA:monitoringgui.publish.to.ip" type="string" value="@memcachedIp" />
+            <Property key="USERDATA:monitoringgui.publish.to.port" type="string" value="@memcachedPort" />
+            <Property key="USERDATA:monitoringgui.publish.objectKey" type="string" value="@experimentId-controllerResults" />
+
+			</ProductSection>
+		</VirtualSystem>
+
+	</VirtualSystemCollection>
+</Envelope>
+
