@@ -21,20 +21,20 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import at.ac.tuwien.dsg.cloud.data.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaCloudServiceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaComponentData;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaComponentReplicaData;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaTopologyData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaInstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ToscaVMNodeTemplatePropertiesEntend;
 import at.ac.tuwien.dsg.cloud.salsa.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.utils.MultiCloudConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.services.CloudInterface;
-import at.ac.tuwien.dsg.cloud.tosca.extension.SalsaInstanceDescription;
-import at.ac.tuwien.dsg.cloud.tosca.extension.ToscaVMNodeTemplatePropertiesEntend;
 
 import com.xerox.amazonws.ec2.InstanceType;
 
@@ -72,7 +72,7 @@ public class DeploymentEngineNodeLevel {
 				.getNodetemplateById(nodeId, def);
 		// create a replica of node and update state: PROLOG
 		SalsaComponentReplicaData repData = new SalsaComponentReplicaData(replica, null);
-		repData.setState(SalsaEntityState.PROLOGUE);
+		repData.setState(SalsaEntityState.ALLOCATING);
 		centerCon.addComponentData(serviceId, topologyId, nodeId, repData);		
 		
 		//enhancedNode.setState(SalsaEntityState.PROLOGUE.getNodeStateString());
@@ -100,22 +100,6 @@ public class DeploymentEngineNodeLevel {
 				enhancedNode.getMinInstances(), maxInstanceInt);
 			
 		SalsaInstanceDescription sid = convertInstanceDescription(indes);		
-//		ToscaVMNodeTemplatePropertiesEntend.Instances instancesObj = new ToscaVMNodeTemplatePropertiesEntend.Instances();
-//		List<SalsaInstanceDescription> instLst = new ArrayList<>();
-//		instLst.add(sid);
-//		instancesObj.setInstance(instLst);
-//		prop.setInstances(instancesObj);
-		//prop.setInstances(instanceLst);
-		// Compute compute = new Compute();
-		// compute.setHostname("134.158.75.176"); // debug
-
-		// Building NodeTemplate with capability
-
-//		Properties pro = enhancedNode.getProperties();
-//		pro.setAny(prop);
-//
-//		enhancedNode.setProperties(pro);
-//		enhancedNode.setState(SalsaEntityState.DEPLOYED.getNodeStateString());
 		
 		EngineLogger.logger.debug("A VM for " + nodeId + " has been created.");
 
@@ -123,7 +107,8 @@ public class DeploymentEngineNodeLevel {
 		SalsaComponentReplicaData.Properties propSalsaData = new SalsaComponentReplicaData.Properties();
 		propSalsaData.setAny(sid);		
 		
-		centerCon.setNodeState(topologyId, nodeId, replica, SalsaEntityState.DEPLOYED);		
+		//centerCon.updateNodeProperty(topologyId, nodeId, replica, sid);
+		centerCon.setNodeState(topologyId, nodeId, replica, SalsaEntityState.CONFIGURING);		
 		
 		return repData;
 	}
@@ -155,10 +140,10 @@ public class DeploymentEngineNodeLevel {
 				+ " \n");
 		userDataBuffer.append("cd " + SalsaConfiguration.getWorkingDir()
 				+ " \n");
-		userDataBuffer.append("wget http://"
-				+ SalsaConfiguration.getSalsaCenterIP()
-				+ SalsaConfiguration.getServiceInstanceRepo() + "/" + serviceId
-				+ " \n");
+//		userDataBuffer.append("wget http://"
+//				+ SalsaConfiguration.getSalsaCenterIP()
+//				+ SalsaConfiguration.getServiceInstanceRepo() + "/" + serviceId
+//				+ " \n");
 
 		// set some variable put in variable.properties
 		userDataBuffer
@@ -183,8 +168,7 @@ public class DeploymentEngineNodeLevel {
 		// download pioneer
 		List<String> fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		for (String file : fileLst) {
-			userDataBuffer.append("wget http://"
-					+ SalsaConfiguration.getSalsaCenterIP()
+			userDataBuffer.append("wget "					
 					+ SalsaConfiguration.getPioneerWeb() + "/"
 					+ file + " \n");
 			userDataBuffer.append("chmod +x "+file +" \n");
@@ -206,14 +190,8 @@ public class DeploymentEngineNodeLevel {
 			List<String> lstPkgs = tprop.getPackagesDependencies()
 					.getPackageDependency();
 			for (String pkg : lstPkgs) {
-				userDataBuffer.append("apt-get -y install " + pkg + " \n"); // TODO:
-																			// should
-																			// change,
-																			// now
-																			// just
-																			// use
-																			// Ubuntu
-																			// image
+				// TODO: should change, now just support Ubuntu image				
+				userDataBuffer.append("apt-get -y install " + pkg + " \n"); 
 			}
 		}
 		// execute Pioneer
@@ -313,10 +291,8 @@ public class DeploymentEngineNodeLevel {
 	
 	public void submitService(String serviceFile){
 		
-			String url="http://" + SalsaConfiguration.getSalsaCenterIP()
-					+ ":" + SalsaConfiguration.getSalsaCenterPort()
-					+ SalsaConfiguration.getSalsaCenterPath()
-					+ "/submit";					
+			String url=SalsaConfiguration.getSalsaCenterEndpoint()
+					+ "/rest/submit";
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(url);
 			FileBody uploadfile=new FileBody(new File(serviceFile));
@@ -329,7 +305,7 @@ public class DeploymentEngineNodeLevel {
 					EngineLogger.logger.error("Server failed to register service: " + new File(serviceFile).getName());				
 				}				
 			} catch (Exception e){
-				EngineLogger.logger.error("Error to submit service: " + new File(serviceFile).getName());
+				EngineLogger.logger.error("Error to submit service: " + serviceFile);
 			}					
 	}
 	

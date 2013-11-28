@@ -10,7 +10,7 @@ import java.util.List;
 import at.ac.tuwien.dsg.cloud.data.StaticServiceDescription;
 import at.ac.tuwien.dsg.cloud.data.VeeDescription;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaStructureQuery;
-import at.ac.tuwien.dsg.cloud.tosca.extension.ToscaVMNodeTemplatePropertiesEntend;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ToscaVMNodeTemplatePropertiesEntend;
 import ch.usi.cloud.controller.common.naming.FQN;
 
 /**

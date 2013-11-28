@@ -30,10 +30,10 @@ public class ToscaXmlProcess {
 		JAXBContext context = JAXBContext.newInstance(
 						TDefinitions.class,
 						generated.occi.infrastructure.compute.Compute.class,
-						at.ac.tuwien.dsg.cloud.tosca.extension.ToscaCapabilityString.class,
-						at.ac.tuwien.dsg.cloud.tosca.extension.ScriptArtifactProperties.class,
-						at.ac.tuwien.dsg.cloud.tosca.extension.SalsaInstanceDescription.class,
-						at.ac.tuwien.dsg.cloud.tosca.extension.ToscaVMNodeTemplatePropertiesEntend.class);
+						at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaCapabilityString.class,
+						at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ScriptArtifactProperties.class,
+						at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaInstanceDescription.class,
+						at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ToscaVMNodeTemplatePropertiesEntend.class);
 						
 		Unmarshaller um = context.createUnmarshaller();
 		TDefinitions td = (TDefinitions) um.unmarshal(new FileReader(fileName));
@@ -49,10 +49,10 @@ public class ToscaXmlProcess {
 					.newInstance(
 							def.getClass(),
 							generated.occi.infrastructure.compute.Compute.class,
-							at.ac.tuwien.dsg.cloud.tosca.extension.ToscaCapabilityString.class,
-							at.ac.tuwien.dsg.cloud.tosca.extension.ScriptArtifactProperties.class,
-							at.ac.tuwien.dsg.cloud.tosca.extension.ToscaVMNodeTemplatePropertiesEntend.class,
-							at.ac.tuwien.dsg.cloud.tosca.extension.SalsaInstanceDescription.class);
+							at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaCapabilityString.class,
+							at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ScriptArtifactProperties.class,
+							at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ToscaVMNodeTemplatePropertiesEntend.class,
+							at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaInstanceDescription.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -78,10 +78,10 @@ public class ToscaXmlProcess {
 					.newInstance(
 							toscaObject.getClass(),
 							generated.occi.infrastructure.compute.Compute.class,
-							at.ac.tuwien.dsg.cloud.tosca.extension.ToscaCapabilityString.class,
-							at.ac.tuwien.dsg.cloud.tosca.extension.ScriptArtifactProperties.class,
-							at.ac.tuwien.dsg.cloud.tosca.extension.SalsaInstanceDescription.class,
-							at.ac.tuwien.dsg.cloud.tosca.extension.ToscaVMNodeTemplatePropertiesEntend.class);
+							at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaCapabilityString.class,
+							at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ScriptArtifactProperties.class,
+							at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaInstanceDescription.class,
+							at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ToscaVMNodeTemplatePropertiesEntend.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 			// output pretty printed

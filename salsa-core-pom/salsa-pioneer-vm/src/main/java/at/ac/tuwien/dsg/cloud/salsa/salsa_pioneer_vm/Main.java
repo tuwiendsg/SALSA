@@ -21,31 +21,41 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaComponentReplicaData;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.PioneerLogger;
-import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.SalsaConfiguration;
+import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.SalsaPioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaStructureQuery;
-import at.ac.tuwien.dsg.cloud.tosca.extension.ScriptArtifactProperties;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ScriptArtifactProperties;
 
 /**
- * Execute on cloud instance to execute command.
+ * This Pioneer service is set up on VM node after the VM started.
+ * It does the deployment for the higher level node, based on HOSTON relationship chain.
+ * It assumes that all the nodes on top of this VM are belong to a same service, topology,
+ * that why it will get the serviceId, topologyId from the VM properties.
  * 
- * @author hungld Usage: # java -jar salsa-pioneer-vm.jar <command> [options]
- *         Available commands: 
- *         - deploy: start deploy the higher components on top of VM 
- *         - checkcapa <id>: check capability <id>. return true/false 
- *         - getcapa <id>: return a capability String of <id> 
- *         - waitcapa <id>: block and wait until node capability is ready and capa is available
- *         - setcapa <id> <value>: set the capability String of <id> 
- *         - setnodestate <id> <value> : set node state
+ * It will be built as a Jar execution program, and can be call locally on the VM.
+ * 
+ * @author Le Duc Hung
+ * 
+ * @Usage: # java -jar salsa-pioneer-vm.jar <command> [options]<br>
+ *         Available commands: <br>
+ *         - deploy: start deploy the higher components on top of VM <br>
+ *         - checkcapa {id}: check capability <id>. return true/false <br>
+ *         - getcapa {id}: return a capability String of <id> <br>
+ *         - waitcapa {id}: block and wait until node capability is ready and capa is available
+ *         - setcapa {id} {value}: set the capability String of <id> <br>
+ *         - setnodestate {id> {value} : set node state<br>
+ * TODO: Replica is not dedicated for upper nodes. Upper nodes get lower node replica
  */
 public class Main {
 	private static String serviceId;
 	private static String topologyId;
-	private static String nodeId;	// this is VM node ID. It may contain other node on it
-	private static int replica;
+	private static String nodeId;	// this is VM node ID. It may contain other nodes on it
+	private static int replica;		// this is Replica number of the VM
 	private static TDefinitions def;	
 	private static SalsaCenterConnector centerCon;
 
@@ -58,21 +68,21 @@ public class Main {
 		}				
 		
 		Properties prop = new Properties();
-		prop.load(new FileInputStream(SalsaConfiguration.getSalsaVariableFile()));
+		prop.load(new FileInputStream(SalsaPioneerConfiguration.getSalsaVariableFile()));		
 		serviceId = prop.getProperty("SALSA_SERVICE_ID");
 		topologyId = prop.getProperty("SALSA_TOPOLOGY_ID");
 		nodeId = prop.getProperty("SALSA_NODE_ID"); // this node
 		replica = Integer.parseInt(prop.getProperty("SALSA_REPLICA")); 
 		
 		centerCon = new SalsaCenterConnector(
-				SalsaConfiguration.getSalsaCenterEndpoint(), serviceId,
-				SalsaConfiguration.getWorkingDir(), PioneerLogger.logger);
+				SalsaPioneerConfiguration.getSalsaCenterEndpoint(), serviceId,
+				SalsaPioneerConfiguration.getWorkingDir(), PioneerLogger.logger);
 				
 		
 		PioneerLogger.logger.debug("Service ID: " + serviceId);
 		PioneerLogger.logger.debug("This node ID: " + nodeId);
 		
-		def = centerCon.updateTopology();// get the latest service description
+		def = centerCon.getToscaDescription();// get the latest service description
 		
 		PioneerLogger.logger.debug("Update topology done !");
 		TNodeTemplate thisNode = ToscaStructureQuery.getNodetemplateById(nodeId, def);
@@ -83,7 +93,7 @@ public class Main {
 			deployNodeChain(thisNode);
 			break;
 		case "checkcapa":	// remote			
-			if (checkCapabilityReady(args[1], def)) {
+			if (checkCapabilityReady(topologyId, replica, args[1])) {
 				System.out.println("true");
 				PioneerLogger.logger.debug("Check capability "+args[1]+": is ready");
 			} else {
@@ -92,22 +102,28 @@ public class Main {
 			}
 			break;
 		case "waitcapa":
-			String capaVal = waitCapability(args[1]);
+			String capaVal = waitCapability(topologyId, replica, args[1]);
 			System.out.println(capaVal);
 			break;
 		case "setcapa":
-			centerCon.setCapability(args[1], args[2], def);
-			def = centerCon.updateTopology();
+			String capaId = args[1];
+			TNodeTemplate myNode = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capaId, def);
+			// TODO: The replica here is the replica of VM. It should be change to replica of upper node.
+			// How to do it: Search the HOSTON node, which have relationship with the replica.
+			centerCon.setCapability(topologyId, myNode.getId(), replica, args[1], args[2]);
+			//def = centerCon.updateTopology();
 			PioneerLogger.logger.debug("Set capability "+args[1]+" as " + args[2]);
 			break;
 		case "getcapa":	// get when node is ready
-			String capaValue = centerCon.getCapability(args[1], def);
-			def = centerCon.updateTopology();
+			String capaIdGet = args[1];
+			TNodeTemplate myNodeGet = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capaIdGet, def);
+			String capaValue = centerCon.getCapabilityValue(topologyId, myNodeGet.getId(), replica, capaIdGet);
+			//def = centerCon.updateTopology();
 			System.out.println(capaValue);
 			break;
 		case "setnodestate":
 			centerCon.setNodeState(topologyId, args[1], replica, SalsaEntityState.fromString(args[2]));
-			def = centerCon.updateTopology();
+			//def = centerCon.updateTopology();
 			break;
 		default:
 			PioneerLogger.logger.error("Unknown command: " + command);
@@ -119,25 +135,27 @@ public class Main {
 	private static void deployNodeChain(TNodeTemplate thisNode)
 			throws IOException {
 		// download full topology from web
-		def = centerCon.updateTopology();
-		PioneerLogger.logger.debug("Update topology service: " + def.getId());
+		//def = centerCon.updateTopology();
+		//PioneerLogger.logger.debug("Update topology service: " + def.getId());
 		// List of upper nodes, which will be deployed
 
 		List<TNodeTemplate> upperNodes = ToscaStructureQuery
 				.getNodeTemplateWithRelationshipChain("HOSTON", thisNode, def);
 		PioneerLogger.logger.debug("Chain for node: " + thisNode.getId());
 		for (TNodeTemplate chainNode : upperNodes) {
-			// submit a new node
-			//SalsaComponentData data = new SalsaComponentData(chainNode.getId(), chainNode.getType().getLocalPart(), replica, null); // same replica with VM, no properties
+			// submit a new node			
 			SalsaComponentReplicaData data = new SalsaComponentReplicaData(replica);
-			data.setState(SalsaEntityState.PROLOGUE);			
+			data.setState(SalsaEntityState.ALLOCATING);
+			
 			centerCon.addComponentData(serviceId, topologyId, chainNode.getId(), data);
 			
 			PioneerLogger.logger.debug("Starting deploy node: "+chainNode.getId());
-			centerCon.setNodeState(topologyId, chainNode.getId(), replica, SalsaEntityState.PROLOGUE);
-			def = centerCon.updateTopology();
+			centerCon.setNodeState(topologyId, chainNode.getId(), replica, SalsaEntityState.ALLOCATING);
+			//def = centerCon.updateTopology();
 			waitingForCapabilities(chainNode, def);
+			centerCon.setNodeState(topologyId, chainNode.getId(), replica, SalsaEntityState.CONFIGURING);
 			downloadAndRunNodeArtifacts(chainNode, def);
+			centerCon.setNodeState(topologyId, chainNode.getId(), replica, SalsaEntityState.READY);
 		}
 
 	}
@@ -154,14 +172,13 @@ public class Main {
 			PioneerLogger.logger.debug("Checking requirement "+req.getId());
 			TCapability cap=ToscaStructureQuery.getCapabilitySuitsRequirement(req, def);
 			PioneerLogger.logger.debug("Waiting for capability: "+cap.getId());
-			waitCapability(cap.getId());
+			waitCapability(topologyId, replica, cap.getId());
 		}
 	}
 
 	// Download and run 1 node. Node shouldn't be VM
 	private static void downloadAndRunNodeArtifacts(TNodeTemplate node,
-			TDefinitions def) {
-		centerCon.setNodeState(topologyId, node.getId(), replica, SalsaEntityState.PROLOGUE);
+			TDefinitions def) {		
 		// get Artifact list
 		List<String> arts = ToscaStructureQuery
 				.getDeployArtifactTemplateReferenceList(node, def);
@@ -171,7 +188,7 @@ public class Main {
 				PioneerLogger.logger.debug("Downloading artifact for: "
 						+ node.getId() + ". URL:" + art);
 				URL url = new URL(art);
-				String filePath = SalsaConfiguration.getWorkingDir()
+				String filePath = SalsaPioneerConfiguration.getWorkingDir()
 						+ File.separator + node.getId()
 						+ File.separator
 						+ FilenameUtils.getName(url.getFile());
@@ -201,11 +218,11 @@ public class Main {
 			ProcessBuilder pb = new ProcessBuilder("sh",runArt);
 			
 			Map<String,String> env = pb.environment();
-			String envPATH = env.get("PATH")+":"+SalsaConfiguration.getWorkingDir();
+			String envPATH = env.get("PATH")+":"+SalsaPioneerConfiguration.getWorkingDir();
 			env.put("PATH", envPATH);
 			PioneerLogger.logger.debug("env PATH="+envPATH);
 			// e.g, working in /opt/salsa/<nodeid>
-			pb.directory(new File(SalsaConfiguration.getWorkingDir()+File.separator+node.getId()));
+			pb.directory(new File(SalsaPioneerConfiguration.getWorkingDir()+File.separator+node.getId()));
 			try {
 				p = pb.start();
 				p.waitFor();
@@ -217,13 +234,11 @@ public class Main {
 					line = reader.readLine();
 					//PioneerLogger.logger.debug(line);
 				}
-				// update node state
-				centerCon.setNodeState(topologyId, node.getId(), replica, SalsaEntityState.READY);	
-				def = centerCon.updateTopology();
+				// update node state					
+				//def = centerCon.updateTopology();
 			} catch (IOException e) {
-				PioneerLogger.logger.debug(e.toString());
-				centerCon.setNodeState(topologyId, node.getId(), replica, SalsaEntityState.ERROR);
-				def = centerCon.updateTopology();
+				PioneerLogger.logger.debug(e.toString());				
+				//def = centerCon.updateTopology();
 			} catch (InterruptedException e1) {
 			}
 		} else {
@@ -234,26 +249,31 @@ public class Main {
 
 	}
 
-	
-
 	/*
-	 * Check if a node is deployed, then its capability will be ready
+	 * Check if an instance of node is deployed, then its capability will be ready
+	 * Note: we don't need nodeID because capaId is unique inside a Topology
 	 */
-	private static boolean checkCapabilityReady(String capaId, TDefinitions def) {
+	private static boolean checkCapabilityReady(String topoId, int replica, String capaId) {
 		TNodeTemplate node = ToscaStructureQuery
 				.getNodetemplateOfRequirementOrCapability(capaId, def);
-		return node.getState()
-				.equals(SalsaEntityState.READY.getNodeStateString());
+		// check if there are a replica of node with Ready state
+		// it doesn't care about which node, just check if existing ONE replica
+		SalsaCloudServiceData service = centerCon.getUpdateCloudServiceRuntime();
+		SalsaComponentData component = service.getComponentById(topologyId, node.getId());
+		if (component.getReplicaNumberByState(SalsaEntityState.READY) == 0){
+			return false;
+		} else {
+			return true;
+		}	
 	}
 	
-	private static String waitCapability(String capaId){
-		while (!checkCapabilityReady(capaId, def)){
+	private static String waitCapability(String topoId, int replica, String capaId){
+		while (!checkCapabilityReady(topoId, replica, capaId)){
 			try{
-				Thread.sleep(5000);
-				def = centerCon.updateTopology();
+				Thread.sleep(5000);				
 			} catch (InterruptedException e) {}
 		}
-		return centerCon.getCapability(capaId, def);
+		return centerCon.getCapabilityValue(topoId, nodeId, replica, capaId);
 	}
 
 	

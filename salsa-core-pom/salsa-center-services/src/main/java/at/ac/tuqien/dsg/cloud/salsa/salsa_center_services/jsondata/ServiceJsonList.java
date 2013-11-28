@@ -43,8 +43,6 @@ public class ServiceJsonList {
 		List<File> fl = Arrays.asList(folder.listFiles(filter));		
 		try {
 		for (File file : fl) {			
-//			BasicFileAttributes att = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class).readAttributes();
-//			Date createTime = new Date(att.lastModifiedTime().to(TimeUnit.SECONDS));
 			Date modifiedTime = new Date(file.lastModified());
 			CenterLogger.logger.debug("File modified time: "+file.lastModified());	
 			SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd yyyy 'at' HH:mm");

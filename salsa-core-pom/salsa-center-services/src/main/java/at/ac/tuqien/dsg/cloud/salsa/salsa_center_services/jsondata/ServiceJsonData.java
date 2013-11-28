@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 import at.ac.tuqien.dsg.cloud.salsa.salsa_center_services.utils.CenterLogger;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaCapabilityString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaXmlProcess;
-import at.ac.tuwien.dsg.cloud.tosca.extension.ToscaCapabilityString;
 
 
 /**
@@ -100,7 +100,7 @@ public class ServiceJsonData {
 					for (TCapability capa : capas) {
 						if (capa.getProperties() !=null){
 							TEntityTemplate.Properties prop = capa.getProperties();
-							ToscaCapabilityString s = (ToscaCapabilityString)prop.getAny();
+							SalsaCapabilityString s = (SalsaCapabilityString)prop.getAny();
 							tmpNode.capability.add(new NodeCapabilityData(capa.getId(), s.getValue()));
 						}
 					}

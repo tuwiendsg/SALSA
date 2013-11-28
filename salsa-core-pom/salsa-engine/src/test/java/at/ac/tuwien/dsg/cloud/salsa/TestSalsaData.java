@@ -17,19 +17,19 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaCloudServiceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaComponentData;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaComponentReplicaData;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaComponentReplicaData.Properties;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaTopologyData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData.Properties;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaInstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaXmlProcess;
 import at.ac.tuwien.dsg.cloud.salsa.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.utils.SalsaConfiguration;
-import at.ac.tuwien.dsg.cloud.tosca.extension.SalsaInstanceDescription;
 
 public class TestSalsaData {
 
@@ -43,7 +43,7 @@ public class TestSalsaData {
 		SalsaCloudServiceData serviceData = new SalsaCloudServiceData();
 		serviceData.setId(deployID.toString());
 		serviceData.setName(def.getName());
-		serviceData.setState(SalsaEntityState.PROLOGUE);
+		serviceData.setState(SalsaEntityState.ALLOCATING);
 		// build first topo
 		SalsaTopologyData topo = new SalsaTopologyData();
 		String topoID = ToscaStructureQuery.getFirstServiceTemplate(def).getId();
@@ -112,9 +112,7 @@ public class TestSalsaData {
 	
 	public static void submitService(String serviceFile){
 		
-		String url="http://" + SalsaConfiguration.getSalsaCenterIP()
-				+ ":" + SalsaConfiguration.getSalsaCenterPort()
-				+ SalsaConfiguration.getSalsaCenterPath()
+		String url="http://" + SalsaConfiguration.getSalsaCenterEndpoint()
 				+ "/submit";					
 		HttpClient client = new DefaultHttpClient();
 		HttpPost post = new HttpPost(url);

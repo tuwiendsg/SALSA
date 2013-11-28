@@ -10,7 +10,7 @@ public class TestDeployTosca {
 		try {
 			TDefinitions def = ToscaXmlProcess
 					.readToscaFile(TestDeployTosca.class.getResource(
-							"/cassandra.tosca.1.xml").getFile());
+							"/cassandra.tosca.xml").getFile());
 			SalsaToscaDeployer.deployNewService(def);
 			
 		} catch (Exception e) {

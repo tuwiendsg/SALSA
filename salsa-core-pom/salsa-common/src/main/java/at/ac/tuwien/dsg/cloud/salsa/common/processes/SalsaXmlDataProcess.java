@@ -3,17 +3,20 @@ package at.ac.tuwien.dsg.cloud.salsa.common.processes;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaCloudServiceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaComponentData;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaComponentReplicaData;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaTopologyData;
-import at.ac.tuwien.dsg.cloud.tosca.extension.SalsaInstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaReplicaRelationship;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaCapabilityString;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaInstanceDescription;
 
 public class SalsaXmlDataProcess {
 	
@@ -21,12 +24,15 @@ public class SalsaXmlDataProcess {
 		System.out.println("Writing Salsa service to file: "+fileName);
 		try {
 			File file = new File(fileName);
+			// add all the model and model.data into the context
 			JAXBContext jaxbContext = JAXBContext
 					.newInstance(SalsaCloudServiceData.class,
 							SalsaTopologyData.class,
 							SalsaComponentData.class,
 							SalsaComponentReplicaData.class,
-							SalsaInstanceDescription.class);
+							SalsaInstanceDescription.class,	// describe VM
+							SalsaCapabilityString.class,
+							SalsaReplicaRelationship.class);	// capability
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -39,6 +45,23 @@ public class SalsaXmlDataProcess {
 	
 	public static SalsaCloudServiceData readSalsaServiceFile(String fileName)
 			throws JAXBException, IOException {		
+		// add all the model and model.data into the context
+		JAXBContext context = JAXBContext.newInstance(
+						SalsaCloudServiceData.class,
+						SalsaTopologyData.class,
+						SalsaComponentData.class,
+						SalsaComponentReplicaData.class,						
+						SalsaInstanceDescription.class,	// describe VM
+						SalsaCapabilityString.class,
+						SalsaReplicaRelationship.class);	// capability
+						
+		Unmarshaller um = context.createUnmarshaller();
+		SalsaCloudServiceData serviceData = (SalsaCloudServiceData) um.unmarshal(new FileReader(fileName));
+		return serviceData;
+	}
+	
+	public static SalsaCloudServiceData readSalsaServiceXml(String xml)
+			throws JAXBException, IOException {		
 		JAXBContext context = JAXBContext.newInstance(
 						SalsaCloudServiceData.class,
 						SalsaTopologyData.class,
@@ -47,8 +70,9 @@ public class SalsaXmlDataProcess {
 						SalsaInstanceDescription.class);
 						
 		Unmarshaller um = context.createUnmarshaller();
-		SalsaCloudServiceData td = (SalsaCloudServiceData) um.unmarshal(new FileReader(fileName));
-		return td;
+		StringReader reader = new StringReader(xml);
+		return (SalsaCloudServiceData) um.unmarshal(reader);	
 	}
+	
 	
 }

@@ -9,14 +9,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaCloudServiceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaComponentData;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.common.data.SalsaTopologyData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
+import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaXmlProcess;
 import at.ac.tuwien.dsg.cloud.salsa.utils.EngineLogger;
+import at.ac.tuwien.dsg.cloud.salsa.utils.SalsaConfiguration;
 
 
 public class SalsaToscaDeployer {
@@ -77,7 +81,7 @@ public class SalsaToscaDeployer {
 			List<TNodeTemplate> nodes = ToscaStructureQuery.getNodeTemplateList(st);
 			for (TNodeTemplate node : nodes) {
 				SalsaComponentData nodeData = new SalsaComponentData(node.getId(), node.getType().getLocalPart());
-				nodeData.setState(SalsaEntityState.INITIAL);
+				nodeData.setState(SalsaEntityState.UNDEPLOYED);
 				nodeData.setName(node.getName());
 				topo.addComponent(nodeData);
 			}			
@@ -87,9 +91,15 @@ public class SalsaToscaDeployer {
 	}
 	
 	
-	public static void cleanService (String serviceId){
+	public static void cleanAllService (String serviceId){
 		// TODO: implement it
 		//List<TNodeTemplate> lst = ToscaStructureQuery.getNodeTemplatesOfTypeList("OPERATING_SYSTEM", def);
+		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "", EngineLogger.logger);
+		SalsaCloudServiceData service = centerCon.getUpdateCloudServiceRuntime();
+		List<SalsaComponentReplicaData> repLst = service.getAllReplicaByType(SalsaEntityType.VIRTUAL_MACHINE);
+		for (SalsaComponentReplicaData rep : repLst) {
+			
+		}
 		
 		
 	}
@@ -109,7 +119,7 @@ public class SalsaToscaDeployer {
 	private static void resetServiceNodeState(TDefinitions def){
 		List<TNodeTemplate> list = ToscaStructureQuery.getNodeTemplateList(def);
 		for (TNodeTemplate node : list) {
-			node.setState(SalsaEntityState.INITIAL.getNodeStateString());
+			node.setState(SalsaEntityState.UNDEPLOYED.getNodeStateString());
 		}
 	}
 	

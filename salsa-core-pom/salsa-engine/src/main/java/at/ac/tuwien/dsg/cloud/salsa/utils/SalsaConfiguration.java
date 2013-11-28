@@ -13,7 +13,7 @@ public class SalsaConfiguration {
 		configuration = new Properties();
 		try {
 			InputStream is = SalsaConfiguration.class.getClassLoader()
-					.getResourceAsStream("salsa.properties");
+					.getResourceAsStream("salsa.engine.properties");
 			configuration.load(is);
 			logger = Logger.getLogger("deploymentLogger");
 			
@@ -31,25 +31,25 @@ public class SalsaConfiguration {
 	}
 	
 	
-	public static String getSalsaCenterStoragePath(){
-		return configuration.getProperty("SERVICE_STORAGE");
-	}
+//	public static String getSalsaCenterStoragePath(){
+//		return configuration.getProperty("SERVICE_STORAGE");
+//	}
 	
 	public static String getSSHKeyForCenter(){
 		return SalsaConfiguration.class.getResource(configuration.getProperty("SALSA_PRIVATE_KEY")).getFile();
 	}
 	
-	public static String getPioneerFolder(){
-		return configuration.getProperty("PIONEER_FOLDER");
-	}
+//	public static String getPioneerFolder(){
+//		return configuration.getProperty("PIONEER_FOLDER");
+//	}
 	
 	public static String getPioneerWeb(){
 		return configuration.getProperty("PIONEER_WEB");
 	}
 	
-	public static String getServiceInstanceRepo(){
-		return configuration.getProperty("SERVICE_INSTANCE_REPOSITORY");
-	}
+//	public static String getServiceInstanceRepo(){
+//		return configuration.getProperty("SERVICE_INSTANCE_REPOSITORY");
+//	}
 	
 	public static String getWorkingDir(){
 		return configuration.getProperty("WORKING_DIR");
@@ -59,17 +59,17 @@ public class SalsaConfiguration {
 		return configuration.getProperty("VARIABLE_FILE");
 	}
 	
-	public static String getSalsaCenterIP(){
-		return configuration.getProperty("SALSA_CENTER_IP");
-	}
-	
-	public static String getSalsaCenterPort(){
-		return configuration.getProperty("SALSA_CENTER_PORT");
-	}
-	
-	public static String getSalsaCenterPath(){
-		return configuration.getProperty("SALSA_CENTER_PATH");
-	}
+//	public static String getSalsaCenterIP(){
+//		return configuration.getProperty("SALSA_CENTER_IP");
+//	}
+//	
+//	public static String getSalsaCenterPort(){
+//		return configuration.getProperty("SALSA_CENTER_PORT");
+//	}
+//	
+//	public static String getSalsaCenterPath(){
+//		return configuration.getProperty("SALSA_CENTER_PATH");
+//	}
 	
 	public static String getSalsaCenterEndpoint(){
 		return configuration.getProperty("SALSA_CENTER_ENDPOINT");
