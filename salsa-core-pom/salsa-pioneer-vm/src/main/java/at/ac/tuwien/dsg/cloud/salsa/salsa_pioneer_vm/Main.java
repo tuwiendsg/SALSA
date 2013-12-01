@@ -24,6 +24,7 @@ import org.apache.commons.io.FilenameUtils;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaCapabilityString;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.PioneerLogger;
@@ -106,19 +107,17 @@ public class Main {
 			System.out.println(capaVal);
 			break;
 		case "setcapa":
-			String capaId = args[1];
-			TNodeTemplate myNode = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capaId, def);
 			// TODO: The replica here is the replica of VM. It should be change to replica of upper node.
 			// How to do it: Search the HOSTON node, which have relationship with the replica.
-			centerCon.setCapability(topologyId, myNode.getId(), replica, args[1], args[2]);
-			//def = centerCon.updateTopology();
+			SalsaCapabilityString capa = new SalsaCapabilityString(args[1],  args[2]);
+			String nodeTmpId = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(args[1], def).getId();
+			centerCon.updateReplicaCapability(topologyId, nodeTmpId, replica, capa);			
 			PioneerLogger.logger.debug("Set capability "+args[1]+" as " + args[2]);
 			break;
 		case "getcapa":	// get when node is ready
 			String capaIdGet = args[1];
 			TNodeTemplate myNodeGet = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capaIdGet, def);
 			String capaValue = centerCon.getCapabilityValue(topologyId, myNodeGet.getId(), replica, capaIdGet);
-			//def = centerCon.updateTopology();
 			System.out.println(capaValue);
 			break;
 		case "setnodestate":

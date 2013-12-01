@@ -2,7 +2,6 @@ package at.ac.tuwien.dsg.cloud.salsa.common.model.data;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -12,24 +11,32 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaCloudProviders;
 
 /**
  * 
- * This class acts as a container for all the information
+ * This class acts as a container for all the information of Salsa Virtual Machine instances
  * 
- * @author Mario Bisignani (bisignam@usi.ch)
- * 
+ * @author Le Duc Hung
+ * TODO: change it for extending from ToscaVMNodeTemplatePropertiesEntend. Currently: copy attributes.
+ * TODO: Unified instance type. Currently: use String.
  */
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "Instance")
+@XmlRootElement(name = "VirtualMachineProperties")
 public class SalsaInstanceDescription {
 
-	// public enum InstanceState {PENDING, RUNNING, SHUTTING_DOWN, TERMINATED,
-	// STOPPING, STOPPED}
-	@XmlAttribute(name = "replicaNumber")
-	private int replicaNumber=0; 		// FQN: ROOT.Customer.Service.Vee.VeeReplica
+	@XmlElement(name = "provider")
+	private SalsaCloudProviders provider;
 	
-	@XmlAttribute(name = "id")
-	private String instanceId;	
+	@XmlElement(name = "baseImage")
+	private String baseImage;
+	
+	@XmlElement(name = "instanceType")
+	private String instanceType;
+
+	@XmlElement(name = "id")
+	private String instanceId;
+
+//	@XmlAttribute(name = "replicaNumber")
+//	private int replicaNumber=0; 	
 	
 	@XmlElement(name = "privateIp")
 	private String privateIp;
@@ -41,23 +48,28 @@ public class SalsaInstanceDescription {
 	private String publicDNS;
 	@XmlElement(name = "state")
 	private String state;
-	@XmlElement(name = "provider")
-	private SalsaCloudProviders provider;
 	
 
 	public SalsaInstanceDescription(){		
 	}
+	
+	public SalsaInstanceDescription(SalsaCloudProviders provider, String instanceId){
+		this.provider = provider;
+		this.instanceId = instanceId;
+//		this.replicaNumber = replicaNumber;
+	}
+	
+	@Deprecated
 	public SalsaInstanceDescription(int replicaNumber, String instanceId,
 			String privateIp, String publicIp, String privateDNS,
 			String publicDNS) {
 
-		this.replicaNumber = replicaNumber;
+//		this.replicaNumber = replicaNumber;
 		this.instanceId = instanceId;
 		this.privateIp = privateIp;
 		this.publicIp = publicIp;
 		this.privateDNS = privateDNS;
 		this.publicDNS = publicDNS;
-		this.state = "PENDING";
 	}
 
 	public void setState(String state) {
@@ -70,9 +82,9 @@ public class SalsaInstanceDescription {
 
 	
 
-	public int getReplicaNumber() {
-		return replicaNumber;
-	}
+//	public int getReplicaNumber() {
+//		return replicaNumber;
+//	}
 	public void setInstanceId(String instanceId) {
 		this.instanceId = instanceId;
 	}
@@ -88,9 +100,9 @@ public class SalsaInstanceDescription {
 	public void setPublicDNS(String publicDNS) {
 		this.publicDNS = publicDNS;
 	}
-	public void setReplicaNumber(int replicaNumber) {
-		this.replicaNumber = replicaNumber;
-	}
+//	public void setReplicaNumber(int replicaNumber) {
+//		this.replicaNumber = replicaNumber;
+//	}
 
 	
 
@@ -117,10 +129,36 @@ public class SalsaInstanceDescription {
 		return publicDNS;
 	}
 	
+	
+	
+	public SalsaCloudProviders getProvider() {
+		return provider;
+	}
+
+	public void setProvider(SalsaCloudProviders provider) {
+		this.provider = provider;
+	}
+	
+
+	public String getBaseImage() {
+		return baseImage;
+	}
+
+	public void setBaseImage(String baseImage) {
+		this.baseImage = baseImage;
+	}
+
+	public String getInstanceType() {
+		return instanceType;
+	}
+
+	public void setInstanceType(String instanceType) {
+		this.instanceType = instanceType;
+	}
+
 	@Override
 	public String toString() {
-		return "SalsaInstanceDescription [replicaNumber=" + replicaNumber
-				+ ", instanceId=" + instanceId + ", privateIp=" + privateIp
+		return "SalsaInstanceDescription [instanceId=" + instanceId + ", privateIp=" + privateIp
 				+ ", publicIp=" + publicIp + ", privateDNS=" + privateDNS
 				+ ", publicDNS=" + publicDNS + ", state=" + state + "]";
 	}

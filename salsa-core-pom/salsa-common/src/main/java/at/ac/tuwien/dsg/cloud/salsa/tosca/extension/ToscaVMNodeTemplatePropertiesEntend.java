@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaInstanceDescription;
-
 /*
  * The property can be
  * 		<Properties>
@@ -41,28 +39,28 @@ public class ToscaVMNodeTemplatePropertiesEntend {
 //	@XmlElement(name = "Compute")
 //	Compute compute;
 	
-	@XmlElement(name = "Instances")
-	ToscaVMNodeTemplatePropertiesEntend.Instances instances;
+//	@XmlElement(name = "Instances")
+//	ToscaVMNodeTemplatePropertiesEntend.Instances instances;
 	
 	@XmlElement(name = "Packages")
 	ToscaVMNodeTemplatePropertiesEntend.PackagesDependencies packagesDependencies;
 	
-	
-	@XmlAccessorType(XmlAccessType.FIELD)
-	@XmlType(name = "Instances")
-	public static class Instances{
-		@XmlElement(name = "Instances")
-		List<SalsaInstanceDescription> instance;
-
-		public List<SalsaInstanceDescription> getInstance() {
-			return instance;
-		}
-
-		public void setInstance(List<SalsaInstanceDescription> instance) {
-			this.instance = instance;
-		}
-		
-	}
+//	
+//	@XmlAccessorType(XmlAccessType.FIELD)
+//	@XmlType(name = "Instances")
+//	public static class Instances{
+//		@XmlElement(name = "Instances")
+//		List<SalsaInstanceDescription> instance;
+//
+//		public List<SalsaInstanceDescription> getInstance() {
+//			return instance;
+//		}
+//
+//		public void setInstance(List<SalsaInstanceDescription> instance) {
+//			this.instance = instance;
+//		}
+//		
+//	}
 	
 	@XmlAccessorType(XmlAccessType.FIELD)
 	@XmlType(name = "Packages")
@@ -89,13 +87,13 @@ public class ToscaVMNodeTemplatePropertiesEntend {
 	}
 
 
-	public ToscaVMNodeTemplatePropertiesEntend.Instances getInstances() {
-		return instances;
-	}
-
-	public void setInstances(ToscaVMNodeTemplatePropertiesEntend.Instances instances) {
-		this.instances = instances;
-	}
+//	public ToscaVMNodeTemplatePropertiesEntend.Instances getInstances() {
+//		return instances;
+//	}
+//
+//	public void setInstances(ToscaVMNodeTemplatePropertiesEntend.Instances instances) {
+//		this.instances = instances;
+//	}
 
 	public PackagesDependencies getPackagesDependencies() {
 		return packagesDependencies;
@@ -133,8 +131,7 @@ public class ToscaVMNodeTemplatePropertiesEntend {
 	public String toString() {
 		return "ToscaVMNodeTemplatePropertiesEntend [cloudProvider="
 				+ cloudProvider + ", baseImage=" + baseImage
-				+ ", instanceType=" + instanceType + ", instances=" + instances
-				+ ", packagesDependencies=" + packagesDependencies + "]";
+				+ ", instanceType=" + instanceType + ", packagesDependencies=" + packagesDependencies + "]";
 	}
 	
 	

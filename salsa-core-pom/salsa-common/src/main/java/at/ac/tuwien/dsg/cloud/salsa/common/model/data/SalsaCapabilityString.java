@@ -40,7 +40,11 @@ public class SalsaCapabilityString {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "SalsaCapabilityString [id=" + id + ", value=" + value + "]";
+	}
 	
 }
 

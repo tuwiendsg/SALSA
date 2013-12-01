@@ -1,7 +1,7 @@
 package at.ac.tuwien.dsg.cloud.salsa;
 
 import generated.oasis.tosca.TDefinitions;
-import at.ac.tuwien.dsg.cloud.salsa.service.impl.SalsaToscaDeployer;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.SalsaToscaDeployer;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaXmlProcess;
 
 public class TestDeployTosca {
