@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaCapabilityString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")

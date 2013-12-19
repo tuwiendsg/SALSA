@@ -20,10 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.io.StringReader;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -50,14 +47,13 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData.Prope
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaReplicaRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData.SalsaReplicaRelationships;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaCapabilityString;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaInstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaXmlDataProcess;
-import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.jsondata.ServiceJsonData;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.jsondata.ServiceJsonList;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.utils.CenterConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.utils.CenterLogger;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -89,6 +85,9 @@ public class ControlServices {
 	@Path("/getservice/{id}")
 	@Produces(MediaType.TEXT_XML)
 	public String getService(@PathParam("id") String serviceDeployId) {
+		if (serviceDeployId.equals("")){
+			return "";
+		}
 		String fileName = CenterConfiguration.getServiceStoragePath() + "/"
 				+ serviceDeployId;
 		try {
@@ -124,22 +123,25 @@ public class ControlServices {
 	}
 	
 	@GET
-	@Path("/deregister/service/{serviceId}")
-	@Produces(MediaType.TEXT_XML)
+	@Path("/deregister/{serviceId}")
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response deregisterService(@PathParam("serviceId") String serviceId) {
 		String fileName = CenterConfiguration.getServiceStoragePath() + "/"
 				+ serviceId;
 		try {
 			File file = new File(fileName);
-			if(file.delete()){
+			File datafile = new File(fileName.concat(".data"));
+			if(file.delete() && datafile.delete()){
+				logger.debug("Deregister service done: " + serviceId);
 				return Response.status(200).entity("Deregistered service: "	+ serviceId).build();
     		}else{
-    			return Response.status(404).entity("Service not found to deregister: " + serviceId).build();
+    			logger.debug("Could not found service to deregister: " + serviceId);
+    			return Response.status(202).entity("Service not found to deregister: " + serviceId).build();
     		}
 		} catch (Exception e) {
 			logger.error("Could not find service: " + serviceId
 					+ ". Data did not be sent. Error: " + e.toString());
-			return Response.status(404).entity("Service not found to deregister: " + serviceId).build();
+			return Response.status(201).entity("Service not found to deregister: " + serviceId).build();
 		}
 	}
 
@@ -412,23 +414,24 @@ public class ControlServices {
 	}
 	
 	
-	@GET
-	@Path("/getservicejson/{id}")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getServiceJson(@PathParam("id") String serviceDeployId) {
-		String fileName = CenterConfiguration.getServiceStoragePath() + "/"
-				+ serviceDeployId;
-		try {
-			ServiceJsonData serviceData = new ServiceJsonData();
-			serviceData.loadService(fileName);
-			Gson json = new GsonBuilder().setPrettyPrinting().create();
-			return json.toJson(serviceData);
-		} catch (Exception e) {
-			logger.error("Could not find service: " + serviceDeployId
-					+ ". Data did not be sent. Error: " + e.toString());
-			return "";
-		}
-	}
+//	@GET
+//	@Path("/getservicejson/{id}")
+//	@Produces(MediaType.TEXT_PLAIN)
+//	@Deprecated
+//	public String getServiceJson(@PathParam("id") String serviceDeployId) {
+//		String fileName = CenterConfiguration.getServiceStoragePath() + "/"
+//				+ serviceDeployId;
+//		try {
+//			ServiceJsonData serviceData = new ServiceJsonData();
+//			serviceData.loadService(fileName);
+//			Gson json = new GsonBuilder().setPrettyPrinting().create();
+//			return json.toJson(serviceData);
+//		} catch (Exception e) {
+//			logger.error("Could not find service: " + serviceDeployId
+//					+ ". Data did not be sent. Error: " + e.toString());
+//			return "";
+//		}
+//	}
 
 	@GET
 	@Path("/getservicejsonlist")
@@ -450,6 +453,9 @@ public class ControlServices {
 	@Path("/getserviceruntimexml/{id}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getServiceRuntimeXml(@PathParam("id") String serviceDeployId) {
+		if (serviceDeployId.equals("")){
+			return "";
+		}
 		String fileName = CenterConfiguration.getServiceStoragePath() + "/"
 				+ serviceDeployId + ".data";
 		try {

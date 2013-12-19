@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:Definitions xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12" id="DaaSApp" targetNamespace="http://tempuri.org">
+    <ns2:ServiceTemplate id="DataControllerService">
+        <ns2:TopologyTemplate>
+
+            <ns2:NodeTemplate name="DataControllerServiceUnit" minInstances="1" maxInstances="1" id="DataControllerServiceUnit" type="sh">
+                <ns2:Requirements>
+                    <ns2:Requirement name="DataController Deployment Target" fulfilled="false" id="DataController_DeploymentTarget_req" type="os">
+                        <ns2:Properties>
+                            <MappingProperties type="os">
+								<map>
+									<property name="instanceType">m1.medium</property>
+									<property name="baseImage">ami-00000163</property>
+									<property name="provider">OPENSTACK</property>
+									<property name="packages">openjdk-7-jre</property>
+								</map>
+                            </MappingProperties>
+                        </ns2:Properties>
+                    </ns2:Requirement>
+                </ns2:Requirements>
+                <ns2:Capabilities>
+                    <ns2:Capability name="Data controller IP" id="seedCap_IP" type="variable"/>
+                </ns2:Capabilities>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Deployment script" artifactType="ns2:script" artifactRef="deployDataController"/>
+                </ns2:DeploymentArtifacts>
+
+
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate name="DataNodeServiceUnit" minInstances="1" maxInstances="unbounded" id="DataNodeServiceUnit" type="sh">
+                <ns2:Requirements>
+                    <ns2:Requirement name="Connect to data controller" fulfilled="false" id="DataNodeServiceUnit_req" type="variable"/>
+                    <ns2:Requirement name="DataNode Deployment Target" fulfilled="false" id="Datanode_deployment_target" type="os">
+                        <ns2:Properties>
+                            <MappingProperties type="os">
+								<map>
+									<property name="cpu">low</property>
+									<property name="os">Linux</property>
+									<property name="dependencies">openjdk-7-jre</property>
+									<property name="memory">high</property>
+								</map>
+                            </MappingProperties>
+                        </ns2:Properties>
+                    </ns2:Requirement>
+                </ns2:Requirements>
+                <ns2:Policies>
+                    <ns2:Policy name="St3:STRATEGY CASE cpuUsage &lt; 40 : scalein" policyType="SYBLConstraint"/>
+                </ns2:Policies>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Deployment script" artifactType="ns2:script" artifactRef="deployDataNode"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+
+
+            <ns2:RelationshipTemplate name="Relation" id="controller2data" type="CONNECTTO">
+                <ns2:SourceElement ref="seedCap_IP"/>
+                <ns2:TargetElement ref="DataNodeServiceUnit_req"/>
+            </ns2:RelationshipTemplate>
+
+
+            <ns2:NodeTemplate id="os_for_DataControllerServiceUnit" type="os">
+                <ns2:Requirements>
+                    <ns2:Requirement fulfilled="false" id="os_for_DataControllerServiceUnit.vm.req" type="vm"/>
+                </ns2:Requirements>
+                <ns2:Capabilities>
+                    <ns2:Capability id="os_for_DataControllerServiceUnit.os.capa" type="os"/>
+                </ns2:Capabilities>
+            </ns2:NodeTemplate>
+
+
+            <ns2:RelationshipTemplate id="DataControllerServiceUnit.HOSTON.os_for_DataControllerServiceUnit" type="HOSTON">
+                <ns2:SourceElement ref="os_for_DataControllerServiceUnit.os.capa"/>
+                <ns2:TargetElement ref="DataController_DeploymentTarget_req"/>
+            </ns2:RelationshipTemplate>
+
+
+            <ns2:NodeTemplate id="vm_for_os_for_DataControllerServiceUnit" type="vm">
+                <ns2:Requirements>
+                    <ns2:Requirement fulfilled="false" id="vm_for_os_for_DataControllerServiceUnit.salsa-base.req" type="salsa-base"/>
+                </ns2:Requirements>
+                <ns2:Capabilities>
+                    <ns2:Capability id="vm_for_os_for_DataControllerServiceUnit.vm.capa" type="vm"/>
+                </ns2:Capabilities>
+            </ns2:NodeTemplate>
+
+
+            <ns2:RelationshipTemplate id="os_for_DataControllerServiceUnit.HOSTON.vm_for_os_for_DataControllerServiceUnit" type="HOSTON">
+                <ns2:SourceElement ref="vm_for_os_for_DataControllerServiceUnit.vm.capa"/>
+                <ns2:TargetElement ref="os_for_DataControllerServiceUnit.vm.req"/>
+            </ns2:RelationshipTemplate>
+
+
+            <ns2:NodeTemplate id="os_for_DataNodeServiceUnit" type="os">
+                <ns2:Requirements>
+                    <ns2:Requirement fulfilled="false" id="os_for_DataNodeServiceUnit.vm.req" type="vm"/>
+                </ns2:Requirements>
+                <ns2:Capabilities>
+                    <ns2:Capability id="os_for_DataNodeServiceUnit.os.capa" type="os"/>
+                </ns2:Capabilities>
+            </ns2:NodeTemplate>
+
+
+            <ns2:RelationshipTemplate id="DataNodeServiceUnit.HOSTON.os_for_DataNodeServiceUnit" type="HOSTON">
+                <ns2:SourceElement ref="os_for_DataNodeServiceUnit.os.capa"/>
+                <ns2:TargetElement ref="Datanode_deployment_target"/>
+            </ns2:RelationshipTemplate>
+
+
+            <ns2:NodeTemplate id="vm_for_os_for_DataNodeServiceUnit" type="vm">
+                <ns2:Requirements>
+                    <ns2:Requirement fulfilled="false" id="vm_for_os_for_DataNodeServiceUnit.salsa-base.req" type="salsa-base"/>
+                </ns2:Requirements>
+                <ns2:Capabilities>
+                    <ns2:Capability id="vm_for_os_for_DataNodeServiceUnit.vm.capa" type="vm"/>
+                </ns2:Capabilities>
+            </ns2:NodeTemplate>
+
+
+            <ns2:RelationshipTemplate id="os_for_DataNodeServiceUnit.HOSTON.vm_for_os_for_DataNodeServiceUnit" type="HOSTON">
+                <ns2:SourceElement ref="vm_for_os_for_DataNodeServiceUnit.vm.capa"/>
+                <ns2:TargetElement ref="os_for_DataNodeServiceUnit.vm.req"/>
+            </ns2:RelationshipTemplate>
+
+
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    <ns2:ArtifactTemplate name="deployseed.sh" id="deployDataController" type="ns2:script">
+        <ns2:Properties>
+            <salsa:ScriptArtifactProperty xmlns:salsa="http://example.com" xmlns:elasticity="http://www.example.org/NewXMLSchema" xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <Action>deploy</Action>
+                <ScriptLanguage>sh</ScriptLanguage>
+                <PrimaryScript>deployseed.sh</PrimaryScript>
+            		</salsa:ScriptArtifactProperty>
+        </ns2:Properties>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/deployseed.sh"/>
+            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/apache-cassandra-1.1.6-bin.tar.gz"/>
+            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/ElasticCassandraScripts.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate name="deploydata.sh" id="deployDataNode" type="ns2:script">
+        <ns2:Properties>
+            <salsa:ScriptArtifactProperty xmlns:salsa="http://example.com" xmlns:elasticity="http://www.example.org/NewXMLSchema" xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <Action>deploy</Action>
+                <ScriptLanguage>sh</ScriptLanguage>
+                <PrimaryScript>deploydata.sh</PrimaryScript>
+            		</salsa:ScriptArtifactProperty>
+        </ns2:Properties>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/deploydata.sh"/>
+            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/apache-cassandra-1.1.6-bin.tar.gz"/>
+            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/ElasticCassandraScripts.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactType name="war" targetNamespace="http://www.example.com/ToscaTypes"/>
+    <ns2:ArtifactType name="tar.gz" targetNamespace="http://www.example.com/ToscaTypes"/>
+</ns2:Definitions>

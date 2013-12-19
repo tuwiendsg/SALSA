@@ -21,7 +21,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.log4j.Logger;
 
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.SalsaToscaDeployer;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;

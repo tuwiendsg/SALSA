@@ -7,7 +7,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum SalsaRelationshipType {
 	HOSTON("HOSTON"),
-	CONNECTTO("CONNECTTO");	
+	CONNECTTO("CONNECTTO"),
+	DEPENDON("DEPENDON");
 	
 	private String relationshipType;
 	

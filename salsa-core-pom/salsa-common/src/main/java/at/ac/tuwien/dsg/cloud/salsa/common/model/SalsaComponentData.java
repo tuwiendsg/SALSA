@@ -15,14 +15,14 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "Component")
+@XmlRootElement(name = "ServiceUnit")
 @XmlSeeAlso({  
     SalsaTopologyData.class,
     SalsaComponentReplicaData.class
 })
 public class SalsaComponentData extends SalsaEntity {	
 	
-	@XmlElement(name = "replicas")
+	@XmlElement(name = "Replica")
 	List<SalsaComponentReplicaData> repLst = new ArrayList<SalsaComponentReplicaData>();;
 		
 	@XmlAttribute(name = "type")

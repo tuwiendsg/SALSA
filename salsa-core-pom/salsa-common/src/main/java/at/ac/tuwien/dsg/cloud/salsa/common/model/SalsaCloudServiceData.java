@@ -20,7 +20,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
 })
 public class SalsaCloudServiceData extends SalsaEntity{	
 	
-	@XmlElement(name = "ComponentTopology")
+	@XmlElement(name = "ServiceTopology")
 	List<SalsaTopologyData> componentTopology;
 
 	public SalsaCloudServiceData(){		

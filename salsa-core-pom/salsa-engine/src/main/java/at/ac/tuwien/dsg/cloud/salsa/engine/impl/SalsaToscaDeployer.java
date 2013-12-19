@@ -13,15 +13,15 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaInstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaStructureQuery;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 
 public class SalsaToscaDeployer {
@@ -45,7 +45,7 @@ public class SalsaToscaDeployer {
 		
 		// register service, all state is INITIAL
 		String fullToscaFile="/tmp/"+deployID.toString();
-		resetServiceNodeState(def);
+		//resetServiceNodeState(def);
 		ToscaXmlProcess.writeToscaDefinitionToFile(def, fullToscaFile);
 		engine.submitService(fullToscaFile);
 		
@@ -113,6 +113,7 @@ public class SalsaToscaDeployer {
 				cloudCon.removeInstance(providerName, instanceId);
 			}			
 		}
+		centerCon.deregisterService();
 		return true;
 	}
 	
@@ -128,12 +129,12 @@ public class SalsaToscaDeployer {
 	}
 	
 	// reset all node to INITIATE state
-	private static void resetServiceNodeState(TDefinitions def){
-		List<TNodeTemplate> list = ToscaStructureQuery.getNodeTemplateList(def);
-		for (TNodeTemplate node : list) {
-			node.setState(SalsaEntityState.UNDEPLOYED.getNodeStateString());
-		}
-	}
+//	private static void resetServiceNodeState(TDefinitions def){
+//		List<TNodeTemplate> list = ToscaStructureQuery.getNodeTemplateList(def);
+//		for (TNodeTemplate node : list) {
+//			node.setState(SalsaEntityState.UNDEPLOYED.getNodeStateString());
+//		}
+//	}
 	
 	
 	

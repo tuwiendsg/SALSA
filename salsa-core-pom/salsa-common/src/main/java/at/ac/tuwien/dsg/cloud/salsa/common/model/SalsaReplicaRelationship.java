@@ -12,7 +12,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaRelationshipType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "relationship")
+@XmlRootElement(name = "Relationship")
 @XmlSeeAlso({  
     SalsaTopologyData.class    
 })
@@ -20,9 +20,9 @@ public class SalsaReplicaRelationship {
 	@XmlAttribute(name = "type")
 	SalsaRelationshipType type;
 	
-	@XmlElement(name = "source")
+	@XmlElement(name = "Source")
 	SalsaReplicaInstanceReference source;
-	@XmlElement(name = "target")
+	@XmlElement(name = "Target")
 	SalsaReplicaInstanceReference target;
 	
 	public SalsaReplicaRelationship(){}

@@ -8,7 +8,6 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -27,10 +26,10 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData.Capabilities;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaReplicaRelationship;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaCapabilityString;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaInstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -79,7 +78,6 @@ public class SalsaCenterConnector {
 	 * @param serviceFile
 	 */
 	public void submitService(String serviceFile) {
-
 		String url = centerRestfulEndpoint + "/submit";
 		HttpClient client = new DefaultHttpClient();
 		HttpPost post = new HttpPost(url);
@@ -103,15 +101,10 @@ public class SalsaCenterConnector {
 	 * Deregister the service on Salsa Center
 	 * @param serviceId
 	 */
-	public void deregisterService(String serviceId) {
-		String url = centerRestfulEndpoint + "/deregister/service/"+serviceId;
-		WebResource webRes = Client.create().resource(url);
-		ClientResponse response = webRes.accept(MediaType.TEXT_PLAIN_TYPE).get(ClientResponse.class);
-		if (response.getStatus() != 200) {
-			logger.error("Error when deregistering service");		
-		} else {
-			logger.debug("Deregistered service: " + serviceId);
-		}		
+	public String deregisterService() {
+		String url = centerRestfulEndpoint + "/deregister/"+serviceId;
+		logger.debug("Salsa Connector query: " + url);
+		return getDataFromSalsaCenter(url);		
 	}
 
 	
@@ -125,24 +118,11 @@ public class SalsaCenterConnector {
 	 */
 	public void setNodeState(String topologyId, String nodeId, int replica,
 			SalsaEntityState state) {
-		// send the update command to Salsa center
-		Client client = Client.create();
 		String serverURL = centerRestfulEndpoint + "/update/nodestate/"
 				+ serviceId + "/" + topologyId + "/" + nodeId + "/" + replica
 				+ "/" + state.getNodeStateString();
 		logger.debug("Querrying: " + serverURL);
-		WebResource webRes = client.resource(serverURL);
-		ClientResponse response = webRes.accept(MediaType.TEXT_PLAIN_TYPE).get(
-				ClientResponse.class);
-		if (response.getStatus() != 200) {
-			logger.error("Error when setting node state");
-			return;
-		}
-		logger.debug("Set node " + nodeId + " state to "
-				+ state.getNodeStateString() + ". "
-				+ response.getEntity(String.class));
-		// get the update
-		// updateTopology();
+		getDataFromSalsaCenter(serverURL);
 	}
 
 	/**
@@ -223,26 +203,42 @@ public class SalsaCenterConnector {
 	 * @return the CloudService instance.
 	 */
 	public SalsaCloudServiceData getUpdateCloudServiceRuntime() {
+		try{
+			String xml = getUpdateCloudServiceRuntimeXML();
+			if (xml==null){
+				return null;
+			} else{
+				return SalsaXmlDataProcess.readSalsaServiceXml(xml);
+			}				
+			//return (xml==null)?null:SalsaXmlDataProcess.readSalsaServiceXml(xml);
+		} catch (IOException e){
+			e.printStackTrace();			
+		} catch (JAXBException e1) {
+			logger.error("Error to parse ServiceRuntime file. Error: " + e1);
+		}
+		return null;		
+	}
+	
+	/**
+	 * Query the Cloud Service Object, contain all runtime replicas of the
+	 * service.
+	 * 
+	 * @return XML String of the object.
+	 */
+	public String getUpdateCloudServiceRuntimeXML() {
 		String url = centerRestfulEndpoint + "/getserviceruntimexml" + "/"
 				+ serviceId;
-		try {
-			Client client = Client.create();
-			WebResource webResource = client.resource(url);
-			ClientResponse response = webResource.accept("text/plain").get(
-					ClientResponse.class);
-			if (response.getStatus() != 200) {
-				logger.error("Fail to get CloudService info. Http error code: "
-						+ response.getStatus());
-				return null;
-			}
-			String xml = response.getEntity(String.class);
-			return SalsaXmlDataProcess.readSalsaServiceXml(xml);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return getDataFromSalsaCenter(url);		
 	}
+	
+	/*
+	 * Get the json contain a list of deployed service Id
+	 */
+	public String getServiceListJson(){
+		String url = centerRestfulEndpoint + "/getservicejsonlist";
+		return getDataFromSalsaCenter(url);
+	}
+	
 
 	/**
 	 * Update the topology for a replica. As the property is AnyType, the
@@ -311,6 +307,23 @@ public class SalsaCenterConnector {
 		} catch (Exception e) {
 			logger.error("Some error when posting data to: " + url);
 		}
+	}
+	
+	/*
+	 * Send a GET request and return the result
+	 */
+	private String getDataFromSalsaCenter(String url){
+		Client client = Client.create();
+		WebResource webResource = client.resource(url);
+		ClientResponse response = webResource.accept("text/plain").get(
+				ClientResponse.class);
+		if (response.getStatus() != 200) {
+			logger.error("Fail to process GET request. Http error code: "
+					+ response.getStatus());
+			return null;
+		}
+		String resStr = response.getEntity(String.class);
+		return resStr;		
 	}
 
 }

@@ -1,175 +1,233 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:Definitions xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12" id="idvalue0" targetNamespace="http://tempuri.org"
-	xsi:schemaLocation="http://docs.oasis-open.org/tosca/ns/2011/12 TOSCA-v1.0.xsd">
-    <ns2:ServiceTemplate id="cassandra">
-        <ns2:TopologyTemplate>  
-            <ns2:documentation>
-				User can set type as Salsa supported NoteTemplate for automatic deployment. Some custom data:
-				 - OPERATING_SYSTEM node type: VirtualMachineNodeProperties to describe its resource.
-				 - Other node type: ScriptArtifactProperty to describe its actions on deployment artifacts.
-				   Pre-defined actions are : deploy, undeploy, configure, start, stop. 
-				   
+<ns2:Definitions xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12"
+	id="idvalue0" targetNamespace="http://tempuri.org">
+	<ns2:ServiceTemplate id="cassandra">
+		<ns2:TopologyTemplate>
+			<ns2:documentation>
+				User can set type as Salsa supported NoteTemplate
+				for automatic deployment. Some custom data:
+				- OPERATING_SYSTEM node type: VirtualMachineNodeProperties to
+				describe its resource.
+				- Other node type: ScriptArtifactProperty to describe its actions on
+				deployment artifacts.
+				Pre-defined actions are : deploy, undeploy, configure, start, stop.
+
 			</ns2:documentation>
-            <ns2:NodeTemplate  id="os1" type="ns2:OPERATING_SYSTEM">
-                <ns2:documentation>This node can be deployed automatic without any specification</ns2:documentation>
-                <ns2:Properties>
-                    <VirtualMachineNodeProperties>
-                    	<Provider>OPENSTACK</Provider> <!-- OPENSTACK / STRATUSLAB -->
+			<ns2:NodeTemplate id="os1" type="ns2:OPERATING_SYSTEM">
+				<ns2:documentation>This node can be deployed automatic without any
+					specification</ns2:documentation>
+				<ns2:Properties>
+					<VirtualMachineNodeProperties>
+						<Provider>OPENSTACK</Provider> <!-- OPENSTACK / STRATUSLAB -->
 						<BaseImage>ami-00000163</BaseImage>  <!-- OS: ami-00000163 ; stratus: L5DrIX5eSjxdxTzQSEOEEotGw3c -->
-						<InstanceType>m1.small</InstanceType>	                        
-                        <Packages>
-                            <Package>openjdk-7-jre</Package> 	<!-- jre-7-source, python-pip -->                             
-                        </Packages>
-                    </VirtualMachineNodeProperties>
-                </ns2:Properties>
-                <ns2:Capabilities>
-                    <ns2:Capability name="os1 cap" id="os1_capability"/>
-                </ns2:Capabilities>
-            </ns2:NodeTemplate>
-            <ns2:NodeTemplate  id="os2" type="ns2:OPERATING_SYSTEM">
-                <ns2:Properties>
-                    <VirtualMachineNodeProperties>
-                    	<Provider>OPENSTACK</Provider>
-						<BaseImage>ami-00000163</BaseImage>
 						<InstanceType>m1.small</InstanceType>
-                        <Packages>
-                            <Package>openjdk-7-jre</Package>							
-						</Packages>
-					</VirtualMachineNodeProperties>
-                </ns2:Properties>
-                <ns2:Capabilities>
-                    <ns2:Capability name="os2 cap" id="os2_capability"/>
-                </ns2:Capabilities>
-            </ns2:NodeTemplate>
-            <ns2:NodeTemplate salsa="true" id="os3" type="ns2:OPERATING_SYSTEM">
-            	<ns2:Properties>
-	           		<VirtualMachineNodeProperties>
-	                   	<Provider>OPENSTACK</Provider>
-						<BaseImage>ami-00000163</BaseImage>
-						<InstanceType>m1.small</InstanceType>
-	                       <Packages>
-	                           <Package>openjdk-7-jre</Package>	
+						<Packages>
+							<Package>openjdk-7-jre</Package> 	<!-- jre-7-source, python-pip -->
 						</Packages>
 					</VirtualMachineNodeProperties>
 				</ns2:Properties>
-                <ns2:Capabilities>
-                    <ns2:Capability name="os3 cap" id="os3_capability" />
-                </ns2:Capabilities>
-            </ns2:NodeTemplate>
-            <ns2:NodeTemplate  id="seed1" type="ns2:Seed" minInstances="1" maxInstances="1">
-            	<ns2:Properties>
+				<ns2:Capabilities>
+					<ns2:Capability name="os1 cap" id="os1_capability" />
+				</ns2:Capabilities>
+			</ns2:NodeTemplate>
+			<ns2:NodeTemplate id="os2" type="ns2:OPERATING_SYSTEM">
+				<ns2:Properties>
+					<VirtualMachineNodeProperties>
+						<Provider>OPENSTACK</Provider>
+						<BaseImage>ami-00000163</BaseImage>
+						<InstanceType>m1.small</InstanceType>
+						<Packages>
+							<Package>openjdk-7-jre</Package>
+						</Packages>
+					</VirtualMachineNodeProperties>
+				</ns2:Properties>
+				<ns2:Capabilities>
+					<ns2:Capability name="os2 cap" id="os2_capability" />
+				</ns2:Capabilities>
+			</ns2:NodeTemplate>
+			<ns2:NodeTemplate salsa="true" id="os3"
+				type="ns2:OPERATING_SYSTEM">
+				<ns2:Properties>
+					<VirtualMachineNodeProperties>
+						<Provider>OPENSTACK</Provider>
+						<BaseImage>ami-00000163</BaseImage>
+						<InstanceType>m1.small</InstanceType>
+						<Packages>
+							<Package>openjdk-7-jre</Package>
+						</Packages>
+					</VirtualMachineNodeProperties>
+				</ns2:Properties>
+				<ns2:Capabilities>
+					<ns2:Capability name="os3 cap" id="os3_capability" />
+				</ns2:Capabilities>
+			</ns2:NodeTemplate>
+			<ns2:NodeTemplate id="seed1" type="ns2:Seed"
+				minInstances="1" maxInstances="1">
+				<ns2:Properties>
+					<ScriptArtifactProperty>
+						<Action>deploy</Action>
+						<ScriptLanguage>sh</ScriptLanguage>
+						<PrimaryScript>deployseed.sh</PrimaryScript>
+					</ScriptArtifactProperty>
+				</ns2:Properties>
+				<ns2:Requirements>
+					<ns2:Requirement name="os_seed" fulfilled="false"
+						id="seed_os_req" />
+				</ns2:Requirements>
+				<ns2:Capabilities>
+					<ns2:Capability name="seedIp" id="seedCap_IP" type="ns2:variable" />
+				</ns2:Capabilities>
+				<ns2:DeploymentArtifacts>
+					<ns2:DeploymentArtifact name="deploy"
+						artifactType="ns2:script" artifactRef="ns2:seedDeploy" />
+				</ns2:DeploymentArtifacts>
+			</ns2:NodeTemplate>
+			<ns2:NodeTemplate id="datanode1" type="ns2:DataNode"
+				minInstances="1" maxInstances="unbounded">
+				<ns2:Properties>
+					<ScriptArtifactProperty>
+						<Action>deploy</Action>
+						<ScriptLanguage>sh</ScriptLanguage>
+						<PrimaryScript>deploydata.sh</PrimaryScript>
+					</ScriptArtifactProperty>
+				</ns2:Properties>
+				<ns2:Requirements>
+					<ns2:Requirement name="os_datanode" fulfilled="false"
+						id="node_os_req" type="ns2:OperatingSystemContainerRequirement" />
+					<ns2:Requirement name="seedIp" fulfilled="false"
+						id="dataNodereq_SeedIP" type="ns2:variable" />
+
+				</ns2:Requirements>
+				<ns2:DeploymentArtifacts>
+					<ns2:DeploymentArtifact name="deploy"
+						artifactType="ns2:script" artifactRef="ns2:datanodeDeploy" />
+				</ns2:DeploymentArtifacts>
+			</ns2:NodeTemplate>
+			<ns2:NodeTemplate id="ycsb1" type="ns2:ycsb"
+				minInstances="0" maxInstances="unbounded">
+				<ns2:Properties>
+					<ScriptArtifactProperty>
+						<Action>deploy</Action>
+						<ScriptLanguage>sh</ScriptLanguage>
+						<PrimaryScript>deployycsb.sh</PrimaryScript>
+					</ScriptArtifactProperty>
+				</ns2:Properties>
+				<ns2:Requirements>
+					<ns2:Requirement name="os_ycsb" fulfilled="false"
+						id="ycsb_os_req" type="ns2:OperatingSystemContainerRequirement" />
+					<ns2:Requirement name="seedIp" fulfilled="false"
+						id="ycsbReq_SeedIP" type="ns2:variable" />
+				</ns2:Requirements>
+				<ns2:DeploymentArtifacts>
+					<ns2:DeploymentArtifact name="deploy"
+						artifactType="ns2:script" artifactRef="ns2:ycsbDeploy" />
+				</ns2:DeploymentArtifacts>
+			</ns2:NodeTemplate>
+			<ns2:RelationshipTemplate id="seed2datanode"
+				type="ns2:CONNECTTO">
+				<ns2:SourceElement ref="seedCap_IP" />
+				<ns2:TargetElement ref="dataNodereq_SeedIP" />
+			</ns2:RelationshipTemplate>
+			<ns2:RelationshipTemplate id="ycsb2seed"
+				type="ns2:CONNECTTO">
+				<ns2:SourceElement ref="seedCap_IP" />
+				<ns2:TargetElement ref="ycsbReq_SeedIP" />
+			</ns2:RelationshipTemplate>
+			<ns2:RelationshipTemplate id="os2seed" type="ns2:HOSTON">
+				<ns2:SourceElement ref="os1_capability" />
+				<ns2:TargetElement ref="seed_os_req" />
+			</ns2:RelationshipTemplate>
+			<ns2:RelationshipTemplate id="os2node" type="ns2:HOSTON">
+				<ns2:SourceElement ref="os2_capability" />
+				<ns2:TargetElement ref="node_os_req" />
+			</ns2:RelationshipTemplate>
+			<ns2:RelationshipTemplate id="os2ycsb" type="ns2:HOSTON">
+				<ns2:SourceElement ref="os3_capability" />
+				<ns2:TargetElement ref="ycsb_os_req" />
+			</ns2:RelationshipTemplate>
+		</ns2:TopologyTemplate>
+	</ns2:ServiceTemplate>
+	<ns2:RelationshipType name="HOSTON">
+		<ns2:PropertiesDefinition />
+	</ns2:RelationshipType>
+	<ns2:NodeType name="Seed">
+		<ns2:RequirementDefinitions>
+			<ns2:RequirementDefinition name="req1"
+				requirementType="ns2:LinuxOS" />
+			<ns2:RequirementDefinition name="req2"
+				requirementType="ns2:Java" />
+		</ns2:RequirementDefinitions>
+	</ns2:NodeType>
+	<ns2:NodeType name="DataNode">
+		<ns2:RequirementDefinitions>
+			<ns2:RequirementDefinition name="req1"
+				requirementType="ns2:LinuxOS" />
+			<ns2:RequirementDefinition name="req2"
+				requirementType="ns2:Java" />
+		</ns2:RequirementDefinitions>
+	</ns2:NodeType>
+	<ns2:NodeType name="ycsb">
+		<ns2:RequirementDefinitions>
+			<ns2:RequirementDefinition name="req1"
+				requirementType="ns2:LinuxOS" />
+		</ns2:RequirementDefinitions>
+	</ns2:NodeType>
+
+	<ns2:ArtifactTemplate name="deployseed.sh" id="seedDeploy"
+		type="ns2:script">
+
+		<ns2:ArtifactReferences>
+			<ns2:Properties>
             		<ScriptArtifactProperty>
             			<Action>deploy</Action>
             			<ScriptLanguage>sh</ScriptLanguage>
             			<PrimaryScript>deployseed.sh</PrimaryScript>
             		</ScriptArtifactProperty>
             	</ns2:Properties>
-                <ns2:Requirements>
-                    <ns2:Requirement name="os_seed" fulfilled="false" id="seed_os_req"/>
-                </ns2:Requirements>
-                <ns2:Capabilities>
-                    <ns2:Capability name="seedIp" id="seedCap_IP" type="ns2:variable"/>
-                </ns2:Capabilities>
-                <ns2:DeploymentArtifacts>
-                    <ns2:DeploymentArtifact name="deploy" artifactType="ns2:script" artifactRef="ns2:seedDeploy"/>
-                </ns2:DeploymentArtifacts>
-            </ns2:NodeTemplate>
-            <ns2:NodeTemplate  id="datanode1" type="ns2:DataNode" minInstances="1" maxInstances="unbounded">
-            	<ns2:Properties>
+			<ns2:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/deployseed.sh" />
+			<ns2:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/apache-cassandra-1.1.6-bin.tar.gz" />
+			<ns2:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/ElasticCassandraScripts.tar.gz" />
+		</ns2:ArtifactReferences>
+	</ns2:ArtifactTemplate>
+	<ns2:ArtifactTemplate name="deploydata.sh" id="datanodeDeploy"
+		type="ns2:script">
+		<ns2:Properties>
             		<ScriptArtifactProperty>
             			<Action>deploy</Action>
             			<ScriptLanguage>sh</ScriptLanguage>
             			<PrimaryScript>deploydata.sh</PrimaryScript>
             		</ScriptArtifactProperty>
             	</ns2:Properties>
-                <ns2:Requirements>
-                    <ns2:Requirement name="os_datanode" fulfilled="false" id="node_os_req" type="ns2:OperatingSystemContainerRequirement"/>
-                    <ns2:Requirement name="seedIp" fulfilled="false" id="dataNodereq_SeedIP" type="ns2:variable"/>
-                    
-                </ns2:Requirements>
-                <ns2:DeploymentArtifacts>
-                    <ns2:DeploymentArtifact name="deploy" artifactType="ns2:script" artifactRef="ns2:datanodeDeploy"/>
-                </ns2:DeploymentArtifacts>
-            </ns2:NodeTemplate>
-            <ns2:NodeTemplate   id="ycsb1" type="ns2:ycsb" minInstances="0" maxInstances="unbounded">            
-            	<ns2:Properties>
+		<ns2:ArtifactReferences>
+			<ns2:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/deploydata.sh" />
+			<ns2:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/apache-cassandra-1.1.6-bin.tar.gz" />
+			<ns2:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/ElasticCassandraScripts.tar.gz" />
+		</ns2:ArtifactReferences>
+	</ns2:ArtifactTemplate>
+	<ns2:ArtifactTemplate name="deployycsb.sh" id="ycsbDeploy"
+		type="ns2:script">
+		<ns2:Properties>
             		<ScriptArtifactProperty>
             			<Action>deploy</Action>
             			<ScriptLanguage>sh</ScriptLanguage>
             			<PrimaryScript>deployycsb.sh</PrimaryScript>
             		</ScriptArtifactProperty>
             	</ns2:Properties>
-                <ns2:Requirements>
-                    <ns2:Requirement name="os_ycsb" fulfilled="false" id="ycsb_os_req" type="ns2:OperatingSystemContainerRequirement"/>
-                    <ns2:Requirement name="seedIp" fulfilled="false" id="ycsbReq_SeedIP" type="ns2:variable"/>
-                </ns2:Requirements>
-                <ns2:DeploymentArtifacts>
-                    <ns2:DeploymentArtifact name="deploy" artifactType="ns2:script" artifactRef="ns2:ycsbDeploy"/>
-                </ns2:DeploymentArtifacts>
-            </ns2:NodeTemplate>
-            <ns2:RelationshipTemplate id="seed2datanode" type="ns2:CONNECTTO">
-                <ns2:SourceElement ref="seedCap_IP"/>
-                <ns2:TargetElement ref="dataNodereq_SeedIP"/>
-            </ns2:RelationshipTemplate>
-            <ns2:RelationshipTemplate id="ycsb2seed" type="ns2:CONNECTTO">
-                <ns2:SourceElement ref="seedCap_IP"/>
-                <ns2:TargetElement ref="ycsbReq_SeedIP"/>
-            </ns2:RelationshipTemplate>
-            <ns2:RelationshipTemplate id="os2seed" type="ns2:HOSTON">
-                <ns2:SourceElement ref="os1_capability"/>
-                <ns2:TargetElement ref="seed_os_req"/>
-            </ns2:RelationshipTemplate>
-            <ns2:RelationshipTemplate id="os2node" type="ns2:HOSTON">
-                <ns2:SourceElement ref="os2_capability"/>
-                <ns2:TargetElement ref="node_os_req"/>
-            </ns2:RelationshipTemplate>
-            <ns2:RelationshipTemplate id="os2ycsb" type="ns2:HOSTON">
-                <ns2:SourceElement ref="os3_capability"/>
-                <ns2:TargetElement ref="ycsb_os_req"/>
-            </ns2:RelationshipTemplate>
-        </ns2:TopologyTemplate>
-    </ns2:ServiceTemplate>
-    <ns2:RelationshipType name="HOSTON">
-        <ns2:PropertiesDefinition/>
-    </ns2:RelationshipType>
-    <ns2:NodeType name="Seed">
-        <ns2:RequirementDefinitions>
-            <ns2:RequirementDefinition name="req1" requirementType="ns2:LinuxOS"/>
-            <ns2:RequirementDefinition name="req2" requirementType="ns2:Java"/>
-        </ns2:RequirementDefinitions>
-    </ns2:NodeType>
-    <ns2:NodeType name="DataNode">
-        <ns2:RequirementDefinitions>
-            <ns2:RequirementDefinition name="req1" requirementType="ns2:LinuxOS"/>
-            <ns2:RequirementDefinition name="req2" requirementType="ns2:Java"/>
-        </ns2:RequirementDefinitions>
-    </ns2:NodeType>
-    <ns2:NodeType name="ycsb">
-        <ns2:RequirementDefinitions>
-            <ns2:RequirementDefinition name="req1" requirementType="ns2:LinuxOS"/>
-        </ns2:RequirementDefinitions>
-    </ns2:NodeType>
-   
-    <ns2:ArtifactTemplate name="deployseed.sh" id="seedDeploy" type="ns2:script">       
-        <ns2:ArtifactReferences>
-            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/deployseed.sh"/>
-            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/apache-cassandra-1.1.6-bin.tar.gz"/>
-            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/ElasticCassandraScripts.tar.gz"/>
-        </ns2:ArtifactReferences>
-    </ns2:ArtifactTemplate>
-    <ns2:ArtifactTemplate name="deploydata.sh" id="datanodeDeploy" type="ns2:script">       
-        <ns2:ArtifactReferences>
-            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/deploydata.sh"/>
-            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/apache-cassandra-1.1.6-bin.tar.gz"/>
-            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/ElasticCassandraScripts.tar.gz"/>
-        </ns2:ArtifactReferences>
-    </ns2:ArtifactTemplate>
-    <ns2:ArtifactTemplate name="deployycsb.sh" id="ycsbDeploy" type="ns2:script">       
-        <ns2:ArtifactReferences>
-            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/deployycsb.sh"/>
-            <ns2:ArtifactReference reference="http://134.158.75.65/artifacts/cassandra/ycsb.tar.gz"/>
-        </ns2:ArtifactReferences>
-    </ns2:ArtifactTemplate>
-    <ns2:ArtifactType name="war" targetNamespace="http://www.example.com/ToscaTypes"/>
-    <ns2:ArtifactType name="tar.gz" targetNamespace="http://www.example.com/ToscaTypes"/>
+		<ns2:ArtifactReferences>
+			<ns2:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/deployycsb.sh" />
+			<ns2:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/ycsb.tar.gz" />
+		</ns2:ArtifactReferences>
+	</ns2:ArtifactTemplate>
+	<ns2:ArtifactType name="war"
+		targetNamespace="http://www.example.com/ToscaTypes" />
+	<ns2:ArtifactType name="tar.gz"
+		targetNamespace="http://www.example.com/ToscaTypes" />
 </ns2:Definitions>

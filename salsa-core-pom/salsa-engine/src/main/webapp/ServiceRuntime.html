@@ -25,13 +25,13 @@ function getURLParameter(name) {
 	return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
 }
 
-var salsaCenterHost="http://134.158.75.65:8080";
-var salsaCenterHostLocal="http://localhost:8080";
+//var salsaCenterHost="http://128.130.172.215/:8080/salsa-center-services/";
+//var salsaCenterHostLocal="http://localhost:8080/salsa-center-services/";
 
 
-var dataSource="rest/getserviceruntimexml/"+getURLParameter('id');
-var listSource="rest/getservicejsonlist";
-var underegisterSource="rest/deregister/service"; // need + id latter
+var dataSource="rest/proxy/getserviceruntimexml/"+getURLParameter('id');
+var listSource="rest/proxy/getservicejsonlist";
+var underegisterSource="rest/undeploy"; // need + id latter
 
 
 var refeshCount=0;
@@ -64,7 +64,7 @@ $.getJSON(listSource,  function(json){
 });
 
 function ShowSalsaRuntime(data){ // data is CloudService
-	var x=data.getElementsByTagName("component");
+	var x=data.getElementsByTagName("ServiceUnit");
 	var str="";
 	for (var i = 0; i < x.length; i++) {
 		str += '<b><big>Id: '+x[i].getAttribute('id')+'; Type:'+x[i].getAttribute('type')+'</big></b>';
@@ -87,7 +87,7 @@ function CreateTableViewSalsaReplicaNodeTable(data) {   // data is Component
     
      // table body
     str += '<tbody>';
-    var x=data.getElementsByTagName("replicas");
+    var x=data.getElementsByTagName("Replica");
     for (var i = 0; i < x.length; i++) {
     	
    		str += (i % 2 == 0) ? '<tr class="alt">' : '<tr>';
@@ -98,7 +98,7 @@ function CreateTableViewSalsaReplicaNodeTable(data) {   // data is Component
         
         // Properties
         str += '<td>';
-        var arrayProp=x[i].getElementsByTagName("VirtualMachineProperties");
+        var arrayProp=x[i].getElementsByTagName("SalsaInstanceDescription");
         //str+=arrayCapa.toString();
         for (var j=0; j<arrayProp.length; j++){        	
         	str += getElementByTagNameToString('provider', arrayProp[j]);
@@ -167,7 +167,7 @@ function createListTable(data){
 
 function deregisterService(serviceId){
 	url = underegisterSource + "/" + serviceId;
-	alert("Prepare undeploy service: " + serviceId);
+	alert("Query to: " + url);
 	$.get(url, function(data) {
 		       alert('Information: ' + data);
 		       location.reload();

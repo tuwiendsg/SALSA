@@ -18,7 +18,7 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>
+  <display-name>Archetype Created Web Application</display-name>  
   <servlet>
   	<servlet-name>salsa_engine_serverlet</servlet-name>
   	<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
@@ -27,7 +27,8 @@
   		<param-value>at.ac.tuwien.dsg.cloud.salsa.engine.services</param-value>
   	</init-param>
   <load-on-startup>1</load-on-startup>
-  </servlet>
+  </servlet>  
+  
   <servlet-mapping>
   	<servlet-name>salsa_engine_serverlet</servlet-name>
   	<url-pattern>/rest/*</url-pattern>

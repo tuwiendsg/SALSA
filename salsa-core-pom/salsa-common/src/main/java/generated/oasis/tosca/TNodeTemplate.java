@@ -115,28 +115,28 @@ public class TNodeTemplate
     protected String maxInstances;
     
     // add for Salsa
-    @XmlAttribute(name = "state")
-    private String state = "prologue";
-    @XmlAttribute(name = "salsa")	// node will be handle by Salsa
-    private boolean salsa = false;
+//    @XmlAttribute(name = "state")
+//    private String state = "prologue";
+//    @XmlAttribute(name = "salsa")	// node will be handle by Salsa
+//    private boolean salsa = false;
         
     
 	
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public boolean isSalsa() {
-		return salsa;
-	}
-
-	public void setSalsa(boolean salsa) {
-		this.salsa = salsa;
-	}
+//	public String getState() {
+//		return state;
+//	}
+//
+//	public void setState(String state) {
+//		this.state = state;
+//	}
+//
+//	public boolean isSalsa() {
+//		return salsa;
+//	}
+//
+//	public void setSalsa(boolean salsa) {
+//		this.salsa = salsa;
+//	}
 
 	/**
      * Gets the value of the requirements property.

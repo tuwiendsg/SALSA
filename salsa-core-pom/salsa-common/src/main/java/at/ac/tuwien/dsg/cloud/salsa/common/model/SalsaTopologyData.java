@@ -15,7 +15,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "ComponentTopology")
+@XmlRootElement(name = "ServiceTopology")
 @XmlSeeAlso({  
     SalsaComponentData.class,
     SalsaReplicaRelationship.class
@@ -24,14 +24,14 @@ public class SalsaTopologyData extends SalsaEntity {
 	@XmlAttribute(name = "replica")
 	int replica=0;
 	
-	@XmlElement(name = "component")
+	@XmlElement(name = "ServiceUnit")
 	List<SalsaComponentData> components = new ArrayList<>();
 	
-	@XmlElement(name = "relationships")
+	@XmlElement(name = "Relationships")
 	SalsaReplicaRelationships relationships;
 	
 	public static class SalsaReplicaRelationships{
-		@XmlElement(name = "relationship")
+		@XmlElement(name = "Relationship")
 		List<SalsaReplicaRelationship> relList = new ArrayList<>();
 		
 		public void addRelationship(SalsaReplicaRelationship rel){

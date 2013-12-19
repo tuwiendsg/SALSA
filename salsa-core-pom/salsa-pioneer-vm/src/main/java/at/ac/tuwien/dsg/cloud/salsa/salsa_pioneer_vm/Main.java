@@ -1,7 +1,9 @@
 package at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm;
 
+import generated.oasis.tosca.TArtifactTemplate;
 import generated.oasis.tosca.TCapability;
 import generated.oasis.tosca.TDefinitions;
+import generated.oasis.tosca.TDeploymentArtifact;
 import generated.oasis.tosca.TEntityTemplate;
 import generated.oasis.tosca.TNodeTemplate;
 import generated.oasis.tosca.TRequirement;
@@ -24,13 +26,13 @@ import org.apache.commons.io.FilenameUtils;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaCapabilityString;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.SalsaPioneerConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ScriptArtifactProperties;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 
 /**
  * This Pioneer service is set up on VM node after the VM started.
@@ -180,7 +182,7 @@ public class Main {
 			TDefinitions def) {		
 		// get Artifact list
 		List<String> arts = ToscaStructureQuery
-				.getDeployArtifactTemplateReferenceList(node, def);
+				.getDeployArtifactTemplateReferenceList(node, def);	
 
 		for (String art : arts) {
 			try {
@@ -203,7 +205,12 @@ public class Main {
 			}
 		}
 		// search and run <Acrion>deploy</Action> scripts
-		TEntityTemplate.Properties prop = node.getProperties();
+		//TEntityTemplate.Properties prop = node.getProperties();		
+		List<TDeploymentArtifact> lst = node.getDeploymentArtifacts().getDeploymentArtifact();
+		// now only get the first one
+		TArtifactTemplate artTem = ToscaStructureQuery.getArtifactTemplateById(lst.get(0).getArtifactRef().getLocalPart(),def);
+		TEntityTemplate.Properties prop = artTem.getProperties();
+		
 		if (prop == null) {
 			PioneerLogger.logger.debug(node.getId()
 					+ " doesn't have a deploy artifact");

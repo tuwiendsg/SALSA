@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaCapabilityString;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.utils.CenterLogger;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaStructureQuery;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 
 /**
@@ -94,7 +94,7 @@ public class ServiceJsonData {
 			List<TNodeTemplate> lst = ToscaStructureQuery.getNodeTemplateList(def);
 			for (TNodeTemplate nt : lst) {
 				CenterLogger.logger.debug("Analizing node "+nt.getId());
-				NodeData tmpNode = new NodeData(nt.getId(),nt.getState(),nt.getType().getLocalPart().toString());				
+				NodeData tmpNode = new NodeData(nt.getId(),"",nt.getType().getLocalPart().toString());				
 				if (nt.getCapabilities() != null){
 					List<TCapability> capas = nt.getCapabilities().getCapability();
 					for (TCapability capa : capas) {

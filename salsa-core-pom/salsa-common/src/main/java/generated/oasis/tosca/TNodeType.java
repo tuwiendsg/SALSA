@@ -365,4 +365,13 @@ public class TNodeType
 
     }
 
+
+    /**
+     * Add for showing on Salsas knowledge graph
+     */
+	@Override
+	public String toString() {
+		return getName();
+	}
+
 }

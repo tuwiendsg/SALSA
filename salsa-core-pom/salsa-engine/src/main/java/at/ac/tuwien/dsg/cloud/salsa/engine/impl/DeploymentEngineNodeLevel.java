@@ -22,16 +22,16 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import at.ac.tuwien.dsg.cloud.data.InstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaInstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.MultiCloudConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaStructureQuery;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ToscaVMNodeTemplatePropertiesEntend;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 import at.ac.tuwien.dsg.cloud.services.CloudInterface;
 
 import com.xerox.amazonws.ec2.InstanceType;
@@ -201,11 +201,13 @@ public class DeploymentEngineNodeLevel {
 		if (node.getProperties() != null) {
 			ToscaVMNodeTemplatePropertiesEntend tprop = (ToscaVMNodeTemplatePropertiesEntend) node
 					.getProperties().getAny();
-			List<String> lstPkgs = tprop.getPackagesDependencies()
-					.getPackageDependency();
-			for (String pkg : lstPkgs) {
-				// TODO: should change, now just support Ubuntu image				
-				userDataBuffer.append("apt-get -y install " + pkg + " \n"); 
+			if (tprop.getPackagesDependencies() != null){				
+				List<String> lstPkgs = tprop.getPackagesDependencies()
+						.getPackageDependency();
+				for (String pkg : lstPkgs) {
+					// TODO: should change, now just support Ubuntu image				
+					userDataBuffer.append("apt-get -y install " + pkg + " \n"); 
+				}
 			}
 		}
 		// execute Pioneer

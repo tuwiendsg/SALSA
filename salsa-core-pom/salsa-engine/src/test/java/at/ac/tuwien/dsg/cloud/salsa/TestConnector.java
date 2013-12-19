@@ -10,14 +10,14 @@ import java.util.UUID;
 import javax.xml.bind.JAXBException;
 
 import at.ac.tuwien.dsg.cloud.data.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaCapabilityString;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.data.SalsaInstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaStructureQuery;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 import at.ac.tuwien.dsg.cloud.stratuslab.services.impl.StratusLabConnector;
 
 public class TestConnector {
