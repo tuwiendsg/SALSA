@@ -1,12 +1,17 @@
 package at.ac.tuwien.dsg.cloud.salsa.tosca.extension;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaCloudProviders;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.SalsaMappingProperty;
 
 
 /**
@@ -24,7 +29,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaCloudProviders;
 public class SalsaInstanceDescription {
 
 	@XmlElement(name = "provider")
-	private SalsaCloudProviders provider;
+	private String provider;
 	
 	@XmlElement(name = "baseImage")
 	private String baseImage;
@@ -50,29 +55,18 @@ public class SalsaInstanceDescription {
 	private String state;
 	
 	@XmlElement(name = "Packages")
-	ToscaVMNodeTemplatePropertiesEntend.PackagesDependencies packagesDependencies;
+	PackagesDependencies packagesDependencies;
 
-	public SalsaInstanceDescription(){		
+	public SalsaInstanceDescription(){
 	}
 	
-	public SalsaInstanceDescription(SalsaCloudProviders provider, String instanceId){
+	public SalsaInstanceDescription(String provider, String instanceId){
 		this.provider = provider;
 		this.instanceId = instanceId;
 //		this.replicaNumber = replicaNumber;
 	}
 	
-	@Deprecated
-	public SalsaInstanceDescription(int replicaNumber, String instanceId,
-			String privateIp, String publicIp, String privateDNS,
-			String publicDNS) {
-
-//		this.replicaNumber = replicaNumber;
-		this.instanceId = instanceId;
-		this.privateIp = privateIp;
-		this.publicIp = publicIp;
-		this.privateDNS = privateDNS;
-		this.publicDNS = publicDNS;
-	}
+	
 
 	public void setState(String state) {
 		this.state = state;
@@ -132,15 +126,13 @@ public class SalsaInstanceDescription {
 	}
 	
 	
-	
-	public SalsaCloudProviders getProvider() {
+	public String getProvider() {
 		return provider;
 	}
 
-	public void setProvider(SalsaCloudProviders provider) {
+	public void setProvider(String provider) {
 		this.provider = provider;
 	}
-	
 
 	public String getBaseImage() {
 		return baseImage;
@@ -158,12 +150,11 @@ public class SalsaInstanceDescription {
 		this.instanceType = instanceType;
 	}
 	
-	public ToscaVMNodeTemplatePropertiesEntend.PackagesDependencies getPackagesDependencies() {
+	public PackagesDependencies getPackagesDependenciesList() {
 		return packagesDependencies;
 	}
 
-	public void setPackagesDependencies(
-			ToscaVMNodeTemplatePropertiesEntend.PackagesDependencies packagesDependencies) {
+	public void setPackagesDependencies(PackagesDependencies packagesDependencies) {
 		this.packagesDependencies = packagesDependencies;
 	}
 
@@ -183,6 +174,49 @@ public class SalsaInstanceDescription {
 					.getInstanceId());
 		}
 		return false;
+	}
+	
+	
+	public void updateFromMappingProperties(SalsaMappingProperties maps){
+		for (SalsaMappingProperty	map : maps.getProperties()) {
+			if (map.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
+				this.provider = map.get("provider");
+				this.baseImage = map.get("baseImage");
+				this.instanceType = map.get("instanceType");
+				String packageStr = map.get("packages");
+				
+				List<String> packagelist = new ArrayList<String>(Arrays.asList(packageStr.split(" , ")));	
+				this.packagesDependencies = new PackagesDependencies();
+				this.packagesDependencies.setPackageDependency(packagelist);				
+			}
+		}		
+	}
+	
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "Packages")
+	public static class PackagesDependencies{
+		
+		@XmlElement(name = "Package")
+		List<String> packageDependency;
+
+		
+		public List<String> getPackageDependency() {
+			return packageDependency;
+		}
+
+		public void setPackageDependency(List<String> packageDependency) {
+			if (this.packageDependency == null){
+				this.packageDependency = new ArrayList<>();
+			}
+			this.packageDependency = packageDependency;
+		}
+
+		@Override
+		public String toString() {
+			return "PackagesDependencies [packageDependency="
+					+ packageDependency + "]";
+		}			
+		
 	}
 
 }

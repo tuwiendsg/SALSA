@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 

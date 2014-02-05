@@ -1,19 +1,16 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl;
 
 import generated.oasis.tosca.TCapability;
-import generated.oasis.tosca.TCapabilityDefinition;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TEntityTemplate;
 import generated.oasis.tosca.TEntityTemplate.Properties;
 import generated.oasis.tosca.TNodeTemplate;
 import generated.oasis.tosca.TNodeTemplate.Capabilities;
 import generated.oasis.tosca.TNodeTemplate.Requirements;
-import generated.oasis.tosca.TNodeType;
 import generated.oasis.tosca.TRelationshipTemplate;
 import generated.oasis.tosca.TRelationshipTemplate.SourceElement;
 import generated.oasis.tosca.TRelationshipTemplate.TargetElement;
 import generated.oasis.tosca.TRequirement;
-import generated.oasis.tosca.TRequirementDefinition;
 import generated.oasis.tosca.TTopologyTemplate;
 
 import java.util.ArrayList;
@@ -24,12 +21,12 @@ import javax.xml.namespace.QName;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaRelationshipType;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.DeploymentObject;
 import at.ac.tuwien.dsg.cloud.salsa.knowledge.process.KnowledgeGraph;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescriptionFuzzy;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.SalsaMappingProperty;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ToscaVMNodeTemplatePropertiesEntend;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
@@ -48,7 +45,7 @@ public class ToscaEnricher {
 	public ToscaEnricher(TDefinitions def, KnowledgeGraph kgraph){
 		this.toscaDef = def;
 		this.kgraph = kgraph;
-		enrichHighLevelTosca();
+		//enrichHighLevelTosca();
 	}
 	
 	public TDefinitions enrichHighLevelTosca(){
@@ -60,7 +57,7 @@ public class ToscaEnricher {
 		List<TRelationshipTemplate> relas = ToscaStructureQuery.getRelationshipTemplateList(toscaDef);
 		for (TRelationshipTemplate rela : relas) {
 			createRelationshipWithCapabilityAndRequirement(rela);
-		}		
+		}
 		
 		// read all NodeTemplate of first ServiceTemplate
 		List<TNodeTemplate> nodeLst = ToscaStructureQuery.getNodeTemplateList(toscaDef);
@@ -68,6 +65,7 @@ public class ToscaEnricher {
 		for (TNodeTemplate node : nodeLst) {
 			enrichOneNodeTemplate(node, topo, this.kgraph);
 		}
+		cleanEmptyProperties(nodeLst);		
 		
 		return null;
 	}
@@ -88,24 +86,7 @@ public class ToscaEnricher {
 		}
 		return true;
 		
-//		// in case if relationship is between capabilities and requirements
-//		if (node.getRequirements() == null){
-//			return true;
-//		}
-//		List<TRequirement> reqs = node.getRequirements().getRequirement();
-//		for (TRequirement req : reqs) {
-//			boolean found = false;
-//			for (TRelationshipTemplate rela : relas) {
-//				TEntityTemplate hoster = (TEntityTemplate) rela.getTargetElement().getRef();
-//				if (hoster.getId().equals(req.getId())){
-//					found = true;	// found something hosts it
-//				}
-//			}
-//			if (!found){		// if nothing hosts it
-//				return true;	// that's mean, it's a leaf
-//			}			
-//		}		
-//		return false;
+
 	}
 	
 	public void enrichOneNodeTemplate(TNodeTemplate node, TTopologyTemplate topo, KnowledgeGraph kgraph){
@@ -117,15 +98,16 @@ public class ToscaEnricher {
 		ArrayList<TRequirement> reqs = (ArrayList<TRequirement>)node.getRequirements().getRequirement();		
 		for (TRequirement req : reqs) {
 			if (needToBeEnriched(req, topo)){
-				TNodeType nextObj = kgraph.searchTargetForObject(node.getType().getLocalPart());	
+				DeploymentObject nextObj = kgraph.searchTargetForObject(node.getType().getLocalPart());	
 				
 				if (nextObj == null){
 					return;				// have no knowledge to deploy requirement
-				}				
+				}	
 				
 				// create one node for the requirement of the target
 				TNodeTemplate newNode = parseDeploymentObjectToNodeTemplate(nextObj, node.getId());
 				TCapability newCapa = null;
+				
 				for (TCapability newCapa1 : newNode.getCapabilities().getCapability()) {
 					if (newCapa1.getType().getLocalPart().equals(req.getType().getLocalPart())){		
 						newCapa = newCapa1;
@@ -156,7 +138,7 @@ public class ToscaEnricher {
 	 * node2.properties will be deleted and replace with new one
 	 */
 	private void moveProperties(TRequirement req1, TNodeTemplate node2, String keepType){
-		if (req1.getProperties().getAny() == null){
+		if (req1.getProperties() == null || req1.getProperties().getAny() == null){
 			return;
 		}
 		System.out.println("moving " + req1.getId() + " to " + node2.getId());
@@ -200,23 +182,44 @@ public class ToscaEnricher {
 		return false;
 	}
 	
+	private void cleanEmptyProperties(List<TNodeTemplate> nodeLst){
+		for (TNodeTemplate node : nodeLst) {
+			if (node.getProperties() != null){
+				SalsaMappingProperties maps = (SalsaMappingProperties)node.getProperties().getAny();
+				if (maps.getProperties().size() == 0){
+					node.setProperties(null);
+				}
+			}
+			if (node.getRequirements() != null){
+				for (TRequirement req : node.getRequirements().getRequirement()) {
+					if (req.getProperties() != null){
+						SalsaMappingProperties maps = (SalsaMappingProperties)req.getProperties().getAny();
+						if (maps.getProperties().size() == 0){
+							req.setProperties(null);
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	
 	
 	/**
 	 * Flow: node1 host node2, deploy node1 then node2, node1 is new which is target of node2
-	 * @param node1
-	 * @param node2
+	 * @param capa
+	 * @param req
 	 * @return
 	 */
-	private TRelationshipTemplate createNewRelationship(TCapability node1, TRequirement node2, String id){
+	private TRelationshipTemplate createNewRelationship(TCapability capa, TRequirement req, String id){
 		TRelationshipTemplate newRela = new TRelationshipTemplate();
 		newRela.setId(id);
 		newRela.setType(new QName(SalsaRelationshipType.HOSTON.getRelationshipTypeString()));
 		SourceElement sou = new SourceElement();
-		sou.setRef(node1);
+		sou.setRef(capa);
 		newRela.setSourceElement(sou);
 		TargetElement tar = new TargetElement();
-		tar.setRef(node2);
+		tar.setRef(req);
 		newRela.setTargetElement(tar);
 		
 		createRelationshipWithCapabilityAndRequirement(newRela);
@@ -224,35 +227,33 @@ public class ToscaEnricher {
 	}
 	
 	
-	private TNodeTemplate parseDeploymentObjectToNodeTemplate(TNodeType obj, String fatherNodeId){
+	private TNodeTemplate parseDeploymentObjectToNodeTemplate(DeploymentObject obj, String fatherNodeId){
 		TNodeTemplate node = new TNodeTemplate();
 		// add basic info
 		node.setId(obj.getName()+"_for_"+fatherNodeId);
 		node.setType(new QName(obj.getName()));
 		// add properties
 		
-		// add capabilities and requirements		
-		if (obj.getCapabilityDefinitions() != null){
 			Capabilities newCapa = new Capabilities();
-			for (TCapabilityDefinition capaDef : obj.getCapabilityDefinitions().getCapabilityDefinition()) {
-				TCapability capa = new TCapability();
-				capa.setId(node.getId()+"."+capaDef.getName()+".capa");
-				capa.setType(new QName(capaDef.getName()));
-				newCapa.getCapability().add(capa);
-			}
-			node.setCapabilities(newCapa);			
-		}
+			TCapability capa = new TCapability();
+			capa.setId(node.getId()+".capa");
+			capa.setType(new QName(obj.getName()));
+			newCapa.getCapability().add(capa);		
+			node.setCapabilities(newCapa);
 		
-		if (obj.getRequirementDefinitions() != null){
+		
+		if (obj.getDependencies() != null){
 			Requirements newReq = new Requirements();
-			for (TRequirementDefinition reqDef : obj.getRequirementDefinitions().getRequirementDefinition()) {
+			for (String depen : obj.getDependencies().getDependencyList()){
 				TRequirement req = new TRequirement();
-				req.setId(node.getId()+"."+reqDef.getName()+".req");
-				req.setType(new QName(reqDef.getName()));
+				req.setId(node.getId()+"."+depen+".req");
+				req.setType(new QName(depen));
 				newReq.getRequirement().add(req);
 			}
-			node.setRequirements(newReq);
+			node.setRequirements(newReq);			
 		}
+		
+		
 		return node;
 	}
 	
@@ -278,9 +279,9 @@ public class ToscaEnricher {
 		} else {
 			vm = (SalsaInstanceDescription) node.getProperties().getAny();
 		}
-		ToscaVMNodeTemplatePropertiesEntend newProp = new ToscaVMNodeTemplatePropertiesEntend();
+		SalsaInstanceDescription newProp = new SalsaInstanceDescription();
 		newProp.setBaseImage(vm.getBaseImage());
-		newProp.setCloudProvider(vm.getProvider().getCloudProviderString());;
+		newProp.setProvider(vm.getProvider());
 		newProp.setInstanceType(vm.getInstanceType());
 		
 		Properties propObject = new Properties();
@@ -324,11 +325,18 @@ public class ToscaEnricher {
 	 */
 	private SalsaInstanceDescription matchingFuzzyNode(TNodeTemplate node){
 		SalsaInstanceDescription target = new SalsaInstanceDescription();
-		target.setProvider(SalsaCloudProviders.OPENSTACK);
+		target.setProvider(SalsaCloudProviders.OPENSTACK.getCloudProviderString());
 		target.setBaseImage("ami-00000163");
 		target.setInstanceType("m1.small");
 		return target;
 		//node.getProperties().setAny(target);		
+	}
+	
+	public void createComplexRelationship(TDefinitions def){
+		List<TRelationshipTemplate> lst = ToscaStructureQuery.getRelationshipTemplateList(def);
+		for (TRelationshipTemplate rela : lst) {
+			createRelationshipWithCapabilityAndRequirement(rela);
+		}
 	}
 	
 	/*

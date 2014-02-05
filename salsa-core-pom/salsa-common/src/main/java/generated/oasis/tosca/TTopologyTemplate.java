@@ -45,7 +45,7 @@ import javax.xml.bind.annotation.XmlType;
     "nodeTemplateOrRelationshipTemplate"
 })
 //@XmlSeeAlso(generated.occi.infrastructure.compute.Compute.class)
-@XmlSeeAlso(at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ToscaVMNodeTemplatePropertiesEntend.class)
+@XmlSeeAlso(at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription.class)
 public class TTopologyTemplate
     extends TExtensibleElements
 {

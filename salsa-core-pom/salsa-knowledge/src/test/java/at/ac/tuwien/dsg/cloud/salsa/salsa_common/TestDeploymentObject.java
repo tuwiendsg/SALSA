@@ -1,7 +1,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.salsa_common;
 
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.basic.DeploymentObjectOS;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.basic.DeploymentObjectTomcat;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.basic.deplicated.DeploymentObjectOS;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.basic.deplicated.DeploymentObjectTomcat;
 
 public class TestDeploymentObject {
 

@@ -18,23 +18,23 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 @XmlRootElement(name = "ServiceUnit")
 @XmlSeeAlso({  
     SalsaTopologyData.class,
-    SalsaComponentReplicaData.class
+    SalsaComponentInstanceData.class
 })
 public class SalsaComponentData extends SalsaEntity {	
 	
 	@XmlElement(name = "Replica")
-	List<SalsaComponentReplicaData> repLst = new ArrayList<SalsaComponentReplicaData>();;
+	List<SalsaComponentInstanceData> repLst = new ArrayList<SalsaComponentInstanceData>();;
 		
 	@XmlAttribute(name = "type")
 	String type;
 	
-	public void addReplica(SalsaComponentReplicaData replica){
-		repLst.add(replica);
+	public void addInstance(SalsaComponentInstanceData instance){
+		repLst.add(instance);
 	}
 	
-	public SalsaComponentReplicaData getReplicaById(int replica){
-		for (SalsaComponentReplicaData node : repLst) {
-			if (node.getReplica() == replica){
+	public SalsaComponentInstanceData getInstanceById(int instance){
+		for (SalsaComponentInstanceData node : repLst) {
+			if (node.getInstanceId() == instance){
 				return node;
 			}			
 		}
@@ -56,13 +56,13 @@ public class SalsaComponentData extends SalsaEntity {
 		this.type = type;
 	}
 	
-	public int getReplicaNumber(){
+	public int getInstanceNumber(){
 		return repLst.size();
 	}
 	
-	public List<SalsaComponentReplicaData> getReplicaByState(SalsaEntityState state){
-		List<SalsaComponentReplicaData> lst = new ArrayList<>();
-		for (SalsaComponentReplicaData rep : repLst) {
+	public List<SalsaComponentInstanceData> getInstanceByState(SalsaEntityState state){
+		List<SalsaComponentInstanceData> lst = new ArrayList<>();
+		for (SalsaComponentInstanceData rep : repLst) {
 			if (rep.getState() == state ){
 				lst.add(rep);
 			}
@@ -71,9 +71,9 @@ public class SalsaComponentData extends SalsaEntity {
 	}
 	
 	
-	public int getReplicaNumberByState(SalsaEntityState state){
+	public int getInstanceNumberByState(SalsaEntityState state){
 		int counter = 0;
-		for (SalsaComponentReplicaData rep : repLst) {
+		for (SalsaComponentInstanceData rep : repLst) {
 			if (rep.getState() == state ){
 				counter++;
 			}
@@ -81,7 +81,7 @@ public class SalsaComponentData extends SalsaEntity {
 		return counter;
 	}
 
-	public List<SalsaComponentReplicaData> getReplicaList() {
+	public List<SalsaComponentInstanceData> getInstanceList() {
 		return repLst;
 	}	
 

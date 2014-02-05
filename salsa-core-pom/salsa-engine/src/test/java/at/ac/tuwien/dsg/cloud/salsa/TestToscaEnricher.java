@@ -24,7 +24,7 @@ public class TestToscaEnricher {
 //		// ENRICH
 		KnowledgeGraph kgraph = new KnowledgeGraph("/tmp/salsa_knowledge");
 		ToscaEnricher enrich = new ToscaEnricher(def, kgraph);
-		enrich.enrichHighLevelTosca();
+		//enrich.enrichHighLevelTosca();
 		enrich.enrichHighLevelTosca();
 
 		enrich.toXMLFile("/tmp/tosca.enrich.xml");

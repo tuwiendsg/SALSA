@@ -26,14 +26,14 @@ public class SalsaInstanceDescriptionFuzzy {
 	@XmlElement(name = "storage")
 	String storage;
 	
-	@XmlElement(name = "Packages")
-	ToscaVMNodeTemplatePropertiesEntend.PackagesDependencies packagesDependencies;
+//	@XmlElement(name = "Packages")
+//	ToscaVMNodeTemplatePropertiesEntend.PackagesDependencies packagesDependencies;
 
 	@Override
 	public String toString() {
 		return "SalsaInstanceDescriptionFuzzy [os=" + os + ", cpu=" + cpu
 				+ ", memory=" + memory + ", storage=" + storage
-				+ ", packagesDependencies=" + packagesDependencies + "]";
+				+ "]";
 	}
 
 
