@@ -15,8 +15,8 @@
   </properties>
 	
 	<modules>
-		<module>salsa-core-pom</module>
-		<module>cloud-connector-pom</module>
+		<module>salsa-cloud-connector</module>
+		<module>salsa-core-pom</module>		
 	</modules>
 
 </project>
