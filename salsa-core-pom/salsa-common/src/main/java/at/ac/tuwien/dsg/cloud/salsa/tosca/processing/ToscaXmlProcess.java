@@ -1,6 +1,5 @@
 package at.ac.tuwien.dsg.cloud.salsa.tosca.processing;
 
-import generated.oasis.tosca.Definitions;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TNodeTemplate;
 
@@ -30,11 +29,8 @@ public class ToscaXmlProcess {
 				// used in Tosca with name space of "Salsa"
 				
 				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString.class,
-				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaDeploymentTargetProperties.class,
-				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescriptionFuzzy.class,
 				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription.class,
 				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ScriptArtifactProperties.class,		
-				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ToscaVMNodeTemplatePropertiesEntend.class,
 				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.class);
 		return context;
 	}

@@ -16,11 +16,8 @@
 					<tosca:Requirement name="DataController Deployment Target" type="os" id="DataController_DeploymentTarget_req">
 						<tosca:Properties>					
 							<MappingProperties>
-								<MappingProperty type="vm">																		
-									<property name="instanceType">m1.medium</property>
-									<property name="provider">OPENSTACK</property>
-								</MappingProperty>
 								<MappingProperty type="os">
+									<property name="instanceType">m1.medium</property>
 									<property name="provider">OPENSTACK</property>
 									<property name="baseImage">ami-00000163</property>
 									<property name="packages">openjdk-7-jre</property> <!-- use comma between package -->
@@ -45,17 +42,18 @@
 						<tosca:Properties>
 							<MappingProperties>
 								<MappingProperty type="os">
-									<property name="name">Linux</property>
-									<property name="arch">x64</property>
-									<property name="dependencies">openjdk-7-jre</property>
+									<property name="provider">OPENSTACK</property>
+									<property name="baseImage">ami-00000163</property>
+									<property name="packages">openjdk-7-jre</property> <!-- use comma between package -->
+									<property name="instanceType">m1.small</property>
 								</MappingProperty>
-								<MappingProperty type="vm">
-									<property name="cpu">low</property>
-									<property name="memory">high</property>
-								</MappingProperty>
+<!-- 								<MappingProperty type="vm"> -->
+<!-- 									<property name="instanceType">m1.small</property> -->
+<!-- 									<property name="provider">OPENSTACK</property> -->
+<!-- 								</MappingProperty> -->
 							</MappingProperties>
 						</tosca:Properties>
-					</tosca:Requirement>			
+					</tosca:Requirement>
 				</tosca:Requirements>
 				<tosca:Policies>
 					<tosca:Policy name="St3:STRATEGY CASE cpuUsage &lt; 40 : scalein" policyType="SYBLConstraint" />

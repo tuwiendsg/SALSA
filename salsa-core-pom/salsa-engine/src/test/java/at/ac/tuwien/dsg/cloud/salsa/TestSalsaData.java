@@ -19,12 +19,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData.Properties;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData.Properties;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaXmlDataProcess;
+import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
@@ -55,10 +55,10 @@ public class TestSalsaData {
 		
 		//submitService("/tmp/testTestId.data");
 		SalsaComponentData appnode = new SalsaComponentData();
-		SalsaComponentReplicaData node = new SalsaComponentReplicaData();
+		SalsaComponentInstanceData node = new SalsaComponentInstanceData();
 		node.setId("seed-example");
 		node.setName("A sample node");
-		node.setReplica(1);
+		node.setInstanceId(1);
 		SalsaInstanceDescription instance = new SalsaInstanceDescription();
 		instance.setInstanceId("VM-id");
 		instance.setPrivateIp("localhost.example.com");		
@@ -71,7 +71,7 @@ public class TestSalsaData {
 		
 	}
 	
-	public static void updateComponent(String serviceId, String topologyId, SalsaComponentReplicaData data){
+	public static void updateComponent(String serviceId, String topologyId, SalsaComponentInstanceData data){
 		String url=SalsaConfiguration.getSalsaCenterEndpoint()
 				+ "/rest"
 				+ "/addcomponent"

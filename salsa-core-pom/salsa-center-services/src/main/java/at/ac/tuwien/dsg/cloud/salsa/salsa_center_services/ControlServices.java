@@ -41,14 +41,14 @@ import org.apache.log4j.Logger;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData.Capabilities;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData.Properties;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData.Capabilities;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData.Properties;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaReplicaRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData.SalsaReplicaRelationships;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaXmlDataProcess;
+import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.jsondata.ServiceJsonList;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.utils.CenterConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.utils.CenterLogger;
@@ -153,7 +153,7 @@ public class ControlServices {
 	@POST
 	@Path("/addcomponent/{serviceId}/{topologyId}/{nodeId}")
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response addComponent(JAXBElement<SalsaComponentReplicaData> data,
+	public Response addComponent(JAXBElement<SalsaComponentInstanceData> data,
 			@PathParam("serviceId") String serviceId,
 			@PathParam("topologyId") String topologyId,
 			@PathParam("nodeId") String nodeId) {
@@ -166,10 +166,10 @@ public class ControlServices {
 			SalsaTopologyData topo = service
 					.getComponentTopologyById(topologyId);
 			SalsaComponentData compo = topo.getComponentById(nodeId);
-			SalsaComponentReplicaData replicaData = data.getValue();
+			SalsaComponentInstanceData replicaData = data.getValue();
 			CenterLogger.logger.debug("Data: id: " + replicaData.getId()
-					+ " - Rep: " + replicaData.getReplica());
-			compo.addReplica(replicaData);
+					+ " - Rep: " + replicaData.getInstanceId());
+			compo.addInstance(replicaData);
 			SalsaXmlDataProcess.writeCloudServiceToFile(service, fileName);
 		} catch (IOException e) {
 			CenterLogger.logger.error("Could not load service data: "
@@ -222,7 +222,7 @@ public class ControlServices {
 	 * Update a replica capability.
 	 * 
 	 * @param serviceId
-	 * @param replica
+	 * @param instanceId
 	 * @param capaId
 	 * @param value
 	 * @return
@@ -241,7 +241,7 @@ public class ControlServices {
 					+ File.separator + serviceId + ".data";
 			SalsaCloudServiceData service = SalsaXmlDataProcess
 					.readSalsaServiceFile(serviceFile);			
-			SalsaComponentReplicaData rep = service.getReplicaById(topologyId, nodeId, replicaInt);
+			SalsaComponentInstanceData rep = service.getReplicaById(topologyId, nodeId, replicaInt);
 			Capabilities capas = rep.getCapabilities();
 			if (capas == null){ // there is no capability list before, create a new
 				capas = new Capabilities();
@@ -290,7 +290,7 @@ public class ControlServices {
 					+ File.separator + serviceId + ".data";
 			SalsaCloudServiceData service = SalsaXmlDataProcess
 					.readSalsaServiceFile(serviceFile);			
-			SalsaComponentReplicaData rep = service.getReplicaById(topologyId, nodeId, replicaInt);
+			SalsaComponentInstanceData rep = service.getReplicaById(topologyId, nodeId, replicaInt);
 						
 			Properties props = rep.getProperties();
 			if (props == null){
@@ -343,8 +343,8 @@ public class ControlServices {
 			SalsaTopologyData topo = service
 					.getComponentTopologyById(topologyId);
 			SalsaComponentData nodeData = topo.getComponentById(nodeId);
-			SalsaComponentReplicaData replicaInst = nodeData
-					.getReplicaById(replica);
+			SalsaComponentInstanceData replicaInst = nodeData
+					.getInstanceById(replica);
 
 			if (SalsaEntityState.fromString(value) != null) {
 				replicaInst.setState(SalsaEntityState.fromString(value));
@@ -453,7 +453,7 @@ public class ControlServices {
 	@Path("/getserviceruntimexml/{id}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getServiceRuntimeXml(@PathParam("id") String serviceDeployId) {
-		if (serviceDeployId.equals("")){
+		if (serviceDeployId.equals("") || serviceDeployId.equals("null")){
 			return "";
 		}
 		String fileName = CenterConfiguration.getServiceStoragePath() + "/"

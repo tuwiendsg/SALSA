@@ -25,9 +25,9 @@ import org.apache.commons.io.FilenameUtils;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentReplicaData;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.common.processes.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.SalsaPioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString;
@@ -145,7 +145,7 @@ public class Main {
 		PioneerLogger.logger.debug("Chain for node: " + thisNode.getId());
 		for (TNodeTemplate chainNode : upperNodes) {
 			// submit a new node			
-			SalsaComponentReplicaData data = new SalsaComponentReplicaData(replica);
+			SalsaComponentInstanceData data = new SalsaComponentInstanceData(replica);
 			data.setState(SalsaEntityState.ALLOCATING);
 			
 			centerCon.addComponentData(serviceId, topologyId, chainNode.getId(), data);
@@ -266,7 +266,7 @@ public class Main {
 		// it doesn't care about which node, just check if existing ONE replica
 		SalsaCloudServiceData service = centerCon.getUpdateCloudServiceRuntime();
 		SalsaComponentData component = service.getComponentById(topologyId, node.getId());
-		if (component.getReplicaNumberByState(SalsaEntityState.READY) == 0){
+		if (component.getInstanceNumberByState(SalsaEntityState.READY) == 0){
 			return false;
 		} else {
 			return true;

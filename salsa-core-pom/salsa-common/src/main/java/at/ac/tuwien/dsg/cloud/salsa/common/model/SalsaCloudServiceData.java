@@ -68,10 +68,10 @@ public class SalsaCloudServiceData extends SalsaEntity{
 		return null;
 	}
 	
-	public SalsaComponentReplicaData getReplicaById(String topologyId, String nodeId, int replica){
+	public SalsaComponentInstanceData getReplicaById(String topologyId, String nodeId, int replica){
 		SalsaComponentData component = getComponentById(topologyId, nodeId);
 		if (component != null){
-			return component.getReplicaById(replica);
+			return component.getInstanceById(replica);
 		}
 		return null;
 	}
@@ -89,11 +89,11 @@ public class SalsaCloudServiceData extends SalsaEntity{
 		return comList;
 	}
 	
-	public List<SalsaComponentReplicaData> getAllReplicaByType(SalsaEntityType type){
-		List<SalsaComponentReplicaData> repList = new ArrayList<>();
+	public List<SalsaComponentInstanceData> getAllReplicaByType(SalsaEntityType type){
+		List<SalsaComponentInstanceData> repList = new ArrayList<>();
 		List<SalsaComponentData> comList = getAllComponentByType(type);
 		for (SalsaComponentData com : comList) {
-			repList.addAll(com.getReplicaList());
+			repList.addAll(com.getInstanceList());
 		}		
 		return repList;
 	}
