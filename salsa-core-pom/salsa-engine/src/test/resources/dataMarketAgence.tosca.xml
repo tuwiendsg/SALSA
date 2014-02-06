@@ -24,7 +24,7 @@
 					<MappingProperties>						
 						<MappingProperty type="os">
 							<property name="instanceType">m1.small</property>
-							<property name="provider">lal@stratuslab</property> <!-- lal@stratuslab / dsg@openstack-->
+							<property name="provider">lal@stratuslab</property> <!-- lal@stratuslab / dsg@openstack -->
 							<property name="baseImage">KBhcU87Wm5IZNOXZYGHrczGekwp</property> <!-- KBhcU87Wm5IZNOXZYGHrczGekwp / ami-00000163 -->
 							<property name="packages">openjdk-7-jre</property> <!-- use comma between package -->
 						</MappingProperty>

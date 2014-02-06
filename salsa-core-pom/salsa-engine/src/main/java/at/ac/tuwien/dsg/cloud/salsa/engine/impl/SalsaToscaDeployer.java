@@ -72,6 +72,7 @@ public class SalsaToscaDeployer {
 		// register service running data		
 		String fullSalsaDataFile = "/tmp/"+deployID.toString()+".data";
 		SalsaCloudServiceData serviceData = buildRuntimeDataFromTosca(def);
+		serviceData.setId(deployID.toString());		
 		SalsaXmlDataProcess.writeCloudServiceToFile(serviceData, fullSalsaDataFile);
 		engine.submitService(fullSalsaDataFile);
 		
@@ -88,7 +89,7 @@ public class SalsaToscaDeployer {
 		EngineLogger.logger.info("Deployed VMs for service: " + deployID.toString());
 		
 		
-		return null;
+		return serviceData;
 	}
 	
 	private static SalsaCloudServiceData buildRuntimeDataFromTosca(TDefinitions def){

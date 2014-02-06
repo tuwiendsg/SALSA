@@ -167,9 +167,7 @@ function createListTable(data){
 
 function deregisterService(serviceId){
 	url = underegisterSource + "/" + serviceId;
-	alert("Query to: " + url);
 	$.get(url, function(data) {
-		       alert('Information: ' + data);
 		       location.reload();
 		    }
 		);
