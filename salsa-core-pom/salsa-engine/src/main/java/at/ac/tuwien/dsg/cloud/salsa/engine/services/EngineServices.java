@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.log4j.Logger;
 
+import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.SalsaToscaDeployer;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
@@ -79,10 +80,10 @@ public class EngineServices {
 			writeToFile(uploadedInputStream, tmpFile);
 			TDefinitions def = ToscaXmlProcess.readToscaFile(tmpFile);
 			SalsaToscaDeployer deployer = new SalsaToscaDeployer(this.configFile);
-			deployer.deployNewService(def);
-			String output = "Deployed service. Id: ";
+			SalsaCloudServiceData service = deployer.deployNewService(def);
+			String output = "Deployed service. Id: " + service.getId();
 			logger.debug(output);
-			return Response.status(200).entity(output).build();
+			return Response.status(200).entity(service.getId()).build();
 		} catch (JAXBException e){
 			logger.error("Error when parsing Tosca: " + e);
 			e.printStackTrace();
