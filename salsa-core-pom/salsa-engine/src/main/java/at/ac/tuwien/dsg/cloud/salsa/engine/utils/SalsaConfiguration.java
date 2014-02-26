@@ -5,6 +5,8 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
+
 public class SalsaConfiguration {
 	private static Properties configuration;
 	static Logger logger;
@@ -30,26 +32,14 @@ public class SalsaConfiguration {
 		return configuration.getProperty("PIONEER_RUN");
 	}
 	
-	
-//	public static String getSalsaCenterStoragePath(){
-//		return configuration.getProperty("SERVICE_STORAGE");
-//	}
-	
 	public static String getSSHKeyForCenter(){
 		return SalsaConfiguration.class.getResource(configuration.getProperty("SALSA_PRIVATE_KEY")).getFile();
 	}
-	
-//	public static String getPioneerFolder(){
-//		return configuration.getProperty("PIONEER_FOLDER");
-//	}
 	
 	public static String getPioneerWeb(){
 		return configuration.getProperty("PIONEER_WEB");
 	}
 	
-//	public static String getServiceInstanceRepo(){
-//		return configuration.getProperty("SERVICE_INSTANCE_REPOSITORY");
-//	}
 	
 	public static String getWorkingDir(){
 		return configuration.getProperty("WORKING_DIR");
@@ -59,20 +49,16 @@ public class SalsaConfiguration {
 		return configuration.getProperty("VARIABLE_FILE");
 	}
 	
-//	public static String getSalsaCenterIP(){
-//		return configuration.getProperty("SALSA_CENTER_IP");
-//	}
-//	
-//	public static String getSalsaCenterPort(){
-//		return configuration.getProperty("SALSA_CENTER_PORT");
-//	}
-//	
-//	public static String getSalsaCenterPath(){
-//		return configuration.getProperty("SALSA_CENTER_PATH");
-//	}
-	
 	public static String getSalsaCenterEndpoint(){
-		return configuration.getProperty("SALSA_CENTER_ENDPOINT");
+		return configuration.getProperty("SALSA_CENTER_ENDPOINT_LOCAL");
 	}
+	
+	public static String getSalsaCenterEndpointForCloudProvider(SalsaCloudProviders provider){
+		String configKey = "SALSA_CENTER_ENDPOINT_@_"+provider.getCloudProviderString();
+		System.out.println(configKey);
+		return configuration.getProperty(configKey);
+	}
+	
+	
 
 }

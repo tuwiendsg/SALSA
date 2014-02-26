@@ -1,0 +1,422 @@
+<div id="treeViewDiv" style="overflow:auto;">Loading tree..</div>
+
+
+<script type="text/javascript">
+	$.ajaxSetup({
+	    cache: false
+	});
+// ref: http://www.voyce.com/index.php/2013/06/23/dynamic-d3-with-knockout-js/	
+	
+	function showTree(){	// 1 time invoke
+		refeshTree();
+	}
+
+	var treeDataSource="rest/proxy/getserviceruntimejsontree/"+getURLParameter('id');
+
+	var margin = {top:10, right:120, bottom:20, left:140},
+    	width = window.innerWidth-500,
+    	height = window.innerHeight - 100,
+    	i = 0, duration = 750, root;
+	var rect_width=110, rect_height=45;	// size of the node
+	var opts = {
+		maxLabelLength: 20
+	};
+	
+	
+	var tree = d3.layout.tree().size([height, width]);
+	var diagonal = d3.svg.diagonal().projection(function (d) { return [d.y, d.x]; });
+	var svg = d3.select("#treeViewDiv").append("svg")
+    .attr("width", width + margin.right + margin.left)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate("+rect_width+",0)");
+    //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+    var currentTree=[];
+    
+	function refeshTree(){
+		if (getURLParameter('id') == ""){
+ 			return;
+ 		}
+		
+		d3.json(treeDataSource, function(error, json){		
+			if(error){
+				alert("Error when request json");
+			}
+			//updateTreeData(json);
+			console.log("Error: " + error);			
+			updateTextOnNode(currentTree, json);
+		});
+// 		setTimeout(function(){
+// 			refeshTree();
+// 	    }, 3000);
+	}
+	
+	function contains(children, child) {
+        for (var index = 0; index < children.length; index++) {
+            if (children[index].id == child.id) {
+                return 0;
+            }
+        }
+        return -1;
+    }
+	
+	function updateTextOnNode(node, new_node){
+		//console.log("Node: " + JSON.stringify(node) + " ||||| new_node: " + JSON.stringify(new_node));
+		if (!node.children){
+			node.children = [];
+		}
+		// check if new nodes have appeared
+		if (node.children.length < new_node.children.length){
+			console.log("node children: " + node.children.length);
+			console.log("new node children: " + new_node.children.length);
+			for (var index=0; index < new_node.children.length; index++){
+				if (contains(node.children, new_node.children[index])==-1){
+					node.children.push(new_node.children[index]);
+					console.log("PUSH " + JSON.stringify(new_node.children[index]));
+					updateTreeData(node);					
+				}
+			}
+		}
+		// check if nodes need to be renmoved
+		if (node.children.length > new_node.children.length){
+			for (var index=0; index<node.children.length; index++){
+				if (contains(new_node.children, node.children[index]==-1)){
+					node.children.splice(index,1);
+				}
+			}
+		}
+		
+		// recursive for children
+		for (var index=0; index < new_node.children.length; index++){
+			var oldEntry = node.children[index];
+		}
+		
+	}
+	
+	function update(node){
+		//alert("update node: " + node.id);
+	}
+	
+	
+	// return an array of full tree from the rootNode
+	function expandTree(rootNode) {
+        var expanded = [];
+
+        expanded.push(rootNode);
+        if (rootNode.children) {
+            for (var i = 0; i < rootNode.children.length; i++) {
+                var expandedChildren = expandTree(rootNode.children[i]);
+                for (var j = 0; j < expandedChildren.length; j++) {
+                    expanded.push(expandedChildren[j]);
+                }
+            }
+        }
+        return expanded;
+    }
+	
+	// clean the children data of the array
+	function clean(d) {
+        var children = d.children;
+        if (children) {
+            for (var i = children.length - 1; i--;) {
+                children[i].remove()
+            }
+
+            for (var i = children.length - 1; i--;) {
+                clean(children[i]);
+            }
+        }
+    }
+	
+		
+	
+	function updateTreeData(node) {
+ 		console.log(JSON.stringify(node));
+		var nodes = tree.nodes(currentTree),
+			links = tree.links(nodes);
+		
+		// normalize for fixed-depth here
+		
+		// select all the node on nodes to update
+// 		var node = svg.selectAll("g.node").data(nodes, function (d) {
+//             return d.id || (d.id = ++i);
+//         });
+		
+		var link = svg.selectAll("path.link")
+	      .data(links)
+	    .enter().append("path")
+	      .attr("class", "link")
+	      .attr("d", diagonal);
+		
+		var node = svg.selectAll("g.node")
+	      .data(nodes)
+	    .enter().append("g")
+	      .attr("class", "node")
+	      .on("click", click)
+	      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })   
+				
+// 		tip = d3.tip().attr('class', 'd3-tip').html(function(d) { return d.id; });
+// 		svg.call(tip);
+		
+		 // DRAW THE NODE
+		node.append("rect")
+			.attr("width", rect_width)
+	        .attr("height", rect_height)
+	        .attr("rx",5)
+	        .attr("x",rect_width/(-2))
+	        .attr("y",rect_height/(-2))	
+	        .attr("stroke", function(d){
+	    		if (d.isAbstract==true){
+	    			return "black";
+	    		} else {
+	    			return "blue";
+	    		}
+			})	
+	        .attr("stroke-width","2")
+	        .attr("fill", "aliceblue");
+// 	        .on('mouseover', tip.show)
+//   			.on('mouseout', tip.hide);
+		
+		$('svg rect').tipsy({ 
+	        gravity: 'nw', 
+	        html: true, 
+	        title: function() {
+	          var d = this.__data__;
+	          var str = "id : <b>" + d.id + "</b>";
+	          str += "<br/>state : <b>" + d.state +"</b>"; 
+	          for (var prop in d.properties) {
+	             str += "<br/>"+prop + " : <b>" + d.properties[prop] + "</b>";
+	          }
+	          
+	          return str; 
+	        }
+	      });
+		
+// 	        .on("mouseover", function(){return tooltip.style("visibility", "visible");})
+// 			.on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+// 			.on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+		
+	  
+		node.append("text")	// show the middle text
+	  	    .attr("dx", 0)
+	        .attr("dy", (-1)*rect_height/2 + 15)
+	        .attr("text-anchor", "middle")
+	        .text(function(d) {
+		    	if(d.isAbstract==true){
+		    		return "TOSCA";
+		    	} else {
+		    		return "INSTANCE";
+		    	}	    	  
+	    	});
+	
+		node.append("text")	// show the id
+			.attr("dx", (-1)*rect_width/2+5)
+			.attr("dy", (-1)*rect_height/2+25)
+			.attr("text-anchor", "start")
+			.text(function(d) {
+				//var trimStr = d.id.substring(0, 20); ??
+				return "id: " + d.id; 
+			});
+	  
+	  		  
+		node.append("text")	// show the state
+ 			.attr("dx", (-1)*rect_width/2+5)
+    		.attr("dy", (-1)*rect_height/2+35)
+    		.attr("fill", function(d){
+  			switch (d.state){
+	  			case 'RUNNING':
+		  			return "green";
+		  			break;
+	  			case 'UNDEPLOY':
+				    return "black";
+				    break;
+	  			default:
+					return "red";
+					break;
+				}
+			return "red";
+    		})
+    		.attr("text-anchor", "start")
+    		.text(function(d) { 
+  	  	 	  	return "state: " + d.state; 
+			});
+		 
+		
+		 
+	} // end update(source)
+	
+	showTree();
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// Get json
+	function showTree1(serviceId){
+		d3.json(treeDataSource,  function(error, json){ 
+			//alert("Should we show banana tree ? " + json);
+			root=json[0];
+			updateTree(root);
+			//$('#treeViewDiv').html(updateTree(json)).fadeIn();
+		});	
+	}
+	
+	// process json to build as tree
+	function updateTree(treedata){
+// 		alert("tree data: " + treedata.toSource());		
+		var maxLabelLength=20;
+		var rect_width=110, rect_height=45;	// size of the node
+		var margin = {top: 20, right: 120, bottom: 20, left: 120},
+	    	width = 1200 - margin.right - margin.left ,	// size of the tree
+	    	height = 800 - margin.top - margin.bottom ;
+		var i = 0,
+	    	duration = 750,
+	    	root;
+		
+		
+		// PREPARE JSON DATA
+		
+		var tree = d3.layout.tree()
+			.sort(null)
+			.size([height,width-200-rect_width])
+		    .children(function(d)
+    		{
+		        return (!d.children || d.children.length === 0) ? null : d.children;
+		    });
+		// RENDERING THE TREE
+		
+		var diagonal = d3.svg.diagonal()
+		    .projection(function(d) { return [d.y, d.x]; });
+		
+		var svg = d3.select("#treeViewDiv").append("svg")
+		    .attr("width", width)
+		    .attr("height", height)
+		  	.append("g")
+		    .attr("transform", "translate("+rect_width+",0)");
+		
+		d3.json(treeDataSource, function(error, json) {
+		  var nodes = tree.nodes(json),
+		      links = tree.links(nodes);
+		
+		  var link = svg.selectAll("path.link")
+		      .data(links)
+		    .enter().append("path")
+		      .attr("class", "link")
+		      .attr("d", diagonal);
+		  
+		  var node = svg.selectAll("g.node")
+		      .data(nodes)
+		    .enter().append("g")
+		      .attr("class", "node")
+		      .on("click", click)
+		      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })   
+		  
+		  
+		  node.append("rect")
+		      .attr("width", rect_width)
+		      .attr("height", rect_height)
+		      .attr("rx",5)
+		      .attr("x",rect_width/(-2))
+		      .attr("y",rect_height/(-2))	
+		      .attr("stroke", function(d){
+		    	  if (d.isAbstract==true){
+		    		  return "black";
+		    	  } else {
+		    		  return "blue";
+		    	  }
+		      })	
+		      .attr("stroke-width","2")
+		      .attr("fill", "aliceblue");
+		  
+		  node.append("text")	// show the middle text
+		  	  .attr("dx", 0)
+		      .attr("dy", (-1)*rect_height/2 + 15)
+		      .attr("text-anchor", "middle")
+		      .text(function(d) {
+		    	  if(d.isAbstract==true){
+		    		  return "TOSCA";
+		    	  } else {
+		    		  return "INSTANCE";
+		    	  }
+		    	  
+		    	  
+		    	});
+		
+		  node.append("text")	// show the id
+		      .attr("dx", (-1)*rect_width/2+5)
+		      .attr("dy", (-1)*rect_height/2+25)
+		      .attr("text-anchor", "start")
+		      .text(function(d) {
+		    	  //var trimStr = d.id.substring(0, 20); ??
+		    	  return "id: " + d.id; 
+		    	});
+		  
+		  		  
+		  node.append("text")	// show the state
+			  .attr("dx", (-1)*rect_width/2+5)
+		      .attr("dy", (-1)*rect_height/2+35)
+		      .attr("fill", function(d){
+				  switch (d.state){
+				  case 'RUNNING':
+					  return "green";
+					  break;
+				  case 'UNDEPLOY':
+					  return "black";
+					  break;
+				  default:
+					  return "red";
+					  break;
+				  }
+				return "red";
+		      })
+		      .attr("text-anchor", "start")
+		      .text(function(d) { 
+		    	  
+		    	  return "state: " + d.state; 
+		    	});
+		  
+		});
+		
+		d3.select(self.frameElement).style("height", height + "px");
+		
+		
+	}
+	
+	// Toggle children on click.
+	function click(d) {
+	  if (d.children) {
+	    d._children = d.children;
+	    d.children = null;
+	  } else {
+	    d.children = d._children;
+	    d._children = null;
+	  }
+	  updateTree(d);
+	}
+	    
+	
+	
+</script>
+

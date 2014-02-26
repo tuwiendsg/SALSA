@@ -53,8 +53,6 @@ public class EngineServices {
 	}
 	
 	
-	
-	
 	/**
 	 * This service deploys the whole Tosca file.
 	 * The form which is posted to service must contain all parameters
@@ -66,7 +64,7 @@ public class EngineServices {
 	@POST
 	@Path("/deploy")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response deployService(//){
+	public Response deployService(
 			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail,
 			@FormDataParam("serviceName") String serviceName) {
@@ -80,7 +78,7 @@ public class EngineServices {
 			writeToFile(uploadedInputStream, tmpFile);
 			TDefinitions def = ToscaXmlProcess.readToscaFile(tmpFile);
 			SalsaToscaDeployer deployer = new SalsaToscaDeployer(this.configFile);
-			SalsaCloudServiceData service = deployer.deployNewService(def);
+			SalsaCloudServiceData service = deployer.deployNewService(def, serviceName);
 			String output = "Deployed service. Id: " + service.getId();
 			logger.debug(output);
 			return Response.status(200).entity(service.getId()).build();
@@ -95,11 +93,48 @@ public class EngineServices {
 		
 	}
 	
+	/**
+	 * 
+	 * @param serviceId The exist service
+	 * @param topologyId Not require at this time, but need to be presented
+	 * @param nodeId Id of node to be deployed more
+	 * @param quantity Number of instances will be deployed
+	 * @return
+	 */
+	@GET
+	@Path("/deployInstance/{serviceId}/{topologyId}/{nodeId}/{quantity}")
+	public Response deployMoreInstance(
+			@PathParam("serviceId")String serviceId,
+			@PathParam("topologyId")String topologyId,
+			@PathParam("nodeId")String nodeId, 
+			@PathParam("quantity")int quantity){
+		logger.debug("Deployment request for this node: " + serviceId + " - " + nodeId);
+		SalsaToscaDeployer deployer = new SalsaToscaDeployer(this.configFile);
+		deployer.deployMoreInstance(serviceId, topologyId, nodeId, quantity);
+		return Response.status(200).entity("Spawned VM").build();
+	}
+	
 	private boolean checkForServiceName(String serviceName){
 		if (!serviceName.equals("")){
 			return true;
 		}
 		return false;
+	}
+	
+	@GET
+	@Path("/undeployInstance/{serviceId}/{topologyId}/{nodeId}/{instanceId}")
+	public Response undeployOneInstance(
+			@PathParam("serviceId") String serviceId,
+			@PathParam("topologyId") String topologyId,
+			@PathParam("nodeId") String nodeId,
+			@PathParam("instanceId") int instanceId){
+		SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
+		if (deployer.removeOneInstance(serviceId, topologyId, nodeId, instanceId)){
+			return Response.status(200).entity("Undeployed instance: " + serviceId+"/"+nodeId+"/"+instanceId).build();
+		} else {
+			return Response.status(201).entity("Could not undeployed instance.").build();
+		}
+				
 	}
 	
 	@GET

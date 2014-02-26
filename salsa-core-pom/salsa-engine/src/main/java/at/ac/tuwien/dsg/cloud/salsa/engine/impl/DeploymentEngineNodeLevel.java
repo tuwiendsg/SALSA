@@ -21,7 +21,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.ConnectorsEnum;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
@@ -29,7 +29,8 @@ import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.MultiCloudConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Artifact;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
@@ -49,6 +50,7 @@ public class DeploymentEngineNodeLevel {
 
 	CloudInterface cloud;
 	File configFile;
+	
 
 //	private static final DeploymentEngineNodeLevel INSTANCE = new DeploymentEngineNodeLevel();
 	
@@ -60,6 +62,9 @@ public class DeploymentEngineNodeLevel {
 //		return INSTANCE;
 //	}
 	
+	private SalsaCenterConnector getCenterConnector(String serviceId){
+		return new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/tmp", EngineLogger.logger);
+	}
 
 	/**
 	 * Create a VM and return the node with properties *
@@ -80,11 +85,12 @@ public class DeploymentEngineNodeLevel {
 		repData.setState(SalsaEntityState.ALLOCATING);
 		
 		// get the static information of TOSCA and put into SalsaComponentInstanceData property
-		SalsaInstanceDescription instanceDesc = new SalsaInstanceDescription();
+		SalsaInstanceDescription_VM instanceDesc = new SalsaInstanceDescription_VM();
 		SalsaMappingProperties mapProp = (SalsaMappingProperties) enhancedNode.getProperties().getAny();
 		instanceDesc.updateFromMappingProperties(mapProp);
 		
-		// add the initiate properties to the InstanceData		
+		// add the initiate properties to the InstanceData
+		repData.setProperties(new SalsaComponentInstanceData.Properties());		
 		repData.getProperties().setAny(instanceDesc);
 		
 		// add the component to server
@@ -92,7 +98,7 @@ public class DeploymentEngineNodeLevel {
 		
 		//enhancedNode.setState(SalsaEntityState.PROLOGUE.getNodeStateString());
 
-		String userData = prepareUserData(serviceId, topologyId, nodeId, instanceNumber, def);
+		String userData = prepareUserData(serviceId, topologyId, nodeId, instanceNumber, instanceDesc, def);
 
 		MultiCloudConnector mcc = new MultiCloudConnector(EngineLogger.logger, configFile);
 
@@ -105,16 +111,16 @@ public class DeploymentEngineNodeLevel {
 //		}
 		
 		System.out.println("DEBUG: " + nodeId + " --- "	+ instanceDesc.getInstanceType());
-		EngineLogger.logger.debug("CLOUD PROVIDER = " + instanceDesc.getProvider() +"//" + ConnectorsEnum.fromString(instanceDesc.getProvider()));
+		EngineLogger.logger.debug("CLOUD PROVIDER = " + instanceDesc.getProvider() +"//" + SalsaCloudProviders.fromString(instanceDesc.getProvider()));
 		
 		// start the VM
 		InstanceDescription indes = mcc.launchInstance(
-				ConnectorsEnum.fromString(instanceDesc.getProvider()),
+				SalsaCloudProviders.fromString(instanceDesc.getProvider()),
 				instanceDesc.getBaseImage(),
 				MultiCloudConfiguration.getSshKeyName(instanceDesc.getProvider()),
 				userData,
 				InstanceType.getTypeFromString(instanceDesc.getInstanceType()),
-				1, 1);	// deploy only 1 node		
+				1, 1);	// deploy min instance number of node		
 		
 		// update the instance property from cloud specific to SALSA format
 		updateVMProperties(instanceDesc, indes);
@@ -125,40 +131,55 @@ public class DeploymentEngineNodeLevel {
 		centerCon.updateReplicaProperty(topologyId, nodeId, instanceNumber, instanceDesc);		
 		
 		//centerCon.updateNodeProperty(topologyId, nodeId, replica, sid);
+		// The configuration will be set until pionner is started
 		centerCon.setNodeState(topologyId, nodeId, instanceNumber, SalsaEntityState.CONFIGURING);		
 		
 		return repData;
 	}
 			
-	private static void updateVMProperties(SalsaInstanceDescription sid, InstanceDescription inst){
+	private static void updateVMProperties(SalsaInstanceDescription_VM sid, InstanceDescription inst){
 		//if (inst.getReplicaFQN()!=null){ sid.setReplicaNumber(inst.getReplicaFQN().getReplicaNum());}
 		if (inst.getPrivateIp() !=null){ sid.setPrivateIp(inst.getPrivateIp().getHostName()); }
 		if (inst.getPublicIp()  !=null){ sid.setPublicIp(inst.getPublicIp().getHostName()); }
 		if (inst.getPrivateDNS()!=null){ sid.setPrivateDNS(inst.getPrivateDNS()); }
 		if (inst.getPublicDNS() !=null){ sid.setPublicDNS(inst.getPublicDNS()); }
 		//if (inst.getState()     !=null){ sid.setState(inst.getState()); }
-		if (inst.getInstanceId()!=null){ sid.setInstanceId(inst.getInstanceId()); }
-		
+		if (inst.getInstanceId()!=null){ sid.setInstanceId(inst.getInstanceId()); }		
 	}
 	
-//	private static SalsaComponentInstanceData.Properties convertVMPropertiesFromToscaToSalsa(TEntityTemplate.Properties toscaP){		
-//		if (toscaP==null) {
-//			return null;
-//		}
-//		SalsaInstanceDescription instance = new SalsaInstanceDescription();
-//		SalsaMappingProperties mappingProp = (SalsaMappingProperties)toscaP.getAny();		
-//		//ToscaVMNodeTemplatePropertiesEntend nodeP = new ToscaVMNodeTemplatePropertiesEntend();
-//		instance.updateFromMappingProperties(mappingProp);
-//		
-//		instance.setProvider(instance.getProvider());
-//		instance.setBaseImage(instance.getBaseImage());
-//		instance.setInstanceType(instance.getInstanceType());
-//		SalsaComponentInstanceData.Properties newProps = new SalsaComponentInstanceData.Properties();
-//		newProps.setAny(instance);
-//		return newProps;
-//	}
-
-	public static String prepareUserData(String serviceId, String topologyId, String nodeId, int replica, TDefinitions def) {
+	// TODO: Implement - Not completed yet
+	public static String prepareUserDataChef(String serviceId, String topologyId, String nodeId, int replica, TDefinitions def) {		
+		StringBuffer userDataBuffer = new StringBuffer();
+		userDataBuffer.append("#!/bin/bash \n");
+		
+		// setup chef solo
+		// follow the guide: http://docs.opscode.com/chef/install_workstation.html
+		// and this: https://www.digitalocean.com/community/articles/how-to-install-a-chef-server-workstation-and-client-on-ubuntu-vps-instances
+		userDataBuffer.append("echo \"Running the customization scripts\" \n");		
+		
+		userDataBuffer.append("apt-get update \n");
+		userDataBuffer.append("apt-get -y install git \n");
+		userDataBuffer.append("wget -O- https://opscode.com/chef/install.sh | sudo bash \n");
+		userDataBuffer.append("git clone git://github.com/opscode/chef-repo.git \n");
+		
+		// cookbook for node VM dependencies
+		
+		// cookbook for hosted-on nodes
+		
+		// putting cookbook for the server
+		// TODO: Build recipe base on node
+		userDataBuffer.append("");
+		userDataBuffer.append("");
+		
+		
+		
+		
+		
+		return userDataBuffer.toString();
+	}
+	
+	// Will be depricated because using Chef later
+	public static String prepareUserData(String serviceId, String topologyId, String nodeId, int replica, SalsaInstanceDescription_VM instanceDesc, TDefinitions def) {
 		StringBuffer userDataBuffer = new StringBuffer();
 		userDataBuffer.append("#!/bin/bash \n");
 		userDataBuffer.append("echo \"Running the customization scripts\" \n");
@@ -172,10 +193,6 @@ public class DeploymentEngineNodeLevel {
 				+ " \n");
 		userDataBuffer.append("cd " + SalsaConfiguration.getWorkingDir()
 				+ " \n");
-//		userDataBuffer.append("wget http://"
-//				+ SalsaConfiguration.getSalsaCenterIP()
-//				+ SalsaConfiguration.getServiceInstanceRepo() + "/" + serviceId
-//				+ " \n");
 
 		// set some variable put in variable.properties
 		userDataBuffer
@@ -196,17 +213,23 @@ public class DeploymentEngineNodeLevel {
 				+ SalsaConfiguration.getSalsaVariableFile() + " \n");
 		userDataBuffer.append("echo 'SALSA_PIONEER_RUN=" + SalsaConfiguration.getPioneerRun() + "' >> "
 				+ SalsaConfiguration.getSalsaVariableFile() + " \n");
+		
+		SalsaCloudProviders provider = SalsaCloudProviders.fromString(instanceDesc.getProvider());
+		
+		userDataBuffer.append("echo 'SALSA_CENTER_ENDPOINT=" + SalsaConfiguration.getSalsaCenterEndpointForCloudProvider(provider) + "' >> "
+				+ SalsaConfiguration.getSalsaVariableFile() + " \n");
 
 		// download pioneer
 		List<String> fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		for (String file : fileLst) {
-			userDataBuffer.append("wget "					
+			userDataBuffer.append("wget "			
 					+ SalsaConfiguration.getPioneerWeb() + "/"
 					+ file + " \n");
 			userDataBuffer.append("chmod +x "+file +" \n");
 		}
 		userDataBuffer.append("cp *.sh /usr/local/bin \n");
-//		userDataBuffer.append("echo 'export PATH=$PATH:"+SalsaConfiguration.getWorkingDir() +"' >> /etc/profile \n");
+		userDataBuffer.append("export PATH=$PATH:"+SalsaConfiguration.getWorkingDir() +" \n");
+		userDataBuffer.append("echo 'export PATH=$PATH:"+SalsaConfiguration.getWorkingDir() +"' >> /etc/profile \n");
 //		userDataBuffer.append("echo 'export SALSA_SERVICE_ID="+serviceId+"' >> /etc/profile \n");
 //		userDataBuffer.append("echo 'export SALSA_NODE_ID="+nodeId+"' >> /etc/profile \n");
 //		userDataBuffer.append("echo 'export SALSA_WORKING_DIR="+SalsaConfiguration.getWorkingDir()+"' >> /etc/profile \n");
@@ -214,17 +237,17 @@ public class DeploymentEngineNodeLevel {
 		
 		
 		// install all package dependencies
-		TNodeTemplate node = ToscaStructureQuery.getNodetemplateById(nodeId,
-				def);
+		TNodeTemplate node = ToscaStructureQuery.getNodetemplateById(nodeId, def);
 		if (node.getProperties() != null) {
 			SalsaMappingProperties mapProp = (SalsaMappingProperties) node.getProperties().getAny();			
-			SalsaInstanceDescription tprop = new SalsaInstanceDescription();
+			SalsaInstanceDescription_VM tprop = new SalsaInstanceDescription_VM();
 			tprop.updateFromMappingProperties(mapProp);
 			
 			if (tprop.getPackagesDependenciesList() != null){				
 				List<String> lstPkgs = tprop.getPackagesDependenciesList()
 						.getPackageDependency();
 				for (String pkg : lstPkgs) {
+					EngineLogger.logger.info("Installing package: " + pkg);
 					// TODO: should change, now just support Ubuntu image				
 					userDataBuffer.append("apt-get -y install " + pkg + " \n"); 
 				}
@@ -239,13 +262,19 @@ public class DeploymentEngineNodeLevel {
 		return userDataBuffer.toString();
 	}
 
-	/*
-	 * Deploy a number of VMs at a time
+	/**
+	 * Deploy multiple VM at the first time, all node.
+	 * At first time, all the instance ids are initiate by 0
+	 * 
+	 * @param serviceId	add info to this service
+	 * @param topologyId add info to this topology
+	 * @param nodeAndReplica with each VM node, get the min instance to deploy at first time
+	 * @param def the TOSCA object
 	 */
 	public void deployConcurrentVMNodes(String serviceId, String topologyId, Map<String,Integer> nodeAndReplica, TDefinitions def) {
 		EngineLogger.logger.info("Spawning multiple Virtual Machines...");
 		List<Thread> threads = new ArrayList<Thread>();
-		int replica = 0;		
+		int replica = 0;
 		for (Map.Entry<String, Integer> map : nodeAndReplica.entrySet()) {
 			replica=0;
 			for (int i=0; i<map.getValue(); i++){		
@@ -254,6 +283,8 @@ public class DeploymentEngineNodeLevel {
 				threads.add(thread);
 				replica+=1;
 			}
+			SalsaCenterConnector cenCon = getCenterConnector(serviceId);
+			cenCon.updateNodeIdCounter(topologyId, map.getKey(), replica);
 		}
 		try {
 			for (Thread thread : threads) {
@@ -264,6 +295,35 @@ public class DeploymentEngineNodeLevel {
 		
 		ToscaXmlProcess.writeToscaDefinitionToFile(def, "/tmp/"+serviceId);
 	}
+	
+	/**
+	 * Deploy a number of VM on for the VM node
+	 * @param serviceId
+	 * @param topologyId
+	 * @param nodeId
+	 * @param quantity Number of VM to be created
+	 * @param startId The starting Id to count up
+	 * @param def 
+	 */
+	public void deployConcurentVMNodesOfOneType(String serviceId, String topologyId, String nodeId, int quantity, int startId, TDefinitions def){
+		EngineLogger.logger.info("Spawning multiple VM for node: " + nodeId);
+		List<Thread> threads = new ArrayList<Thread>();
+		int instanceId = startId;
+		for (int i = 0; i<quantity; i++) {
+			Thread thread = new Thread(new deployOneVmThread(serviceId, topologyId, nodeId, instanceId, def));
+			thread.start();
+			threads.add(thread);
+			instanceId+=1;		
+		}
+		try {
+			for (Thread thread : threads) {
+				thread.join();
+			}
+		} catch (InterruptedException e) {
+		}
+	}
+	
+	
 	
 	public void deployNodeReplica(String serviceId, String topologyId, String nodeId, int startRepNum, int numberOfRep, TDefinitions def){
 		List<Thread> threads = new ArrayList<Thread>();
@@ -330,6 +390,7 @@ public class DeploymentEngineNodeLevel {
 		
 			String url=SalsaConfiguration.getSalsaCenterEndpoint()
 					+ "/rest/submit";
+			EngineLogger.logger.debug("Trying to POST the service description to: " + url);
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(url);
 			FileBody uploadfile=new FileBody(new File(serviceFile));

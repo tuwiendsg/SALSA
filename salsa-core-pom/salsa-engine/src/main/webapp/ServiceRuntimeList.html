@@ -1,0 +1,54 @@
+<h3>List deployed services</h3>
+<div id="list">Loading ...</div>
+
+<script type="text/javascript">
+var listSource="rest/proxy/getservicejsonlist";
+var underegisterSource="rest/undeploy"; // need + id latter
+
+$.getJSON(listSource,  function(json){ 
+	$('#list').html(createListTable(json.services)).fadeIn();
+});
+
+function createListTable(data){
+	 var str = '<table class="lightPro">';
+	 var currentURL= [location.protocol, '//', location.host, location.pathname].join('');
+    str += '<thead><tr>';
+   for (var index in data[0]) {
+       str += '<th scope="col">' + index + '</th>';
+   }
+   str += '<th scope="col">ACTIONS</th>'
+   str += '</tr></thead>';
+  
+   // table body
+  str += '<tbody>';
+  for (var i = 0; i < data.length; i++) {
+         str += (i % 2 == 0) ? '<tr class="alt">' : '<tr>';
+         str += '<td>' + data[i].serviceName + '</td>';
+         str += '<td><a href="'+currentURL+'?id='+data[i].serviceId+'">' + data[i].serviceId + '</a></td>';
+         str += '<td>' + data[i].deployTime + '</td>';
+         str += '<td><button type="button" onclick="deregisterService(\''+data[i].serviceId+'\')">undeploy</button>';
+
+         str += '</tr>';
+        
+      }
+  
+      
+  str += '</tbody>'
+  str += '</table>';
+  return str;
+}
+
+function deregisterService(serviceId){
+	url = underegisterSource + "/" + serviceId;
+	$.get(url, function(data) {
+		       //location.reload();
+		       $.getJSON(listSource,  function(json){ 
+			  		$('#list').html(createListTable(json.services)).fadeIn();
+			  	});
+		       toastr.info("Removed service "+ serviceId +" !");
+		    }
+		);
+}
+
+
+</script>

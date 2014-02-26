@@ -7,70 +7,122 @@
 <script src="scripts/jquery-1.3.2.debug.js" type="text/javascript"></script>
 <script src="scripts/json.debug.js" type="text/javascript"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://d3js.org/d3.v3.js"></script>
+<script src="scripts/toastr.js"></script> <!-- Notification -->
+<script src="scripts/d3.tip.js"></script>
+<script src="scripts/jquery.tipsy.js"></script> <!-- Tooltips -->
 
-<link href="default.css" rel="stylesheet" type="text/css" />
 
-<script> 
-    $(function(){
-      $("#deploymentInfo").load("ServiceRuntime.html"); 
-    });
+<link href="css/toastr.css" rel="stylesheet"/>
+<link href="css/default.css" rel="stylesheet" type="text/css" />
+<link href="css/runtimeTree.css" rel="stylesheet" type="text/css" />
+<link href="css/d3.tip.css" rel="stylesheet" type="text/css" />
+<link href="css/jquery.tipsy.css" rel="stylesheet" type="text/css" />
+
+
+<script type="text/javascript">
+	
+	window.onerror=function(msg, url, linenumber){
+	 alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber)
+	 return true
+	}
+
+	function getURLParameter(name) {
+		return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+	}
+    
+	$.ajaxSetup({
+	    cache: false
+	});
+
+    
+    toastr.options = {
+  		  "closeButton": false,
+  		  "debug": false,
+  		  "positionClass": "toast-top-right",
+  		  "onclick": null,
+  		  "showDuration": "300",
+  		  "hideDuration": "1000",
+  		  "timeOut": "12000",
+  		  "extendedTimeOut": "1000",
+  		  "showEasing": "swing",
+  		  "hideEasing": "linear",
+  		  "showMethod": "fadeIn",
+  		  "hideMethod": "fadeOut"
+  		}
 </script>
+
 
 </head>
 <body>
 
 
 <script type="text/javascript">
+window.onload = loadPart;
 
-window.onerror=function(msg, url, linenumber){
- alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber)
- return true
-}
-</script>
+function loadPart(){
+	$("#deploymentForm").load("DeploymentForm.html");
+	$("#serviceRuntimeList").load("ServiceRuntimeList.html");
 
-
-<h3>New deployment</h3>
-<form id="inputForm" action='rest/deploy' method='post' enctype="multipart/form-data" target="upload_target">
-	Tosca file: <input type='file' name='file' id='file'>
-	<br/>
-	Service name:<input type='text' name='serviceName' id='serviceName'> 
-	<br/>		
- 	<input id="deployBtn" type="submit" onclick="waitForDeploy()" value="Deploy !"> 
- 	<div id="waittext"></div>
-<!-- 	<button name="deployBtn" id="deployBtn" onclick="clickDeploy()">Deploy jquery !</button> -->
-</form>
-
-<iframe id="upload_target" name="upload_target" style="width:0;height:0;border:1px solid #fff;"></iframe>
-
-<hr />
-<h3>Deployment information</h3>
-
-
- <script type="text/javascript">
- var str="Registering new service.";
- function waitForDeploy()
- {
-	var mybody=document.getElementById('upload_target').contentWindow.document.body.innerHTML;
-	if (!mybody.length){
-		$("#deployBtn").hide();
-		setTimeout(waitForDeploy, 1000);
-		str=str.concat(".");
-		$("#waittext").text(str).fadeIn();
-		//alert("wait !: **" + mybody + "**");
-	} else {
-		$.getJSON(listSource,  function(json){ 
-	  		$('#list').html(createListTable(json.services)).fadeIn();
-	  	});
-		$("#deployBtn").show();
-		$("#waittext").html('');
+	if (!!getURLParameter("id")){
+		$("#serviceRuntimeTable").load("ServiceRuntimeTable.html");
+		$("#treeView").load("ServiceRuntimeTreeView.html");
 	}
- }
- 
-    </script>
+			
+	
+	//$("#serviceTemplateTable").load("ServiceTemplateTable.html");
+}
 
 
 
-<div id="deploymentInfo"></div>
+
+</script>
+<div>
+	<div style="float:left;">
+		<div id="deploymentForm"></div>
+		<hr/>
+		<div id="serviceRuntimeList"></div>
+		<hr/>
+		<div id="treeView"></div>
+		<hr/>
+		<div id="serviceRuntimeTable"></div>		
+	</div>
+	<div style="float:left;">
+		<div id="serviceTemplateTable"></div>
+	</div>
+</div>
+
+<!-- 	<div class="content"> -->
+<!-- 		<div class="background block_1"> -->
+<!-- 		</div> -->
+<!-- 		<div class="left_block block_1"> -->
+<!-- 			<div class="content"> -->
+<!-- 				<div class="top_block block_3"> -->
+<!-- 					<div class="content" id="deploymentForm"> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 				<div class="top_block block_4"> -->
+<!-- 					<div class="content" id="serviceRuntimeTable"> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 		<div class="background block_2"> -->
+<!-- 		</div> -->
+<!-- 		<div class="left_block block_2"> -->
+<!-- 			<div class="content"> -->
+<!-- 				<div class="top_block block_5"> -->
+<!-- 					<div class="content" id="serviceTemplateTable"> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 				<div class="top_block block_6"> -->
+<!-- 					<div class="content" id="artifactTable"> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
+
 
 
 
