@@ -1,6 +1,6 @@
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.impl;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.impl;
 
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.InstrumentalMechanism;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.InstrumentalMechanism;
 
 public class InstrumentChefsolo extends InstrumentalMechanism{
 	

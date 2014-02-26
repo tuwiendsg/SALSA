@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.impl;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.impl;
 
 public enum InstrumentType {
 	apt("apt"),

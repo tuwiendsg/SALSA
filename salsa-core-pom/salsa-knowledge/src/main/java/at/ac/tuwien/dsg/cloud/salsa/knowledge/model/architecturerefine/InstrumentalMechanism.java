@@ -1,6 +1,6 @@
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine;
 
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.impl.InstrumentType;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.impl.InstrumentType;
 
 
 
