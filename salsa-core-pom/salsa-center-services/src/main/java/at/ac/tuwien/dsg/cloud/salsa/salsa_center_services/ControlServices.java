@@ -15,15 +15,25 @@
  ******************************************************************************/
 package at.ac.tuwien.dsg.cloud.salsa.salsa_center_services;
 
+import generated.oasis.tosca.TCapability;
+import generated.oasis.tosca.TDefinitions;
+import generated.oasis.tosca.TNodeTemplate;
+import generated.oasis.tosca.TRequirement;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -48,12 +58,16 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaReplicaRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData.SalsaReplicaRelationships;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
+import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.jsondata.ServiceJsonDataTree;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.jsondata.ServiceJsonList;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.utils.CenterConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.utils.CenterLogger;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -116,8 +130,29 @@ public class ControlServices {
 		String serviceId = fileDetail.getFileName(); // file name is the service
 														// Id
 		String uploadedFileLocation = CenterConfiguration
-				.getServiceStoragePath() + File.separator + serviceId;
+				.getServiceStoragePath() + File.separator + serviceId;		
 		writeToFile(uploadedInputStream, uploadedFileLocation);
+		
+		// put the Service Name into
+		lockFile();
+		String fileName = CenterConfiguration.getServiceStoragePath()
+				+ File.separator + serviceId + ".data";
+		try {
+			SalsaCloudServiceData service = SalsaXmlDataProcess
+					.readSalsaServiceFile(fileName);			
+			//service.setName(serviceName);
+			
+			SalsaXmlDataProcess.writeCloudServiceToFile(service, fileName);
+		} catch (IOException e) {
+			CenterLogger.logger.error("Could not load service data: "
+					+ fileName);
+		} catch (JAXBException e1) {
+			e1.printStackTrace();
+		} finally {
+			releaseFile();
+		}
+		
+		
 		String output = "Commited service: " + serviceId;
 		return Response.status(200).entity(output).build();
 	}
@@ -230,7 +265,7 @@ public class ControlServices {
 	@POST
 	@Path("/update/capability/{serviceId}/{topologyId}/{nodeId}/{replicaInt}")
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response updateCapability(JAXBElement<SalsaCapabilityString> data,
+	public Response updateCapability(JAXBElement<SalsaCapaReqString> data,
 			@PathParam("serviceId") String serviceId,
 			@PathParam("topologyId") String topologyId,
 			@PathParam("nodeId") String nodeId,
@@ -240,15 +275,16 @@ public class ControlServices {
 			String serviceFile = CenterConfiguration.getServiceStoragePath()
 					+ File.separator + serviceId + ".data";
 			SalsaCloudServiceData service = SalsaXmlDataProcess
-					.readSalsaServiceFile(serviceFile);			
+					.readSalsaServiceFile(serviceFile);	
 			SalsaComponentInstanceData rep = service.getReplicaById(topologyId, nodeId, replicaInt);
 			Capabilities capas = rep.getCapabilities();
 			if (capas == null){ // there is no capability list before, create a new
 				capas = new Capabilities();
-				rep.setCapabilities(capas);		
+				rep.setCapabilities(capas);
 			}
-			List<SalsaCapabilityString> capaLst = capas.getCapability();	// get the list			
+			List<SalsaCapaReqString> capaLst = capas.getCapability();	// get the list			
 			capaLst.add(data.getValue());
+			
 			SalsaXmlDataProcess.writeCloudServiceToFile(service, serviceFile);			
 			
 		} catch (Exception e) {
@@ -263,6 +299,11 @@ public class ControlServices {
 		return Response.status(200).entity("Updated capability for node: " + nodeId + " on service "
 						+ serviceId).build();
 	}
+	
+	
+	
+	
+	
 	
 	/**
 	 * Update the properties for a replica node instance. Properties is an AnyType Xml object
@@ -297,7 +338,7 @@ public class ControlServices {
 				props = new Properties();
 			}
 			// marshall data and add to props
-			JAXBContext context = JAXBContext.newInstance(SalsaInstanceDescription.class);
+			JAXBContext context = JAXBContext.newInstance(SalsaInstanceDescription_VM.class);
 			Unmarshaller um = context.createUnmarshaller();
 			Object propData = um.unmarshal(new StringReader(data));	// object can be any kind of above class ??			
 			props.setAny(propData);
@@ -316,7 +357,107 @@ public class ControlServices {
 						+ serviceId).build();
 	}
 	
+	@GET
+	@Path("/getrequirementvalue/{serviceId}/{topologyId}/{nodeId}/{instanceId}/{reqId}")
+	public Response getRequirementValue(
+			@PathParam("serviceId") String serviceId,
+			@PathParam("topologyId") String topologyId,
+			@PathParam("nodeId") String nodeId,
+			@PathParam("instanceId") int instanceId,
+			@PathParam("reqId") String reqId){
+		try {
+		// read current TOSCA and SalsaCloudService
+			String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+			SalsaCloudServiceData service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+			SalsaTopologyData topo = service.getComponentTopologyById(topologyId);
+//			SalsaComponentData nodeData = topo.getComponentById(nodeId);
+//			SalsaComponentInstanceData instanceData = nodeData.getInstanceById(instanceId);		
+			
+			String toscaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId;
+			TDefinitions def = ToscaXmlProcess.readToscaFile(toscaFile);
+			TRequirement req = (TRequirement)ToscaStructureQuery.getRequirementOrCapabilityById(reqId, def);
+			TCapability capa = ToscaStructureQuery.getCapabilitySuitsRequirement(req, def);
+			String capaid = capa.getId();
+			TNodeTemplate toscanode = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capa, def);
+			// get the capability of the first instance of the node which have id
+			SalsaComponentData nodeData = topo.getComponentById(toscanode.getId());
+			if (nodeData.getAllInstanceList().size()==0){
+				return Response.status(201).entity("").build();
+			}
+			SalsaComponentInstanceData nodeInstanceOfCapa = nodeData.getInstanceById(0);
+			String reqAndCapaValue = nodeInstanceOfCapa.getCapabilityValue(capaid);
+			return Response.status(200).entity(reqAndCapaValue).build();		
+		} catch (IOException e1){
+			logger.error(e1);			
+		} catch (JAXBException e2){
+			logger.error(e2);
+		}		
+		return Response.status(201).entity("").build();
+	}
+	
+	@GET
+	@Path("/update/nodeidcount/{serviceId}/{topologyId}/{nodeId}/{value}")
+	public Response updateNodeIdCount(
+			@PathParam("serviceId") String serviceId,
+			@PathParam("topologyId") String topologyId,
+			@PathParam("nodeId") String nodeId,
+			@PathParam("value") int value){
+		try{
+			lockFile();
+			String salsaFile = CenterConfiguration.getServiceStoragePath()
+					+ File.separator + serviceId + ".data";
+			SalsaCloudServiceData service = SalsaXmlDataProcess
+					.readSalsaServiceFile(salsaFile);
+			SalsaTopologyData topo = service
+					.getComponentTopologyById(topologyId);
+			SalsaComponentData nodeData = topo.getComponentById(nodeId);
+			nodeData.setIdCounter(value);
+			SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);			
+		} catch (Exception e){
+			logger.error(e.toString());
+			return Response.status(200).entity("Updated node " + nodeId + " on service " + serviceId
+					+ " node ID counter: " + value).build();
+		}
+		finally {
+			releaseFile();
+		}
+		return Response.status(200).entity("Updated node " + nodeId + " on service " + serviceId
+				+ " node ID counter: " + value).build();
+	}
+	
 
+	/**
+	 * Remove one instance of the service
+	 * @param serviceId
+	 * @param topologyId
+	 * @param noceId
+	 * @param instanceId The Id of the instance, from 0 to N. It is not the VM instance ID
+	 * @return
+	 */
+	@GET
+	@Path("/remove/instance/{serviceId}/{topologyId}/{nodeId}/{instanceId}")
+	public Response removeOneNodeInstance(
+			@PathParam("serviceId") String serviceId,
+			@PathParam("topologyId") String topologyId,
+			@PathParam("nodeId") String nodeId,
+			@PathParam("instanceId") int instanceId){
+		try{
+			lockFile();
+			String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+			SalsaCloudServiceData service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+			SalsaTopologyData topo = service.getComponentTopologyById(topologyId);
+			SalsaComponentData nodeData = topo.getComponentById(nodeId);			
+			SalsaComponentInstanceData instanceData = nodeData.getInstanceById(instanceId);
+			nodeData.getAllInstanceList().remove(instanceData);
+			SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
+		} catch (Exception e){
+			logger.error(e.getMessage());
+		} finally {
+			releaseFile();
+		}
+		return Response.status(200).entity("Remove instance id").build();
+	}
+	
 	/**
 	 * Update a replica's state.
 	 * 
@@ -343,20 +484,27 @@ public class ControlServices {
 			SalsaTopologyData topo = service
 					.getComponentTopologyById(topologyId);
 			SalsaComponentData nodeData = topo.getComponentById(nodeId);
-			SalsaComponentInstanceData replicaInst = nodeData
-					.getInstanceById(replica);
-
-			if (SalsaEntityState.fromString(value) != null) {
-				replicaInst.setState(SalsaEntityState.fromString(value));
-				SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
-				// ToscaXmlProcess.writeToscaDefinitionToFile(def, toscaFile);
-			} else {
-
-				return Response
-						.status(200)
-						.entity("Unknown node state of node " + nodeId
-								+ " on service " + serviceId
-								+ " deployed status: " + value).build();
+			
+			
+			if (replica==-1){	// update for node data
+				//nodeData.setState(SalsaEntityState.fromString(value));
+				updateComponentStateBasedOnInstance(nodeData);	// update the Tosca node
+				SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);				
+			} else { // update for instance
+				SalsaComponentInstanceData replicaInst = nodeData.getInstanceById(replica);
+				if (SalsaEntityState.fromString(value) != null) {
+					replicaInst.setState(SalsaEntityState.fromString(value));
+					updateComponentStateBasedOnInstance(nodeData);	// update the Tosca node
+					SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
+					// ToscaXmlProcess.writeToscaDefinitionToFile(def, toscaFile);
+				} else {
+	
+					return Response
+							.status(200)
+							.entity("Unknown node state of node " + nodeId
+									+ " on service " + serviceId
+									+ " deployed status: " + value).build();
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Could not read service for update node status: "
@@ -373,6 +521,31 @@ public class ControlServices {
 				.status(200)
 				.entity("Updated node " + nodeId + " on service " + serviceId
 						+ " deployed status: " + value).build();
+	}
+	
+	private void updateComponentStateBasedOnInstance(SalsaComponentData nodeData){
+		List<SalsaComponentInstanceData> insts = nodeData.getAllInstanceList();
+		List<SalsaEntityState> states = new ArrayList<>();
+		if (insts.isEmpty()){
+			nodeData.setState(SalsaEntityState.UNDEPLOYED);
+			return;
+		}
+		for (SalsaComponentInstanceData inst : insts) {
+			states.add(inst.getState());
+		}
+		if (states.contains(SalsaEntityState.ALLOCATING) || states.contains(SalsaEntityState.CONFIGURING)){
+			nodeData.setState(SalsaEntityState.CONFIGURING);			
+			return;
+		}
+		if (states.contains(SalsaEntityState.RUNNING)){
+			nodeData.setState(SalsaEntityState.RUNNING);
+			return;
+		}
+		if (states.contains(SalsaEntityState.FINISHED)){
+			nodeData.setState(SalsaEntityState.FINISHED);
+			return;
+		}
+		
 	}
 	
 	/**
@@ -448,6 +621,56 @@ public class ControlServices {
 		}
 
 	}
+	
+	
+	@GET
+	@Path("/getserviceruntimejsontree/{serviceId}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getServiceRuntimeJsonTree(@PathParam("serviceId") String serviceDeployId) {
+		if (serviceDeployId.equals("") || serviceDeployId.equals("null")){
+			return "";
+		}
+		try {
+			String salsaFile = CenterConfiguration.getServiceStoragePath() + "/"	+ serviceDeployId + ".data";
+			SalsaCloudServiceData service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+			SalsaTopologyData topo = service.getFirstTopology();
+			ServiceJsonDataTree datatree = new ServiceJsonDataTree();
+			datatree.setId(service.getId());
+			//logger.debug("Create json tree with id = " + datatree.getId());
+			// firstly add all VM node
+			List<SalsaComponentData> components = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
+			for (SalsaComponentData compo : components) {
+				ServiceJsonDataTree componode = new ServiceJsonDataTree();
+				componode.loadData(compo, -1, topo);	// -1 will not check instance id
+				datatree.addChild(componode);
+				//logger.debug("add a child node: " + componode.getId());
+			}
+			Gson json = new GsonBuilder().setPrettyPrinting().create();
+			
+//			String output = json.toJson(datatree);
+//			InputStream is = new ByteArrayInputStream(output.getBytes());
+//			writeToFile(is, "/tmp/salsa_service_json_tree");
+			
+			return json.toJson(datatree);
+			
+		} catch (IOException e){
+			logger.error("Cannot read service file. " + e);			
+		} catch (JAXBException e1){
+			logger.error("Error when parsing service file." + e1);
+		}
+		
+		
+		String pathName = CenterConfiguration.getServiceStoragePath();
+		try {
+			ServiceJsonList serviceList = new ServiceJsonList(pathName);
+			Gson json = new GsonBuilder().setPrettyPrinting().create();
+			return json.toJson(serviceList);
+		} catch (Exception e) {
+			logger.error("Could not list services");
+			return "";
+		}
+	}
+	
 
 	@GET
 	@Path("/getserviceruntimexml/{id}")
@@ -462,8 +685,8 @@ public class ControlServices {
 			String xml = FileUtils.readFileToString(new File(fileName));
 			return xml;
 		} catch (Exception e) {
-			logger.error("Could not find service: " + serviceDeployId
-					+ ". Data did not be sent. Error: " + e.toString());
+//			logger.error("Could not find service: " + serviceDeployId
+//					+ ". Data did not be sent. Error: " + e.toString());
 			return "Error";
 		}
 	}
