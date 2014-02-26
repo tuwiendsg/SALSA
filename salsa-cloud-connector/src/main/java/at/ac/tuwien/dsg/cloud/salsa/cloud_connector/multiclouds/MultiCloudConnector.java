@@ -29,13 +29,12 @@ public class MultiCloudConnector {
 		paramUser = new CloudParametersUser(configFile);
 	}
 
-	public CloudInterface getCloudInplementation(ConnectorsEnum provider) {
+	public CloudInterface getCloudInplementation(SalsaCloudProviders provider) {
 		CloudInterface cloud;
 		try {			
 			switch (provider) {
 			case DSG_OPENSTACK:
-				CloudParameter param = paramUser.getParameter("dsg",
-						"openstack");
+				CloudParameter param = paramUser.getParameter("dsg", "openstack");
 
 				// default value. Should get from contributed method later.
 				int socketTimeout = 5000;
@@ -62,8 +61,9 @@ public class MultiCloudConnector {
 				long retryDelayMillis = 5000;
 				int deployMaxRetries = 24;
 				long deployWaitMillis = 10000;
+				String sshName = param.getParameter(OpenStackParameterStrings.SSH_KEY_NAME);
 				cloud = new OpenStackTypica(logger, cf, maxRetries,
-						retryDelayMillis, deployMaxRetries, deployWaitMillis);
+						retryDelayMillis, deployMaxRetries, deployWaitMillis, sshName);
 				break;
 			case LAL_STRATUSLAB:
 				CloudParameter param1 = paramUser.getParameter("lal",
@@ -101,7 +101,7 @@ public class MultiCloudConnector {
 	}
 
 	// launch an instance on a provider and return an InstanceDescription
-	public InstanceDescription launchInstance(ConnectorsEnum provider,
+	public InstanceDescription launchInstance(SalsaCloudProviders provider,
 			String imageId, String sshKeyName, String userData,
 			InstanceType instType, int minInst, int maxInst) {
 		CloudInterface cloud = getCloudInplementation(provider);
@@ -122,7 +122,7 @@ public class MultiCloudConnector {
 		}
 	}
 
-	public void removeInstance(ConnectorsEnum provider, String instanceId) {
+	public void removeInstance(SalsaCloudProviders provider, String instanceId) {
 		CloudInterface cloud = getCloudInplementation(provider);
 		try {
 			cloud.removeInstance(instanceId);
