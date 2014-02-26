@@ -15,7 +15,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.collections15.Transformer;
 
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.DeploymentObject;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.DeploymentObject;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;

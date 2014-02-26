@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.DeploymentObject;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.impl.InstrumentApt;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.impl.InstrumentChefsolo;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.impl.InstrumentScript;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.DeploymentObject;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.impl.InstrumentApt;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.impl.InstrumentChefsolo;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.impl.InstrumentScript;
 
 public class GenerateTestKnowledge {
 

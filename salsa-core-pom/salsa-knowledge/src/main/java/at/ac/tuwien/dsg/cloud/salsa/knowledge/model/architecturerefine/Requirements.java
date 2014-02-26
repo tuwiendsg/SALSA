@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine;
 
 import java.util.ArrayList;
 import java.util.List;

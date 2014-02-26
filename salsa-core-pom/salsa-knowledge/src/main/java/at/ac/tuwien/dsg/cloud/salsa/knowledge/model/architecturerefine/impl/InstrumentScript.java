@@ -1,9 +1,9 @@
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.impl;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.impl;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.InstrumentalMechanism;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.InstrumentalMechanism;
 
 public class InstrumentScript extends InstrumentalMechanism {
 	
