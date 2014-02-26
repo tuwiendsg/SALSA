@@ -60,8 +60,21 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+				</configuration>				
+			</plugin>
+			
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>tomcat-maven-plugin</artifactId>
+				<configuration>
+					<url>http://128.130.172.215:8080/manager/text</url>
+					<server>TomcatServerDSG</server>
+					<path>/salsa-center-services</path>
 				</configuration>
 			</plugin>
+			
+			
 		</plugins>
 	</build>
 </project>

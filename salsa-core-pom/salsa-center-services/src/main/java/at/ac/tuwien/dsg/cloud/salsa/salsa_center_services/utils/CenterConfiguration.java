@@ -42,4 +42,12 @@ public class CenterConfiguration {
 	public static String getServiceStoragePath(){
 		return configuration.getProperty("SERVICE_STORAGE");
 	}
+	
+	public static String getArtifactStoragePath(){
+		return configuration.getProperty("ARTIFACT_STORAGE");
+	}
+	
+	public static String getToscaTemplatePath(){
+		return configuration.getProperty("TOSCA_TEMPLATE_STORAGE");
+	}
 }
