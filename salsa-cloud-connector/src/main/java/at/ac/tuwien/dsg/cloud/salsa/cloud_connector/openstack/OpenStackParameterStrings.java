@@ -7,6 +7,7 @@ public enum OpenStackParameterStrings implements ParameterStringsEnumInterface {
 	SECRET_KEY("secret_key"),
 	ACCESS_KEY("access_key"),
 	PORT("port"),
+	SSH_KEY_NAME("sshKeyName"),
 	END_POINT("end_point");
 	
 	private String value;

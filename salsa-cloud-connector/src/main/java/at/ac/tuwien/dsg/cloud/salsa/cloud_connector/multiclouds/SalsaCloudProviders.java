@@ -1,12 +1,13 @@
 package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds;
 
-public enum ConnectorsEnum {
+public enum SalsaCloudProviders {
 
-	DSG_OPENSTACK("dsg@openstack"), LAL_STRATUSLAB("lal@stratuslab");
+	DSG_OPENSTACK("dsg@openstack"),	
+	LAL_STRATUSLAB("lal@stratuslab");
 
 	private String providerId;
 
-	private ConnectorsEnum(String providerId) {
+	private SalsaCloudProviders(String providerId) {
 		this.providerId = providerId;
 	}
 
@@ -14,9 +15,9 @@ public enum ConnectorsEnum {
 		return providerId;
 	}
 
-	public static ConnectorsEnum fromString(String text) {
+	public static SalsaCloudProviders fromString(String text) {
 		if (text != null) {
-			for (ConnectorsEnum b : ConnectorsEnum.values()) {
+			for (SalsaCloudProviders b : SalsaCloudProviders.values()) {
 				if (text.equalsIgnoreCase(b.getCloudProviderString())) {
 					return b;
 				}

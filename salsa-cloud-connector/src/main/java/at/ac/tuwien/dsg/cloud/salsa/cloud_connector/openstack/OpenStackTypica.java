@@ -28,6 +28,7 @@ public class OpenStackTypica implements CloudInterface {
 	private long retryDelayMillis;
 	private int deployMaxRetries;
 	private long deployWaitMillis;
+	String sshName;
 
 	public OpenStackTypica(
 			// Resources
@@ -36,13 +37,14 @@ public class OpenStackTypica implements CloudInterface {
 			JEC2ClientFactory clientFactory,
 			// Configuration Symbols
 			Integer maxRetries, Long retryDelayMillis,
-			Integer deployMaxRetries, Long deployWaitMillis) {
+			Integer deployMaxRetries, Long deployWaitMillis, String sshName) {
 		this.logger = logger;
 		this.clientFactory = clientFactory;
 		this.maxRetries = maxRetries;
 		this.retryDelayMillis = retryDelayMillis;
 		this.deployMaxRetries = deployMaxRetries;
 		this.deployWaitMillis = deployWaitMillis;
+		this.sshName = sshName;		
 
 		// System.out.println("OpenStackTypica.OpenStackTypica() Logger "
 		// + logger.getName());
@@ -355,7 +357,7 @@ public class OpenStackTypica implements CloudInterface {
 		launchReq.setMinCount(minInst);
 		launchReq.setMaxCount(maxInst);
 
-		launchReq.setKeyName(sshKeyName);
+		launchReq.setKeyName(this.sshName);
 		launchReq.setSecurityGroup(securityGroups);
 
 		ReservationDescription result;
