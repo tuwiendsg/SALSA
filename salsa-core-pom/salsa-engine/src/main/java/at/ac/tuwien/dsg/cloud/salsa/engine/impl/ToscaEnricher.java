@@ -18,13 +18,13 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaCloudProviders;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaRelationshipType;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.DeploymentObject;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.DeploymentObject;
 import at.ac.tuwien.dsg.cloud.salsa.knowledge.process.KnowledgeGraph;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescriptionFuzzy;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.SalsaMappingProperty;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
@@ -272,14 +272,14 @@ public class ToscaEnricher {
 		newOSNode.setType(new QName(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString()));		
 		
 		// create new properties data
-		SalsaInstanceDescription vm;
+		SalsaInstanceDescription_VM vm;
 		Object target = node.getProperties().getAny();
 		if (target.getClass().equals(SalsaInstanceDescriptionFuzzy.class)){
 			vm = matchingFuzzyNode(node);
 		} else {
-			vm = (SalsaInstanceDescription) node.getProperties().getAny();
+			vm = (SalsaInstanceDescription_VM) node.getProperties().getAny();
 		}
-		SalsaInstanceDescription newProp = new SalsaInstanceDescription();
+		SalsaInstanceDescription_VM newProp = new SalsaInstanceDescription_VM();
 		newProp.setBaseImage(vm.getBaseImage());
 		newProp.setProvider(vm.getProvider());
 		newProp.setInstanceType(vm.getInstanceType());
@@ -323,9 +323,9 @@ public class ToscaEnricher {
 	/*
 	 * Currently set default for the matching
 	 */
-	private SalsaInstanceDescription matchingFuzzyNode(TNodeTemplate node){
-		SalsaInstanceDescription target = new SalsaInstanceDescription();
-		target.setProvider(SalsaCloudProviders.OPENSTACK.getCloudProviderString());
+	private SalsaInstanceDescription_VM matchingFuzzyNode(TNodeTemplate node){
+		SalsaInstanceDescription_VM target = new SalsaInstanceDescription_VM();
+		target.setProvider(SalsaCloudProviders.DSG_OPENSTACK.getCloudProviderString());
 		target.setBaseImage("ami-00000163");
 		target.setInstanceType("m1.small");
 		return target;
@@ -341,12 +341,13 @@ public class ToscaEnricher {
 	
 	/*
 	 * Add capability and requirement for nodes if relationship is at two node
+	 * Node source: requirement, node target: capability
 	 */
 	private void createRelationshipWithCapabilityAndRequirement(TRelationshipTemplate rela){
 		SourceElement testNode = rela.getSourceElement();
 		if (testNode.getRef().getClass().equals(TNodeTemplate.class)){	// rela between 2 node
-			TNodeTemplate node1 = (TNodeTemplate)rela.getSourceElement().getRef();
-			TNodeTemplate node2 = (TNodeTemplate)rela.getTargetElement().getRef();
+			TNodeTemplate node2 = (TNodeTemplate)rela.getSourceElement().getRef();
+			TNodeTemplate node1 = (TNodeTemplate)rela.getTargetElement().getRef();
 			if (node1.getCapabilities() == null){
 				node1.setCapabilities(new Capabilities());
 			}

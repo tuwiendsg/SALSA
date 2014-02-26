@@ -12,10 +12,13 @@ import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 
-/**
+/** 
  * This code is a proxy for some service calls from SalsaEngine to SalsaCenter
  * SalsaCenterConnector class provides enough calls to the center, but JavaScript
  * on this webapp cannot due to Cross-Domain Request.
+ * 
+ * The main user of this service is Javascripts in webpps 
+ * 
  * @author Le Duc Hung
  *
  */
@@ -32,6 +35,13 @@ public class ProxySalsaCenter  {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String test() {		
 		return "This is a test from Proxy !";		
+	}
+	
+	@GET
+	@Path("/getSalsaCenter")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getSalsaCenter() {		
+		return endPoint;
 	}
 	
 	@GET
@@ -60,6 +70,31 @@ public class ProxySalsaCenter  {
 		connector = new SalsaCenterConnector(endPoint, serviceDeployId, "", logger);
 		EngineLogger.logger.debug("Proxy call deregister: " + serviceDeployId);
 		return connector.deregisterService();		
+	}
+	
+	
+	@GET
+	@Path("/getservicetemplatejsonlist")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getservicetemplatejsonlist() {
+		connector = new SalsaCenterConnector(endPoint, "", "", logger);
+		return connector.getservicetemplatejsonlist();
+	}
+	
+	@GET
+	@Path("/getartifactjsonlist")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getartifactjsonlist() {
+		connector = new SalsaCenterConnector(endPoint, "", "", logger);
+		return connector.getartifactjsonlist();
+	}
+	
+	@GET
+	@Path("/getserviceruntimejsontree/{serviceId}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getserviceruntimejsontree(@PathParam("serviceId") String serviceDeployId) {
+		connector = new SalsaCenterConnector(endPoint, serviceDeployId, "", logger);
+		return connector.getserviceruntimejsontree(serviceDeployId);
 	}
 	
 }
