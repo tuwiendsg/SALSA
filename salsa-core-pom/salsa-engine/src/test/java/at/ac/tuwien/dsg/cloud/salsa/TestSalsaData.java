@@ -27,7 +27,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
@@ -59,7 +59,7 @@ public class TestSalsaData {
 		node.setId("seed-example");
 		node.setName("A sample node");
 		node.setInstanceId(1);
-		SalsaInstanceDescription instance = new SalsaInstanceDescription();
+		SalsaInstanceDescription_VM instance = new SalsaInstanceDescription_VM();
 		instance.setInstanceId("VM-id");
 		instance.setPrivateIp("localhost.example.com");		
 		Properties prop = new Properties();
@@ -81,7 +81,7 @@ public class TestSalsaData {
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(url);
 			
-			JAXBContext jaxbContext = JAXBContext.newInstance(SalsaComponentData.class, SalsaInstanceDescription.class);	// don't need Topology or Service
+			JAXBContext jaxbContext = JAXBContext.newInstance(SalsaComponentData.class, SalsaInstanceDescription_VM.class);	// don't need Topology or Service
 			Marshaller msl = jaxbContext.createMarshaller();
 			msl.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			StringWriter result = new StringWriter();

@@ -18,10 +18,13 @@
 			<tosca:NodeTemplate id="DataEndServiceTopologyService"
 				type="DataEndServiceTopology">
 				<tosca:Policies>
+					
 					<tosca:Policy
 						name="Co1:CONSTRAINT latency &lt; 0.5 ms;Co2:CONSTRAINT cpuUsage &lt; 83 %"
 						policyType="SYBLConstraint" />
+					<tosca:Policy policyType="SALSA" policyRef="test"></tosca:Policy>
 				</tosca:Policies>
+				
 			</tosca:NodeTemplate>
 			<tosca:NodeTemplate id="EventProcessingServiceTopologyService"
 				type="EventProcessingServiceTopology">

@@ -7,7 +7,7 @@ import generated.oasis.tosca.TServiceTemplate;
 import generated.oasis.tosca.TTopologyTemplate;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.ToscaEnricher;
 import at.ac.tuwien.dsg.cloud.salsa.knowledge.process.KnowledgeGraph;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
@@ -46,7 +46,7 @@ public class TestToscaEnricher {
 		node.setId("testNode");
 		Properties prop = new Properties();
 		
-		SalsaInstanceDescription ins = new SalsaInstanceDescription();
+		SalsaInstanceDescription_VM ins = new SalsaInstanceDescription_VM();
 		ins.setBaseImage("testBaseImage");
 		
 		SalsaMappingProperties maps = new SalsaMappingProperties();
