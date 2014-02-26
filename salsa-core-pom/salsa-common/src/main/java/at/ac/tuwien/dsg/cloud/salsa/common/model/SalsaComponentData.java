@@ -28,6 +28,12 @@ public class SalsaComponentData extends SalsaEntity {
 	@XmlAttribute(name = "type")
 	String type;
 	
+	@XmlAttribute(name = "hostedId")
+	String hostedId="";
+	
+	@XmlAttribute(name = "idCounter")
+	int idCounter=0;
+	
 	public void addInstance(SalsaComponentInstanceData instance){
 		repLst.add(instance);
 	}
@@ -59,7 +65,25 @@ public class SalsaComponentData extends SalsaEntity {
 	public int getInstanceNumber(){
 		return repLst.size();
 	}
+		
+	public int getIdCounter() {
+		return idCounter;
+	}
+
+	public void setIdCounter(int idCounter) {
+		this.idCounter = idCounter;
+	}
 	
+	
+
+	public String getHostedId() {
+		return hostedId;
+	}
+
+	public void setHostedId(String hostedId) {
+		this.hostedId = hostedId;
+	}
+
 	public List<SalsaComponentInstanceData> getInstanceByState(SalsaEntityState state){
 		List<SalsaComponentInstanceData> lst = new ArrayList<>();
 		for (SalsaComponentInstanceData rep : repLst) {
@@ -75,14 +99,24 @@ public class SalsaComponentData extends SalsaEntity {
 		int counter = 0;
 		for (SalsaComponentInstanceData rep : repLst) {
 			if (rep.getState() == state ){
-				counter++;
+				counter++;				
 			}
 		}
 		return counter;
 	}
 
-	public List<SalsaComponentInstanceData> getInstanceList() {
+	public List<SalsaComponentInstanceData> getAllInstanceList() {
 		return repLst;
-	}	
+	}
+	
+	public List<SalsaComponentInstanceData> getInstanceHostOn(int hostOnId){
+		List<SalsaComponentInstanceData> newLst = new ArrayList<>();
+		for (SalsaComponentInstanceData instance : repLst) {
+			if (instance.getHostedId_Integer()==hostOnId){
+				newLst.add(instance);
+			}			
+		}
+		return newLst;				
+	}
 
 }

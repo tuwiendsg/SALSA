@@ -27,8 +27,8 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData.Capabilities;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaReplicaRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 import com.sun.jersey.api.client.Client;
@@ -96,25 +96,29 @@ public class SalsaCenterConnector {
 					+ new File(serviceFile).getName());
 		}
 	}
-	
+
 	/**
 	 * Deregister the service on Salsa Center
+	 * 
 	 * @param serviceId
 	 */
 	public String deregisterService() {
-		String url = centerRestfulEndpoint + "/deregister/"+serviceId;
+		String url = centerRestfulEndpoint + "/deregister/" + serviceId;
 		logger.debug("Salsa Connector query: " + url);
-		return getDataFromSalsaCenter(url);		
+		return getDataFromSalsaCenter(url);
 	}
 
-	
 	/**
 	 * Set the state of a node instances (replcia).
 	 * 
-	 * @param topologyId The topology of node
-	 * @param nodeId The node
-	 * @param replica The instance of node
-	 * @param state The state
+	 * @param topologyId
+	 *            The topology of node
+	 * @param nodeId
+	 *            The node
+	 * @param replica
+	 *            The instance of node
+	 * @param state
+	 *            The state
 	 */
 	public void setNodeState(String topologyId, String nodeId, int replica,
 			SalsaEntityState state) {
@@ -126,27 +130,35 @@ public class SalsaCenterConnector {
 	}
 
 	/**
-	 * Get capability value of a Replica instance.
+	 * Get capability value of a instance.
 	 * 
 	 * @param topoId
-	 * @param nodeId
-	 * @param replica
-	 * @param capaId
+	 * @param nodeId node of the capability
+	 * @param replica instanceId
+	 * @param capaId ID of capa
 	 * @return TODO: Change the replica hierarchy
 	 */
 	public String getCapabilityValue(String topoId, String nodeId, int replica,
 			String capaId) {
+		System.out.println("Try to get capability value of capaid: " + capaId);
 		SalsaCloudServiceData service = getUpdateCloudServiceRuntime();
-		SalsaComponentInstanceData rep = service.getReplicaById(topoId, nodeId,
-				replica);
+		System.out.println("Checking topo/node/inst-id: " + topoId +"/" + nodeId +"/" + replica);
+		SalsaComponentInstanceData rep = service.getReplicaById(topoId, nodeId, replica);
+		System.out.println("Get this instance: " + rep.getInstanceId());
 		Capabilities capas = rep.getCapabilities();
+		
 		if (capas != null) {
-			List<SalsaCapabilityString> capaLst = capas.getCapability();
-			for (SalsaCapabilityString capa : capaLst) {
+			System.out.println("Capa is not null !");
+			List<SalsaCapaReqString> capaLst = capas.getCapability();
+			for (SalsaCapaReqString capa : capaLst) {
+				System.out.println("Checking capa: " + capa.getId() + " if it equals to " +capaId);
 				if (capa.getId().equals(capaId)) {
+					System.out.println("OK, return the capa value: " + capa.getValue());					
 					return capa.getValue();
 				}
 			}
+		} else {
+			System.out.println("capa is null");
 		}
 		return null;
 	}
@@ -203,22 +215,23 @@ public class SalsaCenterConnector {
 	 * @return the CloudService instance.
 	 */
 	public SalsaCloudServiceData getUpdateCloudServiceRuntime() {
-		try{
+		try {
 			String xml = getUpdateCloudServiceRuntimeXML();
-			if (xml==null){
+			if (xml == null) {
 				return null;
-			} else{
+			} else {
 				return SalsaXmlDataProcess.readSalsaServiceXml(xml);
-			}				
-			//return (xml==null)?null:SalsaXmlDataProcess.readSalsaServiceXml(xml);
-		} catch (IOException e){
-			e.printStackTrace();			
+			}
+			// return
+			// (xml==null)?null:SalsaXmlDataProcess.readSalsaServiceXml(xml);
+		} catch (IOException e) {
+			e.printStackTrace();
 		} catch (JAXBException e1) {
 			logger.error("Error to parse ServiceRuntime file. Error: " + e1);
 		}
-		return null;		
+		return null;
 	}
-	
+
 	/**
 	 * Query the Cloud Service Object, contain all runtime replicas of the
 	 * service.
@@ -228,17 +241,34 @@ public class SalsaCenterConnector {
 	public String getUpdateCloudServiceRuntimeXML() {
 		String url = centerRestfulEndpoint + "/getserviceruntimexml" + "/"
 				+ serviceId;
-		return getDataFromSalsaCenter(url);		
+		return getDataFromSalsaCenter(url);
 	}
-	
+
 	/*
 	 * Get the json contain a list of deployed service Id
 	 */
-	public String getServiceListJson(){
+	public String getServiceListJson() {
 		String url = centerRestfulEndpoint + "/getservicejsonlist";
 		return getDataFromSalsaCenter(url);
 	}
-	
+
+	/*
+	 * Get the json of running serviceto generate the tree
+	 */
+	public String getserviceruntimejsontree(String serviceId) {
+		String url = centerRestfulEndpoint + "/getserviceruntimejsontree/"
+				+ serviceId;
+		return getDataFromSalsaCenter(url);
+	}
+
+	// /getrequirementvalue/{serviceId}/{topologyId}/{nodeId}/{instanceId}/{reqId}"
+	public String getRequirementValue(String serviceId, String topologyId,
+			String nodeId, int instanceId, String reqId) {
+		String url = centerRestfulEndpoint + "/getrequirementvalue/"
+				+ serviceId + "/" + topologyId + "/" + nodeId + "/"
+				+ instanceId + "/" + reqId;
+		return getDataFromSalsaCenter(url);
+	}
 
 	/**
 	 * Update the topology for a replica. As the property is AnyType, the
@@ -262,14 +292,29 @@ public class SalsaCenterConnector {
 	 * @param topologyId
 	 * @param nodeId
 	 * @param replica
-	 * @param capaId
 	 * @param value
 	 */
 	public void updateReplicaCapability(String topologyId, String nodeId,
-			int replica, SalsaCapabilityString capa) {
+			int replica, SalsaCapaReqString capa) {
 		String url = centerRestfulEndpoint + "/update/capability" + "/"
 				+ serviceId + "/" + topologyId + "/" + nodeId + "/" + replica;
 		postDataToSalsaCenter(url, capa);
+	}
+
+	/**
+	 * Update the node ID counter which is use to calculate the id of multiple
+	 * instances of one application node
+	 * 
+	 * @param serviceId
+	 * @param topoId
+	 * @param nodeId
+	 * @param value
+	 */
+	public void updateNodeIdCounter(String topologyId, String nodeId, int value) {
+		String url = centerRestfulEndpoint + "/update/nodeidcount/" + serviceId
+				+ "/" + topologyId + "/" + nodeId + "/" + value;
+		System.out.println(url);
+		getDataFromSalsaCenter(url);
 	}
 
 	/*
@@ -280,10 +325,14 @@ public class SalsaCenterConnector {
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(url);
 
-			JAXBContext jaxbContext = JAXBContext				// beside data.class, addition classes for contents
-					.newInstance(data.getClass(),				// e.g. when update Replica, need its capability and InstanceDes.
-							SalsaInstanceDescription.class,
-							SalsaCapabilityString.class);
+			JAXBContext jaxbContext = JAXBContext // beside data.class, addition
+													// classes for contents
+					.newInstance(
+							data.getClass(), // e.g. when update Replica, need
+												// its capability and
+												// InstanceDes.
+							SalsaInstanceDescription_VM.class,
+							SalsaCapaReqString.class);
 			Marshaller msl = jaxbContext.createMarshaller();
 			msl.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			StringWriter result = new StringWriter();
@@ -308,11 +357,11 @@ public class SalsaCenterConnector {
 			logger.error("Some error when posting data to: " + url);
 		}
 	}
-	
+
 	/*
 	 * Send a GET request and return the result
 	 */
-	private String getDataFromSalsaCenter(String url){
+	private String getDataFromSalsaCenter(String url) {
 		Client client = Client.create();
 		WebResource webResource = client.resource(url);
 		ClientResponse response = webResource.accept("text/plain").get(
@@ -323,7 +372,24 @@ public class SalsaCenterConnector {
 			return null;
 		}
 		String resStr = response.getEntity(String.class);
-		return resStr;		
+		return resStr;
+	}
+
+	public String getservicetemplatejsonlist() {
+		String url = centerRestfulEndpoint + "/app/getservicetemplatejsonlist";
+		return getDataFromSalsaCenter(url);
+	}
+
+	public String getartifactjsonlist() {
+		String url = centerRestfulEndpoint + "/app/getartifactjsonlist";
+		return getDataFromSalsaCenter(url);
+	}
+
+	public String removeOneInstance(String serviceId, String topologyId,
+			String nodeId, int instanceId) {
+		String url = centerRestfulEndpoint + "/remove/instance/" + serviceId
+				+ "/" + topologyId + "/" + nodeId + "/" + instanceId;
+		return getDataFromSalsaCenter(url);
 	}
 
 }

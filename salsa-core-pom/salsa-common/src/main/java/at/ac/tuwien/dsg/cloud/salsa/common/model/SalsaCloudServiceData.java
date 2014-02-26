@@ -93,7 +93,7 @@ public class SalsaCloudServiceData extends SalsaEntity{
 		List<SalsaComponentInstanceData> repList = new ArrayList<>();
 		List<SalsaComponentData> comList = getAllComponentByType(type);
 		for (SalsaComponentData com : comList) {
-			repList.addAll(com.getInstanceList());
+			repList.addAll(com.getAllInstanceList());
 		}		
 		return repList;
 	}

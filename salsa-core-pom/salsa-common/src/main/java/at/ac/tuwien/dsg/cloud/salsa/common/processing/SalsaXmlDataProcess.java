@@ -15,8 +15,8 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaReplicaRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 
 public class SalsaXmlDataProcess {
 	
@@ -30,8 +30,8 @@ public class SalsaXmlDataProcess {
 							SalsaTopologyData.class,
 							SalsaComponentData.class,
 							SalsaComponentInstanceData.class,
-							SalsaInstanceDescription.class,	// describe VM
-							SalsaCapabilityString.class,
+							SalsaInstanceDescription_VM.class,	// describe VM
+							SalsaCapaReqString.class,
 							SalsaReplicaRelationship.class);	// capability
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
@@ -51,8 +51,8 @@ public class SalsaXmlDataProcess {
 						SalsaTopologyData.class,
 						SalsaComponentData.class,
 						SalsaComponentInstanceData.class,						
-						SalsaInstanceDescription.class,	// describe VM
-						SalsaCapabilityString.class,
+						SalsaInstanceDescription_VM.class,	// describe VM
+						SalsaCapaReqString.class,
 						SalsaReplicaRelationship.class);	// capability
 						
 		Unmarshaller um = context.createUnmarshaller();
@@ -67,7 +67,7 @@ public class SalsaXmlDataProcess {
 						SalsaTopologyData.class,
 						SalsaComponentData.class,
 						SalsaComponentInstanceData.class,
-						SalsaInstanceDescription.class);
+						SalsaInstanceDescription_VM.class);
 						
 		Unmarshaller um = context.createUnmarshaller();
 		StringReader reader = new StringReader(xml);
