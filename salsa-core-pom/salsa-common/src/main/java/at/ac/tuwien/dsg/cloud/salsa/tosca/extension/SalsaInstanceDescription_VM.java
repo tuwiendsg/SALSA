@@ -2,7 +2,10 @@ package at.ac.tuwien.dsg.cloud.salsa.tosca.extension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -19,14 +22,13 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.Salsa
  * This class acts as a container for all the information of Salsa Virtual Machine instances
  * 
  * @author Le Duc Hung
- * TODO: change it for extending from ToscaVMNodeTemplatePropertiesEntend. Currently: copy attributes.
  * TODO: Unified instance type. Currently: use String.
  */
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "SalsaInstanceDescription")
-public class SalsaInstanceDescription {
+public class SalsaInstanceDescription_VM {
 
 	@XmlElement(name = "provider")
 	private String provider;
@@ -40,9 +42,6 @@ public class SalsaInstanceDescription {
 	@XmlElement(name = "id")
 	private String instanceId;
 
-//	@XmlAttribute(name = "replicaNumber")
-//	private int replicaNumber=0; 	
-	
 	@XmlElement(name = "privateIp")
 	private String privateIp;
 	@XmlElement(name = "publicIP")
@@ -57,10 +56,10 @@ public class SalsaInstanceDescription {
 	@XmlElement(name = "Packages")
 	PackagesDependencies packagesDependencies;
 
-	public SalsaInstanceDescription(){
+	public SalsaInstanceDescription_VM(){
 	}
 	
-	public SalsaInstanceDescription(String provider, String instanceId){
+	public SalsaInstanceDescription_VM(String provider, String instanceId){
 		this.provider = provider;
 		this.instanceId = instanceId;
 //		this.replicaNumber = replicaNumber;
@@ -169,8 +168,8 @@ public class SalsaInstanceDescription {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof SalsaInstanceDescription) {
-			return instanceId.equals(((SalsaInstanceDescription) obj)
+		if (obj instanceof SalsaInstanceDescription_VM) {
+			return instanceId.equals(((SalsaInstanceDescription_VM) obj)
 					.getInstanceId());
 		}
 		return false;
@@ -185,11 +184,32 @@ public class SalsaInstanceDescription {
 				this.instanceType = map.get("instanceType");
 				String packageStr = map.get("packages");
 				
-				List<String> packagelist = new ArrayList<String>(Arrays.asList(packageStr.split(" , ")));	
+				List<String> packagelist = new ArrayList<String>(Arrays.asList(packageStr.split(",")));	
 				this.packagesDependencies = new PackagesDependencies();
 				this.packagesDependencies.setPackageDependency(packagelist);				
 			}
 		}		
+	}
+	
+	public Map<String,String> exportToMap(){
+		Map<String,String> resMap = new HashMap<String, String>();
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("provider", this.provider);
+		map.put("baseImage", this.baseImage);
+		map.put("instanceType", this.instanceType);
+		map.put("instanceId", this.instanceId);
+		map.put("publicIp", this.publicIp);
+		map.put("privateIp", this.privateIp);
+		map.put("publicDNS", this.publicDNS);
+		Iterator iterator = map.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry<String, String> mapEntry = (Map.Entry<String,String>) iterator.next();
+			if (mapEntry.getValue()!=null){
+				resMap.put(mapEntry.getKey(), mapEntry.getValue());
+			}
+		}
+		
+		return resMap;
 	}
 	
 	@XmlAccessorType(XmlAccessType.FIELD)

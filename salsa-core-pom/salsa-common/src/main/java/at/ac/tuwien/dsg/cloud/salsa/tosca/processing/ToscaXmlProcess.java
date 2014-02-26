@@ -28,8 +28,8 @@ public class ToscaXmlProcess {
 				
 				// used in Tosca with name space of "Salsa"
 				
-				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString.class,
-				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription.class,
+				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString.class,
+				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM.class,
 				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ScriptArtifactProperties.class,		
 				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.class);
 		return context;

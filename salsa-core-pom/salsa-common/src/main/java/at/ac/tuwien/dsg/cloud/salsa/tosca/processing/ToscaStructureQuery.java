@@ -3,6 +3,7 @@ package at.ac.tuwien.dsg.cloud.salsa.tosca.processing;
 import generated.oasis.tosca.TArtifactReference;
 import generated.oasis.tosca.TArtifactTemplate;
 import generated.oasis.tosca.TCapability;
+import generated.oasis.tosca.TCapabilityType;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TDeploymentArtifact;
 import generated.oasis.tosca.TEntityTemplate;
@@ -351,12 +352,35 @@ public class ToscaStructureQuery {
 		return null;
 	}
 	
+	public static TRelationshipTemplate getRelationshipBetweenTwoCapaReq(TCapability capa, TRequirement req, TDefinitions def){
+		List<TRelationshipTemplate> lstrel = getRelationshipTemplateList(def);
+		System.out.println("TESTING capa: " + capa.getId() +" and req: " + req.getId());
+		for (TRelationshipTemplate rel : lstrel) {
+			System.out.println("RELA: "+rel.getId());
+			if (rel.getSourceElement().getRef().equals(capa) && rel.getTargetElement().getRef().equals(req)){
+				return rel;
+			}
+		}
+		return null;
+	}
+	
 	public static TCapability getCapabilitySuitsRequirement(TRequirement req, TDefinitions def){
 		List<TRelationshipTemplate> rels=getRelationshipTemplateList(def);
 		for (TRelationshipTemplate rel : rels) {
 			TEntityTemplate target = (TEntityTemplate)rel.getTargetElement().getRef();
 			if (target.getId().equals(req.getId())){
 				return (TCapability) rel.getSourceElement().getRef();
+			}
+		}
+		return null;
+	}
+	
+	public static TRequirement getRequirementSuitsCapability(TCapability capa, TDefinitions def){
+		List<TRelationshipTemplate> rels=getRelationshipTemplateList(def);
+		for (TRelationshipTemplate rel : rels) {
+			TEntityTemplate source = (TEntityTemplate)rel.getSourceElement().getRef();
+			if (source.getId().equals(capa.getId())){
+				return (TRequirement) rel.getTargetElement().getRef();
 			}
 		}
 		return null;

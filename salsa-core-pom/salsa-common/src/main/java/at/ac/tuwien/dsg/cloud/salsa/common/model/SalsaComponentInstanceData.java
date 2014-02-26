@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapabilityString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
@@ -25,26 +25,48 @@ public class SalsaComponentInstanceData extends SalsaEntity {
 	@XmlAttribute(name = "replica")
 	int instanceId=0;
 	
+	@XmlAttribute(name = "hostedId")
+	int hostedId=0;
+	
 	@XmlElement(name = "Properties")
 	protected SalsaComponentInstanceData.Properties properties;	
 	
 	@XmlElement(name = "Capabilities")
-	protected Capabilities capabilities;		
+	protected Capabilities capabilities;
+	
+//	@XmlElement(name = "Requirements")
+//	protected Capabilities requirements;
+	
 	
 	@XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
     public static class Capabilities {
 		@XmlElement(name = "Capability")
-        protected List<SalsaCapabilityString> capability = new ArrayList<>();
+        protected List<SalsaCapaReqString> capability = new ArrayList<>();
 
-		public List<SalsaCapabilityString> getCapability() {
+		public List<SalsaCapaReqString> getCapability() {
 			return capability;
 		}
 
-		public void setCapability(List<SalsaCapabilityString> capability) {
-			this.capability = capability;
+		public void setCapability(List<SalsaCapaReqString> capabilities) {
+			this.capability = capabilities;
 		}  		
     }
+	
+//	@XmlAccessorType(XmlAccessType.FIELD)
+//    @XmlType(name = "")
+//    public static class Requirements {
+//		@XmlElement(name = "Requirement")
+//        protected List<SalsaCapaReqString> requirement = new ArrayList<>();
+//
+//		public List<SalsaCapaReqString> getRequirement() {
+//			return requirement;
+//		}
+//
+//		public void setRequirement(List<SalsaCapaReqString> requirements) {
+//			this.requirement = requirements;
+//		}  		
+//    }
 	
 	
 	@XmlAccessorType(XmlAccessType.FIELD)
@@ -63,7 +85,16 @@ public class SalsaComponentInstanceData extends SalsaEntity {
         }
     }
 
-
+	public String getCapabilityValue(String id){
+		if (this.capabilities != null){
+			for (SalsaCapaReqString capaStr : this.capabilities.getCapability()) {
+				if (capaStr.getId().equals(id)){
+					return capaStr.getValue();
+				}
+			}
+		}
+		return null;
+	}
 	
 	public SalsaComponentInstanceData(int replica, SalsaComponentInstanceData.Properties pros){
 		this.instanceId = replica;
@@ -84,16 +115,21 @@ public class SalsaComponentInstanceData extends SalsaEntity {
 	public void setInstanceId(int instance) {
 		this.instanceId = instance;
 	}
+	
+	public int getHostedId_Integer() {
+		return hostedId;
+	}
 
-	public SalsaComponentInstanceData.Properties getProperties() {
-		if (properties == null){
-			properties = new SalsaComponentInstanceData.Properties();
-		}
+	public void setHostedId_Integer(int hostedId) {
+		this.hostedId = hostedId;
+	}
+
+	public SalsaComponentInstanceData.Properties getProperties() {		
 		return properties;
 	}
 
 
-	public void setProperties(SalsaComponentInstanceData.Properties properties) {
+	public void setProperties(SalsaComponentInstanceData.Properties properties) {		
 		this.properties = properties;
 	}
 

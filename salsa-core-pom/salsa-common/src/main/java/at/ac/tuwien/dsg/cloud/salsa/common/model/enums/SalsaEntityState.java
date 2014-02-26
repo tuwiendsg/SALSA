@@ -14,8 +14,9 @@ public enum SalsaEntityState {
 	UNDEPLOYED("undeployed"),
 	ALLOCATING("allocating"),	
 	CONFIGURING("configuring"),
-	STOPED("stoped"),
-	READY("ready"),
+	STOPPED("stopped"),
+	RUNNING("running"),
+	FINISHED("finished"),	
 	ERROR("error");
 	
 	private String nodeState;

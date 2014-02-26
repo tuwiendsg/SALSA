@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ToscaCapabilityString")
 @XmlRootElement(name = "ToscaCapabilityString")
-public class SalsaCapabilityString {
+public class SalsaCapaReqString {
 
 	@XmlAttribute(name = "id")
 	private String id;
@@ -25,10 +25,10 @@ public class SalsaCapabilityString {
 		this.value = value;
 	}
 	
-	public SalsaCapabilityString(){		
+	public SalsaCapaReqString(){		
 	}
 	
-	public SalsaCapabilityString(String id, String value){
+	public SalsaCapaReqString(String id, String value){
 		this.id = id;
 		this.value = value;
 	}

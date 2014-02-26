@@ -21,52 +21,17 @@ public class SalsaReplicaRelationship {
 	SalsaRelationshipType type;
 	
 	@XmlElement(name = "Source")
-	SalsaReplicaInstanceReference source;
+	String sourceId;
 	@XmlElement(name = "Target")
-	SalsaReplicaInstanceReference target;
+	String targetId;
 	
 	public SalsaReplicaRelationship(){}
 	
-	public SalsaReplicaRelationship(String sourceNode, int sourceRep, String targetNode, int targetRep){
-		this.source = new SalsaReplicaInstanceReference(sourceNode, sourceRep);
-		this.target = new SalsaReplicaInstanceReference(targetNode, targetRep);
+	public SalsaReplicaRelationship(String sourceid, String targetid){
+		this.sourceId = sourceid;
+		this.targetId = targetid;
 	}
 	
-	@XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "")
-	public static class SalsaReplicaInstanceReference{
-		@XmlAttribute(name = "node")
-		String node;
-		@XmlAttribute(name = "replica")
-		int replica;
-		
-		public SalsaReplicaInstanceReference(){}
-		
-		public SalsaReplicaInstanceReference(String node, int replica){
-			this.node = node;
-			this.replica = replica;
-		}
-		
-		public String getNode() {
-			return node;
-		}
-		public void setNode(String node) {
-			this.node = node;
-		}
-		public int getReplica() {
-			return replica;
-		}
-		public void setReplica(int replica) {
-			this.replica = replica;
-		}		
-	}
-
-	@Override
-	public String toString() {
-		return "SalsaReplicaRelationship [source=" + source.getNode()+"."+source.getReplica() + ", target="
-				+ target.getNode()+"."+target.getReplica() + "]";
-	}
-
 	public SalsaRelationshipType getType() {
 		return type;
 	}
@@ -74,5 +39,23 @@ public class SalsaReplicaRelationship {
 	public void setType(SalsaRelationshipType type) {
 		this.type = type;
 	}
+
+	public String getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(String sourceId) {
+		this.sourceId = sourceId;
+	}
+
+	public String getTargetId() {
+		return targetId;
+	}
+
+	public void setTargetId(String targetId) {
+		this.targetId = targetId;
+	}
+	
+	
 		
 }
