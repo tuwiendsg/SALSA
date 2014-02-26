@@ -1,0 +1,35 @@
+1. Application description
+
+Salsa uses Tosca for describing applications. An application is called a Tosca-Definition which contains a number of Service Template. In Salsa, a Service Template can be consider as an Atomic Service, which can be deployed separatedly. For example, an application has a database service and a business service which can connect to each other, but not be strictly depended, and can be deployed independently.
+
+A Service Template has a Topology Template which describes its abstract structure. Following the idea of Tosca, all application components are considered as Tosca-Nodes, or Node Template. Node Templates have dependencies to others, and be described via Relationship Template. 
+
+For execute the deployment, each Tosca-Nodes will have a number of Deployment-Artifacts which point to the Artifact repositories of the Node materials.
+
+These templates can be defined by other Tosca-Elements such as Node-Types, Relationship-Types, Artifact-Types, etc.
+
+2. Tosca addition for Salsa
+As the property for NodeTemplate is Any, Salsa use some custom Properties for the description
+2.1. Virtual Machine Node Properties
+Below is an example of the custom VM Node deployment information Properties.
+
+<MappingProperties>		
+	<MappingProperty type="os">
+		<property name="instanceType">m1.small</property>
+		<property name="provider">dsg@openstack</property>
+		<property name="baseImage">ami-00000163</property>
+		<property name="packages">openjdk-7-jre,expect,ntp,chef</property>
+	</MappingProperty>
+</MappingProperties>
+
+2.2. Node Type
+Tosca allow describe custom Node Types. Salsa will support a number of Node Type, which user can specific. Node types that pre-support in Salsa are:
+ - type="os" : This node type will provide an OS on an Virtual Machine. It will need a MappingProperty of type "os" which describe the resource to be deployed.
+ - type="software": install a software on top of VM. The software can have multiple of artifact type, like "sh", "chef", etc.
+
+3. Deployment scripts
+Each node will has a number of script related to deployment system actions (as described above). The deployment scripts is a BASH script. Salsa provide 2 command, which is available on all Salsa Vitual machine instance. This method support the components can transfer variables to others.
+ - salsa-capability-set <capability ID> <value>
+ - salsa-requirement-get <requirement ID>
+These commands will set node's capability and get node's requirement. These value will be controlled and synchronized by Salsa Center, ensure the logic of the deployment.
+
