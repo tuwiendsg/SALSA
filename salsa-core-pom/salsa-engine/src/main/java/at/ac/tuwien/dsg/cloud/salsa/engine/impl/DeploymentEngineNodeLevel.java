@@ -21,15 +21,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
-import at.ac.tuwien.dsg.cloud.salsa.engine.utils.MultiCloudConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Artifact;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
@@ -117,7 +115,7 @@ public class DeploymentEngineNodeLevel {
 		InstanceDescription indes = mcc.launchInstance(
 				SalsaCloudProviders.fromString(instanceDesc.getProvider()),
 				instanceDesc.getBaseImage(),
-				MultiCloudConfiguration.getSshKeyName(instanceDesc.getProvider()),
+				"",	// this is the sshKeyGen, but not need anymore. When create mcc, we pass the configFile
 				userData,
 				InstanceType.getTypeFromString(instanceDesc.getInstanceType()),
 				1, 1);	// deploy min instance number of node		
