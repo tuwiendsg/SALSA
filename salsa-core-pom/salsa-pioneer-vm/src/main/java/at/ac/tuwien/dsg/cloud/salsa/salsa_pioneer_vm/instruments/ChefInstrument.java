@@ -10,8 +10,10 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.PioneerLogger;
@@ -70,6 +72,8 @@ public class ChefInstrument implements InstrumentInterface {
 				while ((read = is.read(bytes)) != -1) {
 					os.write(bytes, 0, read);
 				}
+				os.flush();
+				
 				is.close();
 				os.close();
 				
@@ -111,7 +115,37 @@ public class ChefInstrument implements InstrumentInterface {
 		    	sb2.append(line + "\n");
 		    }
 		    
-		    PioneerLogger.logger.debug(sb2.toString());	        		    
+		    PioneerLogger.logger.debug(sb2.toString());
+		    
+		    // Run chef-client every 10 seconds
+		    PioneerLogger.logger.debug("Start the loop of running Chef every 10 seconds");
+		    Runnable r =new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+					Process	pp = Runtime.getRuntime().exec("chef-client");
+					
+				    pp.waitFor();
+				    
+				    BufferedReader reader =  new BufferedReader(new InputStreamReader(pp.getInputStream()));
+					StringBuffer sb2 = new StringBuffer();
+					String line = "";			
+					while ((line = reader.readLine())!= null) {
+					  	sb2.append(line + "\n");
+					}
+
+					PioneerLogger.logger.debug(sb2.toString());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+			};
+			 ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+			 scheduler.scheduleAtFixedRate(r, 0, 10, TimeUnit.SECONDS);
+
 			return "Done";
 			
 		} catch (Exception e){
