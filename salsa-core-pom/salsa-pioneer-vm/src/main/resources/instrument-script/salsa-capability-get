@@ -1,6 +1,9 @@
 #/bin/bash
-# waiting for capa
-# Usage: getcapa.sh <capaId>
+# This is one of VM instrument script support deployment
+# This script is used for waiting and getting the capability value
+# This one should be deprecated soon
+#
+# Usage: salsa-capability-get <capaId>
 . /etc/salsa.variables
 
 if [ -z "$SALSA_PIONEER_RUN" ]; then

@@ -1,4 +1,7 @@
 #/bin/bash
+# This is one of VM instrument script support deployment
+# This script is used for setting the String capability property
+#
 # Usage: setcapa.sh <capaId> <value>
 . /etc/salsa.variables
 

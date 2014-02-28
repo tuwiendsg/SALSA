@@ -106,7 +106,8 @@ public class Main {
 			break;
 		}
 		case "setcapa":
-			// TODO: The instanceId here is for of VM. It should be change to instanceId of upper node.
+		{
+			// TODO: The instanceId here is for of VM. It should be change to instanceId of upper node.			
 			// How to do it: Search the HOSTON node, which have relationship with the instanceId.
 			// CURRENTLY, SET CAPABILITY FOR THE FIRST INSTANCE OF THE NODE !!!
 			SalsaCapaReqString capa = new SalsaCapaReqString(args[1],  args[2]);
@@ -114,21 +115,32 @@ public class Main {
 			centerCon.updateReplicaCapability(topologyId, nodeTmpId, 0, capa);			
 			PioneerLogger.logger.debug("Set capability "+args[1]+" as " + args[2]);
 			break;
+		}
 		case "getcapa":	// get when node is ready
+		{
 			String capaIdGet = args[1];
 			TNodeTemplate myNodeGet = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capaIdGet, def);
 			String capaValue = centerCon.getCapabilityValue(topologyId, myNodeGet.getId(), replica, capaIdGet);
 			System.out.println(capaValue);
 			break;
+		}
 		case "getreq":
+		{
 			String reqIdGet = args[1];
 			String reqValue = centerCon.getRequirementValue(serviceId, topologyId, nodeId, 0, reqIdGet);
 			System.out.println(reqValue);
 			break;
+		}
 		case "setnodestate":
+		{
 			centerCon.setNodeState(topologyId, args[1], replica, SalsaEntityState.fromString(args[2]));
 			//def = centerCon.updateTopology();
 			break;
+		}
+		case "getprop":
+		{
+			deployer.getVMProperty(args[1]);
+		}
 		default:
 			PioneerLogger.logger.error("Unknown command: " + command);
 		}
