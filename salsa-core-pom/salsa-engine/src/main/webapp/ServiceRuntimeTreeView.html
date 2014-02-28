@@ -187,8 +187,7 @@
 	          str += "<br/>state : <b>" + d.state +"</b>"; 
 	          for (var prop in d.properties) {
 	             str += "<br/>"+prop + " : <b>" + d.properties[prop] + "</b>";
-	          }
-	          
+	          }	          
 	          return str; 
 	        }
 	      });
@@ -196,6 +195,7 @@
 // 	        .on("mouseover", function(){return tooltip.style("visibility", "visible");})
 // 			.on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
 // 			.on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+		
 		
 	  
 		node.append("text")	// show the middle text
