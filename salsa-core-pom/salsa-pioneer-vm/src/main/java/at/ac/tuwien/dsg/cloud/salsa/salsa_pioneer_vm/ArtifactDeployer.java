@@ -7,14 +7,13 @@ import generated.oasis.tosca.TNodeTemplate;
 import generated.oasis.tosca.TRelationshipTemplate;
 import generated.oasis.tosca.TRequirement;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -37,7 +36,6 @@ import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.SalsaPioneerConfigura
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 public class ArtifactDeployer {
 	private String serviceId;
@@ -147,8 +145,7 @@ public class ArtifactDeployer {
 				
 			}
 
-		}
-		
+		}		
 		
 		// waiting for capabilities and fulfill requirements
 		private void waitingForCapabilities(TNodeTemplate node, TDefinitions def) {
@@ -160,10 +157,10 @@ public class ArtifactDeployer {
 				logger.debug("Checking requirement "+req.getId());
 				TCapability cap=ToscaStructureQuery.getCapabilitySuitsRequirement(req, def);
 				logger.debug("Waiting for capability: "+cap.getId());
-				waitRelationshipReady(topologyId, replica, cap, req);
+				String value = waitRelationshipReady(topologyId, replica, cap, req);
+
 			}
-		}
-		
+		}	
 		
 
 		// Download node artifact
@@ -195,8 +192,8 @@ public class ArtifactDeployer {
 			}
 		}
 		
-		// Download and run 1 node. Node shouldn't be VM
-		private static void runNodeArtifacts(TNodeTemplate node, TDefinitions def) {
+		// Download and run 1 node of software
+		private void runNodeArtifacts(TNodeTemplate node, TDefinitions def) {
 			PioneerLogger.logger.debug("==> Run artifact for node: " + node.getId());
 			// get Artifact list
 			String runArt="";
@@ -240,7 +237,24 @@ public class ArtifactDeployer {
 			}
 			instrument.initiate(node);
 			instrument.deployArtifact(runArt);
-				
+			
+			// if this node is part of CONNECTTO, send the IP
+			if (node.getCapabilities()==null){
+				return;				
+			}
+			for (TCapability capa : node.getCapabilities().getCapability()){
+				TRequirement req = ToscaStructureQuery.getRequirementSuitsCapability(capa, def);
+				TRelationshipTemplate rela = ToscaStructureQuery.getRelationshipBetweenTwoCapaReq(capa, req, def);
+				if (rela.getType().getLocalPart().equals(SalsaRelationshipType.CONNECTTO.getRelationshipTypeString())){
+					try{
+						String ip = InetAddress.getLocalHost().getHostAddress();
+						SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), ip);					
+						centerCon.updateReplicaCapability(topologyId, node.getId(), 0, capaString);
+					} catch (UnknownHostException e){
+						PioneerLogger.logger.error("Cannot get the IP of the host of node: " + node.getId());
+					}
+				}
+			}
 		}
 		
 		/*
@@ -297,7 +311,7 @@ public class ArtifactDeployer {
 			}
 			// try to get value, retry every 5 secs if it is not a hoston. Because the HOSTON is always available if node is ready, but not for software
 			if (rela.getType().getLocalPart().equals(SalsaRelationshipType.HOSTON.getRelationshipTypeString())){
-				return "ready";	// random
+				return "ready";	// just return for HOSTON
 			}
 			TNodeTemplate nodeOfCapa = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capa, def);
 			String value=centerCon.getCapabilityValue(topoId, nodeOfCapa.getId(), replica, capa.getId());
@@ -306,8 +320,27 @@ public class ArtifactDeployer {
 					System.out.println("Value is " + value);
 					Thread.sleep(5000);
 					value=centerCon.getCapabilityValue(topoId, nodeOfCapa.getId(), replica, capa.getId());
+					
 				} catch (InterruptedException e) {}
 			}
+			// set the environment variable. Write the value to node_capability_id
+			// if the value is of CONNECTTO relationship, write to NodeOfCapability_IP
+			// SystemFunctions.writeSystemVariable(nodeOfCapa.getId()+"_"+capa.getId(), value);
+			PioneerLogger.logger.debug("123. Check the relationship: " + rela.getType().getLocalPart());
+			if (rela.getType().getLocalPart().equals(SalsaRelationshipType.CONNECTTO.toString())){
+				PioneerLogger.logger.debug("123. Relationship type is CONNECTTO !");
+				// get the IP form the center
+				String ip=value;
+				try{
+					SystemFunctions.writeSystemVariable(nodeOfCapa.getId()+"_IP", ip);					
+					SystemFunctions.writeSystemVariable(rela.getId()+"_IP", ip);		
+				} catch (Exception e){
+					PioneerLogger.logger.error("Couldn't get IP of host !");
+				}
+			}
+			
+			
+			
 			return value;
 		}
 		
@@ -315,6 +348,7 @@ public class ArtifactDeployer {
 		
 		// cannot handle null, so always return of requirement has not been updated
 		// only use for CONNECTTO relationship. (not works with HOSTON relationship)
+		@Deprecated
 		public String waitRequirement(String reqId){			
 			TRequirement req = (TRequirement)ToscaStructureQuery.getRequirementOrCapabilityById(reqId, def);
 			TCapability capa = ToscaStructureQuery.getCapabilitySuitsRequirement(req, def);
