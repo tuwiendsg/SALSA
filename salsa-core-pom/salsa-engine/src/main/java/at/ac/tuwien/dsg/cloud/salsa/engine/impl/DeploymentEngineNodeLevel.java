@@ -223,11 +223,11 @@ public class DeploymentEngineNodeLevel {
 		List<String> fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		for (String file : fileLst) {
 			userDataBuffer.append("wget "			
-					+ SalsaConfiguration.getPioneerWeb() + "/"
-					+ file + " \n");
+					+ SalsaConfiguration.getPioneerWeb() + "/" + file + " \n");
 			userDataBuffer.append("chmod +x "+file +" \n");
+			userDataBuffer.append("cp " + file + " /usr/local/bin \n");
 		}
-		userDataBuffer.append("cp *.sh /usr/local/bin \n");
+		
 		userDataBuffer.append("export PATH=$PATH:"+SalsaConfiguration.getWorkingDir() +" \n");
 		userDataBuffer.append("echo 'export PATH=$PATH:"+SalsaConfiguration.getWorkingDir() +"' >> /etc/profile \n");
 //		userDataBuffer.append("echo 'export SALSA_SERVICE_ID="+serviceId+"' >> /etc/profile \n");
