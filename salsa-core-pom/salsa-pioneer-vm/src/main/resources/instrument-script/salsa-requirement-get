@@ -1,5 +1,7 @@
 #/bin/bash
-# waiting for requirement
+# This is one of VM instrument script support deployment
+# This script is used for waiting requirement
+#
 # Usage: salsa-requirement-get <requirement-id>
 . /etc/salsa.variables
 
