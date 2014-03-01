@@ -16,5 +16,5 @@ log/
 *.iws
 
 config_TOSCA/
-.externalToolBuilders
-*.ini 
+.externalToolBuilders/
+*.ini
