@@ -18,3 +18,4 @@ log/
 config_TOSCA/
 .externalToolBuilders/
 *.ini
+*.pem

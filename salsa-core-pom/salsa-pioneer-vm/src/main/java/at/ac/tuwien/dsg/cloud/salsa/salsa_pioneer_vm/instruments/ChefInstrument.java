@@ -83,7 +83,8 @@ public class ChefInstrument implements InstrumentInterface {
 				os.close();
 
 			} catch (Exception e) {
-				LOGGER.debug("Error when installing chef. Error: " + e);
+				LOGGER.debug("Error when installing chef. Error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 	}

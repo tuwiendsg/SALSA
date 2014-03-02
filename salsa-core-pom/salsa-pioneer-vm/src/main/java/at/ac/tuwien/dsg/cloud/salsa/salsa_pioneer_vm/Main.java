@@ -57,6 +57,8 @@ public class Main {
 			return;
 		}
 		
+		System.out.println("Starting pioneer ...");
+		PioneerLogger.logger.info("Starting pioneer");
 		
 		Properties prop = new Properties();
 		prop.load(new FileInputStream(SalsaPioneerConfiguration.getSalsaVariableFile()));		
