@@ -255,7 +255,7 @@ public class DeploymentEngineNodeLevel {
 		fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		userDataBuffer.append("echo Current dir `pwd` \n");
 		userDataBuffer.append("java -jar " + fileLst.get(0) + " setnodestate "+node.getId()+" ready \n");
-		userDataBuffer.append("java -jar " + fileLst.get(0) + " deploy \n");	// execute deploy script
+		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " deploy \n");	// execute deploy script
 
 		return userDataBuffer.toString();
 	}
