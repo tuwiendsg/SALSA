@@ -9,6 +9,8 @@ import java.util.Properties;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.log4j.PropertyConfigurator;
+
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
@@ -54,6 +56,7 @@ public class Main {
 			System.out.println("test");			
 			return;
 		}
+		
 		
 		Properties prop = new Properties();
 		prop.load(new FileInputStream(SalsaPioneerConfiguration.getSalsaVariableFile()));		

@@ -347,6 +347,7 @@ public class OpenStackTypica implements CloudInterface {
 
 		LaunchConfiguration launchReq = new LaunchConfiguration(imageId);
 		launchReq.setImageId(imageId);
+		launchReq.setConfigName("Stefan tests Openstack typical!");
 
 		// Here we pass the parameter to configure the machine at boot time
 		// Cloud init cannot run this... dunno why
