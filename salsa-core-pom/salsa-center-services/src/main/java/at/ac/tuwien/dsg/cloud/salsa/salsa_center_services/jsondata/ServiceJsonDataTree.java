@@ -41,6 +41,7 @@ public class ServiceJsonDataTree {
 	Map<String, String> properties;
 	List<ServiceJsonDataTree> children;
 	boolean isAbstract=true;	// true: tosca node, false: instance node
+	String nodeType;
 	
 	static Logger logger;
 
@@ -120,6 +121,7 @@ public class ServiceJsonDataTree {
 		this.id = data.getId();
 		this.setState(data.getState());
 		this.isAbstract = true;
+		this.nodeType=data.getType();
 		List<SalsaComponentInstanceData> instances;
 //		logger.debug("PI123 - nodeid:" + data.getId() +" which hoston " + hostOnId);
 //		logger.debug("PI123 - The all instance list: " + data.getAllInstanceList().size());
@@ -153,10 +155,11 @@ public class ServiceJsonDataTree {
 	// convert instance. abstractNode is for geting TYPE, knowing how to parse properties
 	public void loadData(SalsaComponentInstanceData instance, List<SalsaComponentData> hostOnCompos, SalsaComponentData abstractNode, SalsaTopologyData topo){
 		logger.debug("Adding instance node id: " + instance.getInstanceId());
-		this.id = Integer.toString(instance.getInstanceId());
+		this.id = abstractNode.getId()+"_"+Integer.toString(instance.getInstanceId());
 		this.setState(instance.getState());
 		this.isAbstract = false;
 		this.setState(instance.getState());
+		this.nodeType=abstractNode.getType();
 		//logger.debug("abstractNode.getType(): " + abstractNode.getType());
 		SalsaEntityType type = SalsaEntityType.fromString(abstractNode.getType());
 		//logger.debug("The instance node know it parent type is: " + type);
@@ -176,6 +179,36 @@ public class ServiceJsonDataTree {
 			newNode.loadData(compo, instance.getInstanceId(), topo);
 			addChild(newNode);
 		}
+	}
+	
+	// remove the abstract node, return instance children
+	public List<ServiceJsonDataTree> compactData(){		
+		List<ServiceJsonDataTree> cleanChildren=new ArrayList<>();
+		if (this.children!=null) {		
+			if (!this.getChidren().isEmpty()){								
+				for (ServiceJsonDataTree child : this.getChidren()) {
+					if (!child.isAbstract){
+						cleanChildren.add(child);
+					}
+				}
+				
+				List<ServiceJsonDataTree> newChildren=new ArrayList<>();			
+				
+				for (ServiceJsonDataTree child : this.getChidren()) {
+					newChildren.addAll(child.compactData());
+				}
+				this.children.addAll(newChildren);
+				
+				List<ServiceJsonDataTree> toRemove=new ArrayList<>();
+				for (ServiceJsonDataTree child : this.getChidren()) {
+					if (child.isAbstract){
+						toRemove.add(child);
+					}
+				}
+				this.getChidren().removeAll(toRemove);
+			}
+		}
+		return cleanChildren;
 	}
 	
 	

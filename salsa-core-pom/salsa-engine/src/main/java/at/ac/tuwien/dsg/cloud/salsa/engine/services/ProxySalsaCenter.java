@@ -97,4 +97,12 @@ public class ProxySalsaCenter  {
 		return connector.getserviceruntimejsontree(serviceDeployId);
 	}
 	
+	@GET
+	@Path("/getserviceruntimejsontreecompact/{serviceId}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getserviceruntimejsontreecompact(@PathParam("serviceId") String serviceDeployId) {
+		connector = new SalsaCenterConnector(endPoint, serviceDeployId, "", logger);
+		return connector.getserviceruntimejsontreecompact(serviceDeployId);
+	}
+	
 }

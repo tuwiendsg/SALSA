@@ -622,6 +622,43 @@ public class ControlServices {
 
 	}
 	
+	@GET
+	@Path("/getserviceruntimejsontreecompact/{serviceId}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getServiceRuntimeJsonTreeCompact(@PathParam("serviceId") String serviceDeployId) {
+		if (serviceDeployId.equals("") || serviceDeployId.equals("null")){
+			return "";
+		}
+		try {
+			String salsaFile = CenterConfiguration.getServiceStoragePath() + "/"	+ serviceDeployId + ".data";
+			SalsaCloudServiceData service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+			SalsaTopologyData topo = service.getFirstTopology();
+			ServiceJsonDataTree datatree = new ServiceJsonDataTree();
+			datatree.setId(service.getName());
+			datatree.setState(SalsaEntityState.RUNNING);
+			
+			//logger.debug("Create json tree with id = " + datatree.getId());
+			// firstly add all VM node
+			List<SalsaComponentData> components = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
+			for (SalsaComponentData compo : components) {
+				ServiceJsonDataTree componode = new ServiceJsonDataTree();
+				componode.loadData(compo, -1, topo);	// -1 will not check instance id
+				datatree.addChild(componode);				
+			}
+			datatree.compactData();	// parent=null for root node
+			Gson json = new GsonBuilder().setPrettyPrinting().create();
+			
+			return json.toJson(datatree);
+			
+		} catch (IOException e){
+			logger.error("Cannot read service file. " + e);			
+		} catch (JAXBException e1){
+			logger.error("Error when parsing service file." + e1);
+		}
+		
+		
+		return "";
+	}
 	
 	@GET
 	@Path("/getserviceruntimejsontree/{serviceId}")
@@ -635,7 +672,9 @@ public class ControlServices {
 			SalsaCloudServiceData service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 			SalsaTopologyData topo = service.getFirstTopology();
 			ServiceJsonDataTree datatree = new ServiceJsonDataTree();
-			datatree.setId(service.getId());
+			datatree.setId(service.getName());
+			datatree.setState(SalsaEntityState.RUNNING);
+			
 			//logger.debug("Create json tree with id = " + datatree.getId());
 			// firstly add all VM node
 			List<SalsaComponentData> components = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
@@ -645,12 +684,7 @@ public class ControlServices {
 				datatree.addChild(componode);
 				//logger.debug("add a child node: " + componode.getId());
 			}
-			Gson json = new GsonBuilder().setPrettyPrinting().create();
-			
-//			String output = json.toJson(datatree);
-//			InputStream is = new ByteArrayInputStream(output.getBytes());
-//			writeToFile(is, "/tmp/salsa_service_json_tree");
-			
+			Gson json = new GsonBuilder().setPrettyPrinting().create();		
 			return json.toJson(datatree);
 			
 		} catch (IOException e){
@@ -660,15 +694,7 @@ public class ControlServices {
 		}
 		
 		
-		String pathName = CenterConfiguration.getServiceStoragePath();
-		try {
-			ServiceJsonList serviceList = new ServiceJsonList(pathName);
-			Gson json = new GsonBuilder().setPrettyPrinting().create();
-			return json.toJson(serviceList);
-		} catch (Exception e) {
-			logger.error("Could not list services");
-			return "";
-		}
+		return "";
 	}
 	
 
