@@ -260,6 +260,15 @@ public class SalsaCenterConnector {
 				+ serviceId;
 		return getDataFromSalsaCenter(url);
 	}
+	
+	/*
+	 * Get the json of running serviceto generate the tree
+	 */
+	public String getserviceruntimejsontreecompact(String serviceId) {
+		String url = centerRestfulEndpoint + "/getserviceruntimejsontreecompact/"
+				+ serviceId;
+		return getDataFromSalsaCenter(url);
+	}
 
 	// /getrequirementvalue/{serviceId}/{topologyId}/{nodeId}/{instanceId}/{reqId}"
 	public String getRequirementValue(String serviceId, String topologyId,

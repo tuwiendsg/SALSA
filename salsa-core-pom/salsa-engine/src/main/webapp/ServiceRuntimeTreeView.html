@@ -13,7 +13,7 @@
 // 		toUpdateTree();
 // 	}
 
-	var treeDataSource="rest/proxy/getserviceruntimejsontree/"+getURLParameter('id');
+	var treeDataSource="rest/proxy/getserviceruntimejsontreecompact/"+getURLParameter('id');
 
 	var margin = {top:10, right:120, bottom:20, left:140},
     	width = window.innerWidth-500,
@@ -131,24 +131,28 @@ function update(source) {
 	        .attr("text-anchor", "middle")
 	        .text(function(d) {
 		    	if(d.isAbstract==true){
-		    		return "TOSCA";
+		    		return "SALSA CENTER";
+		    	} else if (d.nodeType=="os"){
+		    		return "VITUAL MACHINE"
 		    	} else {
-		    		return "INSTANCE";
+		    		return "SOFTWARE";
 		    	}	    	  
 	    	});
 	
 		nodeEnter.append("text")	// show the id
 			.attr("dx", (-1)*rect_width/2+5)
-			.attr("dy", (-1)*rect_height/2+25)
-			.attr("text-anchor", "start")
+			.attr("dy", (-1)*rect_height/2+27)
+			.attr("text-anchor", "middle")
 			.text(function(d) {
-				//var trimStr = d.id.substring(0, 20); ??
+				if (d.isAbstract==true){
+					return "";
+				}
 				return "id: " + d.id; 
 			});	  
 	  		  
 		nodeEnter.append("text")	// show the state
  			.attr("dx", (-1)*rect_width/2+5)
-    		.attr("dy", (-1)*rect_height/2+35)
+    		.attr("dy", (-1)*rect_height/2+38)
     		.attr("fill", function(d){
   			switch (d.state){
 	  			case 'RUNNING':
@@ -163,7 +167,7 @@ function update(source) {
 				}
 			return "red";
     		})
-    		.attr("text-anchor", "start")
+    		.attr("text-anchor", "middle")
     		.text(function(d) { 
   	  	 	  	return "state: " + d.state; 
 			});

@@ -5,12 +5,14 @@ import generated.oasis.tosca.TNodeTemplate;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -20,9 +22,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.SalsaPioneerConfiguration;
+
 public class ChefInstrument implements InstrumentInterface {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChefInstrument.class);
+	private static int counter=0;
 	static {
 		LOGGER.debug("Loading ChefInstrument!");
 	}
@@ -103,9 +108,17 @@ public class ChefInstrument implements InstrumentInterface {
 			sb.append("log_location     STDOUT \n");
 			sb.append("chef_server_url  \"https://api.opscode.com/organizations/tuwien\" \n");
 			sb.append("validation_client_name \"tuwien-validator\" \n");
+			
+			Properties prop = new Properties();
+			prop.load(new FileInputStream(SalsaPioneerConfiguration.getSalsaVariableFile()));		
+			String VMID = prop.getProperty("SALSA_REPLICA");	// get the VM ID
+			
 			//FIXME: If we run multiple instances this will cause error.
-			sb.append("node_name \"" + uri.trim() + "\" \n");
-
+			//FIXED: read the id of the VM from /etc/salsa.variables and add to the node.
+			// This method is not good by using a function from higher layer.
+			sb.append("node_name \"" + uri.trim()+"_"+VMID + "\" \n");
+			
+			
 			BufferedWriter out = new BufferedWriter(new FileWriter("/etc/chef/client.rb"));
 			out.write(sb.toString());
 			out.flush();
