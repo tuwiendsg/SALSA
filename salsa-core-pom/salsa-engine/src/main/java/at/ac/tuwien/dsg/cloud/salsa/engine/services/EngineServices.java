@@ -36,9 +36,15 @@ import com.sun.jersey.multipart.FormDataParam;
 @Path("/")
 public class EngineServices {
 	static Logger logger;
-	File configFile = new File(EngineServices.class.getResource("/cloudUserParameters.ini").getFile());
+	static File configFile;
 
 	static {
+		File tmpFile=new File("/etc/cloudUserParameters.ini");
+		if (tmpFile.exists()) {
+			configFile = tmpFile;
+		} else {
+			configFile = new File(EngineServices.class.getResource("/cloudUserParameters.ini").getFile());
+		}
 		logger = Logger.getLogger("EngineLogger");
 	}
 	
@@ -77,7 +83,7 @@ public class EngineServices {
 		try {
 			writeToFile(uploadedInputStream, tmpFile);
 			TDefinitions def = ToscaXmlProcess.readToscaFile(tmpFile);
-			SalsaToscaDeployer deployer = new SalsaToscaDeployer(this.configFile);
+			SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
 			SalsaCloudServiceData service = deployer.deployNewService(def, serviceName);
 			String output = "Deployed service. Id: " + service.getId();
 			logger.debug(output);
@@ -109,7 +115,7 @@ public class EngineServices {
 			@PathParam("nodeId")String nodeId, 
 			@PathParam("quantity")int quantity){
 		logger.debug("Deployment request for this node: " + serviceId + " - " + nodeId);
-		SalsaToscaDeployer deployer = new SalsaToscaDeployer(this.configFile);
+		SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
 		deployer.deployMoreInstance(serviceId, topologyId, nodeId, quantity);
 		return Response.status(200).entity("Spawned VM").build();
 	}

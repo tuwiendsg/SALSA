@@ -5,6 +5,7 @@ import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TEntityTemplate;
 import generated.oasis.tosca.TNodeTemplate;
 import generated.oasis.tosca.TRelationshipTemplate;
+import generated.oasis.tosca.TRequirement;
 import generated.oasis.tosca.TServiceTemplate;
 
 import java.io.File;
@@ -186,14 +187,19 @@ public class SalsaToscaDeployer {
 			topo.setId(st.getId());
 			topo.setName(st.getName());
 			List<TNodeTemplate> nodes = ToscaStructureQuery.getNodeTemplateList(st);	// all other nodes
-			List<TRelationshipTemplate> relas = ToscaStructureQuery.getRelationshipTemplateList(SalsaRelationshipType.HOSTON.getRelationshipTypeString(),st);
-			EngineLogger.logger.debug("Number of HostOn relationships: " + relas.size());
+			List<TRelationshipTemplate> relas_hoston = ToscaStructureQuery.getRelationshipTemplateList(SalsaRelationshipType.HOSTON.getRelationshipTypeString(),st);
+			List<TRelationshipTemplate> relas_connectto = ToscaStructureQuery.getRelationshipTemplateList(SalsaRelationshipType.CONNECTTO.getRelationshipTypeString(),st);
+			EngineLogger.logger.debug("Number of HostOn relationships: " + relas_hoston.size());
 			for (TNodeTemplate node : nodes) {	
 				SalsaComponentData nodeData = new SalsaComponentData(node.getId(), node.getType().getLocalPart());
 				nodeData.setState(SalsaEntityState.UNDEPLOYED);
 				nodeData.setName(node.getName());
+				// add the artifact type for SOFTWARE NODE
+				if (node.getType().getLocalPart().equals(SalsaEntityType.SOFTWARE.getEntityTypeString())){
+					nodeData.setArtifactType(node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart());
+				}
 				// find what is the host of this node, add to hostId
-				for (TRelationshipTemplate rela : relas) { // search on all relationship, find the host of this "node"
+				for (TRelationshipTemplate rela : relas_hoston) { // search on all relationship, find the host of this "node"
 															// note that, after convert, the capa and req are reverted.
 					TEntityTemplate targetReq = (TEntityTemplate)rela.getTargetElement().getRef();
 					TNodeTemplate target = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(targetReq.getId(), def);
@@ -205,6 +211,25 @@ public class SalsaToscaDeployer {
 						EngineLogger.logger.debug("Found the host of node "+nodeData.getId() +" which is id = " + source.getId());
 					}
 				}
+				// find the connect to node, add it to connecttoId
+				// this node will be the requirement, connect to capability (reverse with the Tosca)
+				
+				for (TRelationshipTemplate rela:relas_connectto) {
+					EngineLogger.logger.debug("buildRuntimeDataFromTosca. Let's see relationship connectto: " + rela.getId());
+					TRequirement targetReq = (TRequirement)rela.getTargetElement().getRef();
+					TNodeTemplate target = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(targetReq.getId(), def);
+					
+					if (target.getId().equals(node.getId())){
+						EngineLogger.logger.debug("buildRuntimeDataFromTosca. Found the target id: " + target.getId());
+						TCapability sourceCapa = (TCapability)rela.getSourceElement().getRef();
+						EngineLogger.logger.debug("buildRuntimeDataFromTosca. Source capa: " + sourceCapa.getId());
+						TNodeTemplate source = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(sourceCapa.getId(), def);
+						EngineLogger.logger.debug("buildRuntimeDataFromTosca. Source  " + source.getId());
+						nodeData.setConnecttoId(source.getId());						
+					}
+					
+				}
+				
 				topo.addComponent(nodeData);
 			}
 			

@@ -635,6 +635,7 @@ public class ControlServices {
 			SalsaTopologyData topo = service.getFirstTopology();
 			ServiceJsonDataTree datatree = new ServiceJsonDataTree();
 			datatree.setId(service.getName());
+			datatree.setNodeType("Salsa center");			
 			datatree.setState(SalsaEntityState.RUNNING);
 			
 			//logger.debug("Create json tree with id = " + datatree.getId());

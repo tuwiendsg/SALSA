@@ -228,7 +228,7 @@ public class ArtifactDeployer {
 			
 			InstrumentInterface instrument=null;
 			switch (SalsaArtifactType.fromString(artType)){
-			case sh:				
+			case sh:
 				instrument = new BashInstrument();
 				break;
 			case chef:				
@@ -240,15 +240,16 @@ public class ArtifactDeployer {
 			
 			// if this node is part of CONNECTTO, send the IP
 			if (node.getCapabilities()==null){
-				return;				
+				return;
 			}
 			for (TCapability capa : node.getCapabilities().getCapability()){
 				TRequirement req = ToscaStructureQuery.getRequirementSuitsCapability(capa, def);
 				TRelationshipTemplate rela = ToscaStructureQuery.getRelationshipBetweenTwoCapaReq(capa, req, def);
 				if (rela.getType().getLocalPart().equals(SalsaRelationshipType.CONNECTTO.getRelationshipTypeString())){
 					try{
+						logger.debug("Sending the IP of this node to the capability of CONNECTTO");						
 						String ip = InetAddress.getLocalHost().getHostAddress();
-						SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), ip);					
+						SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), ip);				
 						centerCon.updateReplicaCapability(topologyId, node.getId(), 0, capaString);
 					} catch (UnknownHostException e){
 						PioneerLogger.logger.error("Cannot get the IP of the host of node: " + node.getId());

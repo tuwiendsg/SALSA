@@ -76,14 +76,7 @@ function ShowSalsaRuntime(data){ // data is CloudService
 		str += '<b><big>Id: '+nodeId+'; Type:'+x[i].getAttribute('type')+'</big></b>';		
 		//str += '<form> Deploy more ";
 		str += '</br>Deploy more: ';
-// 		str += '<input type="button" id="minus" value="-100" onClick="'+inputboxQuantityId+'.value = ('+inputboxQuantityId+'.value-100) "/>';
-// 		str += '<input type="button" id="minus" value="-10" onClick="'+inputboxQuantityId+'.value = ('+inputboxQuantityId+'.value-10) "/>';
-// 		str += '<input type="button" id="minus" value="-1" onClick="'+inputboxQuantityId+'.value = ('+inputboxQuantityId+'.value-1) "/>';
-		//str += '<input type="text" id="'+inputboxQuantityId+'" value="'+oldRefeshValue+'" /> ';
 		str += '<input type="text" size=3 id="'+inputboxQuantityId+'" value="'+oldRefeshValue+'" /> ';
-// 		str += '<input type="button" id="add" value="+1"onClick="'+inputboxQuantityId+'.value = (+'+inputboxQuantityId+'.value + 1) "/>';
-// 		str += '<input type="button" id="add" value="+10"onClick="'+inputboxQuantityId+'.value = (+'+inputboxQuantityId+'.value + 10) "/>';
-// 		str += '<input type="button" id="add" value="+100"onClick="'+inputboxQuantityId+'.value = (+'+inputboxQuantityId+'.value + 100) "/>';
 		str += '<input type="button" id="inputvalue" value="Edit" onClick="inputQuantity('+inputboxQuantityId+', '+inputboxQuantityId+'.value) " />';
 		
 		str += '<button type="button" onclick=\'deployMoreInstance("'+serviceId+'", "'+topologyId+'", "'+ x[i].getAttribute('id') +'", "'+inputboxQuantityId+'")\'>Deploy !</button> ';
@@ -171,6 +164,7 @@ function getElementByTagNameToString(tagName, parentElement){
 function deployMoreInstance(serviceId, topologyId, nodeId, inputboxQuantityId){	
 	var quantity=document.getElementById(inputboxQuantityId).value;
 	url = deployMoreInstanceSource + "/" +serviceId+"/"+topologyId+"/"+nodeId+"/"+quantity;
+	alert(url);
 	toastr.info("Requesting to deploy "+quantity+" instance(s) of node "+nodeId+" !");
 	
 	$.get(url, function(data) {

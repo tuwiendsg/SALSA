@@ -63,8 +63,25 @@ function update(source) {
   var nodes = tree.nodes(root).reverse(),
       links = tree.links(nodes);
 
+//   if (typeof(links.toSource()) != "undefined") { 
+// 	    console.log(links.toSource());
+// 	}
+  
   // Normalize for fixed-depth.
   nodes.forEach(function(d) { d.y = d.depth * 180; });
+  
+  // add link from node
+  nodes.forEach(function(d1) {
+	  if(!!d1.connectto){
+		  nodes.forEach(function(d2){
+			if (d1.connectto==d2.id){
+				console.log("Connect the " + d1.id +" and " + d2.id);
+				links.push({"source":d1, "target":d2, "connectto":true});
+			}
+			
+		  });
+	  }
+	});
 
   // Update the nodes…
   var node = svg.selectAll("g.node")
@@ -75,17 +92,6 @@ function update(source) {
       .attr("class", "node")
       .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
       .on("click", click);
-
-//   nodeEnter.append("circle")
-//       .attr("r", 1e-6)
-//       .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
-
-//   nodeEnter.append("text")
-//       .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
-//       .attr("dy", ".35em")
-//       .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-//       .text(function(d) { return d.id; })
-//       .style("fill-opacity", 1e-6);
 
 
  //DRAW THE NODE
@@ -125,34 +131,37 @@ function update(source) {
 	        }
 	      });
 	  
-		nodeEnter.append("text")	// show the middle text
+		nodeEnter.append("text")	// show the TITLE text of the block
 	  	    .attr("dx", 0)
 	        .attr("dy", (-1)*rect_height/2 + 15)
 	        .attr("text-anchor", "middle")
 	        .text(function(d) {
-		    	if(d.isAbstract==true){
-		    		return "SALSA CENTER";
-		    	} else if (d.nodeType=="os"){
-		    		return "VITUAL MACHINE"
-		    	} else {
-		    		return "SOFTWARE";
-		    	}	    	  
+	        	if (d.nodeType=="root"){
+	        		return "SALSA CENTER";
+	        	}
+	        	if (d.nodeType=="os" && d.isAbstract==true){
+	        		return "VIRTUAL MACHINE";
+	        	}
+	        	if (d.nodeType=="os" && d.isAbstract==false){
+	        		return "INSTANCE";
+	        	}
+	        	return d.nodeType.toUpperCase();
 	    	});
 	
 		nodeEnter.append("text")	// show the id
 			.attr("dx", (-1)*rect_width/2+5)
 			.attr("dy", (-1)*rect_height/2+27)
-			.attr("text-anchor", "middle")
+			.attr("text-anchor", "start")
 			.text(function(d) {
-				if (d.isAbstract==true){
+				if(d.nodeType=="root"){
 					return "";
-				}
+				}				
 				return "id: " + d.id; 
 			});	  
 	  		  
 		nodeEnter.append("text")	// show the state
  			.attr("dx", (-1)*rect_width/2+5)
-    		.attr("dy", (-1)*rect_height/2+38)
+    		.attr("dy", (-1)*rect_height/2+39)
     		.attr("fill", function(d){
   			switch (d.state){
 	  			case 'RUNNING':
@@ -167,7 +176,7 @@ function update(source) {
 				}
 			return "red";
     		})
-    		.attr("text-anchor", "middle")
+    		.attr("text-anchor", "start")
     		.text(function(d) { 
   	  	 	  	return "state: " + d.state; 
 			});
@@ -178,34 +187,40 @@ function update(source) {
       .duration(duration)
       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
-//   nodeUpdate.select("circle")
-//       //.attr("r", 4.5)
-//       .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
-
-//   nodeUpdate.select("text")
-//       .style("fill-opacity", 1);
-
   // Transition exiting nodes to the parent's new position.
   var nodeExit = node.exit().transition()
       .duration(duration)
       .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
       .remove();
 
-//   nodeExit.select("rect")
-// //       .attr("r", 1e-6);
-//   	.attr("stroke-width","0")
-//   	.attr("fill", "white");
-
-//   nodeExit.select("text")
-//       .style("fill-opacity", 1e-6);
-
+  
   // Update the links…
   var link = svg.selectAll("path.link")
-      .data(links, function(d) { return d.target.idp; });
+      .data(links, function(d) { return d.source.idp+"_"+d.target.idp; });
 
+  svg.append("svg:defs").selectAll("marker")
+  .data(["end"])      // Different link/path types can be defined here
+.enter().append("svg:marker")    // This section adds in the arrows
+  .attr("id", String)
+  .attr("viewBox", "0 -5 10 10")
+  .attr("refX", 45)
+  .attr("refY",-5.2)
+  .attr("markerWidth", 6)
+  .attr("markerHeight", 6)
+  .attr("orient", "auto")
+.append("svg:path")
+  .attr("d", "M0,-5L10,0L0,5");
+  
+  
   // Enter any new links at the parent's previous position.
   link.enter().insert("path", "g")
       .attr("class", "link")
+      .attr("marker-end", function(d){
+    	  if (d.connectto==true){
+          	return "url(#end)";
+          	// http://jsfiddle.net/manojmcet/BcW8z/
+          }  
+      })
       .attr("d", function(d) {
         var o = {x: source.x0, y: source.y0};
         return diagonal({source: o, target: o});
