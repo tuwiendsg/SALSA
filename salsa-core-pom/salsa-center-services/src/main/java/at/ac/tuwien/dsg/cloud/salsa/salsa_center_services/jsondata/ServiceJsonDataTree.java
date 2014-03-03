@@ -42,6 +42,7 @@ public class ServiceJsonDataTree {
 	List<ServiceJsonDataTree> children;
 	boolean isAbstract=true;	// true: tosca node, false: instance node
 	String nodeType;
+	String connectto;
 	
 	static Logger logger;
 
@@ -77,6 +78,18 @@ public class ServiceJsonDataTree {
 		this.children = chidren;
 	}
 	
+	public String getConnectto() {
+		return connectto;
+	}
+	public void setConnectto(String connectto) {
+		this.connectto = connectto;
+	}
+	public String getNodeType() {
+		return nodeType;
+	}
+	public void setNodeType(String nodeType) {
+		this.nodeType = nodeType;
+	}
 	public boolean isAbstract() {
 		return isAbstract;
 	}
@@ -121,7 +134,9 @@ public class ServiceJsonDataTree {
 		this.id = data.getId();
 		this.setState(data.getState());
 		this.isAbstract = true;
-		this.nodeType=data.getType();
+		this.setNodeType(data.getType());
+		this.connectto=data.getConnecttoId();		
+				
 		List<SalsaComponentInstanceData> instances;
 //		logger.debug("PI123 - nodeid:" + data.getId() +" which hoston " + hostOnId);
 //		logger.debug("PI123 - The all instance list: " + data.getAllInstanceList().size());
@@ -159,7 +174,22 @@ public class ServiceJsonDataTree {
 		this.setState(instance.getState());
 		this.isAbstract = false;
 		this.setState(instance.getState());
-		this.nodeType=abstractNode.getType();
+		this.setNodeType(abstractNode.getType());
+		
+		if (!abstractNode.getConnecttoId().equals("")){
+			this.setConnectto(abstractNode.getConnecttoId()+"_0"); // all instance of this node connect to instance 0
+		}
+		
+		// set connectto links
+		
+		
+		// if nodeType=SOFTWARE, change it into artifactType. so if it is os, leave there
+		if (abstractNode.getArtifactType()!=null){
+			if(this.nodeType.equals(SalsaEntityType.SOFTWARE.getEntityTypeString())){
+				this.nodeType=abstractNode.getArtifactType();
+			}
+		}
+		
 		//logger.debug("abstractNode.getType(): " + abstractNode.getType());
 		SalsaEntityType type = SalsaEntityType.fromString(abstractNode.getType());
 		//logger.debug("The instance node know it parent type is: " + type);
@@ -187,7 +217,7 @@ public class ServiceJsonDataTree {
 		if (this.children!=null) {		
 			if (!this.getChidren().isEmpty()){								
 				for (ServiceJsonDataTree child : this.getChidren()) {
-					if (!child.isAbstract){
+					if (!child.isAbstract && !child.getNodeType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
 						cleanChildren.add(child);
 					}
 				}
@@ -201,7 +231,7 @@ public class ServiceJsonDataTree {
 				
 				List<ServiceJsonDataTree> toRemove=new ArrayList<>();
 				for (ServiceJsonDataTree child : this.getChidren()) {
-					if (child.isAbstract){
+					if (child.isAbstract && !child.getNodeType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
 						toRemove.add(child);
 					}
 				}
@@ -210,6 +240,7 @@ public class ServiceJsonDataTree {
 		}
 		return cleanChildren;
 	}
+	
 	
 	
 }

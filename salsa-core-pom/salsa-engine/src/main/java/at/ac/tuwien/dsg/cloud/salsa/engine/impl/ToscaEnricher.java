@@ -39,7 +39,7 @@ public class ToscaEnricher {
 	
 	TDefinitions toscaDef;
 	KnowledgeGraph kgraph;
-	final String BASETYPE = "salsa-base";
+	final String BASETYPE = "os";
 	int counter=0;
 	
 	public ToscaEnricher(TDefinitions def, KnowledgeGraph kgraph){

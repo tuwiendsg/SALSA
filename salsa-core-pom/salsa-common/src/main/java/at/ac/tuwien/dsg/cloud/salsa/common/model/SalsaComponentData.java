@@ -28,9 +28,15 @@ public class SalsaComponentData extends SalsaEntity {
 	@XmlAttribute(name = "type")
 	String type;
 	
+	@XmlAttribute(name = "artifactType")
+	String artifactType;
+	
 	@XmlAttribute(name = "hostedId")
 	String hostedId="";
 	
+	@XmlAttribute(name = "connecttoId")
+	String connecttoId="";
+		
 	@XmlAttribute(name = "idCounter")
 	int idCounter=0;
 	
@@ -74,7 +80,13 @@ public class SalsaComponentData extends SalsaEntity {
 		this.idCounter = idCounter;
 	}
 	
-	
+	public String getArtifactType() {
+		return artifactType;
+	}
+
+	public void setArtifactType(String artifactType) {
+		this.artifactType = artifactType;
+	}
 
 	public String getHostedId() {
 		return hostedId;
@@ -82,6 +94,16 @@ public class SalsaComponentData extends SalsaEntity {
 
 	public void setHostedId(String hostedId) {
 		this.hostedId = hostedId;
+	}
+
+	
+	
+	public String getConnecttoId() {
+		return connecttoId;
+	}
+
+	public void setConnecttoId(String connecttoId) {
+		this.connecttoId = connecttoId;
 	}
 
 	public List<SalsaComponentInstanceData> getInstanceByState(SalsaEntityState state){
