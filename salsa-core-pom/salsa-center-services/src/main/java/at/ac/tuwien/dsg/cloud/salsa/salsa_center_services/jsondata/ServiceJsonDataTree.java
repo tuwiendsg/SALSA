@@ -42,7 +42,7 @@ public class ServiceJsonDataTree {
 	List<ServiceJsonDataTree> children;
 	boolean isAbstract=true;	// true: tosca node, false: instance node
 	String nodeType;
-	String connectto;
+	List<String> connectto = new ArrayList<>();
 	
 	static Logger logger;
 
@@ -78,12 +78,13 @@ public class ServiceJsonDataTree {
 		this.children = chidren;
 	}
 	
-	public String getConnectto() {
+	public List<String> getConnectto() {
 		return connectto;
 	}
-	public void setConnectto(String connectto) {
+	public void setConnectto(List<String> connectto) {
 		this.connectto = connectto;
 	}
+
 	public String getNodeType() {
 		return nodeType;
 	}
@@ -130,12 +131,13 @@ public class ServiceJsonDataTree {
 	
 	// convert component and all it stack
 	public void loadData(SalsaComponentData data, int hostOnId, SalsaTopologyData topo){
-//		logger.debug("Starting loading abstract node: " + data.getId());
+		//logger.debug("Starting loading abstract node: " + data.getId());
 		this.id = data.getId();
 		this.setState(data.getState());
 		this.isAbstract = true;
 		this.setNodeType(data.getType());
-		this.connectto=data.getConnecttoId();		
+		this.connectto=data.getConnecttoId();
+		logger.debug("On abstract, Connectto size: " + this.connectto.size());
 				
 		List<SalsaComponentInstanceData> instances;
 //		logger.debug("PI123 - nodeid:" + data.getId() +" which hoston " + hostOnId);
@@ -170,14 +172,21 @@ public class ServiceJsonDataTree {
 	// convert instance. abstractNode is for geting TYPE, knowing how to parse properties
 	public void loadData(SalsaComponentInstanceData instance, List<SalsaComponentData> hostOnCompos, SalsaComponentData abstractNode, SalsaTopologyData topo){
 		logger.debug("Adding instance node id: " + instance.getInstanceId());
-		this.id = abstractNode.getId()+"_"+Integer.toString(instance.getInstanceId());
-		this.setState(instance.getState());
+		this.id = abstractNode.getId()+"_"+Integer.toString(instance.getInstanceId());		
+		this.setState(instance.getState());		
 		this.isAbstract = false;
 		this.setState(instance.getState());
-		this.setNodeType(abstractNode.getType());
 		
-		if (!abstractNode.getConnecttoId().equals("")){
-			this.setConnectto(abstractNode.getConnecttoId()+"_0"); // all instance of this node connect to instance 0
+		this.setNodeType(abstractNode.getType());
+		logger.debug("Let check connectto ID ");
+		if (!abstractNode.getConnecttoId().isEmpty()){
+			logger.debug("Inside the list ");
+			for (String conId : abstractNode.getConnecttoId()) {
+				logger.debug("List item: " + conId);
+				this.connectto.add(conId+"_0"); // all instance of this node connect to instance 0
+				logger.debug("Add done: " + conId+"_0");
+			}
+			
 		}
 		
 		// set connectto links

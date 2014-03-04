@@ -35,7 +35,7 @@ public class SalsaComponentData extends SalsaEntity {
 	String hostedId="";
 	
 	@XmlAttribute(name = "connecttoId")
-	String connecttoId="";
+	List<String> connecttoId=new ArrayList<>();
 		
 	@XmlAttribute(name = "idCounter")
 	int idCounter=0;
@@ -96,13 +96,11 @@ public class SalsaComponentData extends SalsaEntity {
 		this.hostedId = hostedId;
 	}
 
-	
-	
-	public String getConnecttoId() {
+	public List<String> getConnecttoId() {
 		return connecttoId;
 	}
 
-	public void setConnecttoId(String connecttoId) {
+	public void setConnecttoId(List<String> connecttoId) {
 		this.connecttoId = connecttoId;
 	}
 
