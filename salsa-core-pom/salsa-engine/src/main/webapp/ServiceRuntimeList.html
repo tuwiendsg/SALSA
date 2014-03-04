@@ -40,8 +40,9 @@ function createListTable(data){
 
 function deregisterService(serviceId){
 	url = underegisterSource + "/" + serviceId;
-	document.getElementById("treeView").innerHTML="";
-	document.getElementById("serviceRuntimeTable").innerHTML=""; 
+	$('#treeView').html("").fadeIn();
+	$('#serviceRuntimeTable').html("").fadeIn();
+	
 	$.get(url, function(data) {
 		       //location.reload();
 		       $.getJSON(listSource,  function(json){ 

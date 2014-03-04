@@ -156,6 +156,9 @@ function update(source) {
 	        	if (d.nodeType=="os" && d.isAbstract==false){
 	        		return "INSTANCE";
 	        	}
+	        	if (d.nodeType=="chef" && d.isAbstract==false){
+	        		return "CHEF-COOKBOOK";
+	        	}
 	        	return d.nodeType.toUpperCase();
 	    	});
 	
