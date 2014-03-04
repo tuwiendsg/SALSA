@@ -21,7 +21,7 @@ public class BashInstrument implements InstrumentInterface {
 	}
 
 	@Override
-	public String deployArtifact(String uri) {
+	public String deployArtifact(String uri, String instanceId) {
 		String runArt = uri;
 		Process p;
 		ProcessBuilder pb = new ProcessBuilder("bash",runArt);

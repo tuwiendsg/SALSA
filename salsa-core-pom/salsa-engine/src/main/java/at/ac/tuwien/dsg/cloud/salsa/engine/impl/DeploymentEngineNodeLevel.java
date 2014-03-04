@@ -183,8 +183,8 @@ public class DeploymentEngineNodeLevel {
 		userDataBuffer.append("echo \"Running the customization scripts\" \n");
 
 		// install java. It ad-hoc, will be improve later
-		userDataBuffer.append("apt-get update \n");
-		userDataBuffer.append("apt-get -y install openjdk-7-jre \n");
+		userDataBuffer.append("apt-get -q update \n");
+		userDataBuffer.append("apt-get -q -y install openjdk-7-jre \n");
 
 		// download full Tosca file
 		userDataBuffer.append("mkdir " + SalsaConfiguration.getWorkingDir()
@@ -220,7 +220,7 @@ public class DeploymentEngineNodeLevel {
 		// download pioneer
 		List<String> fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		for (String file : fileLst) {
-			userDataBuffer.append("wget "			
+			userDataBuffer.append("wget -nv "			
 					+ SalsaConfiguration.getPioneerWeb() + "/" + file + " \n");
 			userDataBuffer.append("chmod +x "+file +" \n");
 			userDataBuffer.append("cp " + file + " /usr/local/bin \n");
@@ -247,7 +247,7 @@ public class DeploymentEngineNodeLevel {
 				for (String pkg : lstPkgs) {
 					EngineLogger.logger.info("Installing package: " + pkg);
 					// TODO: should change, now just support Ubuntu image				
-					userDataBuffer.append("apt-get -y install " + pkg + " \n"); 
+					userDataBuffer.append("apt-get -q -y install " + pkg + " \n"); 
 				}
 			}
 		}
