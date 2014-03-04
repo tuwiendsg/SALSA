@@ -81,7 +81,7 @@ public class ArtifactDeployer {
 				logger.debug("Number of instance to deploy: " + quantity);
 				int startId=serviceRuntimeInfo.getComponentById(topologyId, chainNode.getId()).getIdCounter();
 				logger.debug("Starting ID: " + startId);
-				centerCon.updateNodeIdCounter(topologyId, chainNode.getId(), startId+quantity+1);
+				centerCon.updateNodeIdCounter(topologyId, chainNode.getId(), startId+quantity);
 				
 				List<Integer> instanceIdList = new ArrayList<>();
 				// Create quantity nodes for all

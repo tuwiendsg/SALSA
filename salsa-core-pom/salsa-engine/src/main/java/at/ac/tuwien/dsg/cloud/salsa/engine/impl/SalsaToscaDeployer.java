@@ -119,7 +119,7 @@ public class SalsaToscaDeployer {
 		SalsaComponentData node = service.getComponentById(topologyId, nodeId);
 		
 		if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
-			centerCon.updateNodeIdCounter(topologyId, nodeId, node.getIdCounter()+quantity);
+			centerCon.updateNodeIdCounter(topologyId, nodeId, node.getIdCounter()+quantity); // update first the number + quantity
 			deployMoreInstance_VM(topologyId, nodeId, quantity, def, service);			
 		} else {
 			deployMoreInstance_Artifact(topologyId, nodeId, quantity, def, service);
@@ -147,7 +147,10 @@ public class SalsaToscaDeployer {
 		SalsaComponentData node = service.getComponentById(topoId, nodeId);
 		
 		int startingId=node.getIdCounter();
+		
 		engine.deployConcurentVMNodesOfOneType(service.getId(), topoId, nodeId, quantity, startingId, def);
+//		Map<String, Integer> nodeAndNumber = new HashMap<>();
+//		engine.deployConcurrentVMNodes(service.getId(), topologyId, nodeAndNumber, def);
 		
 	}
 	
@@ -225,7 +228,7 @@ public class SalsaToscaDeployer {
 						EngineLogger.logger.debug("buildRuntimeDataFromTosca. Source capa: " + sourceCapa.getId());
 						TNodeTemplate source = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(sourceCapa.getId(), def);
 						EngineLogger.logger.debug("buildRuntimeDataFromTosca. Source  " + source.getId());
-						nodeData.setConnecttoId(source.getId());						
+						nodeData.getConnecttoId().add(source.getId());		
 					}
 					
 				}

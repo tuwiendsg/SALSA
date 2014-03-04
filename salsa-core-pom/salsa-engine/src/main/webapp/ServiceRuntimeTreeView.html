@@ -18,7 +18,7 @@
 	var margin = {top:10, right:120, bottom:20, left:140},
     	width = window.innerWidth-500,
     	height = window.innerHeight - 100,
-    	i = 0, duration = 750, root;
+    	i = 0, duration = 0, root;
 	var rect_width=110, rect_height=45;	// size of the node
 	var opts = {
 		maxLabelLength: 20
@@ -36,25 +36,27 @@ var svg = d3.select("#treeViewDiv").append("svg")
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-d3.json(treeDataSource, function(error, flare) {
-  root = flare;
-  root.x0 = height / 2;
-  root.y0 = 0;	
-
-  function collapse(d) {
-    if (d.children) {
-      d._children = d.children;
-      d._children.forEach(collapse);
-      d.children = null;
-    }
-  }  
-  //root.children.forEach(collapse);
-  update(root);
-
-});
+    
+    var isUpdateTree=false;
+    
+function showTheTree(){
+	d3.json(treeDataSource, function(error, flare) {
+	  root = flare;
+	  root.x0 = height / 2;
+	  root.y0 = 0;	
+	  
+	  update(root);  
+	  
+	  setTimeout(function(){
+		  isUpdateTree=true;
+		  showTheTree();
+	  }, 3000);
+	});
+}
 	
 d3.select(self.frameElement).style("height", "800px");
+
+showTheTree();
 
 
 function update(source) {
@@ -63,24 +65,28 @@ function update(source) {
   var nodes = tree.nodes(root).reverse(),
       links = tree.links(nodes);
   		
-
-//   if (typeof(links.toSource()) != "undefined") { 
-// 	    console.log(links.toSource());
-// 	}
-  
   // Normalize for fixed-depth.
   nodes.forEach(function(d) { d.y = d.depth * 180; });
-  
-  
-  
+    
   // add link from node
   nodes.forEach(function(d1) {
 	  if(!!d1.connectto){
 		  nodes.forEach(function(d2){
-			if (d1.connectto==d2.id){
-				console.log("Connect the " + d1.id +" and " + d2.id);
-				links.push({"source":d1, "target":d2, "connectto":true});
+			//if (d1.connectto==d2.id){
+				
+			var arrayLength = d1.connectto.length;
+			for (var i = 0; i < arrayLength; i++) {
+			    if (d2.id==d1.connectto[i]){
+					console.log("Connect the " + d1.id +" and " + d2.id);
+					links.push({"source":d1, "target":d2, "connectto":true});
+				}
 			}
+				
+				
+// 			if ($.inArray(d2.id, d1.connectto)){
+// 				console.log("Connect the " + d1.id +" and " + d2.id);
+// 				links.push({"source":d1, "target":d2, "connectto":true});
+// 			}
 			
 		  });
 	  }
@@ -93,9 +99,10 @@ function update(source) {
   // Enter any new nodes at the parent's previous position.
   var nodeEnter = node.enter().append("g")
       .attr("class", "node")
-      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+      .attr("transform", function(d) {    	  
+    		  return "translate(" + source.y0 + "," + source.x0 + ")";
+    	  })
       .on("click", click);
-
 
  //DRAW THE NODE
 		nodeEnter.append("rect")
@@ -119,7 +126,8 @@ function update(source) {
 	    			return "white";
 	    		}
 	        });
-
+		
+ 		// The tooltips
 		$('svg rect').tipsy({ 
 	        gravity: 'nw', 
 	        html: true, 
@@ -184,18 +192,19 @@ function update(source) {
   	  	 	  	return "state: " + d.state; 
 			});
 
-
   // Transition nodes to their new position.
   var nodeUpdate = node.transition()
       .duration(duration)
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+      .attr("transform", function(d) { 
+    	  return "translate(" + d.y + "," + d.x + ")"; 
+    	  });
+ 
 
   // Transition exiting nodes to the parent's new position.
   var nodeExit = node.exit().transition()
       .duration(duration)
       .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
       .remove();
-
   
   // Update the links…
   var link = svg.selectAll("path.link")
@@ -219,11 +228,11 @@ function update(source) {
   var pi=Math.PI;
   var arc = d3.svg.arc()
   	.innerRadius(function(d){
-  		console.log("Inner RADIUS: " + (d.source.x-d.target.x)/2 );
+  		
   		return (d.source.x-d.target.x)/2;
   	})
   	.outerRadius(function(d){
-  		console.log("Outter RADIUS: " + (d.source.x-d.target.x)/2+1 );
+  		
   		return (d.source.x-d.target.x)/2+1;
   	})
   	.startAngle(0 * (pi/180))
@@ -271,48 +280,17 @@ function update(source) {
     	  }
       });
       
-//      links_connectto.enter().insert("path", "g")
-//       .attr("class", function(d){
-//     	  return arc(d);
-//       });
-      
-      
-      
-//       links_connectto.enter().insert("path", "g")
-//       .attr("class", "link")
-//       .attr("marker-end", function(d){
-//     	  if (d.connectto==true){
-//           	return "url(#end)";
-//           }  
-//       })
-//       .attr("d", arc);
-      
-      
   // Transition links to their new position.
   	link.transition()
       .duration(duration)
       .attr("d", //diagonal);
   			function(d){
   				if (d.connectto==true){
-  					console.log("SUPER TRANSIT ARC");
   					return arc({source:d.source, target:d.target, connectto: true });
   				} else {
   					return diagonal(d);
   				}
   			});
-  
-   
-  
-//     	 function(){
-//     		 return diagonal;
-//     	  if (d.connectto==true){
-//     		  console.log("RETURN ART");
-//     		return diagonal;
-//     	  } else {
-//     		  console.log("RETURN DIAGONAL");
-//     		return diagonal;
-//     	 }    	  
-//       });
 
   // Transition exiting nodes to the parent's new position.
   link.exit().transition()
@@ -332,7 +310,7 @@ function update(source) {
 
 // Toggle children on click.
 function click(d) {
-	console.log(d);
+	
   if (d.children) {
     d._children = d.children;
     d.children = null;
@@ -343,6 +321,81 @@ function click(d) {
   update(d);
 }
 
+
+// show the menu box on click
+// function click(d) {
+
+// 	$( "#dialog" )
+// 	.data(d)
+// 	.dialog({
+// 	    autoOpen: false,
+// 	    height: 300,
+// 	    width: 350,
+// 	    modal: true,
+// 	    open: function(d){
+	    	
+// 	        var str = "id : <b>" + d.id + "</b>";
+// 	        str += "<br/>state : <b>" + d.state +"</b>"; 
+// 	        for (var prop in d.properties) {
+// 	           str += "<br/>"+prop + " : <b>" + d.properties[prop] + "</b>";	           
+// 	        }
+// 	        str+='<input type="text" size=3 id="deploymore_'+d.id+'" value="1" />';
+// 	        $("dialog-content").text(str);
+// 	    }
+// 	    buttons: {
+// 	      	"Deploy more": function() {
+// 	    	  //getCloudServiceForDeployingMore(d.id, $("deploymore"+_d.id).value);
+// 	      		$( this ).dialog( "close" );
+// 	      	},
+// 	    	Ok: function() {
+// 	        	$( this ).dialog( "close" );
+// 	      	}
+// 	    }    
+// 	});
+	
+// 	$( "#dialog" ).dialog( "open" );
+// }
+
+
+// function getCloudServiceForDeployingMore(instanceId, quantity){
+// 	var dataSource="rest/proxy/getserviceruntimexml/"+getURLParameter('id');
+// 	$.get(dataSource,
+// 			  function(xml){ 
+// 				  parser = new DOMParser();
+// 				  xmlDoc=parser.parseFromString(xml,"text/xml");
+// 				  deployMoreInstance(xmlDoc);
+// 			  });
+// }
+
+// function deployMoreInstance(cloudService, quantity){
+// 	var serviceData=data.getElementsByTagName("CloudService");
+// 	if (serviceData[0]==null){	// if there is no parameter
+// 		return;
+// 	}
+// 	var serviceId=serviceData[0].getAttribute('id');
+// 	var topo=data.getElementsByTagName("ServiceTopology");
+// 	var topologyId=topo[0].getAttribute('id');
+	
+// 	var deployMoreInstanceSource="rest/deployInstance";
+	
+// 	url = deployMoreInstanceSource + "/" +serviceId+"/"+topologyId+"/"+nodeId+"/"+quantity;
+// 	alert(url);
+// 	toastr.info("Requesting to deploy "+quantity+" instance(s) of node "+nodeId+" !");
+	
+// 	$.get(url, function(data) {
+// 			toastr.success("Deployed "+quantity+" instance(s) done !","Done");
+// 	    }
+// 	);
+// }
+
 	
 </script>
+
+<div id="dialog" title="Cookie Monster Says">
+		<p>Deployment Component Information<br/>
+		</p>		
+		<div id="dialog-content"></div>
+</div>
+
+
 

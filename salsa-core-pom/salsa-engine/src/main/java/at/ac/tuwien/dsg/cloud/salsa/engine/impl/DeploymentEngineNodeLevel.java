@@ -266,7 +266,7 @@ public class DeploymentEngineNodeLevel {
 	 * 
 	 * @param serviceId	add info to this service
 	 * @param topologyId add info to this topology
-	 * @param nodeAndReplica with each VM node, get the min instance to deploy at first time
+	 * @param nodeAndReplica with each VM node, get the min instance to deploy at first time. The map is: id:number of instance
 	 * @param def the TOSCA object
 	 */
 	public void deployConcurrentVMNodes(String serviceId, String topologyId, Map<String,Integer> nodeAndReplica, TDefinitions def) {
@@ -311,7 +311,7 @@ public class DeploymentEngineNodeLevel {
 			Thread thread = new Thread(new deployOneVmThread(serviceId, topologyId, nodeId, instanceId, def));
 			thread.start();
 			threads.add(thread);
-			instanceId+=1;		
+			instanceId+=1;
 		}
 		try {
 			for (Thread thread : threads) {
