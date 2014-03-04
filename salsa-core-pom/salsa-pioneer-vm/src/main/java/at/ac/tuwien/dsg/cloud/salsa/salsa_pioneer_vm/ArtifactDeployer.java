@@ -79,6 +79,7 @@ public class ArtifactDeployer {
 				// Get the number of node to be deploy
 				int quantity = chainNode.getMinInstances();
 				logger.debug("Number of instance to deploy: " + quantity);
+				serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime();
 				int startId=serviceRuntimeInfo.getComponentById(topologyId, chainNode.getId()).getIdCounter();
 				logger.debug("Starting ID: " + startId);
 				centerCon.updateNodeIdCounter(topologyId, chainNode.getId(), startId+quantity);
