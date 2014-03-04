@@ -1,4 +1,4 @@
-<div id="treeViewDiv" style="overflow:auto;">Loading tree..</div>
+<div id="treeViewDiv" style="overflow:auto;"></div>
 
 <!--  ref: http://www.voyce.com/index.php/2013/06/23/dynamic-d3-with-knockout-js/ -->
 
@@ -62,6 +62,7 @@ function update(source) {
   // Compute the new tree layout.
   var nodes = tree.nodes(root).reverse(),
       links = tree.links(nodes);
+  		
 
 //   if (typeof(links.toSource()) != "undefined") { 
 // 	    console.log(links.toSource());
@@ -69,6 +70,8 @@ function update(source) {
   
   // Normalize for fixed-depth.
   nodes.forEach(function(d) { d.y = d.depth * 180; });
+  
+  
   
   // add link from node
   nodes.forEach(function(d1) {
@@ -202,34 +205,114 @@ function update(source) {
   .data(["end"])      // Different link/path types can be defined here
 .enter().append("svg:marker")    // This section adds in the arrows
   .attr("id", String)
-  .attr("viewBox", "0 -5 10 10")
-  .attr("refX", 45)
-  .attr("refY",-5.2)
-  .attr("markerWidth", 6)
-  .attr("markerHeight", 6)
+  .attr("viewBox", "0 0 10 10")
+  .attr("refX", 4)
+  .attr("refY", 7)
+  .attr("markerWidth", 10)
+  .attr("markerHeight", 10)
   .attr("orient", "auto")
 .append("svg:path")
-  .attr("d", "M0,-5L10,0L0,5");
+  .attr("d", "M 0 7 L 8 1 L 10 10 z");
   
   
+  // how the arc show
+  var pi=Math.PI;
+  var arc = d3.svg.arc()
+  	.innerRadius(function(d){
+  		console.log("Inner RADIUS: " + (d.source.x-d.target.x)/2 );
+  		return (d.source.x-d.target.x)/2;
+  	})
+  	.outerRadius(function(d){
+  		console.log("Outter RADIUS: " + (d.source.x-d.target.x)/2+1 );
+  		return (d.source.x-d.target.x)/2+1;
+  	})
+  	.startAngle(0 * (pi/180))
+  	.endAngle(180 * (pi/180));
+  	//.attr("transform", function(d) { return "translate(" + d.source.y + "," + d.source.x + ")"; });
+  	
+    
   // Enter any new links at the parent's previous position.
   link.enter().insert("path", "g")
-      .attr("class", "link")
+      //.attr("class", "link")
+      .attr("class", function(d){
+    	  if (d.connectto!=true){
+              return "link";
+          } else {
+        	  return "link_connectto";
+          }
+      })
       .attr("marker-end", function(d){
     	  if (d.connectto==true){
           	return "url(#end)";
-          	// http://jsfiddle.net/manojmcet/BcW8z/
           }  
+      })
+      .attr("stroke", function(d){
+			if (d.connectto==true){
+				return "blue";
+			} else {
+				return "black";
+			}
       })
       .attr("d", function(d) {
         var o = {x: source.x0, y: source.y0};
-        return diagonal({source: o, target: o});
+        if (d.connectto==true){
+        	console.log("Draw arc !"+d.source.x+"-"+d.source.y+"--" + d.target.x+"-"+d.target.y);
+        	return arc(d);
+        } else {
+        	return diagonal({source: o, target: o, connectto:false});	
+        }
+      })
+      .attr("transform", function(d) {
+    	  if (d.connectto==true){
+    		  var r=(d.source.x-d.target.x)/2;
+    		  var xr=d.target.x+r;
+    		  var yr=d.target.y + rect_width/2+5;
+    		  return "translate(" + yr + "," + xr + ")" ;
+    	  }
       });
-
+      
+//      links_connectto.enter().insert("path", "g")
+//       .attr("class", function(d){
+//     	  return arc(d);
+//       });
+      
+      
+      
+//       links_connectto.enter().insert("path", "g")
+//       .attr("class", "link")
+//       .attr("marker-end", function(d){
+//     	  if (d.connectto==true){
+//           	return "url(#end)";
+//           }  
+//       })
+//       .attr("d", arc);
+      
+      
   // Transition links to their new position.
-  link.transition()
+  	link.transition()
       .duration(duration)
-      .attr("d", diagonal);
+      .attr("d", //diagonal);
+  			function(d){
+  				if (d.connectto==true){
+  					console.log("SUPER TRANSIT ARC");
+  					return arc({source:d.source, target:d.target, connectto: true });
+  				} else {
+  					return diagonal(d);
+  				}
+  			});
+  
+   
+  
+//     	 function(){
+//     		 return diagonal;
+//     	  if (d.connectto==true){
+//     		  console.log("RETURN ART");
+//     		return diagonal;
+//     	  } else {
+//     		  console.log("RETURN DIAGONAL");
+//     		return diagonal;
+//     	 }    	  
+//       });
 
   // Transition exiting nodes to the parent's new position.
   link.exit().transition()
