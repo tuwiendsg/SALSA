@@ -67,22 +67,23 @@ public class Main {
 		nodeId = prop.getProperty("SALSA_NODE_ID"); // this node
 		replica = Integer.parseInt(prop.getProperty("SALSA_REPLICA")); 
 		
-		
-		
 		centerCon = new SalsaCenterConnector(
 				SalsaPioneerConfiguration.getSalsaCenterEndpoint(), serviceId,
 				SalsaPioneerConfiguration.getWorkingDir(), PioneerLogger.logger);
-				
+		
 		
 		PioneerLogger.logger.debug("Service ID: " + serviceId);
 		PioneerLogger.logger.debug("This node ID: " + nodeId);
 		
+		
 		def = centerCon.getToscaDescription();// get the latest service description
+		
 		serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime();
 		
-		ArtifactDeployer deployer = new ArtifactDeployer(serviceId, topologyId, nodeId, replica, def, centerCon, serviceRuntimeInfo);
+		PioneerLogger.logger.debug("This VM is belong to service id: "+serviceRuntimeInfo.getId());
 		
-		PioneerLogger.logger.debug("Update topology done !");
+		ArtifactDeployer deployer = new ArtifactDeployer(serviceId, topologyId, nodeId, replica, def, centerCon, serviceRuntimeInfo);
+				
 		TNodeTemplate thisNode = ToscaStructureQuery.getNodetemplateById(nodeId, def);
 		String command = args[0];
 

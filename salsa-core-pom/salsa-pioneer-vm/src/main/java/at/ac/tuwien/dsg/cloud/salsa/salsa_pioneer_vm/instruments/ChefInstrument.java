@@ -98,7 +98,7 @@ public class ChefInstrument implements InstrumentInterface {
 	 * put the client.rc with the chef name on it
 	 */
 	@Override
-	public String deployArtifact(String uri) {
+	public String deployArtifact(String uri, String instanceId) {
 		try {
 
 			StringBuffer sb = new StringBuffer();
@@ -116,7 +116,7 @@ public class ChefInstrument implements InstrumentInterface {
 			//FIXME: If we run multiple instances this will cause error.
 			//FIXED: read the id of the VM from /etc/salsa.variables and add to the node.
 			// This method is not good by using a function from higher layer.
-			sb.append("node_name \"" + uri.trim()+"_"+VMID + "\" \n");
+			sb.append("node_name \"" + uri.trim()+"_"+VMID+"_"+instanceId + "\" \n");
 			
 			
 			BufferedWriter out = new BufferedWriter(new FileWriter("/etc/chef/client.rb"));

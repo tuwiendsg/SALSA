@@ -228,6 +228,8 @@ public class SalsaCenterConnector {
 			e.printStackTrace();
 		} catch (JAXBException e1) {
 			logger.error("Error to parse ServiceRuntime file. Error: " + e1);
+			e1.printStackTrace();
+			
 		}
 		return null;
 	}

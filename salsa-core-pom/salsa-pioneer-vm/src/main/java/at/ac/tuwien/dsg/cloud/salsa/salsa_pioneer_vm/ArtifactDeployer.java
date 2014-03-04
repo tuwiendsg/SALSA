@@ -84,13 +84,13 @@ public class ArtifactDeployer {
 				centerCon.updateNodeIdCounter(topologyId, chainNode.getId(), startId+quantity);
 				
 				List<Integer> instanceIdList = new ArrayList<>();
-				// Create quantity nodes for all
+				// Create quantity node instances(instance of software) for this chainNode(software)
 				for (int i=startId; i<startId+quantity; i++){
 					instanceIdList.add(i);
 					SalsaComponentInstanceData data = new SalsaComponentInstanceData(i);
 					data.setHostedId_Integer(replica);
 					data.setState(SalsaEntityState.ALLOCATING);	// waiting for other conditions
-					centerCon.addComponentData(serviceId, topologyId, chainNode.getId(), data);					
+					centerCon.addComponentData(serviceId, topologyId, chainNode.getId(), data);	// add the 					
 				}
 				waitingForCapabilities(chainNode, def);
 				// wait for downloading and configuring artifact itself
@@ -134,8 +134,8 @@ public class ArtifactDeployer {
 			}
 
 			private synchronized void executeDeploymentNode() {
-				logger.debug("Executing the deployment for node ..");
-				runNodeArtifacts(node, def);
+				logger.debug("Executing the deployment for node: " + node.getId() +", instance: " + instanceId );
+				runNodeArtifacts(node, Integer.toString(instanceId), def);
 				centerCon.setNodeState(topologyId, node.getId(), instanceId, SalsaEntityState.FINISHED);
 			}
 
@@ -164,7 +164,13 @@ public class ArtifactDeployer {
 		
 
 		// Download node artifact
-		private void downloadNodeArtifacts(TNodeTemplate node, TDefinitions def) {	
+		private void downloadNodeArtifacts(TNodeTemplate node, TDefinitions def) {
+			if (node.getDeploymentArtifacts()==null){
+				return;
+			}
+			if (node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart().equals(SalsaArtifactType.chef.getString())){
+				return;
+			}
 			// get Artifact list
 			List<String> arts = ToscaStructureQuery
 					.getDeployArtifactTemplateReferenceList(node, def);	
@@ -193,7 +199,7 @@ public class ArtifactDeployer {
 		}
 		
 		// Download and run 1 node of software
-		private void runNodeArtifacts(TNodeTemplate node, TDefinitions def) {
+		private void runNodeArtifacts(TNodeTemplate node, String instanceId, TDefinitions def) {
 			PioneerLogger.logger.debug("==> Run artifact for node: " + node.getId());
 			// get Artifact list
 			String runArt="";
@@ -236,7 +242,7 @@ public class ArtifactDeployer {
 				break;
 			}
 			instrument.initiate(node);
-			instrument.deployArtifact(runArt);
+			instrument.deployArtifact(runArt, instanceId);
 			
 			// if this node is part of CONNECTTO, send the IP
 			if (node.getCapabilities()==null){
@@ -314,13 +320,16 @@ public class ArtifactDeployer {
 			if (rela.getType().getLocalPart().equals(SalsaRelationshipType.HOSTON.getRelationshipTypeString())){
 				return "ready";	// just return for HOSTON
 			}
+			logger.debug("WaitRelationshipReady Mar4 - capa: " + capa.getId());
 			TNodeTemplate nodeOfCapa = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capa, def);
-			String value=centerCon.getCapabilityValue(topoId, nodeOfCapa.getId(), replica, capa.getId());
+			
+			String value=centerCon.getCapabilityValue(topoId, nodeOfCapa.getId(), 0, capa.getId());	// note: 0 is the ID of the first node, which provide the capability
+			logger.debug("waitRelationshipReady - Get the value is: " + value);
 			while (value==null){
 				try{
-					System.out.println("Value is " + value);
+					logger.debug("waitRelationshipReady - Get the value is: " + value);
 					Thread.sleep(5000);
-					value=centerCon.getCapabilityValue(topoId, nodeOfCapa.getId(), replica, capa.getId());
+					value=centerCon.getCapabilityValue(topoId, nodeOfCapa.getId(), 0, capa.getId());
 					
 				} catch (InterruptedException e) {}
 			}

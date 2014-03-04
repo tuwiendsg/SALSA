@@ -148,7 +148,7 @@ function update(source) {
 	        .attr("text-anchor", "middle")
 	        .text(function(d) {
 	        	if (d.nodeType=="root"){
-	        		return "SALSA CENTER";
+	        		return "SALSA SERVER";
 	        	}
 	        	if (d.nodeType=="os" && d.isAbstract==true){
 	        		return "VIRTUAL MACHINE";
@@ -176,6 +176,7 @@ function update(source) {
     		.attr("fill", function(d){
   			switch (d.state){
 	  			case 'RUNNING':
+	  			case 'FINISHED':
 		  			return "green";
 		  			break;
 	  			case 'UNDEPLOY':
@@ -247,7 +248,7 @@ function update(source) {
     	  if (d.connectto!=true){
               return "link";
           } else {
-        	  return "link_connectto";
+        	  return "link";
           }
       })
       .attr("marker-end", function(d){
