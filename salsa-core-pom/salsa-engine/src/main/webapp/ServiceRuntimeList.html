@@ -2,7 +2,7 @@
 <div id="list">Loading ...</div>
 
 <script type="text/javascript">
-var listSource="rest/proxy/getservicejsonlist";
+var listSource=salsaCenterRestEndpoint+"/getservicejsonlist";
 var underegisterSource="rest/undeploy"; // need + id latter
 
 $.getJSON(listSource,  function(json){ 
