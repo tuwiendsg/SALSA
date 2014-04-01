@@ -87,15 +87,18 @@ public class EngineServices {
 			SalsaCloudServiceData service = deployer.deployNewService(def, serviceName);
 			String output = "Deployed service. Id: " + service.getId();
 			logger.debug(output);
-			return Response.status(200).entity(service.getId()).build();
+			// return 201: resource created
+			return Response.status(201).entity(service.getId()).build();
 		} catch (JAXBException e){
 			logger.error("Error when parsing Tosca: " + e);
 			e.printStackTrace();
-			return Response.status(201).entity("Error. Unable to parse Tosca. Error: " +e).build();
+			// return 400: bad request, the XML is malformed and could not process 
+			return Response.status(400).entity("Error. Unable to parse Tosca. Error: " +e).build();
 		} catch (IOException e) {
 			logger.error("Error reading file: " + tmpFile + ". Error: " +e);
-			return Response.status(201).entity("Error when process Tosca file. Error: " +e).build();
-		}	
+			//return 500: intenal server error. The server cannot create and process tmp Tosca file 
+			return Response.status(500).entity("Error when process Tosca file. Error: " +e).build();
+		}
 		
 	}
 	
@@ -117,7 +120,7 @@ public class EngineServices {
 		logger.debug("Deployment request for this node: " + serviceId + " - " + nodeId);
 		SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
 		deployer.deployMoreInstance(serviceId, topologyId, nodeId, quantity);
-		return Response.status(200).entity("Spawned VM").build();
+		return Response.status(201).entity("Spawned VM").build();
 	}
 	
 	private boolean checkForServiceName(String serviceName){
@@ -138,7 +141,8 @@ public class EngineServices {
 		if (deployer.removeOneInstance(serviceId, topologyId, nodeId, instanceId)){
 			return Response.status(200).entity("Undeployed instance: " + serviceId+"/"+nodeId+"/"+instanceId).build();
 		} else {
-			return Response.status(201).entity("Could not undeployed instance.").build();
+			// return 404: resource not found. The instance is not found to be undeployed
+			return Response.status(404).entity("Could not undeployed instance.").build();
 		}
 				
 	}
@@ -150,7 +154,8 @@ public class EngineServices {
 		if (deployer.cleanAllService(serviceId)) {		
 			return Response.status(200).entity("Cleaning service done: " + serviceId).build();
 		} else {
-			return Response.status(201).entity("Error: Fail to clean service: " + serviceId).build();
+			// return 404: not found the service to be undeployed
+			return Response.status(404).entity("Error: Fail to clean service: " + serviceId).build();
 		}
 	}
 	
