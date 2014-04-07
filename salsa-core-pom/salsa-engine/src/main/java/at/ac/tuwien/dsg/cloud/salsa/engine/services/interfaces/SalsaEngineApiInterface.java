@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.engine.services.api;
+package at.ac.tuwien.dsg.cloud.salsa.engine.services.interfaces;
 
 import java.io.InputStream;
 
