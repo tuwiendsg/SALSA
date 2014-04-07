@@ -1,0 +1,17 @@
+The project contains the logic of deployment, such as deploying, undeploying.
+
+ * Dependencies *
+ The following dependencies should be install/run external. The other libraries are included by Maven and go with the package. 
+ 1. A running salsa-center-services. The endpoint is set in configuration file
+ 2. Tomcat 7 for hosting .war file (not test with other containers yet)
+ 3. Stratuslab client. It is included in resource folder but need to be copied outside and define in the configuration file.
+ 
+ * Installation *
+ The service is built and packed in a .war archive. The project use some resource configuration (should be external configuration file later).
+ The following steps are for building and deploying the service:
+ 1. Edit properties file:
+ 	+ salsa.engine.properties: information relates to service configuration.
+ 	+ cloudUserParameters.ini: user's information for connecting to the clouds.
+ 2. Build the war file and deploy. In the .pom, there is a configuration which point to remove tomcat server, user can user "mvn deploy:tomcat" to deploy the service.
+ 3. The deployment service UI is at http://<server address>/salsa-engine/ServiceDeployment.html
+ 	The RESTful services is at  http://<server address>/salsa-engine/rest/<method>

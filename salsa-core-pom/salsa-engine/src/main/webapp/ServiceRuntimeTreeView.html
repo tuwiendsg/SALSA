@@ -1,0 +1,405 @@
+<div id="treeViewDiv" style="overflow:auto;"></div>
+
+<!--  ref: http://www.voyce.com/index.php/2013/06/23/dynamic-d3-with-knockout-js/ -->
+
+<script type="text/javascript">
+	$.ajaxSetup({
+	    cache: false
+	});
+	
+// 	showTree();
+	
+// 	function showTree(){	// 1 time invoke
+// 		toUpdateTree();
+// 	}
+
+	var treeDataSource=salsaCenterRestEndpoint + "/viewgenerator/cloudservice/json/compact/"+getURLParameter('id');
+
+	var margin = {top:10, right:120, bottom:20, left:140},
+    	width = window.innerWidth-500,
+    	height = window.innerHeight - 100,
+    	i = 0, duration = 0, root;
+	var rect_width=110, rect_height=45;	// size of the node
+	var opts = {
+		maxLabelLength: 20
+	};
+	
+	
+	var tree = d3.layout.tree()
+    .size([height, width]);
+
+var diagonal = d3.svg.diagonal()
+    .projection(function(d) { return [d.y, d.x]; });
+
+var svg = d3.select("#treeViewDiv").append("svg")
+    .attr("width", width + margin.right + margin.left)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+    var isUpdateTree=false;
+    
+function showTheTree(){
+	d3.json(treeDataSource, function(error, flare) {
+	  root = flare;
+	  root.x0 = height / 2;
+	  root.y0 = 0;	
+	  
+	  update(root);  
+	  
+	  setTimeout(function(){
+		  isUpdateTree=true;
+		  showTheTree();
+	  }, 3000);
+	});
+}
+	
+d3.select(self.frameElement).style("height", "800px");
+
+showTheTree();
+
+
+function update(source) {
+
+  // Compute the new tree layout.
+  var nodes = tree.nodes(root).reverse(),
+      links = tree.links(nodes);
+  		
+  // Normalize for fixed-depth.
+  nodes.forEach(function(d) { d.y = d.depth * 180; });
+    
+  // add link from node
+  nodes.forEach(function(d1) {
+	  if(!!d1.connectto){
+		  nodes.forEach(function(d2){
+			//if (d1.connectto==d2.id){
+				
+			var arrayLength = d1.connectto.length;
+			for (var i = 0; i < arrayLength; i++) {
+			    if (d2.id==d1.connectto[i]){
+					console.log("Connect the " + d1.id +" and " + d2.id);
+					links.push({"source":d1, "target":d2, "connectto":true});
+				}
+			}
+				
+				
+// 			if ($.inArray(d2.id, d1.connectto)){
+// 				console.log("Connect the " + d1.id +" and " + d2.id);
+// 				links.push({"source":d1, "target":d2, "connectto":true});
+// 			}
+			
+		  });
+	  }
+	});
+
+  // Update the nodes…
+  var node = svg.selectAll("g.node")
+      .data(nodes, function(d) { return d.idp || (d.idp = ++i); });
+
+  // Enter any new nodes at the parent's previous position.
+  var nodeEnter = node.enter().append("g")
+      .attr("class", "node")
+      .attr("transform", function(d) {    	  
+    		  return "translate(" + source.y0 + "," + source.x0 + ")";
+    	  })
+      .on("click", click);
+
+ //DRAW THE NODE
+		nodeEnter.append("rect")
+			.attr("width", rect_width)
+	        .attr("height", rect_height)
+ 	        .attr("rx",5)	       
+	        .attr("x",rect_width/(-2))
+	        .attr("y",rect_height/(-2))	
+	        .attr("stroke", function(d){
+	    		if (d.isAbstract==true){
+	    			return "black";
+	    		} else {
+	    			return "blue";
+	    		}
+			})
+	        .attr("stroke-width","2")
+	        .attr("fill", function(d){
+	        	if (d.isAbstract==true){
+	    			return "#81BEF7";
+	    		} else {
+	    			return "white";
+	    		}
+	        });
+		
+ 		// The tooltips
+		$('svg rect').tipsy({ 
+	        gravity: 'nw', 
+	        html: true, 
+	        title: function() {
+	          var d = this.__data__;
+	          var str = "id : <b>" + d.id + "</b>";
+	          str += "<br/>state : <b>" + d.state +"</b>"; 
+	          for (var prop in d.properties) {
+	             str += "<br/>"+prop + " : <b>" + d.properties[prop] + "</b>";
+	          }	          
+	          return str; 
+	        }
+	      });
+	  
+		nodeEnter.append("text")	// show the TITLE text of the block
+	  	    .attr("dx", 0)
+	        .attr("dy", (-1)*rect_height/2 + 15)
+	        .attr("text-anchor", "middle")
+	        .text(function(d) {
+	        	if (d.nodeType=="root"){
+	        		return "SALSA SERVER";
+	        	}
+	        	if (d.nodeType=="os" && d.isAbstract==true){
+	        		return "VIRTUAL MACHINE";
+	        	}
+	        	if (d.nodeType=="os" && d.isAbstract==false){
+	        		return "INSTANCE";
+	        	}
+	        	if (d.nodeType=="chef" && d.isAbstract==false){
+	        		return "CHEF CLIENT";
+	        	}
+	        	return d.nodeType.toUpperCase();
+	    	});
+	
+		nodeEnter.append("text")	// show the id
+			.attr("dx", (-1)*rect_width/2+5)
+			.attr("dy", (-1)*rect_height/2+27)
+			.attr("text-anchor", "start")
+			.text(function(d) {
+				if(d.nodeType=="root"){
+					return "";
+				}				
+				return "id: " + d.id; 
+			});	  
+	  		  
+		nodeEnter.append("text")	// show the state
+ 			.attr("dx", (-1)*rect_width/2+5)
+    		.attr("dy", (-1)*rect_height/2+39)
+    		.attr("fill", function(d){
+  			switch (d.state){
+	  			case 'RUNNING':
+	  			case 'FINISHED':
+		  			return "green";
+		  			break;
+	  			case 'UNDEPLOY':
+				    return "black";
+				    break;
+	  			default:
+					return "red";
+					break;
+				}
+			return "red";
+    		})
+    		.attr("text-anchor", "start")
+    		.text(function(d) { 
+  	  	 	  	return "state: " + d.state; 
+			});
+
+  // Transition nodes to their new position.
+  var nodeUpdate = node.transition()
+      .duration(duration)
+      .attr("transform", function(d) { 
+    	  return "translate(" + d.y + "," + d.x + ")"; 
+    	  });
+ 
+
+  // Transition exiting nodes to the parent's new position.
+  var nodeExit = node.exit().transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+      .remove();
+  
+  // Update the links…
+  var link = svg.selectAll("path.link")
+      .data(links, function(d) { return d.source.idp+"_"+d.target.idp; });
+
+  svg.append("svg:defs").selectAll("marker")
+  .data(["end"])      // Different link/path types can be defined here
+.enter().append("svg:marker")    // This section adds in the arrows
+  .attr("id", String)
+  .attr("viewBox", "0 0 10 10")
+  .attr("refX", 4)
+  .attr("refY", 7)
+  .attr("markerWidth", 10)
+  .attr("markerHeight", 10)
+  .attr("orient", "auto")
+.append("svg:path")
+  .attr("d", "M 0 7 L 8 1 L 10 10 z");
+  
+  
+  // how the arc show
+  var pi=Math.PI;
+  var arc = d3.svg.arc()
+  	.innerRadius(function(d){
+  		
+  		return (d.source.x-d.target.x)/2;
+  	})
+  	.outerRadius(function(d){
+  		
+  		return (d.source.x-d.target.x)/2+1;
+  	})
+  	.startAngle(0 * (pi/180))
+  	.endAngle(180 * (pi/180));
+  	//.attr("transform", function(d) { return "translate(" + d.source.y + "," + d.source.x + ")"; });
+  	
+    
+  // Enter any new links at the parent's previous position.
+  link.enter().insert("path", "g")
+      //.attr("class", "link")
+      .attr("class", function(d){
+    	  if (d.connectto!=true){
+              return "link";
+          } else {
+        	  return "link";
+          }
+      })
+      .attr("marker-end", function(d){
+    	  if (d.connectto==true){
+          	return "url(#end)";
+          }  
+      })
+      .attr("stroke", function(d){
+			if (d.connectto==true){
+				return "blue";
+			} else {
+				return "black";
+			}
+      })
+      .attr("d", function(d) {
+        var o = {x: source.x0, y: source.y0};
+        if (d.connectto==true){
+        	console.log("Draw arc !"+d.source.x+"-"+d.source.y+"--" + d.target.x+"-"+d.target.y);
+        	return arc(d);
+        } else {
+        	return diagonal({source: o, target: o, connectto:false});	
+        }
+      })
+      .attr("transform", function(d) {
+    	  if (d.connectto==true){
+    		  var r=(d.source.x-d.target.x)/2;
+    		  var xr=d.target.x+r;
+    		  var yr=d.target.y + rect_width/2+5;
+    		  return "translate(" + yr + "," + xr + ")" ;
+    	  }
+      });
+      
+  // Transition links to their new position.
+  	link.transition()
+      .duration(duration)
+      .attr("d", //diagonal);
+  			function(d){
+  				if (d.connectto==true){
+  					return arc({source:d.source, target:d.target, connectto: true });
+  				} else {
+  					return diagonal(d);
+  				}
+  			});
+
+  // Transition exiting nodes to the parent's new position.
+  link.exit().transition()
+      .duration(duration)
+      .attr("d", function(d) {
+        var o = {x: source.x, y: source.y};
+        return diagonal({source: o, target: o});
+      })
+      .remove();
+
+  // Stash the old positions for transition.
+  nodes.forEach(function(d) {
+    d.x0 = d.x;
+    d.y0 = d.y;
+  });
+}
+
+// Toggle children on click.
+function click(d) {
+	
+  if (d.children) {
+    d._children = d.children;
+    d.children = null;
+  } else {
+    d.children = d._children;
+    d._children = null;
+  }
+  update(d);
+}
+
+
+// show the menu box on click
+// function click(d) {
+
+// 	$( "#dialog" )
+// 	.data(d)
+// 	.dialog({
+// 	    autoOpen: false,
+// 	    height: 300,
+// 	    width: 350,
+// 	    modal: true,
+// 	    open: function(d){
+	    	
+// 	        var str = "id : <b>" + d.id + "</b>";
+// 	        str += "<br/>state : <b>" + d.state +"</b>"; 
+// 	        for (var prop in d.properties) {
+// 	           str += "<br/>"+prop + " : <b>" + d.properties[prop] + "</b>";	           
+// 	        }
+// 	        str+='<input type="text" size=3 id="deploymore_'+d.id+'" value="1" />';
+// 	        $("dialog-content").text(str);
+// 	    }
+// 	    buttons: {
+// 	      	"Deploy more": function() {
+// 	    	  //getCloudServiceForDeployingMore(d.id, $("deploymore"+_d.id).value);
+// 	      		$( this ).dialog( "close" );
+// 	      	},
+// 	    	Ok: function() {
+// 	        	$( this ).dialog( "close" );
+// 	      	}
+// 	    }    
+// 	});
+	
+// 	$( "#dialog" ).dialog( "open" );
+// }
+
+
+// function getCloudServiceForDeployingMore(instanceId, quantity){
+// 	var dataSource="rest/proxy/getserviceruntimexml/"+getURLParameter('id');
+// 	$.get(dataSource,
+// 			  function(xml){ 
+// 				  parser = new DOMParser();
+// 				  xmlDoc=parser.parseFromString(xml,"text/xml");
+// 				  deployMoreInstance(xmlDoc);
+// 			  });
+// }
+
+// function deployMoreInstance(cloudService, quantity){
+// 	var serviceData=data.getElementsByTagName("CloudService");
+// 	if (serviceData[0]==null){	// if there is no parameter
+// 		return;
+// 	}
+// 	var serviceId=serviceData[0].getAttribute('id');
+// 	var topo=data.getElementsByTagName("ServiceTopology");
+// 	var topologyId=topo[0].getAttribute('id');
+	
+// 	var deployMoreInstanceSource="rest/deployInstance";
+	
+// 	url = deployMoreInstanceSource + "/" +serviceId+"/"+topologyId+"/"+nodeId+"/"+quantity;
+// 	alert(url);
+// 	toastr.info("Requesting to deploy "+quantity+" instance(s) of node "+nodeId+" !");
+	
+// 	$.get(url, function(data) {
+// 			toastr.success("Deployed "+quantity+" instance(s) done !","Done");
+// 	    }
+// 	);
+// }
+
+	
+</script>
+
+<div id="dialog" title="Cookie Monster Says">
+		<p>Deployment Component Information<br/>
+		</p>		
+		<div id="dialog-content"></div>
+</div>
+
+
+

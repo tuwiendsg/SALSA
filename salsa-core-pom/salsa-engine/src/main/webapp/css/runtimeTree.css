@@ -1,0 +1,33 @@
+.node {
+  cursor: pointer;
+}
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none; 
+  stroke: black; 
+  stroke-width: 2px;
+}
+
+.link_connectto {
+  fill: none; 
+  stroke: darkcyan; 
+  stroke-dasharray="5,5";
+  stroke-width: 1.5px;
+}
+
+.node text {
+  font: 10px sans-serif;
+}
+
+
+
