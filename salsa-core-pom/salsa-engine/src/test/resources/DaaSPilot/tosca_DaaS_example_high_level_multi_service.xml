@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tosca:Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:elasticity="http://www.example.org/NewXMLSchema" 
+	xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12"
+	xmlns:salsa="http://example.com"
+	xsi:schemaLocation="http://docs.oasis-open.org/tosca/ns/2011/12 TOSCA-v1.0.xsd"
+	targetNamespace="http://tempuri.org"
+	id="DaaSApp">
+	
+	<tosca:ServiceTemplate id="DemoApp">
+		
+		<tosca:TopologyTemplate>
+			<tosca:NodeTemplate id="DataEndServiceTopologyService" type="DataEndServiceTopology" />
+			<tosca:NodeTemplate id="EventProcessingServiceTopologyService" type="EventProcessingServiceTopology" />
+			<tosca:RelationshipTemplate name="Directed Relation" id="directedRelation" type="CONNECTTO">
+				<tosca:SourceElement ref="EventProcessingServiceTopology" />
+				<tosca:TargetElement ref="DataEndServiceTopology" />
+			</tosca:RelationshipTemplate>			
+		</tosca:TopologyTemplate>
+	</tosca:ServiceTemplate>
+
+
+	<tosca:ServiceTemplate id="DataEndServiceTopology">
+		<tosca:TopologyTemplate>		
+			<tosca:NodeTemplate id="DataControllerServiceUnit"
+				name="DataControllerServiceUnit" type="software"
+				minInstances="1" maxInstances="1">
+				<tosca:Properties>
+					<!-- fuzzy requirement for VM target type -->
+					<salsa:DeploymentTarget type="VirtualMachine" fuzzy="false">	 					
+						<Provider>OPENSTACK</Provider>
+						<BaseImage>ami-00000163</BaseImage>
+						<InstanceType>m1.small</InstanceType>	                        
+                        <Packages>
+                            <Package>openjdk-7-jre</Package>                             
+                        </Packages>		
+					</salsa:DeploymentTarget>
+				</tosca:Properties>				
+				<tosca:Capabilities>				
+					<tosca:Capability name="Data controller IP" type="variable" id="DataControllerServiceUnit_capa"></tosca:Capability>
+				</tosca:Capabilities>
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="tosca:script" name="Deployment script" artifactRef="deployDataController"/>
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate id="DataNodeServiceUnit" name="DataNodeServiceUnit" type="software" minInstances="1" maxInstances="unbounded">
+				<tosca:Properties>
+					<salsa:DeploymentTarget type="VirtualMachine" fuzzy="true">	 					
+						<os>Linux</os>								
+						<cpu>low</cpu>
+						<memory>high</memory>
+						<storage>low</storage>
+						<packages>
+                            <package>openjdk-7-jre</package>                             
+                        </packages>			
+					</salsa:DeploymentTarget>
+				</tosca:Properties>				
+				<tosca:Requirements>
+					<tosca:Requirement name="Connect to data controller" type="variable" id="DataNodeServiceUnit_req"></tosca:Requirement>
+				</tosca:Requirements>
+				<tosca:Policies>
+					<tosca:Policy name="St3:STRATEGY CASE cpuUsage &lt; 40 : scalein" policyType="SYBLConstraint" />
+				</tosca:Policies>
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="tosca:script" name="Deployment script" artifactRef="deployDataNode"/>
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+						
+			<tosca:RelationshipTemplate name="Relation" type="CONNECTTO" id="controller2data">
+				<tosca:SourceElement ref="DataControllerServiceUnit_capa"/>
+				<tosca:TargetElement ref="DataNodeServiceUnit_req"/>
+			</tosca:RelationshipTemplate>		
+		</tosca:TopologyTemplate>
+	</tosca:ServiceTemplate>
+
+
+	<tosca:ServiceTemplate id="EventProcessingServiceTopology">
+		<tosca:TopologyTemplate>
+			<tosca:NodeTemplate id="LoadBalancerServiceUnit" type="software" name="LoadBalancerServiceUnit">
+				<salsa:DeploymentTarget type="VirtualMachine" fuzzy="false">	 					
+						<Provider>STRATUSLAB</Provider>
+						<BaseImage>L5DrIX5eSjxdxTzQSEOEEotGw3c</BaseImage>  
+						<InstanceType>m1.medium</InstanceType>	                        
+                        <Packages>
+                            <Package>openjdk-7-jre</Package>                             
+                        </Packages>		
+				</salsa:DeploymentTarget>
+				<tosca:Capabilities>
+					<tosca:Capability name="Load balancer IP" type="variable" id="LoadBalancerServiceUnit_capa"></tosca:Capability>
+				</tosca:Capabilities>
+				<tosca:DeploymentArtifacts>				
+                    <tosca:DeploymentArtifact name="deploy" artifactType="tosca:script" artifactRef="tosca:deployLoadBalancer"/>                
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			<tosca:NodeTemplate id="EventProcessingServiceUnit" type="software" name="EventProcessingServiceUnit">
+			
+				<tosca:Properties>
+				<salsa:DeploymentTarget type="VirtualMachine" fuzzy="true">	 					
+						<os>ubuntu</os>								
+						<cpu>high</cpu>
+						<memory>medium</memory>
+						<storage>low</storage>
+						<packages>
+                            <package>openjdk-7-jre</package>                             
+                        </packages>			
+				</salsa:DeploymentTarget>
+				</tosca:Properties>
+				
+				<tosca:Requirements>
+					<tosca:Requirement name="Get Load balancer IP" type="variable" id="EventProcessingServiceUnit_req"></tosca:Requirement>
+				</tosca:Requirements>
+				<tosca:Policies>
+					<tosca:Policy
+						name="St2:STRATEGY CASE responseTime &lt; 360 ms AND throughput &lt; 400 : scalein"
+						policyType="SYBLConstraint" />
+				</tosca:Policies>
+				<tosca:DeploymentArtifacts>				
+                    <tosca:DeploymentArtifact name="deploy" artifactType="tosca:script" artifactRef="tosca:deployEventProcessing"/>                
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			
+			<tosca:RelationshipTemplate name="Relation" type="CONNECTTO" id="loadbalancer2EventProcessing">
+				<tosca:SourceElement ref="LoadBalancerServiceUnit_capa" />
+				<tosca:TargetElement ref="EventProcessingServiceUnit_req" />
+			</tosca:RelationshipTemplate>			
+									
+		</tosca:TopologyTemplate>
+	</tosca:ServiceTemplate>
+	
+	<tosca:ArtifactTemplate id="deployDataController" type="tosca:script">       
+        <tosca:ArtifactReferences>
+            <tosca:ArtifactReference reference="http://134.158.75.65/artifacts/daas/deployDataController.sh"/>
+        </tosca:ArtifactReferences>
+    </tosca:ArtifactTemplate>
+    
+    <tosca:ArtifactTemplate id="deployDataNode" type="tosca:script">       
+        <tosca:ArtifactReferences>
+            <tosca:ArtifactReference reference="http://134.158.75.65/artifacts/daas/deployDataNode.sh"/>
+        </tosca:ArtifactReferences>
+    </tosca:ArtifactTemplate>
+    
+    <tosca:ArtifactTemplate id="deployLoadBalancer" type="tosca:script">       
+        <tosca:ArtifactReferences>
+            <tosca:ArtifactReference reference="http://134.158.75.65/artifacts/daas/deployLoadBalancer.sh"/>
+        </tosca:ArtifactReferences>
+    </tosca:ArtifactTemplate>
+    
+    <tosca:ArtifactTemplate id="deployEventProcessing" type="tosca:script">       
+        <tosca:ArtifactReferences>
+            <tosca:ArtifactReference reference="http://134.158.75.65/artifacts/daas/deployEventProcessing.sh"/>
+        </tosca:ArtifactReferences>
+    </tosca:ArtifactTemplate>
+	
+	
+	
+	
+	
+	
+</tosca:Definitions>

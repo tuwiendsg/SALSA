@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tosca:Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:elasticity="http://www.example.org/NewXMLSchema" 
+	xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12"
+	xmlns:salsa="http://example.com"
+	xsi:schemaLocation="http://docs.oasis-open.org/tosca/ns/2011/12 TOSCA-v1.0.xsd"
+	targetNamespace="http://tempuri.org"
+	id="DaaSApp">
+	
+	<tosca:ServiceTemplate id="DataControllerService">
+		<tosca:TopologyTemplate>
+			<tosca:NodeTemplate id="DataControllerServiceUnit"
+				name="DataControllerServiceUnit" type="sh"
+				minInstances="1" maxInstances="1">
+				<tosca:Requirements>
+					<tosca:Requirement name="DataController Deployment Target" type="os" id="DataController_DeploymentTarget_req">
+						<tosca:Properties>					
+							<MappingProperties>
+								<MappingProperty type="os">
+									<property name="instanceType">m1.medium</property>
+									<property name="provider">OPENSTACK</property>
+									<property name="baseImage">ami-00000163</property>
+									<property name="packages">openjdk-7-jre</property> <!-- use comma between package -->
+								</MappingProperty>
+							</MappingProperties>
+						</tosca:Properties>
+					</tosca:Requirement>
+				</tosca:Requirements>
+				<tosca:Capabilities>							
+					<tosca:Capability name="Data controller IP" type="variable" id="seedCap_IP"></tosca:Capability>					
+				</tosca:Capabilities>
+				
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="tosca:script" name="Deployment script" artifactRef="deployDataController"/>
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate id="DataNodeServiceUnit" name="DataNodeServiceUnit" type="sh" minInstances="1" maxInstances="unbounded">
+				<tosca:Requirements>
+					<tosca:Requirement name="Connect to data controller" type="variable" id="DataNodeServiceUnit_req"></tosca:Requirement>
+					<tosca:Requirement name="DataNode Deployment Target" type="os" id="Datanode_deployment_target">		<!-- I use the Relationship Type as Type of Requirement to generate the relationship later -->
+						<tosca:Properties>
+							<MappingProperties>
+								<MappingProperty type="os">
+									<property name="provider">OPENSTACK</property>
+									<property name="baseImage">ami-00000163</property>
+									<property name="packages">openjdk-7-jre</property> <!-- use comma between package -->
+									<property name="instanceType">m1.small</property>
+								</MappingProperty>
+<!-- 								<MappingProperty type="vm"> -->
+<!-- 									<property name="instanceType">m1.small</property> -->
+<!-- 									<property name="provider">OPENSTACK</property> -->
+<!-- 								</MappingProperty> -->
+							</MappingProperties>
+						</tosca:Properties>
+					</tosca:Requirement>
+				</tosca:Requirements>
+				<tosca:Policies>
+					<tosca:Policy name="St3:STRATEGY CASE cpuUsage &lt; 40 : scalein" policyType="SYBLConstraint" />
+				</tosca:Policies>
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="tosca:script" name="Deployment script" artifactRef="deployDataNode"/>
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+						
+			<tosca:RelationshipTemplate name="Relation" type="CONNECTTO" id="controller2data">			
+				<tosca:SourceElement ref="seedCap_IP"/>
+				<tosca:TargetElement ref="DataNodeServiceUnit_req"/>
+			</tosca:RelationshipTemplate>
+
+		</tosca:TopologyTemplate>
+
+	</tosca:ServiceTemplate>
+
+	<tosca:ArtifactTemplate name="deployseed.sh" id="deployDataController"
+		type="tosca:script">		
+		<tosca:Properties>
+            		<salsa:ScriptArtifactProperty>
+            			<Action>deploy</Action>
+            			<ScriptLanguage>sh</ScriptLanguage>
+            			<PrimaryScript>deployseed.sh</PrimaryScript>
+            		</salsa:ScriptArtifactProperty>
+         </tosca:Properties>
+		<tosca:ArtifactReferences>			
+			<tosca:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/deployseed.sh" />
+			<tosca:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/apache-cassandra-1.1.6-bin.tar.gz" />
+			<tosca:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/ElasticCassandraScripts.tar.gz" />
+		</tosca:ArtifactReferences>
+	</tosca:ArtifactTemplate>
+	<tosca:ArtifactTemplate name="deploydata.sh" id="deployDataNode" type="tosca:script">
+		<tosca:Properties>
+            		<salsa:ScriptArtifactProperty>
+            			<Action>deploy</Action>
+            			<ScriptLanguage>sh</ScriptLanguage>
+            			<PrimaryScript>deploydata.sh</PrimaryScript>
+            		</salsa:ScriptArtifactProperty>
+         </tosca:Properties>		
+		<tosca:ArtifactReferences>			
+			<tosca:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/deploydata.sh" />
+			<tosca:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/apache-cassandra-1.1.6-bin.tar.gz" />
+			<tosca:ArtifactReference
+				reference="http://134.158.75.65/artifacts/cassandra/ElasticCassandraScripts.tar.gz" />
+		</tosca:ArtifactReferences>
+	</tosca:ArtifactTemplate>
+	
+	<tosca:ArtifactType name="war"
+		targetNamespace="http://www.example.com/ToscaTypes" />
+	<tosca:ArtifactType name="tar.gz"
+		targetNamespace="http://www.example.com/ToscaTypes" />
+</tosca:Definitions>

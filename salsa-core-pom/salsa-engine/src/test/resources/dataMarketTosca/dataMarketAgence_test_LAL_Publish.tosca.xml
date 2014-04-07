@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tosca:Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:elasticity="http://www.example.org/NewXMLSchema" 
+	xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12"
+	xmlns:salsa="http://example.com"
+	xsi:schemaLocation="http://docs.oasis-open.org/tosca/ns/2011/12 TOSCA-v1.0.xsd"
+	targetNamespace="http://tempuri.org"
+	id="DaaSApp">
+	
+	<tosca:ServiceTemplate id="DataMarketAgence">
+		<tosca:TopologyTemplate>
+			<tosca:NodeTemplate id="agence"
+				name="agence" type="software"
+				minInstances="10" maxInstances="20">											
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="sh" name="Deployment script" artifactRef="deployAgenceScript"/>
+				</tosca:DeploymentArtifacts>
+				
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate id="agence_os"
+				name="agence os" type="os"
+				minInstances="1" maxInstances="3">
+				<tosca:Properties>
+					<MappingProperties>						
+						<MappingProperty type="os">
+							<property name="instanceType">m1.small</property>
+							<property name="provider">lal@stratuslab</property> <!-- lal@stratuslab / dsg@openstack -->
+							<property name="baseImage">KBhcU87Wm5IZNOXZYGHrczGekwp</property> <!-- KBhcU87Wm5IZNOXZYGHrczGekwp / ami-00000163 -->
+							<property name="packages">openjdk-7-jre</property> <!-- use comma between package -->
+						</MappingProperty>
+					</MappingProperties>
+				</tosca:Properties>
+				
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="tosca:script" name="Deployment script" artifactRef="deployDataController"/>
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			<tosca:RelationshipTemplate type="HOSTON" id="angence_on_os">
+				<tosca:SourceElement ref="agence"/>
+				<tosca:TargetElement ref="agence_os"/>
+			</tosca:RelationshipTemplate>
+		</tosca:TopologyTemplate>
+		
+		
+	</tosca:ServiceTemplate>
+
+	<tosca:ArtifactTemplate id="deployAgenceScript" type="sh">		
+		<tosca:ArtifactReferences>
+			<tosca:ArtifactReference
+				reference="http://134.158.75.65/salsa/upload/files/datamarket/dataMarketAgence_lal_publish.sh" />				
+		</tosca:ArtifactReferences>
+	</tosca:ArtifactTemplate>
+	
+</tosca:Definitions>

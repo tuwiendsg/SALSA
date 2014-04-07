@@ -1,0 +1,94 @@
+<h3>New deployment</h3>
+<form id="inputForm" action='rest/deploy' method="post"
+	enctype="multipart/form-data" target="upload_target">
+	Tosca file: <input type='file' name='file' id='file'> <br />
+	Service name:<input type='text' name='serviceName' id='serviceName'>
+	<br /> <input id="deployBtn" type="submit" onclick="deployNewService()"
+		value="Deploy !">
+	<!--  <input id="uploadBtn" type="submit" value="Upload !">  -->
+	<div id="waittext"></div>
+</form>
+
+<iframe id="upload_target" name="upload_target"
+	style="width: 0; height: 0; border: 1px solid #fff;"></iframe>
+<div id="info1"></div>
+<div id="info2"></div>
+
+<script type="text/javascript">
+ var str="Registering new service.";
+ 
+ function deployNewService(){
+	 var formElement = document.getElementById("inputForm");
+	 var serviceName = document.getElementById("serviceName").value;
+	 var waiting=true;
+	 
+	 $('#inputForm').submit(function(event) {	 
+         event.preventDefault();
+         var formData1 = new FormData($(this)[0]);
+         var timeout;
+         
+         $("#deployBtn").hide();
+         $("#info1").html('sending').fadeIn(); 
+         $("#waittext").text(str).fadeIn();
+         addDotWaiting();
+	     
+         $.ajax({
+                type: 'PUT',
+                url: 'rest/services/' + serviceName,
+                data: formData1,
+                async: false,
+			    cache: false,
+			    contentType: false,
+			    processData: false,
+			    
+			    complete: function (data) {
+                	waiting=false;
+                	$("#deployBtn").show();
+            		$("#waittext").html('');
+                	$.getJSON(listSource,  function(json){ 
+            	  		$('#list').html(createListTable(json.services)).fadeIn();
+            	  	});
+            		toastr.info("Deployed new service !");
+            		clearTimeout(timeout);
+                },
+      		 	error: function (data) {			     
+		            alert("Error in sending deployment request: " + JSON.stringify(data.msg));			            
+     			}  
+         });	// end ajax   
+         
+     }); // end submit
+ }
+	 
+	 function addDotWaiting(){
+		 str=str.concat(".");
+		 $("#waittext").text(str).fadeIn();		 
+  	 	 timeout=setTimeout(addDotWaiting, 1000);	
+	 }
+	  
+ function waitForDeploy()
+ { 
+	var mybody=document.getElementById('upload_target').contentWindow.document.body.innerHTML;
+	if (!mybody.length){
+		$("#deployBtn").hide();
+		setTimeout(waitForDeploy, 1000);
+		str=str.concat(".");
+		$("#waittext").text(str).fadeIn();
+		//alert("wait !: **" + mybody + "**");
+	} else {
+		$.getJSON(listSource,  function(json){ 
+	  		$('#list').html(createListTable(json.services)).fadeIn();
+	  	});		
+		$("#deployBtn").show();
+		$("#waittext").html('');
+		toastr.info("Deployed new service !");
+		document.getElementById('upload_target').contentWindow.document.body.innerHTML="";
+	}
+ }
+
+</script>
+
+
+
+
+
+
