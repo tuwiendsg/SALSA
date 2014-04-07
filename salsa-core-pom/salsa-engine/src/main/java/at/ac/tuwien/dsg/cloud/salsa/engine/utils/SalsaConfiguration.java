@@ -59,6 +59,16 @@ public class SalsaConfiguration {
 		return configuration.getProperty(configKey);
 	}
 	
+	public static String getServiceStorageDir(){
+		return configuration.getProperty("SERVICE_STORAGE");
+	}
 	
+	public static String getArtifactStorage(){
+		return configuration.getProperty("ARTIFACT_STORAGE");
+	}
+	
+	public static String getToscaTemplateStorage(){
+		return configuration.getProperty("TOSCA_TEMPLATE_STORAGE");
+	}
 
 }

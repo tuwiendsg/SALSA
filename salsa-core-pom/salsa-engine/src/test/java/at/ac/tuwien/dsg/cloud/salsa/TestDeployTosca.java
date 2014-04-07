@@ -7,7 +7,7 @@ import java.io.File;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.DeploymentEngineNodeLevel;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.SalsaToscaDeployer;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.ToscaEnricher;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.process.KnowledgeGraph;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.architecturerefine.process.KnowledgeGraph;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 public class TestDeployTosca {

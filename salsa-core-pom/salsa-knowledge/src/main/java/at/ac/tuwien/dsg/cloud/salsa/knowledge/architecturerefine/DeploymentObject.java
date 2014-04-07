@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.architecturerefine;
 
 import java.io.IOException;
 import java.io.StringWriter;

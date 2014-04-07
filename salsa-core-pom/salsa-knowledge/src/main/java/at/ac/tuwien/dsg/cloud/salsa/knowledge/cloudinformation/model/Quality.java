@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.model;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -24,9 +24,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.helpers.PropertiesAdapter;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.melaconcepts.Metric;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.melaconcepts.MetricValue;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.helpers.PropertiesAdapter;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.melaconcepts.Metric;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.melaconcepts.MetricValue;
 
 /**
  *

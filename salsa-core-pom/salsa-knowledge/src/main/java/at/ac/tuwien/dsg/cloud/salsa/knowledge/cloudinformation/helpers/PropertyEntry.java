@@ -15,15 +15,15 @@
  * the License.
  */
 
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.helpers;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.helpers;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.melaconcepts.Metric;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.melaconcepts.MetricValue;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.melaconcepts.Metric;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.melaconcepts.MetricValue;
 
 /**
  *

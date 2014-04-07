@@ -91,7 +91,7 @@ public class ArtifactDeployer {
 					SalsaComponentInstanceData data = new SalsaComponentInstanceData(i);
 					data.setHostedId_Integer(replica);
 					data.setState(SalsaEntityState.ALLOCATING);	// waiting for other conditions
-					centerCon.addComponentData(serviceId, topologyId, chainNode.getId(), data);	// add the 					
+					centerCon.addInstanceUnitMetaData(serviceId, topologyId, chainNode.getId(), data);	// add the 					
 				}
 				waitingForCapabilities(chainNode, def);
 				// wait for downloading and configuring artifact itself
@@ -257,7 +257,7 @@ public class ArtifactDeployer {
 						logger.debug("Sending the IP of this node to the capability of CONNECTTO");						
 						String ip = InetAddress.getLocalHost().getHostAddress();
 						SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), ip);				
-						centerCon.updateReplicaCapability(topologyId, node.getId(), 0, capaString);
+						centerCon.updateInstanceUnitCapability(topologyId, node.getId(), 0, capaString);
 					} catch (UnknownHostException e){
 						PioneerLogger.logger.error("Cannot get the IP of the host of node: " + node.getId());
 					}

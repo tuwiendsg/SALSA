@@ -67,7 +67,7 @@ public class TestSalsaData {
 		
 		//updateComponent(deployID, topoID, node);
 		SalsaCenterConnector con = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), deployID, "/tmp", EngineLogger.logger);
-		con.addComponentData("7ac87894-7d0b-4466-a767-f3783980b5a3", "casandra", "os1", node);
+		//con.addInstanceUnit("7ac87894-7d0b-4466-a767-f3783980b5a3", "casandra", "os1", node);
 		
 	}
 	

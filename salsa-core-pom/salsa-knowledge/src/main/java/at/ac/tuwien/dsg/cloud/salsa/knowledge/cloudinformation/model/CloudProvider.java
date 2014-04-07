@@ -14,17 +14,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.model;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.JarException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -107,4 +106,5 @@ public class CloudProvider extends Entity {
     	marshaller.marshal(this, output);
     	marshaller.marshal(this, System.out);
     }
+    
 }

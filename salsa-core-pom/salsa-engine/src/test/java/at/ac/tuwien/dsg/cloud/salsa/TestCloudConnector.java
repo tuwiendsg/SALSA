@@ -14,8 +14,9 @@ import javax.xml.bind.JAXBException;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ServiceDeployerException;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.VMStates;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.JEC2ClientFactory;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.OpenStackTypica;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.stratuslab.StratusLabConnector;
@@ -28,17 +29,17 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 import com.xerox.amazonws.ec2.InstanceType;
 
-public class TestConnector {
+public class TestCloudConnector {
 	public static void main(String[] args) throws Exception {
 		// testUserData();
 		// testQuery();
 		// testAddCapaAndProperties();
-		//teststratus();
+		teststratus();
 		//testDsgOpenStack();
 		//testMultiCloudConnector();
 		//testCenterConnector();
 		//testAddCapaAndProperties();
-		testCenterConfigurations();
+		//testCenterConfigurations();
 	}
 	
 	private static void testCenterConfigurations() throws Exception{
@@ -55,15 +56,10 @@ public class TestConnector {
 		
 	}
 
-	private static void teststratus() throws Exception{
-		StratusLabConnector sc = new StratusLabConnector(EngineLogger.logger, "cloud.lal.stratuslab.eu", "pdisk.lal.stratuslab.eu", "hungld", "thovasoi", "/home/hungld/.ssh/id_rsa.pub", "/home/hungld/Work/celar/implementation/stratuslab");
-		ArrayList<String> sec = new ArrayList<>();
-		sec.add("default");
-		sc.launchInstance("KBhcU87Wm5IZNOXZYGHrczGekwp", sec, "", "echo test", InstanceType.DEFAULT, 1, 1);
-	}
+	
 
 	private static void testMultiCloudConnector() {
-		String conf = TestConnector.class.getResource(
+		String conf = TestCloudConnector.class.getResource(
 				"/cloudUserParameters.ini").getFile();
 		File f = new File(conf);
 		MultiCloudConnector mcc = new MultiCloudConnector(EngineLogger.logger,
@@ -79,7 +75,7 @@ public class TestConnector {
 
 		SalsaCapaReqString capa = new SalsaCapaReqString(
 				"seedCap_IP_test", "10.0.0.41");
-		con.updateReplicaCapability("DataMarketAgence", "agence", 29, capa);
+		con.updateInstanceUnitCapability("DataMarketAgence", "agence", 29, capa);
 
 	}
 
@@ -114,7 +110,7 @@ public class TestConnector {
 	 int socketTimeout = 5000;
 	 int connectionTimeout = 3000;
 	 int connectionManagerTimeout = 6000;
-	 int maxRetries = 10;
+	 int maxRetries = 100;
 	 int maxConnections = 10;
 	 JEC2ClientFactory cf = new JEC2ClientFactory(
 	 EngineLogger.logger,
@@ -126,19 +122,66 @@ public class TestConnector {
 	 connectionManagerTimeout, maxRetries, maxConnections);
 	 long retryDelayMillis = 5000;
 	 int deployMaxRetries = 24;
-	 long deployWaitMillis = 10000;
+	 long deployWaitMillis = 1000;
 	
 	 OpenStackTypica os = new OpenStackTypica(EngineLogger.logger, cf,
 	 maxRetries,
 	 retryDelayMillis, deployMaxRetries, deployWaitMillis, "Hungld");
 	
-	
+	 long lStartTime = System.currentTimeMillis();
+		 
 	 String newInstance = os.launchInstance("ami-00000163",
-	 Arrays.asList("default"), "salsa", "test=1", InstanceType.DEFAULT, 1, 1);
+	 Arrays.asList("default"), "salsa", "test=1", InstanceType.LARGE, 1, 1);
 	 InstanceDescription id = os.getInstanceDescriptionByID(newInstance);
+	 
+	 long lEndTime = System.currentTimeMillis();	 
+	 long difference = lEndTime - lStartTime;	 
+	 System.out.println("Elapsed milliseconds: " + difference);
+	 
+	 
 	 System.out.println(id.getInstanceId());
 	 System.out.println(id.getPrivateIp());
 	 System.out.println(id.getState());
+	 
+	 os.removeInstance(id.getInstanceId());
+	 
 	 }
+	 
+	 
+	 private static void teststratus() throws Exception{
+			StratusLabConnector sc = new StratusLabConnector(EngineLogger.logger, "cloud.lal.stratuslab.eu", "pdisk.lal.stratuslab.eu", "hungld", "thovasoi", "/home/hungld/.ssh/id_rsa.pub", "/home/hungld/Work/celar/implementation/stratuslab");
+			ArrayList<String> sec = new ArrayList<>();
+			sec.add("default");
+			
+			long lStartTime = System.currentTimeMillis();
+			
+			String id = sc.launchInstance("KBhcU87Wm5IZNOXZYGHrczGekwp", sec, "", "echo test", InstanceType.SMALL, 1, 1);
+			for (int i=0;i<10000;i++){
+				InstanceDescription des = sc.getInstanceDescriptionByID(id);
+				if (des.getState().equals(VMStates.Running)){
+					System.out.println("RUNNING !");
+					break;
+				} else {
+					try{
+						System.out.println("state: " +des.getState().getString()+". wait for " + i);
+						Thread.sleep(1000);
+					} catch (Exception e){
+						
+					}
+				}
+			}
+			
+			 long lEndTime = System.currentTimeMillis();	 
+			 long difference = lEndTime - lStartTime;	 
+			 System.out.println("Elapsed milliseconds: " + difference);
+			
+			 try{
+					Thread.sleep(5);
+				} catch (Exception e){
+					
+				}
+			 sc.removeInstance(id);
+			
+		}
 
 }

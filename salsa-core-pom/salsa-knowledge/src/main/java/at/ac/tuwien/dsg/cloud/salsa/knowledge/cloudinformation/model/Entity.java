@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.model;
 
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;

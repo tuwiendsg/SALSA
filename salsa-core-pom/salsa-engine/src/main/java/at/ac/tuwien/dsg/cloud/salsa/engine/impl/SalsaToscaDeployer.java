@@ -14,12 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.management.ServiceNotFoundException;
-
-import org.apache.log4j.Logger;
-
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
@@ -34,6 +30,8 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
+
+
 
 
 public class SalsaToscaDeployer {
@@ -75,35 +73,44 @@ public class SalsaToscaDeployer {
 		DeploymentEngineNodeLevel engine = new DeploymentEngineNodeLevel(configFile);
 		
 		// register service, all state is INITIAL
-		String fullToscaFile="/tmp/"+deployID.toString();
+		String fullToscaFile = SalsaConfiguration.getServiceStorageDir()+"/"+deployID.toString();
 		
 		//resetServiceNodeState(def);
-		ToscaXmlProcess.writeToscaDefinitionToFile(def, fullToscaFile);
-		engine.submitService(fullToscaFile);
+		ToscaXmlProcess.writeToscaDefinitionToFile(def, fullToscaFile);	
 		
 		// register service running data		
-		String fullSalsaDataFile = "/tmp/"+deployID.toString()+".data";
+		String fullSalsaDataFile = SalsaConfiguration.getServiceStorageDir()+"/"+deployID.toString()+".data";
 		SalsaCloudServiceData serviceData = buildRuntimeDataFromTosca(def);
 		serviceData.setId(deployID.toString());		
 		serviceData.setName(serviceName);
 		SalsaXmlDataProcess.writeCloudServiceToFile(serviceData, fullSalsaDataFile);
-		engine.submitService(fullSalsaDataFile);
+		
 		
 		// deploy all VM of first Topology
 		// TODO: separate deployment Node of Topology
-		String topoId = ToscaStructureQuery.getFirstServiceTemplate(def).getId();
-		engine.deployConcurrentVMNodes(deployID.toString(), topoId, mapNodeAndRep, def);
-		
-		// delete tmp topology file
-		File file = new File(fullToscaFile);
-		file.delete();
-		
+		String topoId = ToscaStructureQuery.getFirstServiceTemplate(def).getId();	
+		//engine.deployConcurrentVMNodes(deployID.toString(), topoId, mapNodeAndRep, def);
+		// call to the service to deploy multiple concurent
+		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), deployID.toString(), "/tmp", EngineLogger.logger);		
+		int replica = 0;
+		for (Map.Entry<String, Integer> map : mapNodeAndRep.entrySet()) {
+			EngineLogger.logger.debug("Deploying new service, Vm concurent: " + map.getKey() +" - " + map.getValue());
+			replica=0;
+			for (int i=0; i<map.getValue(); i++){				
+				centerCon.addInstanceUnit(deployID.toString(), topoId, map.getKey(), replica);				
+				replica+=1;
+			}
+			centerCon.updateNodeIdCounter(topoId, map.getKey(), replica);
+		}
 		
 		EngineLogger.logger.info("Deployed VMs for service: " + deployID.toString());
 		
 		
 		return serviceData;
 	}
+	
+	
+	
 	
 	/**
 	 * Deploy more instance of a node. Only support deploying VM Tosca node
@@ -114,8 +121,11 @@ public class SalsaToscaDeployer {
 	 */
 	public void deployMoreInstance(String serviceId, String topologyId, String nodeId, int quantity){
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/tmp", EngineLogger.logger);
+		EngineLogger.logger.debug("1-----");
 		TDefinitions def = centerCon.getToscaDescription();
-		SalsaCloudServiceData service = centerCon.getUpdateCloudServiceRuntime();		
+		EngineLogger.logger.debug("2-----");
+		SalsaCloudServiceData service = centerCon.getUpdateCloudServiceRuntime();
+		EngineLogger.logger.debug("3------");
 		SalsaComponentData node = service.getComponentById(topologyId, nodeId);
 		
 		if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
@@ -174,7 +184,7 @@ public class SalsaToscaDeployer {
 			EngineLogger.logger.debug("Removing virtual machine. Provider: " + providerName + "InstanceId: " + instanceId);				
 			cloudCon.removeInstance(SalsaCloudProviders.fromString(providerName), cloudInstanceId);
 			
-			centerCon.removeOneInstance(serviceId, topologyId, nodeId, instanceId);
+			//centerCon.removeOneInstance(serviceId, topologyId, nodeId, instanceId);
 			return true;
 		} else {
 			return false;
@@ -250,6 +260,7 @@ public class SalsaToscaDeployer {
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "", EngineLogger.logger);
 		SalsaCloudServiceData service = centerCon.getUpdateCloudServiceRuntime();
 		if (service == null) {
+			EngineLogger.logger.error("Cannot clean service. Service description is not found.");
 			return false;
 		}
 		List<SalsaComponentInstanceData> repLst = service.getAllReplicaByType(SalsaEntityType.OPERATING_SYSTEM);		
@@ -263,7 +274,7 @@ public class SalsaToscaDeployer {
 				cloudCon.removeInstance(SalsaCloudProviders.fromString(providerName), instanceId);
 			}			
 		}
-		centerCon.deregisterService();
+		//centerCon.deregisterService();
 		return true;
 	}
 	
