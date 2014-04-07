@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import at.ac.tuwien.dsg.cloud.salsa.engine.services.api.SalsaEngineApiInterface;
+import at.ac.tuwien.dsg.cloud.salsa.engine.services.interfaces.SalsaEngineApiInterface;
 
 import com.sun.jersey.multipart.FormDataParam;
 
@@ -34,7 +34,7 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 		logger = Logger.getLogger("EngineLogger");
 	}
 	
-	SalsaEngineInternal iE = new SalsaEngineInternal();
+	SalsaEngineInternal internalEngine = new SalsaEngineInternal();
 	
 	@PUT
 	@Path("/services/{serviceName}")
@@ -42,13 +42,13 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 	public Response deployService(
 			@PathParam("serviceName") String serviceName,
 			@FormDataParam("file") InputStream uploadedInputStream) {		
-		return iE.deployService(serviceName, uploadedInputStream);
+		return internalEngine.deployService(serviceName, uploadedInputStream);
 	}
 		
 	@DELETE
 	@Path("/services/{serviceId}")
 	public Response undeployService(@PathParam("serviceId")String serviceId){
-		return iE.undeployService(serviceId);
+		return internalEngine.undeployService(serviceId);
 	}
 	
 	@POST
@@ -58,7 +58,7 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
                                   @PathParam("topologyId") String topologyId,
                                   @PathParam("nodeId") String nodeId,
                                   @PathParam("quantity") int quantity) {
-		return iE.spawnInstance(serviceId, topologyId, nodeId, quantity);
+		return internalEngine.spawnInstance(serviceId, topologyId, nodeId, quantity);
 	}
 	
 	/**
