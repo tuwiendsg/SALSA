@@ -6,7 +6,7 @@ import generated.oasis.tosca.TNodeTemplate;
 import generated.oasis.tosca.TServiceTemplate;
 import generated.oasis.tosca.TTopologyTemplate;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.ToscaEnricher;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.process.KnowledgeGraph;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.architecturerefine.process.KnowledgeGraph;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;

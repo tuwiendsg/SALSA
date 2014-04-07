@@ -8,8 +8,9 @@
 
 <script type="text/javascript">
 
-var dataSource=salsaCenterRestEndpoint + "/getserviceruntimexml/"+getURLParameter('id');
-var deployMoreInstanceSource="rest/deployInstance"; // need to add serviceid, topologyid, nodeid later
+var dataSource=salsaCenterRestEndpoint + "/viewgenerator/cloudservice/xml/"+getURLParameter('id');
+
+var deployMoreInstanceSource="/instanceunits"; // need to add serviceid, topologyid, nodeid later
 
 var refeshCount=0;
 
@@ -168,13 +169,30 @@ function getElementByTagNameToString(tagName, parentElement){
 function deployMoreInstance(serviceId, topologyId, nodeId, inputboxQuantityId){	
 	var quantity=document.getElementById(inputboxQuantityId).value;
 	url = deployMoreInstanceSource + "/" +serviceId+"/"+topologyId+"/"+nodeId+"/"+quantity;
-	alert(url);
+	
 	toastr.info("Requesting to deploy "+quantity+" instance(s) of node "+nodeId+" !");
 	
-	$.get(url, function(data) {
-			toastr.success("Deployed "+quantity+" instance(s) done !","Done");
+// 	$.put(url, function(data) {
+// 			toastr.success("Deployed "+quantity+" instance(s) done !","Done");
+// 	    }
+// 	);
+	// /instanceunits/eeb20807-6cb6-455e-a720-30093436eecd/DataMarketAgence/agence_os/1
+	
+	$.ajax({
+	    url: 'rest/instanceunits/' +serviceId+"/"+topologyId+"/"+nodeId+"/"+quantity,
+	    type: 'PUT',
+	    async: false,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+ 	    error: function(xhr){
+ 	    	toastr.error("Unable to deploy instance ! Code: " + xhr.status,"Error");
+ 	    },
+	    complete: function(xhr, textStatus) {
+	    	toastr.success("Deployed "+quantity+" instance(s) done ! Code: " + xhr.status,"Done");
 	    }
-	);
+	});
+	
 }
 
 </script>

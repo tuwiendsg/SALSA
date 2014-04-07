@@ -12,13 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
@@ -72,27 +65,27 @@ public class DeploymentEngineNodeLevel {
 	 * @return A Node with capabilities properties.
 	 */
 	public SalsaComponentInstanceData deployVMNode(String serviceId, String topologyId, String nodeId, int instanceNumber, TDefinitions def) {
-		EngineLogger.logger.info("Creating this VM node: " + nodeId);
+		EngineLogger.logger.info("Creating this VM node: " + nodeId +". Tosca ID:" + def.getId());
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/not/use/workingdir", EngineLogger.logger);
-
 		TNodeTemplate enhancedNode = (TNodeTemplate) ToscaStructureQuery
 				.getNodetemplateById(nodeId, def);
 		// create a replica of node and update state: PROLOG
 		SalsaComponentInstanceData repData = new SalsaComponentInstanceData(instanceNumber, null);
-		
 		repData.setState(SalsaEntityState.ALLOCATING);
+		
+		EngineLogger.logger.debug("YOUR ARE HERE TO DEPLOY 4");
 		
 		// get the static information of TOSCA and put into SalsaComponentInstanceData property
 		SalsaInstanceDescription_VM instanceDesc = new SalsaInstanceDescription_VM();
 		SalsaMappingProperties mapProp = (SalsaMappingProperties) enhancedNode.getProperties().getAny();
 		instanceDesc.updateFromMappingProperties(mapProp);
-		
+		EngineLogger.logger.debug("YOUR ARE HERE TO DEPLOY 5");
 		// add the initiate properties to the InstanceData
 		repData.setProperties(new SalsaComponentInstanceData.Properties());		
 		repData.getProperties().setAny(instanceDesc);
 		
-		// add the component to server
-		centerCon.addComponentData(serviceId, topologyId, nodeId, repData);	
+		// add the component instance to server
+		//centerCon.addInstanceUnit(serviceId, topologyId, nodeId, repData);
 		
 		//enhancedNode.setState(SalsaEntityState.PROLOGUE.getNodeStateString());
 
@@ -108,7 +101,7 @@ public class DeploymentEngineNodeLevel {
 //			maxInstanceInt = Integer.parseInt(enhancedNode.getMaxInstances());
 //		}
 		
-		System.out.println("DEBUG: " + nodeId + " --- "	+ instanceDesc.getInstanceType());
+		EngineLogger.logger.debug("DEBUG: " + nodeId + " --- "	+ instanceDesc.getInstanceType());
 		EngineLogger.logger.debug("CLOUD PROVIDER = " + instanceDesc.getProvider() +"//" + SalsaCloudProviders.fromString(instanceDesc.getProvider()));
 		
 		// start the VM
@@ -123,10 +116,10 @@ public class DeploymentEngineNodeLevel {
 		// update the instance property from cloud specific to SALSA format
 		updateVMProperties(instanceDesc, indes);
 		
-		EngineLogger.logger.debug(instanceDesc.getProvider()+" -- " + instanceDesc.getBaseImage() + " -- " + instanceDesc.getInstanceType()+" -- " + enhancedNode.getMinInstances());
-		
+		EngineLogger.logger.debug(instanceDesc.getProvider()+" -- " + instanceDesc.getBaseImage() + " -- " + instanceDesc.getInstanceType()+" -- " + enhancedNode.getMinInstances());		
 		EngineLogger.logger.debug("A VM for " + nodeId + " has been created.");
-		centerCon.updateReplicaProperty(topologyId, nodeId, instanceNumber, instanceDesc);		
+		
+		centerCon.updateInstanceUnitProperty(topologyId, nodeId, instanceNumber, instanceDesc);		
 		
 		//centerCon.updateNodeProperty(topologyId, nodeId, replica, sid);
 		// The configuration will be set until pionner is started
@@ -356,7 +349,10 @@ public class DeploymentEngineNodeLevel {
 		}
 
 		private synchronized SalsaComponentInstanceData executeDeploymentNode() {
-			return deployVMNode(serviceId, topologyId, nodeId, replica, def);
+			SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/tmp", EngineLogger.logger);
+			centerCon.addInstanceUnit(serviceId, topologyId, nodeId, replica);			
+			//return deployVMNode(serviceId, topologyId, nodeId, replica, def);
+			return null;
 		}
 
 		@Override
@@ -384,26 +380,26 @@ public class DeploymentEngineNodeLevel {
 		ToscaXmlProcess.writeToscaDefinitionToFile(def, fileName);
 	}
 	
-	public void submitService(String serviceFile){
-		
-			String url=SalsaConfiguration.getSalsaCenterEndpoint()
-					+ "/rest/submit";
-			EngineLogger.logger.debug("Trying to POST the service description to: " + url);
-			HttpClient client = new DefaultHttpClient();
-			HttpPost post = new HttpPost(url);
-			FileBody uploadfile=new FileBody(new File(serviceFile));
-			MultipartEntity reqEntity = new MultipartEntity();
-			reqEntity.addPart("file", uploadfile);
-			post.setEntity(reqEntity);
-			try {
-				HttpResponse response = client.execute(post);
-				if (response.getStatusLine().getStatusCode() != 200) {
-					EngineLogger.logger.error("Server failed to register service: " + new File(serviceFile).getName());				
-				}				
-			} catch (Exception e){
-				EngineLogger.logger.error("Error to submit service: " + serviceFile);
-			}					
-	}
+//	public void submitService(String serviceFile){
+//		
+//			String url=SalsaConfiguration.getSalsaCenterEndpoint()
+//					+ "/rest/cloudservices/submit";
+//			EngineLogger.logger.debug("Trying to POST the service description to: " + url);
+//			HttpClient client = new DefaultHttpClient();
+//			HttpPost post = new HttpPost(url);
+//			FileBody uploadfile=new FileBody(new File(serviceFile));
+//			MultipartEntity reqEntity = new MultipartEntity();
+//			reqEntity.addPart("file", uploadfile);
+//			post.setEntity(reqEntity);
+//			try {
+//				HttpResponse response = client.execute(post);
+//				if (response.getStatusLine().getStatusCode() != 200) {
+//					EngineLogger.logger.error("Server failed to register service: " + new File(serviceFile).getName());				
+//				}				
+//			} catch (Exception e){
+//				EngineLogger.logger.error("Error to submit service: " + serviceFile);
+//			}					
+//	}
 	
 	
 }

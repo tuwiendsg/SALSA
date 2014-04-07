@@ -118,7 +118,7 @@ public class Main {
 			// CURRENTLY, SET CAPABILITY FOR THE FIRST INSTANCE OF THE NODE !!!
 			SalsaCapaReqString capa = new SalsaCapaReqString(args[1],  args[2]);
 			String nodeTmpId = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(args[1], def).getId();
-			centerCon.updateReplicaCapability(topologyId, nodeTmpId, 0, capa);	
+			centerCon.updateInstanceUnitCapability(topologyId, nodeTmpId, 0, capa);	
 			PioneerLogger.logger.debug("Set capability "+args[1]+" as " + args[2]);
 			break;
 		}

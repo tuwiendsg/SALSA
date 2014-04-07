@@ -1,6 +1,6 @@
 package at.ac.tuwien.dsg.cloud.salsa.salsa_common;
 
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.process.KnowledgeGraph;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.architecturerefine.process.KnowledgeGraph;
 
 public class TestKnowledgeBase {
 	public static void main(String[] args) throws Exception{

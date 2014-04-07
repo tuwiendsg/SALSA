@@ -1,9 +1,9 @@
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.impl;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.architecturerefine.impl;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.architecturerefine.InstrumentalMechanism;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.architecturerefine.InstrumentalMechanism;
 
 /** 
  * How to execute apt on linux

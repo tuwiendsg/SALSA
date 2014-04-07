@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.jsondata;
+package at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,7 +137,7 @@ public class ServiceJsonDataTree {
 		this.isAbstract = true;
 		this.setNodeType(data.getType());
 		this.connectto=data.getConnecttoId();
-		logger.debug("On abstract, Connectto size: " + this.connectto.size());
+		//logger.debug("On abstract, Connectto size: " + this.connectto.size());
 				
 		List<SalsaComponentInstanceData> instances;
 //		logger.debug("PI123 - nodeid:" + data.getId() +" which hoston " + hostOnId);
@@ -171,20 +171,20 @@ public class ServiceJsonDataTree {
 	
 	// convert instance. abstractNode is for geting TYPE, knowing how to parse properties
 	public void loadData(SalsaComponentInstanceData instance, List<SalsaComponentData> hostOnCompos, SalsaComponentData abstractNode, SalsaTopologyData topo){
-		logger.debug("Adding instance node id: " + instance.getInstanceId());
+		//logger.debug("Adding instance node id: " + instance.getInstanceId());
 		this.id = abstractNode.getId()+"_"+Integer.toString(instance.getInstanceId());		
 		this.setState(instance.getState());		
 		this.isAbstract = false;
 		this.setState(instance.getState());
 		
 		this.setNodeType(abstractNode.getType());
-		logger.debug("Let check connectto ID ");
+		//logger.debug("Let check connectto ID ");
 		if (!abstractNode.getConnecttoId().isEmpty()){
-			logger.debug("Inside the list ");
+//			logger.debug("Inside the list ");
 			for (String conId : abstractNode.getConnecttoId()) {
-				logger.debug("List item: " + conId);
+//				logger.debug("List item: " + conId);
 				this.connectto.add(conId+"_0"); // all instance of this node connect to instance 0
-				logger.debug("Add done: " + conId+"_0");
+//				logger.debug("Add done: " + conId+"_0");
 			}
 			
 		}
@@ -204,16 +204,16 @@ public class ServiceJsonDataTree {
 		//logger.debug("The instance node know it parent type is: " + type);
 		// put properties
 		if (type.equals(SalsaEntityType.OPERATING_SYSTEM) && instance.getProperties()!=null){
-			logger.debug("Putting property of OS type");			
+//			logger.debug("Putting property of OS type");			
 			SalsaInstanceDescription_VM props = (SalsaInstanceDescription_VM)instance.getProperties().getAny();
 			this.setProperties(props.exportToMap());
 		}
 		// TODO: properties for others
 							
 		// recursive components which host on this node
-		logger.debug("Will recursive by hostOnCompos.size(): " + hostOnCompos.size());
+//		logger.debug("Will recursive by hostOnCompos.size(): " + hostOnCompos.size());
 		for (SalsaComponentData compo : hostOnCompos) {
-			logger.debug(" -- PI123 - Recursiving id: " + compo.getId());
+//			logger.debug(" -- PI123 - Recursiving id: " + compo.getId());
 			ServiceJsonDataTree newNode = new ServiceJsonDataTree();
 			newNode.loadData(compo, instance.getInstanceId(), topo);
 			addChild(newNode);

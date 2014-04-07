@@ -14,15 +14,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.helpers;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.helpers;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.melaconcepts.Metric;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.melaconcepts.MetricValue;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.melaconcepts.Metric;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.melaconcepts.MetricValue;
 
 /**
  *

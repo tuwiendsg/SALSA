@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.utils;
+package at.ac.tuwien.dsg.cloud.salsa.engine.utils;
 
 
 import org.apache.log4j.PropertyConfigurator;

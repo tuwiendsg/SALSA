@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.jsondata;
+package at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -28,8 +28,8 @@ import javax.xml.bind.JAXBException;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
-import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.utils.CenterConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.salsa_center_services.utils.CenterLogger;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterConfiguration;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterLogger;
 
 public class ServiceJsonList {
 	List<ServiceInfo> services = new ArrayList<ServiceInfo>();

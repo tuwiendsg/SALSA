@@ -1,8 +1,12 @@
 package at.ac.tuwien.dsg.cloud.salsa.common.model;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -13,6 +17,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
@@ -140,5 +145,20 @@ public class SalsaComponentInstanceData extends SalsaEntity {
 	public void setCapabilities(Capabilities capabilities) {
 		this.capabilities = capabilities;
 	}
+	
+	
+	public String convertToXML() throws JAXBException{
+		JAXBContext jaxbContext = JAXBContext // beside data.class, addition
+				// classes for contents
+				.newInstance(SalsaComponentData.class, // e.g. when update Replica, need its capability and InstanceDes.
+							 SalsaInstanceDescription_VM.class,
+							 SalsaCapaReqString.class);
+		Marshaller msl = jaxbContext.createMarshaller();
+		msl.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		StringWriter result = new StringWriter();
+		msl.marshal(this, result);
+		return result.toString();
+	}
+	
 	
 }

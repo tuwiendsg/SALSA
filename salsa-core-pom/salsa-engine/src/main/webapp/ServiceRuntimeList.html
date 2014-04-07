@@ -2,8 +2,7 @@
 <div id="list">Loading ...</div>
 
 <script type="text/javascript">
-var listSource=salsaCenterRestEndpoint+"/getservicejsonlist";
-var underegisterSource="rest/undeploy"; // need + id latter
+var listSource=salsaCenterRestEndpoint+"/viewgenerator/cloudservice/json/list";
 
 $.getJSON(listSource,  function(json){ 
 	$('#list').html(createListTable(json.services)).fadeIn();
@@ -39,18 +38,35 @@ function createListTable(data){
 }
 
 function deregisterService(serviceId){
-	url = underegisterSource + "/" + serviceId;
 	$('#treeView').html("").fadeIn();
 	$('#serviceRuntimeTable').html("").fadeIn();
 	
-	$.get(url, function(data) {
-		       //location.reload();
-		       $.getJSON(listSource,  function(json){ 
-			  		$('#list').html(createListTable(json.services)).fadeIn();
-			  	});
-		       toastr.info("Removed service "+ serviceId +" !");
-		    }
-		);
+	$.ajax({
+	    url: 'rest/services/' + serviceId,
+	    type: 'DELETE',
+	    async: false,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    
+	    complete: function(result) {
+	    	$.getJSON(listSource,  function(json){ 
+		  		$('#list').html(createListTable(json.services)).fadeIn();
+		  	});
+	       toastr.info("Removed service "+ serviceId +" !");
+	    }
+	});
+	
+	
+	
+// 	$.get(url, function(data) {
+// 		       //location.reload();
+// 		       $.getJSON(listSource,  function(json){ 
+// 			  		$('#list').html(createListTable(json.services)).fadeIn();
+// 			  	});
+// 		       toastr.info("Removed service "+ serviceId +" !");
+// 		    }
+// 		);
 }
 
 

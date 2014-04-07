@@ -14,7 +14,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.helpers;
+package at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.helpers;
 
 import java.util.ArrayList;
 import java.util.Collections;

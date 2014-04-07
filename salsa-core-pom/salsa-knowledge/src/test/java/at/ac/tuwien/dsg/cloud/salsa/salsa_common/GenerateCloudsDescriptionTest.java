@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.CloudProvider;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.Resource;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.ServiceUnit;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.melaconcepts.Metric;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.model.cloudinformation.melaconcepts.MetricValue;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.melaconcepts.Metric;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.melaconcepts.MetricValue;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.model.CloudProvider;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.model.Resource;
+import at.ac.tuwien.dsg.cloud.salsa.knowledge.cloudinformation.model.ServiceUnit;
 
 /**
  * Hello world!
