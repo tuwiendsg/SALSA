@@ -9,8 +9,6 @@ import java.util.Properties;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.log4j.PropertyConfigurator;
-
 import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
 import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
@@ -89,7 +87,7 @@ public class Main {
 
 		switch (command) {
 		case "deploy":
-			centerCon.setNodeState(topologyId, nodeId, replica, SalsaEntityState.RUNNING);
+			centerCon.updateNodeState(topologyId, nodeId, replica, SalsaEntityState.RUNNING);
 			deployer.deployNodeChain(thisNode);
 			break;
 		case "checkcapa":	// remote			
@@ -133,13 +131,13 @@ public class Main {
 		case "getreq":
 		{
 			String reqIdGet = args[1];
-			String reqValue = centerCon.getRequirementValue(serviceId, topologyId, nodeId, 0, reqIdGet);
+			String reqValue = centerCon.getRequirementValue(topologyId, nodeId, 0, reqIdGet);
 			System.out.println(reqValue);
 			break;
 		}
 		case "setnodestate":
 		{
-			centerCon.setNodeState(topologyId, args[1], replica, SalsaEntityState.fromString(args[2]));
+			centerCon.updateNodeState(topologyId, args[1], replica, SalsaEntityState.fromString(args[2]));
 			//def = centerCon.updateTopology();
 			break;
 		}

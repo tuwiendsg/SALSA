@@ -31,9 +31,6 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
-
-
-
 public class SalsaToscaDeployer {
 	
 	// some hard-code variables
@@ -92,15 +89,11 @@ public class SalsaToscaDeployer {
 		//engine.deployConcurrentVMNodes(deployID.toString(), topoId, mapNodeAndRep, def);
 		// call to the service to deploy multiple concurent
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), deployID.toString(), "/tmp", EngineLogger.logger);		
-		int replica = 0;
+				
 		for (Map.Entry<String, Integer> map : mapNodeAndRep.entrySet()) {
-			EngineLogger.logger.debug("Deploying new service, Vm concurent: " + map.getKey() +" - " + map.getValue());
-			replica=0;
-			for (int i=0; i<map.getValue(); i++){				
-				centerCon.addInstanceUnit(deployID.toString(), topoId, map.getKey(), replica);				
-				replica+=1;
-			}
-			centerCon.updateNodeIdCounter(topoId, map.getKey(), replica);
+			centerCon.updateNodeIdCounter(topoId, map.getKey(), 0);
+			EngineLogger.logger.debug("Deploying new service, Vm concurent: " + map.getKey() +" - " + map.getValue());		
+			deployMoreInstance(deployID.toString(), topoId, map.getKey(),map.getValue());			
 		}
 		
 		EngineLogger.logger.info("Deployed VMs for service: " + deployID.toString());

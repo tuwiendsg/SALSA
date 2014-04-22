@@ -123,7 +123,7 @@ public class SalsaCenterConnector {
 	 * @param state
 	 *            The state
 	 */
-	public String setNodeState(String topologyId, String nodeId, int instanceId,
+	public String updateNodeState(String topologyId, String nodeId, int instanceId,
 			SalsaEntityState state) {
 		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/state/{value}
 		String url = centerRestfulEndpoint 
@@ -203,7 +203,7 @@ public class SalsaCenterConnector {
 	 * @param componentData
 	 *            The component object
 	 */
-	public void addInstanceUnit(String serviceId, String topologyId,
+	public void addInstanceUnit(String topologyId,
 			String nodeId, int instanceId) {
 		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}
 		String url = centerRestfulEndpoint 
@@ -214,15 +214,15 @@ public class SalsaCenterConnector {
 		queryDataToCenter(url, HttpVerb.PUT, "", "", "");
 	}
 	
-	public void addInstanceUnitMetaData(String serviceId, String topologyId,
+	public void addInstanceUnitMetaData(String topologyId,
 			String nodeId, SalsaComponentInstanceData data) {
 		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/metadata
 		String url = centerRestfulEndpoint 
 				+ "/services/" + serviceId
 				+ "/topologies/" + topologyId 
-				+ "/nodes/" + nodeId + "/metadata";
+				+ "/nodes/" + nodeId + "/instance-metadata";
 		try{		
-			queryDataToCenter(url, HttpVerb.PUT, data.convertToXML(), MediaType.APPLICATION_XML, "");
+			queryDataToCenter(url, HttpVerb.POST, data.convertToXML(), MediaType.APPLICATION_XML, "");
 		} catch(JAXBException e){
 			logger.error(e.toString());
 		}
@@ -245,7 +245,7 @@ public class SalsaCenterConnector {
 	public SalsaCloudServiceData getUpdateCloudServiceRuntime() {
 		try {
 			String xml = getUpdateCloudServiceRuntimeXML();
-			logger.debug("IN getUpdateCloudServiceRuntime. XML: " + xml);
+//			logger.debug("IN getUpdateCloudServiceRuntime. XML: " + xml);
 			if (xml == null) {
 				return null;
 			} else {
@@ -286,7 +286,7 @@ public class SalsaCenterConnector {
 	/*
 	 * Get the json of running service to generate the tree
 	 */
-	public String getserviceruntimejsontree(String serviceId) {
+	public String getserviceruntimejsontree() {
 		String url = centerRestfulEndpoint + "/viewgenerator/cloudservice/json/compact/"
 				+ serviceId;
 		return queryDataToCenter(url, HttpVerb.GET, "", "", MediaType.TEXT_PLAIN);
@@ -295,13 +295,13 @@ public class SalsaCenterConnector {
 	/*
 	 * Get the json of running serviceto generate the tree
 	 */
-	public String getserviceruntimejsontreecompact(String serviceId) {
+	public String getserviceruntimejsontreecompact() {
 		String url = centerRestfulEndpoint + "/viewgenerator/cloudservice/json/full/"
 				+ serviceId;
 		return queryDataToCenter(url, HttpVerb.GET, "", "", MediaType.TEXT_PLAIN);
 	}
 
-	public String getRequirementValue(String serviceId, String topologyId,
+	public String getRequirementValue(String topologyId,
 			String nodeId, int instanceId, String reqId) {
 		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/requirement/{reqId}
 		String url = centerRestfulEndpoint 
