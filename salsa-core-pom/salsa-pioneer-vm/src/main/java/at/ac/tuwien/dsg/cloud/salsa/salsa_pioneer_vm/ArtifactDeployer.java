@@ -74,7 +74,7 @@ public class ArtifactDeployer {
 				
 				logger.debug("Starting deploy node: "+chainNode.getId());
 				// don't need it ? setting state for ServiceUnit, not for Instance. Set -1 as instanceId will do the job
-				centerCon.setNodeState(topologyId, chainNode.getId(), -1, SalsaEntityState.ALLOCATING);
+				centerCon.updateNodeState(topologyId, chainNode.getId(), -1, SalsaEntityState.ALLOCATING);
 								
 				// Get the number of node to be deploy
 				int quantity = chainNode.getMinInstances();
@@ -91,14 +91,14 @@ public class ArtifactDeployer {
 					SalsaComponentInstanceData data = new SalsaComponentInstanceData(i);
 					data.setHostedId_Integer(replica);
 					data.setState(SalsaEntityState.ALLOCATING);	// waiting for other conditions
-					centerCon.addInstanceUnitMetaData(serviceId, topologyId, chainNode.getId(), data);	// add the 					
+					centerCon.addInstanceUnitMetaData(topologyId, chainNode.getId(), data);	// add the 					
 				}
 				waitingForCapabilities(chainNode, def);
 				// wait for downloading and configuring artifact itself
 				logger.debug("OK, we have " + instanceIdList.size() + " of instances");
 				for (Integer i : instanceIdList) {
 					logger.debug("Set status for instance " + i + " to CONFIGURING !");
-					centerCon.setNodeState(topologyId, chainNode.getId(), i, SalsaEntityState.CONFIGURING);
+					centerCon.updateNodeState(topologyId, chainNode.getId(), i, SalsaEntityState.CONFIGURING);
 				}
 				downloadNodeArtifacts(chainNode, def);
 				// execute multi threads for multi instance				
@@ -113,7 +113,7 @@ public class ArtifactDeployer {
 			
 			for (Integer i : instanceIds){
 				logger.debug("STARTING Thread for node ID :" + i);		
-				centerCon.setNodeState(topologyId, node.getId(), i, SalsaEntityState.RUNNING);
+				centerCon.updateNodeState(topologyId, node.getId(), i, SalsaEntityState.RUNNING);
 				Thread thread = new Thread(new deployOneArtifactThread(node, i, def));
 				thread.start();
 				threads.add(thread);	
@@ -137,7 +137,7 @@ public class ArtifactDeployer {
 			private synchronized void executeDeploymentNode() {
 				logger.debug("Executing the deployment for node: " + node.getId() +", instance: " + instanceId );
 				runNodeArtifacts(node, Integer.toString(instanceId), def);
-				centerCon.setNodeState(topologyId, node.getId(), instanceId, SalsaEntityState.FINISHED);
+				centerCon.updateNodeState(topologyId, node.getId(), instanceId, SalsaEntityState.FINISHED);
 			}
 
 			@Override
@@ -371,7 +371,7 @@ public class ArtifactDeployer {
 					} catch (InterruptedException e) {}
 				}
 				// if the capa for the req ready, query the req
-				return centerCon.getRequirementValue(serviceId, topologyId, nodeId, replica, reqId);
+				return centerCon.getRequirementValue(topologyId, nodeId, replica, reqId);
 			}
 			return null;
 		}

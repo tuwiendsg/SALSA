@@ -66,7 +66,7 @@ public class DeploymentEngineNodeLevel {
 	 */
 	public SalsaComponentInstanceData deployVMNode(String serviceId, String topologyId, String nodeId, int instanceNumber, TDefinitions def) {
 		EngineLogger.logger.info("Creating this VM node: " + nodeId +". Tosca ID:" + def.getId());
-		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/not/use/workingdir", EngineLogger.logger);
+		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/not/use/workingdir", EngineLogger.logger);				
 		TNodeTemplate enhancedNode = (TNodeTemplate) ToscaStructureQuery
 				.getNodetemplateById(nodeId, def);
 		// create a replica of node and update state: PROLOG
@@ -119,12 +119,15 @@ public class DeploymentEngineNodeLevel {
 		EngineLogger.logger.debug(instanceDesc.getProvider()+" -- " + instanceDesc.getBaseImage() + " -- " + instanceDesc.getInstanceType()+" -- " + enhancedNode.getMinInstances());		
 		EngineLogger.logger.debug("A VM for " + nodeId + " has been created.");
 		
-		centerCon.updateInstanceUnitProperty(topologyId, nodeId, instanceNumber, instanceDesc);		
+		//centerCon.updateInstanceUnitProperty(topologyId, nodeId, instanceNumber, instanceDesc);
+		//centerCon.updateNodeState(topologyId, nodeId, instanceNumber, SalsaEntityState.CONFIGURING);
 		
-		//centerCon.updateNodeProperty(topologyId, nodeId, replica, sid);
-		// The configuration will be set until pionner is started
-		centerCon.setNodeState(topologyId, nodeId, instanceNumber, SalsaEntityState.CONFIGURING);		
+		SalsaComponentInstanceData.Properties props = new SalsaComponentInstanceData.Properties();
+		props.setAny(instanceDesc);
+		SalsaComponentInstanceData data = new SalsaComponentInstanceData(instanceNumber, props);
+		data.setState(SalsaEntityState.CONFIGURING);
 		
+		centerCon.addInstanceUnitMetaData(topologyId, nodeId, data);		
 		return repData;
 	}
 			
@@ -350,9 +353,9 @@ public class DeploymentEngineNodeLevel {
 
 		private synchronized SalsaComponentInstanceData executeDeploymentNode() {
 			SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/tmp", EngineLogger.logger);
-			centerCon.addInstanceUnit(serviceId, topologyId, nodeId, replica);			
-			//return deployVMNode(serviceId, topologyId, nodeId, replica, def);
-			return null;
+			//centerCon.addInstanceUnit(serviceId, topologyId, nodeId, replica);			
+			return deployVMNode(serviceId, topologyId, nodeId, replica, def);
+			//return null;
 		}
 
 		@Override

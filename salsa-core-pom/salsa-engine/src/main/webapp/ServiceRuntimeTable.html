@@ -10,8 +10,6 @@
 
 var dataSource=salsaCenterRestEndpoint + "/viewgenerator/cloudservice/xml/"+getURLParameter('id');
 
-var deployMoreInstanceSource="/instanceunits"; // need to add serviceid, topologyid, nodeid later
-
 var refeshCount=0;
 
 $.ajaxSetup({
@@ -168,7 +166,7 @@ function getElementByTagNameToString(tagName, parentElement){
 
 function deployMoreInstance(serviceId, topologyId, nodeId, inputboxQuantityId){	
 	var quantity=document.getElementById(inputboxQuantityId).value;
-	url = deployMoreInstanceSource + "/" +serviceId+"/"+topologyId+"/"+nodeId+"/"+quantity;
+	//url = "/services/" +serviceId+"/topologies/"+topologyId+"/nodes/"+nodeId+"/instance-count/"+quantity;
 	
 	toastr.info("Requesting to deploy "+quantity+" instance(s) of node "+nodeId+" !");
 	
@@ -179,8 +177,8 @@ function deployMoreInstance(serviceId, topologyId, nodeId, inputboxQuantityId){
 	// /instanceunits/eeb20807-6cb6-455e-a720-30093436eecd/DataMarketAgence/agence_os/1
 	
 	$.ajax({
-	    url: 'rest/instanceunits/' +serviceId+"/"+topologyId+"/"+nodeId+"/"+quantity,
-	    type: 'PUT',
+	    url: salsaCenterRestEndpoint + "/services/" + serviceId +"/topologies/"+ topologyId + "/nodes/"+ nodeId +"/instance-count/" + quantity,
+	    type: 'POST',
 	    async: false,
 	    cache: false,
 	    contentType: false,

@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import at.ac.tuwien.dsg.cloud.salsa.engine.services.interfaces.SalsaEngineApiInterface;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineApiInterface;
 
 import com.sun.jersey.multipart.FormDataParam;
 
@@ -36,6 +36,7 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 	
 	SalsaEngineInternal internalEngine = new SalsaEngineInternal();
 	
+	@Override
 	@PUT
 	@Path("/services/{serviceName}")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -44,13 +45,15 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 			@FormDataParam("file") InputStream uploadedInputStream) {		
 		return internalEngine.deployService(serviceName, uploadedInputStream);
 	}
-		
+	
+	@Override
 	@DELETE
 	@Path("/services/{serviceId}")
 	public Response undeployService(@PathParam("serviceId")String serviceId){
 		return internalEngine.undeployService(serviceId);
 	}
 	
+	@Override
 	@POST
     @Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instance-count/{quantity}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -69,6 +72,7 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 	 * @param instanceId
 	 * @return
 	 */
+	@Override
 	@DELETE
 	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}")
 	public Response destroyInstance(
