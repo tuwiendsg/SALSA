@@ -20,14 +20,15 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaRelationshipType;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaRelationshipType;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.instruments.BashInstrument;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.instruments.ChefInstrument;
+import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.instruments.ChefSoloInstrument;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.instruments.InstrumentInterface;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.type.PropertyVMExpose;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.type.SalsaArtifactType;
@@ -44,10 +45,10 @@ public class ArtifactDeployer {
 	private int replica;		// this is Replica number of the VM
 	private TDefinitions def;	
 	private SalsaCenterConnector centerCon;
-	private SalsaCloudServiceData serviceRuntimeInfo;
+	private CloudService serviceRuntimeInfo;
 	private Logger logger = LoggerFactory.getLogger("PioneerLogger");
 	
-	public ArtifactDeployer(String serviceId, String topologyId, String nodeId, int thisInstanceId, TDefinitions def, SalsaCenterConnector centerCon, SalsaCloudServiceData serviceRuntimeInfo){
+	public ArtifactDeployer(String serviceId, String topologyId, String nodeId, int thisInstanceId, TDefinitions def, SalsaCenterConnector centerCon, CloudService serviceRuntimeInfo){
 		this.serviceId = serviceId;
 		this.topologyId = topologyId;
 		this.nodeId = nodeId;
@@ -88,7 +89,7 @@ public class ArtifactDeployer {
 				// Create quantity node instances(instance of software) for this chainNode(software)
 				for (int i=startId; i<startId+quantity; i++){
 					instanceIdList.add(i);
-					SalsaComponentInstanceData data = new SalsaComponentInstanceData(i);
+					ServiceInstance data = new ServiceInstance(i);
 					data.setHostedId_Integer(replica);
 					data.setState(SalsaEntityState.ALLOCATING);	// waiting for other conditions
 					centerCon.addInstanceUnitMetaData(topologyId, chainNode.getId(), data);	// add the 					
@@ -241,7 +242,14 @@ public class ArtifactDeployer {
 			case chef:				
 				instrument = new ChefInstrument();
 				break;
-			}
+			case chefSolo:
+				instrument = new ChefSoloInstrument();
+				break;
+			default:
+				instrument = new BashInstrument();
+				break;
+			}			
+				
 			instrument.initiate(node);
 			instrument.deployArtifact(runArt, instanceId);
 			
@@ -281,8 +289,8 @@ public class ArtifactDeployer {
 			
 			// check if there are a replica of node with Ready state
 			// it doesn't care about which node, just check if existing ONE replica
-			SalsaCloudServiceData service = centerCon.getUpdateCloudServiceRuntime();
-			SalsaComponentData component = service.getComponentById(topologyId, node.getId());			
+			CloudService service = centerCon.getUpdateCloudServiceRuntime();
+			ServiceUnit component = service.getComponentById(topologyId, node.getId());			
 			int number=component.getInstanceNumberByState(SalsaEntityState.RUNNING)+component.getInstanceNumberByState(SalsaEntityState.FINISHED);
 			logger.debug("Check capability. Checking component id " + component.getId() + "  -- " + number +" number of running or finished instances.");			
 			if (number == 0){
@@ -379,7 +387,7 @@ public class ArtifactDeployer {
 		
 		public String getVMProperty(String propName){
 			String res="";
-			SalsaComponentInstanceData nodeData = serviceRuntimeInfo.getComponentById(topologyId, nodeId).getInstanceById(replica);			
+			ServiceInstance nodeData = serviceRuntimeInfo.getComponentById(topologyId, nodeId).getInstanceById(replica);			
 			SalsaInstanceDescription_VM vm= (SalsaInstanceDescription_VM)nodeData.getProperties().getAny();
 			PropertyVMExpose proptype = PropertyVMExpose.fromString(propName);			
 			switch (proptype){

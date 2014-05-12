@@ -21,11 +21,11 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 
 
@@ -130,7 +130,7 @@ public class ServiceJsonDataTree {
 	}
 	
 	// convert component and all it stack
-	public void loadData(SalsaComponentData data, int hostOnId, SalsaTopologyData topo){
+	public void loadData(ServiceUnit data, int hostOnId, ServiceTopology topo){
 		//logger.debug("Starting loading abstract node: " + data.getId());
 		this.id = data.getId();
 		this.setState(data.getState());
@@ -139,7 +139,7 @@ public class ServiceJsonDataTree {
 		this.connectto=data.getConnecttoId();
 		//logger.debug("On abstract, Connectto size: " + this.connectto.size());
 				
-		List<SalsaComponentInstanceData> instances;
+		List<ServiceInstance> instances;
 //		logger.debug("PI123 - nodeid:" + data.getId() +" which hoston " + hostOnId);
 //		logger.debug("PI123 - The all instance list: " + data.getAllInstanceList().size());
 //		logger.debug("PI123 - The hoston instance list: " + data.getInstanceHostOn(hostOnId).size());
@@ -148,8 +148,8 @@ public class ServiceJsonDataTree {
 		} else {
 			instances = data.getInstanceHostOn(hostOnId);
 		}
-		List<SalsaComponentData> hostOnCompos = new ArrayList<>();
-		for (SalsaComponentData compo : topo.getComponents()) {
+		List<ServiceUnit> hostOnCompos = new ArrayList<>();
+		for (ServiceUnit compo : topo.getComponents()) {
 //			logger.debug("Comparing this id: " + data.getId() + " and other abstact node id: " + compo.getId() +" which has hosted id: " + compo.getHostedId() );
 			if (compo.getHostedId().equals(data.getId())){	// compare ID on TOSCA node
 				hostOnCompos.add(compo);
@@ -159,7 +159,7 @@ public class ServiceJsonDataTree {
 //		logger.debug("This abstract node has instances: " + instances.size());
 //		logger.debug("This abstract node host on abstractnode: " + hostOnCompos.size());
 		// updatethe list of instance to this "children" 
-		for (SalsaComponentInstanceData instance : instances) {
+		for (ServiceInstance instance : instances) {
 //			logger.debug("Work with instance id: " + instance.getInstanceId());
 			ServiceJsonDataTree oneChild = new ServiceJsonDataTree(instance.getInstanceId());
 			addChild(oneChild);			
@@ -170,7 +170,7 @@ public class ServiceJsonDataTree {
 	}
 	
 	// convert instance. abstractNode is for geting TYPE, knowing how to parse properties
-	public void loadData(SalsaComponentInstanceData instance, List<SalsaComponentData> hostOnCompos, SalsaComponentData abstractNode, SalsaTopologyData topo){
+	public void loadData(ServiceInstance instance, List<ServiceUnit> hostOnCompos, ServiceUnit abstractNode, ServiceTopology topo){
 		//logger.debug("Adding instance node id: " + instance.getInstanceId());
 		this.id = abstractNode.getId()+"_"+Integer.toString(instance.getInstanceId());		
 		this.setState(instance.getState());		
@@ -212,7 +212,7 @@ public class ServiceJsonDataTree {
 							
 		// recursive components which host on this node
 //		logger.debug("Will recursive by hostOnCompos.size(): " + hostOnCompos.size());
-		for (SalsaComponentData compo : hostOnCompos) {
+		for (ServiceUnit compo : hostOnCompos) {
 //			logger.debug(" -- PI123 - Recursiving id: " + compo.getId());
 			ServiceJsonDataTree newNode = new ServiceJsonDataTree();
 			newNode.loadData(compo, instance.getInstanceId(), topo);

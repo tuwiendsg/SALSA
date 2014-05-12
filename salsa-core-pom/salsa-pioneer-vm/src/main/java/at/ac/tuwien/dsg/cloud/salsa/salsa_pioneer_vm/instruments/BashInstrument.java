@@ -25,6 +25,7 @@ public class BashInstrument implements InstrumentInterface {
 		String runArt = uri;
 		Process p;
 		ProcessBuilder pb = new ProcessBuilder("bash",runArt);
+		PioneerLogger.logger.debug("Executing command: bash " + runArt);		
 		
 		Map<String,String> env = pb.environment();
 		String envPATH = env.get("PATH")+":"+SalsaPioneerConfiguration.getWorkingDir();
@@ -42,7 +43,7 @@ public class BashInstrument implements InstrumentInterface {
 			String line = reader.readLine();
 			while (line != null) {
 				line = reader.readLine();
-				//PioneerLogger.logger.debug(line);
+				PioneerLogger.logger.debug(line);
 			}
 		} catch (IOException e) {
 			PioneerLogger.logger.debug(e.toString());			

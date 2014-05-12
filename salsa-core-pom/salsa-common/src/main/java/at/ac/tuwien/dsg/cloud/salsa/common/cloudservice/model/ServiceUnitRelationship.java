@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.common.model;
+package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,15 +8,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaRelationshipType;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaRelationshipType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "Relationship")
 @XmlSeeAlso({  
-    SalsaTopologyData.class    
+    ServiceTopology.class    
 })
-public class SalsaReplicaRelationship {
+public class ServiceUnitRelationship {
 	@XmlAttribute(name = "type")
 	SalsaRelationshipType type;
 	
@@ -25,9 +25,9 @@ public class SalsaReplicaRelationship {
 	@XmlElement(name = "Target")
 	String targetId;
 	
-	public SalsaReplicaRelationship(){}
+	public ServiceUnitRelationship(){}
 	
-	public SalsaReplicaRelationship(String sourceid, String targetid){
+	public ServiceUnitRelationship(String sourceid, String targetid){
 		this.sourceId = sourceid;
 		this.targetId = targetid;
 	}

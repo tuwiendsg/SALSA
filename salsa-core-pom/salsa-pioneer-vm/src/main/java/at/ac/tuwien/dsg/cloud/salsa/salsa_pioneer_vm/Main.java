@@ -9,8 +9,8 @@ import java.util.Properties;
 
 import javax.xml.bind.JAXBException;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.SalsaPioneerConfiguration;
@@ -45,7 +45,7 @@ public class Main {
 	private static int replica;		// this is Replica number of the VM
 	private static TDefinitions def;	
 	private static SalsaCenterConnector centerCon;
-	private static SalsaCloudServiceData serviceRuntimeInfo;
+	private static CloudService serviceRuntimeInfo;
 
 	public static void main(String[] args) throws IOException, JAXBException {
 		// Some ready variables		

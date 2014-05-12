@@ -28,11 +28,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpProtocolParams;
 import org.slf4j.Logger;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData.Capabilities;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaReplicaRelationship;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnitRelationship;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance.Capabilities;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
@@ -148,9 +148,9 @@ public class SalsaCenterConnector {
 	public String getCapabilityValue(String topoId, String nodeId, int replica,
 			String capaId) {
 		System.out.println("Try to get capability value of capaid: " + capaId);
-		SalsaCloudServiceData service = getUpdateCloudServiceRuntime();
+		CloudService service = getUpdateCloudServiceRuntime();
 		System.out.println("Checking topo/node/inst-id: " + topoId +"/" + nodeId +"/" + replica);
-		SalsaComponentInstanceData rep = service.getReplicaById(topoId, nodeId, replica);
+		ServiceInstance rep = service.getReplicaById(topoId, nodeId, replica);
 		System.out.println("Get this instance: " + rep.getInstanceId());
 		Capabilities capas = rep.getCapabilities();
 		
@@ -215,7 +215,7 @@ public class SalsaCenterConnector {
 	}
 	
 	public void addInstanceUnitMetaData(String topologyId,
-			String nodeId, SalsaComponentInstanceData data) {
+			String nodeId, ServiceInstance data) {
 		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/metadata
 		String url = centerRestfulEndpoint 
 				+ "/services/" + serviceId
@@ -228,7 +228,7 @@ public class SalsaCenterConnector {
 		}
 	}
 
-	public void addRelationship(String topologyId, SalsaReplicaRelationship rela) {
+	public void addRelationship(String topologyId, ServiceUnitRelationship rela) {
 		// /services/{serviceId}/topologies/{topologyId}/relationship
 		String url = centerRestfulEndpoint 
 				+ "/services/" + serviceId 
@@ -242,7 +242,7 @@ public class SalsaCenterConnector {
 	 * 
 	 * @return the CloudService instance.
 	 */
-	public SalsaCloudServiceData getUpdateCloudServiceRuntime() {
+	public CloudService getUpdateCloudServiceRuntime() {
 		try {
 			String xml = getUpdateCloudServiceRuntimeXML();
 //			logger.debug("IN getUpdateCloudServiceRuntime. XML: " + xml);

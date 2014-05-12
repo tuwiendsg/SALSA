@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.common.model;
+package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -23,9 +23,9 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 @XmlType(name = "")
 @XmlRootElement(name = "Replica")
 @XmlSeeAlso({  
-    SalsaTopologyData.class  
+    ServiceTopology.class  
 })
-public class SalsaComponentInstanceData extends SalsaEntity {	
+public class ServiceInstance extends SalsaEntity {	
 	
 	@XmlAttribute(name = "replica")
 	int instanceId=0;
@@ -34,7 +34,7 @@ public class SalsaComponentInstanceData extends SalsaEntity {
 	int hostedId=0;
 	
 	@XmlElement(name = "Properties")
-	protected SalsaComponentInstanceData.Properties properties;	
+	protected ServiceInstance.Properties properties;	
 	
 	@XmlElement(name = "Capabilities")
 	protected Capabilities capabilities;
@@ -101,16 +101,16 @@ public class SalsaComponentInstanceData extends SalsaEntity {
 		return null;
 	}
 	
-	public SalsaComponentInstanceData(int replica, SalsaComponentInstanceData.Properties pros){
+	public ServiceInstance(int replica, ServiceInstance.Properties pros){
 		this.instanceId = replica;
 		this.properties = pros;
 	}
 	
-	public SalsaComponentInstanceData(int replica){
+	public ServiceInstance(int replica){
 		this.instanceId = replica;		
 	}
 	
-	public SalsaComponentInstanceData(){}
+	public ServiceInstance(){}
 	
 	public int getInstanceId() {
 		return instanceId;
@@ -129,12 +129,12 @@ public class SalsaComponentInstanceData extends SalsaEntity {
 		this.hostedId = hostedId;
 	}
 
-	public SalsaComponentInstanceData.Properties getProperties() {		
+	public ServiceInstance.Properties getProperties() {		
 		return properties;
 	}
 
 
-	public void setProperties(SalsaComponentInstanceData.Properties properties) {		
+	public void setProperties(ServiceInstance.Properties properties) {		
 		this.properties = properties;
 	}
 
@@ -150,7 +150,7 @@ public class SalsaComponentInstanceData extends SalsaEntity {
 	public String convertToXML() throws JAXBException{
 		JAXBContext jaxbContext = JAXBContext // beside data.class, addition
 				// classes for contents
-				.newInstance(SalsaComponentData.class, // e.g. when update Replica, need its capability and InstanceDes.
+				.newInstance(ServiceUnit.class, // e.g. when update Replica, need its capability and InstanceDes.
 							 SalsaInstanceDescription_VM.class,
 							 SalsaCapaReqString.class);
 		Marshaller msl = jaxbContext.createMarshaller();

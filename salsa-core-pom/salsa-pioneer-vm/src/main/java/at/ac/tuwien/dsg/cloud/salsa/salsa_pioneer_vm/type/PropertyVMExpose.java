@@ -1,6 +1,6 @@
 package at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.type;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 
 public enum PropertyVMExpose {
 	ip("ip"),

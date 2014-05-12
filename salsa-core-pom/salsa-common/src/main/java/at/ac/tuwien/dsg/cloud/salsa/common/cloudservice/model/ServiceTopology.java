@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.common.model;
+package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,46 +11,46 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "ServiceTopology")
 @XmlSeeAlso({  
-    SalsaComponentData.class,
-    SalsaReplicaRelationship.class
+    ServiceUnit.class,
+    ServiceUnitRelationship.class
 })
-public class SalsaTopologyData extends SalsaEntity {
+public class ServiceTopology extends SalsaEntity {
 	@XmlAttribute(name = "replica")
 	int replica=0;
 	
 	@XmlElement(name = "ServiceUnit")
-	List<SalsaComponentData> components = new ArrayList<>();
+	List<ServiceUnit> components = new ArrayList<>();
 	
 	@XmlElement(name = "Relationships")
 	SalsaReplicaRelationships relationships;
 	
 	public static class SalsaReplicaRelationships{
 		@XmlElement(name = "Relationship")
-		List<SalsaReplicaRelationship> relList = new ArrayList<>();
+		List<ServiceUnitRelationship> relList = new ArrayList<>();
 		
-		public void addRelationship(SalsaReplicaRelationship rel){
+		public void addRelationship(ServiceUnitRelationship rel){
 			relList.add(rel);
 		}
 	}
 	
-	public SalsaTopologyData(){
+	public ServiceTopology(){
 	}
 	
-	public void addComponent(SalsaComponentData component){
+	public void addComponent(ServiceUnit component){
 		if (components==null){
 			components = new ArrayList<>();
 		}
 		this.components.add(component);
 	}
 	
-	public SalsaComponentData getComponentById(String id){
-		for (SalsaComponentData node : components) {
+	public ServiceUnit getComponentById(String id){
+		for (ServiceUnit node : components) {
 			if (node.getId().equals(id)){
 				return node;
 			}
@@ -58,7 +58,7 @@ public class SalsaTopologyData extends SalsaEntity {
 		return null;
 	}
 	
-	public void removeComponent(SalsaComponentData component){
+	public void removeComponent(ServiceUnit component){
 		this.components.remove(component);
 	}
 
@@ -70,13 +70,13 @@ public class SalsaTopologyData extends SalsaEntity {
 		this.replica = replica;
 	}
 
-	public List<SalsaComponentData> getComponents() {
+	public List<ServiceUnit> getComponents() {
 		return components;
 	}
 	
-	public List<SalsaComponentData> getComponentsByType(SalsaEntityType type){
-		List<SalsaComponentData> lst = new ArrayList<>();
-		for (SalsaComponentData node : components) {
+	public List<ServiceUnit> getComponentsByType(SalsaEntityType type){
+		List<ServiceUnit> lst = new ArrayList<>();
+		for (ServiceUnit node : components) {
 			if (SalsaEntityType.fromString(node.getType()) == type){
 				lst.add(node);
 			}
