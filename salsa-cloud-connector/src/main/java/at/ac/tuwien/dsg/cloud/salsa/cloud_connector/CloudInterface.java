@@ -2,8 +2,6 @@ package at.ac.tuwien.dsg.cloud.salsa.cloud_connector;
 
 import java.util.List;
 
-import com.xerox.amazonws.ec2.InstanceType;
-
 
 public interface CloudInterface {
 
@@ -18,7 +16,7 @@ public interface CloudInterface {
 	public InstanceDescription getInstanceDescriptionByID(String instanceID);
 
 	
-	public String launchInstance(String imageId, List<String> securityGroups,
+	public String launchInstance(String instanceName, String imageId, List<String> securityGroups,
 			String sshKeyName, String userData, InstanceType instType,
 			int minInst, int maxInst) throws ServiceDeployerException;
 	

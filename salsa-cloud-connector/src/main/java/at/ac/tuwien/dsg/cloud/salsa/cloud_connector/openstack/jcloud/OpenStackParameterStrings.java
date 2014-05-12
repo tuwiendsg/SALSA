@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack;
+package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ParameterStringsEnumInterface;
 
@@ -8,7 +8,11 @@ public enum OpenStackParameterStrings implements ParameterStringsEnumInterface {
 	ACCESS_KEY("access_key"),
 	PORT("port"),
 	SSH_KEY_NAME("sshKeyName"),
-	END_POINT("end_point");
+	END_POINT("end_point"),
+	USERNAME("username"),
+	PASSWORD("password"),
+	TENANT("tenant"),
+	KEYSTONE_ENDPOINT("keystone_endpoint");
 	
 	private String value;
 	

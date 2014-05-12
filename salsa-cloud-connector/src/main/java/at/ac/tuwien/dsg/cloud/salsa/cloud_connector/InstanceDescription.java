@@ -30,16 +30,20 @@ public class InstanceDescription {
 	// InetAddress.getByName(instance.getIpAddress()),
 	// instance.getPrivateDnsName(), instance.getDnsName());
 
-	public InstanceDescription(String instanceId, String _privateIp, String _publicIp) throws UnknownHostException {
-		if (_privateIp != null && _privateIp.length() > 0) {
-			this.privateIp = InetAddress.getByName(_privateIp);
+	public InstanceDescription(String instanceId, String _privateIp, String _publicIp) {
+		try {
+			if (_privateIp != null && _privateIp.length() > 0) {
+				this.privateIp = InetAddress.getByName(_privateIp);
+			}
+			if (_publicIp != null && _publicIp.length() > 0) {
+				this.publicIp = InetAddress.getByName(_publicIp);
+			}
+			
+			this.instanceId = instanceId;		
+			this.state = VMStates.Pending;
+		} catch (UnknownHostException e){
+			System.out.println("Error by undefined IP address");
 		}
-		if (_publicIp != null && _publicIp.length() > 0) {
-			this.publicIp = InetAddress.getByName(_publicIp);
-		}
-		
-		this.instanceId = instanceId;		
-		this.state = VMStates.Pending;
 	}
 	
 	public InstanceDescription(String instanceId,
