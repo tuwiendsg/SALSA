@@ -14,10 +14,11 @@ import java.util.Map;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceType;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
@@ -25,8 +26,6 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
-
-import com.xerox.amazonws.ec2.InstanceType;
 
 /**
  * This class contain methods for deploying Entities in ToscaGraph included
@@ -64,13 +63,13 @@ public class DeploymentEngineNodeLevel {
 	 * @param def
 	 * @return A Node with capabilities properties.
 	 */
-	public SalsaComponentInstanceData deployVMNode(String serviceId, String topologyId, String nodeId, int instanceNumber, TDefinitions def) {
+	public ServiceInstance deployVMNode(String serviceId, String topologyId, String nodeId, int instanceNumber, TDefinitions def) {
 		EngineLogger.logger.info("Creating this VM node: " + nodeId +". Tosca ID:" + def.getId());
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/not/use/workingdir", EngineLogger.logger);				
 		TNodeTemplate enhancedNode = (TNodeTemplate) ToscaStructureQuery
 				.getNodetemplateById(nodeId, def);
 		// create a replica of node and update state: PROLOG
-		SalsaComponentInstanceData repData = new SalsaComponentInstanceData(instanceNumber, null);
+		ServiceInstance repData = new ServiceInstance(instanceNumber, null);
 		repData.setState(SalsaEntityState.ALLOCATING);
 		
 		EngineLogger.logger.debug("YOUR ARE HERE TO DEPLOY 4");
@@ -81,7 +80,7 @@ public class DeploymentEngineNodeLevel {
 		instanceDesc.updateFromMappingProperties(mapProp);
 		EngineLogger.logger.debug("YOUR ARE HERE TO DEPLOY 5");
 		// add the initiate properties to the InstanceData
-		repData.setProperties(new SalsaComponentInstanceData.Properties());		
+		repData.setProperties(new ServiceInstance.Properties());		
 		repData.getProperties().setAny(instanceDesc);
 		
 		// add the component instance to server
@@ -106,6 +105,7 @@ public class DeploymentEngineNodeLevel {
 		
 		// start the VM
 		InstanceDescription indes = mcc.launchInstance(
+				nodeId +"_"+instanceNumber,
 				SalsaCloudProviders.fromString(instanceDesc.getProvider()),
 				instanceDesc.getBaseImage(),
 				"",	// this is the sshKeyGen, but not need anymore. When create mcc, we pass the configFile
@@ -122,9 +122,9 @@ public class DeploymentEngineNodeLevel {
 		//centerCon.updateInstanceUnitProperty(topologyId, nodeId, instanceNumber, instanceDesc);
 		//centerCon.updateNodeState(topologyId, nodeId, instanceNumber, SalsaEntityState.CONFIGURING);
 		
-		SalsaComponentInstanceData.Properties props = new SalsaComponentInstanceData.Properties();
+		ServiceInstance.Properties props = new ServiceInstance.Properties();
 		props.setAny(instanceDesc);
-		SalsaComponentInstanceData data = new SalsaComponentInstanceData(instanceNumber, props);
+		ServiceInstance data = new ServiceInstance(instanceNumber, props);
 		data.setState(SalsaEntityState.CONFIGURING);
 		
 		centerCon.addInstanceUnitMetaData(topologyId, nodeId, data);		
@@ -280,12 +280,12 @@ public class DeploymentEngineNodeLevel {
 			SalsaCenterConnector cenCon = getCenterConnector(serviceId);
 			cenCon.updateNodeIdCounter(topologyId, map.getKey(), replica);
 		}
-		try {
-			for (Thread thread : threads) {
-				thread.join();
-			}
-		} catch (InterruptedException e) {
-		}
+//		try {
+//			for (Thread thread : threads) {
+//				thread.join();
+//			}
+//		} catch (InterruptedException e) {
+//		}
 		
 		ToscaXmlProcess.writeToscaDefinitionToFile(def, "/tmp/"+serviceId);
 	}
@@ -351,7 +351,7 @@ public class DeploymentEngineNodeLevel {
 			this.replica = replica;
 		}
 
-		private synchronized SalsaComponentInstanceData executeDeploymentNode() {
+		private synchronized ServiceInstance executeDeploymentNode() {
 			SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/tmp", EngineLogger.logger);
 			//centerCon.addInstanceUnit(serviceId, topologyId, nodeId, replica);			
 			return deployVMNode(serviceId, topologyId, nodeId, replica, def);

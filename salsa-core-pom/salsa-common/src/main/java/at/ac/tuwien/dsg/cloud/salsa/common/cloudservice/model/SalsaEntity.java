@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.common.model;
+package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 
 /**
  * This class is abstract for CloudService, ComponentTopology and Component
@@ -17,9 +17,9 @@ import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlSeeAlso({
-    SalsaCloudServiceData.class,
-    SalsaTopologyData.class,
-    SalsaComponentData.class    
+    CloudService.class,
+    ServiceTopology.class,
+    ServiceUnit.class    
 })
 public class SalsaEntity {
 	@XmlAttribute(name = "id")

@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.common.model.enums;
+package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;

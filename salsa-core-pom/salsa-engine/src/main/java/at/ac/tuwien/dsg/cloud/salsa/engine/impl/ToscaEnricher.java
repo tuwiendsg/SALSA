@@ -19,8 +19,8 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaRelationshipType;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaRelationshipType;
 import at.ac.tuwien.dsg.cloud.salsa.knowledge.architecturerefine.DeploymentObject;
 import at.ac.tuwien.dsg.cloud.salsa.knowledge.architecturerefine.process.KnowledgeGraph;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescriptionFuzzy;

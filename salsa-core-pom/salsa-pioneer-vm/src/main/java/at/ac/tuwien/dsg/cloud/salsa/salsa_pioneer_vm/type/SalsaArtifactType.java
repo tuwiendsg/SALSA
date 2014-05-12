@@ -3,7 +3,8 @@ package at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.type;
 
 public enum SalsaArtifactType {
 	sh("sh"),
-	chef("chef");
+	chef("chef"),
+	chefSolo("chef-solo");
 	
 	private String prop;
 	

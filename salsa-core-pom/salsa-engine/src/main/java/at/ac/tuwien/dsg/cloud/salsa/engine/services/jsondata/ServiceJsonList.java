@@ -26,7 +26,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterLogger;
@@ -59,7 +59,7 @@ public class ServiceJsonList {
 			String fileName = CenterConfiguration.getServiceStoragePath()
 					+ File.separator + serviceId + ".data";
 			try {
-				SalsaCloudServiceData service = SalsaXmlDataProcess
+				CloudService service = SalsaXmlDataProcess
 						.readSalsaServiceFile(fileName);
 				CenterLogger.logger.debug("ListService:"+service.getName());
 				if (service.getName() != null ){

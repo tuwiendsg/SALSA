@@ -16,13 +16,13 @@ import java.util.UUID;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaRelationshipType;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaRelationshipType;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
@@ -50,7 +50,7 @@ public class SalsaToscaDeployer {
 	 * @param def
 	 * @return
 	 */
-	public SalsaCloudServiceData deployNewService (TDefinitions def, String serviceName){
+	public CloudService deployNewService (TDefinitions def, String serviceName){
 		if (configFile == null){
 			EngineLogger.logger.error("No config file specified");
 			return null;
@@ -77,7 +77,7 @@ public class SalsaToscaDeployer {
 		
 		// register service running data		
 		String fullSalsaDataFile = SalsaConfiguration.getServiceStorageDir()+"/"+deployID.toString()+".data";
-		SalsaCloudServiceData serviceData = buildRuntimeDataFromTosca(def);
+		CloudService serviceData = buildRuntimeDataFromTosca(def);
 		serviceData.setId(deployID.toString());		
 		serviceData.setName(serviceName);
 		SalsaXmlDataProcess.writeCloudServiceToFile(serviceData, fullSalsaDataFile);
@@ -117,9 +117,9 @@ public class SalsaToscaDeployer {
 		EngineLogger.logger.debug("1-----");
 		TDefinitions def = centerCon.getToscaDescription();
 		EngineLogger.logger.debug("2-----");
-		SalsaCloudServiceData service = centerCon.getUpdateCloudServiceRuntime();
+		CloudService service = centerCon.getUpdateCloudServiceRuntime();
 		EngineLogger.logger.debug("3------");
-		SalsaComponentData node = service.getComponentById(topologyId, nodeId);
+		ServiceUnit node = service.getComponentById(topologyId, nodeId);
 		
 		if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
 			centerCon.updateNodeIdCounter(topologyId, nodeId, node.getIdCounter()+quantity); // update first the number + quantity
@@ -129,7 +129,7 @@ public class SalsaToscaDeployer {
 		}
 	}
 	
-	private void deployMoreInstance_Artifact(String topologyId, String nodeId, int quantity, TDefinitions def, SalsaCloudServiceData service){
+	private void deployMoreInstance_Artifact(String topologyId, String nodeId, int quantity, TDefinitions def, CloudService service){
 		// TODO: Implementation
 	}
 	
@@ -142,12 +142,12 @@ public class SalsaToscaDeployer {
 	 * @param def
 	 * @param service
 	 */
-	private void deployMoreInstance_VM(String topologyId, String nodeId, int quantity, TDefinitions def, SalsaCloudServiceData service){		
+	private void deployMoreInstance_VM(String topologyId, String nodeId, int quantity, TDefinitions def, CloudService service){		
 		DeploymentEngineNodeLevel engine = new DeploymentEngineNodeLevel(configFile);		
 		
 		// TODO: implement to manage topology, current: get the first		
 		String topoId = service.getFirstTopology().getId();
-		SalsaComponentData node = service.getComponentById(topoId, nodeId);
+		ServiceUnit node = service.getComponentById(topoId, nodeId);
 		
 		int startingId=node.getIdCounter();
 		
@@ -164,11 +164,11 @@ public class SalsaToscaDeployer {
 	
 	public boolean removeOneInstance(String serviceId, String topologyId, String nodeId, int instanceId){
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/tmp", EngineLogger.logger);
-		SalsaCloudServiceData service = centerCon.getUpdateCloudServiceRuntime();		
-		SalsaComponentData node = service.getComponentById(topologyId, nodeId);
+		CloudService service = centerCon.getUpdateCloudServiceRuntime();		
+		ServiceUnit node = service.getComponentById(topologyId, nodeId);
 		// remove VM node by invoke MultiCloudConnector
 		if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
-			SalsaComponentInstanceData vm = node.getInstanceById(instanceId);
+			ServiceInstance vm = node.getInstanceById(instanceId);
 			SalsaInstanceDescription_VM vmProps = (SalsaInstanceDescription_VM)vm.getProperties().getAny();
 			
 			MultiCloudConnector cloudCon= new MultiCloudConnector(EngineLogger.logger,configFile);
@@ -184,12 +184,12 @@ public class SalsaToscaDeployer {
 		}
 	}
 	
-	private static SalsaCloudServiceData buildRuntimeDataFromTosca(TDefinitions def){
+	private static CloudService buildRuntimeDataFromTosca(TDefinitions def){
 		EngineLogger.logger.debug("Building runtime from Tosca file");
-		SalsaCloudServiceData service = new SalsaCloudServiceData();
+		CloudService service = new CloudService();
 		List<TServiceTemplate> serviceTemplateLst = ToscaStructureQuery.getServiceTemplateList(def);
 		for (TServiceTemplate st : serviceTemplateLst) {
-			SalsaTopologyData topo = new SalsaTopologyData();
+			ServiceTopology topo = new ServiceTopology();
 			topo.setId(st.getId());
 			topo.setName(st.getName());
 			List<TNodeTemplate> nodes = ToscaStructureQuery.getNodeTemplateList(st);	// all other nodes
@@ -197,7 +197,7 @@ public class SalsaToscaDeployer {
 			List<TRelationshipTemplate> relas_connectto = ToscaStructureQuery.getRelationshipTemplateList(SalsaRelationshipType.CONNECTTO.getRelationshipTypeString(),st);
 			EngineLogger.logger.debug("Number of HostOn relationships: " + relas_hoston.size());
 			for (TNodeTemplate node : nodes) {	
-				SalsaComponentData nodeData = new SalsaComponentData(node.getId(), node.getType().getLocalPart());
+				ServiceUnit nodeData = new ServiceUnit(node.getId(), node.getType().getLocalPart());
 				nodeData.setState(SalsaEntityState.UNDEPLOYED);
 				nodeData.setName(node.getName());
 				// add the artifact type for SOFTWARE NODE
@@ -251,13 +251,13 @@ public class SalsaToscaDeployer {
 		// TODO: implement it
 		//List<TNodeTemplate> lst = ToscaStructureQuery.getNodeTemplatesOfTypeList("OPERATING_SYSTEM", def);
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "", EngineLogger.logger);
-		SalsaCloudServiceData service = centerCon.getUpdateCloudServiceRuntime();
+		CloudService service = centerCon.getUpdateCloudServiceRuntime();
 		if (service == null) {
 			EngineLogger.logger.error("Cannot clean service. Service description is not found.");
 			return false;
 		}
-		List<SalsaComponentInstanceData> repLst = service.getAllReplicaByType(SalsaEntityType.OPERATING_SYSTEM);		
-		for (SalsaComponentInstanceData rep : repLst) {
+		List<ServiceInstance> repLst = service.getAllReplicaByType(SalsaEntityType.OPERATING_SYSTEM);		
+		for (ServiceInstance rep : repLst) {
 			if (rep.getProperties() != null){
 				SalsaInstanceDescription_VM instance = (SalsaInstanceDescription_VM)rep.getProperties().getAny();				
 				MultiCloudConnector cloudCon= new MultiCloudConnector(EngineLogger.logger,configFile);

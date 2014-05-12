@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.common.model;
+package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +11,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "ServiceUnit")
 @XmlSeeAlso({  
-    SalsaTopologyData.class,
-    SalsaComponentInstanceData.class
+    ServiceTopology.class,
+    ServiceInstance.class
 })
-public class SalsaComponentData extends SalsaEntity {	
+public class ServiceUnit extends SalsaEntity {	
 	
 	@XmlElement(name = "Replica")
-	List<SalsaComponentInstanceData> repLst = new ArrayList<SalsaComponentInstanceData>();;
+	List<ServiceInstance> repLst = new ArrayList<ServiceInstance>();;
 		
 	@XmlAttribute(name = "type")
 	String type;
@@ -40,12 +40,12 @@ public class SalsaComponentData extends SalsaEntity {
 	@XmlAttribute(name = "idCounter")
 	int idCounter=0;
 	
-	public void addInstance(SalsaComponentInstanceData instance){
+	public void addInstance(ServiceInstance instance){
 		repLst.add(instance);
 	}
 	
-	public SalsaComponentInstanceData getInstanceById(int instance){
-		for (SalsaComponentInstanceData node : repLst) {
+	public ServiceInstance getInstanceById(int instance){
+		for (ServiceInstance node : repLst) {
 			if (node.getInstanceId() == instance){
 				return node;
 			}			
@@ -53,12 +53,12 @@ public class SalsaComponentData extends SalsaEntity {
 		return null;
 	}
 	
-	public SalsaComponentData(String id, String type){
+	public ServiceUnit(String id, String type){
 		this.id = id;
 		this.type = type;
 	}
 	
-	public SalsaComponentData(){}
+	public ServiceUnit(){}
 
 	public String getType() {
 		return type;
@@ -104,9 +104,9 @@ public class SalsaComponentData extends SalsaEntity {
 		this.connecttoId = connecttoId;
 	}
 
-	public List<SalsaComponentInstanceData> getInstanceByState(SalsaEntityState state){
-		List<SalsaComponentInstanceData> lst = new ArrayList<>();
-		for (SalsaComponentInstanceData rep : repLst) {
+	public List<ServiceInstance> getInstanceByState(SalsaEntityState state){
+		List<ServiceInstance> lst = new ArrayList<>();
+		for (ServiceInstance rep : repLst) {
 			if (rep.getState() == state ){
 				lst.add(rep);
 			}
@@ -117,7 +117,7 @@ public class SalsaComponentData extends SalsaEntity {
 	
 	public int getInstanceNumberByState(SalsaEntityState state){
 		int counter = 0;
-		for (SalsaComponentInstanceData rep : repLst) {
+		for (ServiceInstance rep : repLst) {
 			if (rep.getState() == state ){
 				counter++;				
 			}
@@ -125,13 +125,13 @@ public class SalsaComponentData extends SalsaEntity {
 		return counter;
 	}
 
-	public List<SalsaComponentInstanceData> getAllInstanceList() {
+	public List<ServiceInstance> getAllInstanceList() {
 		return repLst;
 	}
 	
-	public List<SalsaComponentInstanceData> getInstanceHostOn(int hostOnId){
-		List<SalsaComponentInstanceData> newLst = new ArrayList<>();
-		for (SalsaComponentInstanceData instance : repLst) {
+	public List<ServiceInstance> getInstanceHostOn(int hostOnId){
+		List<ServiceInstance> newLst = new ArrayList<>();
+		for (ServiceInstance instance : repLst) {
 			if (instance.getHostedId_Integer()==hostOnId){
 				newLst.add(instance);
 			}			

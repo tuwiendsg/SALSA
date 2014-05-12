@@ -14,11 +14,11 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityType;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataTree;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList;
@@ -44,8 +44,8 @@ static Logger logger;
 		}
 		try {
 			String salsaFile = CenterConfiguration.getServiceStoragePath() + "/"	+ serviceDeployId + ".data";
-			SalsaCloudServiceData service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
-			SalsaTopologyData topo = service.getFirstTopology();
+			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+			ServiceTopology topo = service.getFirstTopology();
 			ServiceJsonDataTree datatree = new ServiceJsonDataTree();
 			datatree.setId(service.getName());
 			datatree.setNodeType("Salsa center");			
@@ -53,8 +53,8 @@ static Logger logger;
 			
 			//logger.debug("Create json tree with id = " + datatree.getId());
 			// firstly add all VM node
-			List<SalsaComponentData> components = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
-			for (SalsaComponentData compo : components) {
+			List<ServiceUnit> components = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
+			for (ServiceUnit compo : components) {
 				ServiceJsonDataTree componode = new ServiceJsonDataTree();
 				componode.loadData(compo, -1, topo);	// -1 will not check instance id
 				datatree.addChild(componode);				
@@ -83,16 +83,16 @@ static Logger logger;
 		}
 		try {
 			String salsaFile = CenterConfiguration.getServiceStoragePath() + "/"	+ serviceDeployId + ".data";
-			SalsaCloudServiceData service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
-			SalsaTopologyData topo = service.getFirstTopology();
+			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+			ServiceTopology topo = service.getFirstTopology();
 			ServiceJsonDataTree datatree = new ServiceJsonDataTree();
 			datatree.setId(service.getName());
 			datatree.setState(SalsaEntityState.RUNNING);
 			
 			//logger.debug("Create json tree with id = " + datatree.getId());
 			// firstly add all VM node
-			List<SalsaComponentData> components = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
-			for (SalsaComponentData compo : components) {
+			List<ServiceUnit> components = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
+			for (ServiceUnit compo : components) {
 				ServiceJsonDataTree componode = new ServiceJsonDataTree();
 				componode.loadData(compo, -1, topo);	// -1 will not check instance id
 				datatree.addChild(componode);
