@@ -16,10 +16,9 @@ import org.slf4j.Logger;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceType;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ServiceDeployerException;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.VMStates;
-
-import com.xerox.amazonws.ec2.InstanceType;
 
 public class StratusLabConnector implements CloudInterface{
 	
@@ -158,7 +157,7 @@ public class StratusLabConnector implements CloudInterface{
 	/*
 	 * Note: sshKeyName is the file of publickey
 	 */
-	public String launchInstance(String imageId, List<String> securityGroups,
+	public String launchInstance(String instanceName, String imageId, List<String> securityGroups,
 			String sshKeyName, String userData, InstanceType instType,
 			int minInst, int maxInst) throws ServiceDeployerException {
 		logger.debug("Launching instance with TAGs: \n" + securityGroups);
