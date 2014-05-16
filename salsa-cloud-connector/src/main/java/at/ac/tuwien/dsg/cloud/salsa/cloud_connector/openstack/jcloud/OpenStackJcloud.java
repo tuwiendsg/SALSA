@@ -1,6 +1,8 @@
 package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import org.jclouds.ContextBuilder;
@@ -131,13 +133,21 @@ public class OpenStackJcloud implements CloudInterface, Cloneable{
 	}
 	
 	public void listImages(){
-		ImageApi imageApi = client.getImageApiForZone(region);
-		
-		FluentIterable<? extends Image> images = imageApi.listInDetail().concat();
-		 for (Image image: images) {
-		        System.out.println("\t" + image);
+		try {
+			ImageApi imageApi = client.getImageApiForZone(region);
+			
+			FluentIterable<? extends Image> images = imageApi.listInDetail().concat();
+			
+			PrintWriter f0 = new PrintWriter(new FileWriter("/tmp/dsg_openstack_images.txt"));
+			
+			 for (Image image: images) {
+			        System.out.println("\t" + image);
+			        f0.println(image);
+			 }
+			 f0.close();
+		 }catch (Exception e){
+			 
 		 }
-		
 	}
 	
 	public void listServers() {
