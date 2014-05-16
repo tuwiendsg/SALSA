@@ -29,6 +29,5 @@ public interface CloudInterface {
 
 	void removeInstance(String instanceToTerminateID) throws ServiceDeployerException;
 
-
 	
 }
