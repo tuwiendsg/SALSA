@@ -50,6 +50,7 @@ public class SalsaInstanceDescription_VM {
 	private String privateDNS;
 	@XmlElement(name = "publicDNS")
 	private String publicDNS;
+	
 	@XmlElement(name = "state")
 	private String state;
 	

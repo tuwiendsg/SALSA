@@ -150,7 +150,7 @@ public class SalsaCenterConnector {
 		System.out.println("Try to get capability value of capaid: " + capaId);
 		CloudService service = getUpdateCloudServiceRuntime();
 		System.out.println("Checking topo/node/inst-id: " + topoId +"/" + nodeId +"/" + replica);
-		ServiceInstance rep = service.getReplicaById(topoId, nodeId, replica);
+		ServiceInstance rep = service.getInstanceById(topoId, nodeId, replica);
 		System.out.println("Get this instance: " + rep.getInstanceId());
 		Capabilities capas = rep.getCapabilities();
 		

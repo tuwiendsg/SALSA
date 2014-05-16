@@ -85,6 +85,12 @@ public class SalsaMappingProperties{
 			return mytype;
 		}
 		
+		public void setPropType(String mytype) {
+			this.mytype = mytype;
+		}
+
+
+
 		public String get(String name) {		
 			for (Property item : properties) {
 				if (item.name.equals(name)){
