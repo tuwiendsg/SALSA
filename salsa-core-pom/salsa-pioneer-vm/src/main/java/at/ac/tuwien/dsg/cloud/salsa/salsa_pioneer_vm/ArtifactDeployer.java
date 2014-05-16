@@ -102,7 +102,7 @@ public class ArtifactDeployer {
 					centerCon.updateNodeState(topologyId, chainNode.getId(), i, SalsaEntityState.CONFIGURING);
 				}
 				downloadNodeArtifacts(chainNode, def);
-				// execute multi threads for multi instance				
+				// execute multi threads for multi instance
 				multiThreadRunArtifacts(chainNode, instanceIdList);
 				
 			}

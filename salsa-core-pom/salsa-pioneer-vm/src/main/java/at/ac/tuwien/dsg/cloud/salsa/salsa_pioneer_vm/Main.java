@@ -89,6 +89,7 @@ public class Main {
 		case "deploy":
 			centerCon.updateNodeState(topologyId, nodeId, replica, SalsaEntityState.RUNNING);
 			deployer.deployNodeChain(thisNode);
+			// listen to
 			break;
 		case "checkcapa":	// remote			
 			if (deployer.checkCapabilityReady(args[1])) {

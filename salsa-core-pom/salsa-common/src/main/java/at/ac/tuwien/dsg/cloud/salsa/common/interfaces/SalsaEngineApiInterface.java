@@ -13,4 +13,6 @@ public interface SalsaEngineApiInterface {
     Response destroyInstance(String serviceId, String topologyId, String nodeId, String instanceId);
 
     Response undeployService(String serviceId);
+    
+    Response fetchStatus(String serviceId);
 }
