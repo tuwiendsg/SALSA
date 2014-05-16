@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -82,6 +83,15 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 			@PathParam("instanceId") String instanceId){
 		return destroyInstance(serviceId, topologyId, nodeId, instanceId);
 	}
+
+	@Override
+	@GET
+	@Path("/services/{serviceId}")
+	public Response fetchStatus(@PathParam("serviceId") String serviceId) {		
+		return internalEngine.getService(serviceId);
+	}
+	
+	
 	
 	
 }

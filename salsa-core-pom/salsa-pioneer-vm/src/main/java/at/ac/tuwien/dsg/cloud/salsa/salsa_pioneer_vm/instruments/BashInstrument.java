@@ -35,6 +35,7 @@ public class BashInstrument implements InstrumentInterface {
 		pb.directory(new File(SalsaPioneerConfiguration.getWorkingDir()+File.separator+node.getId()));
 		try {
 			p = pb.start();
+			
 			p.waitFor();
 			PioneerLogger.logger.debug("Executed process. Exit value: " + p.exitValue());
 
