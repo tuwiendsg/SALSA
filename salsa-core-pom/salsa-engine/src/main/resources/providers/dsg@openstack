@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<CloudProvider type="IAAS" name="dsg@openstack">
+    <ServiceUnit category="VirtualInfrastructure" subcategory="VM" name="m1.tiny">
+        <Resource name="Computing">
+            <properties>
+                <entry>
+                    <metric name="VCPU" measurementUnit="number" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">1</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="Memory">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="MB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">512</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="EphemeralDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">0</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="RootDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">0</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+    </ServiceUnit>
+    <ServiceUnit category="VirtualInfrastructure" subcategory="VM" name="m1.small">
+        <Resource name="Computing">
+            <properties>
+                <entry>
+                    <metric name="VCPU" measurementUnit="number" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">1</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="Memory">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="MB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">1920</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="EphemeralDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">40</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="RootDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">20</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+    </ServiceUnit>
+    <ServiceUnit category="VirtualInfrastructure" subcategory="VM" name="m1.medium">
+        <Resource name="Computing">
+            <properties>
+                <entry>
+                    <metric name="VCPU" measurementUnit="number" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">2</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="Memory">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="MB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">3750</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="EphemeralDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">40</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="RootDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">40</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+    </ServiceUnit>
+    <ServiceUnit category="VirtualInfrastructure" subcategory="VM" name="m1.micro">
+        <Resource name="Computing">
+            <properties>
+                <entry>
+                    <metric name="VCPU" measurementUnit="number" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">1</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="Memory">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="MB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">960</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="EphemeralDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">40</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="RootDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">0</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+    </ServiceUnit>
+    <ServiceUnit category="VirtualInfrastructure" subcategory="VM" name="m1.large">
+        <Resource name="Computing">
+            <properties>
+                <entry>
+                    <metric name="VCPU" measurementUnit="number" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">4</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="Memory">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="MB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">7680</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="EphemeralDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">40</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="RootDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">80</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+    </ServiceUnit>
+    <ServiceUnit category="VirtualInfrastructure" subcategory="VM" name="m1.xlarge">
+        <Resource name="Computing">
+            <properties>
+                <entry>
+                    <metric name="VCPU" measurementUnit="number" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">8</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="Memory">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="MB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">15360</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="EphemeralDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">40</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="RootDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">160</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+    </ServiceUnit>
+    <ServiceUnit category="VirtualInfrastructure" subcategory="VM" name="m1.2xlarge">
+        <Resource name="Computing">
+            <properties>
+                <entry>
+                    <metric name="VCPU" measurementUnit="number" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">4</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="Memory">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="MB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">7680</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="EphemeralDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">40</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="RootDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">30</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+    </ServiceUnit>
+    <ServiceUnit category="VirtualInfrastructure" subcategory="VM" name="m2.medium">
+        <Resource name="Computing">
+            <properties>
+                <entry>
+                    <metric name="VCPU" measurementUnit="number" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">3</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="Memory">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="MB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">5760</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="EphemeralDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">40</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+        <Resource name="RootDisk">
+            <properties>
+                <entry>
+                    <metric name="size" measurementUnit="GB" type="RESOURCE"/>
+                    <value ValueType="NUMERIC">
+                        <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">40</Value>
+                    </value>
+                </entry>
+            </properties>
+        </Resource>
+    </ServiceUnit>
+</CloudProvider>

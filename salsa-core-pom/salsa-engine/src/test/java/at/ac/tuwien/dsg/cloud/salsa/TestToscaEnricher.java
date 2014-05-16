@@ -6,7 +6,6 @@ import generated.oasis.tosca.TNodeTemplate;
 import generated.oasis.tosca.TServiceTemplate;
 import generated.oasis.tosca.TTopologyTemplate;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.ToscaEnricher;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.architecturerefine.process.KnowledgeGraph;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
@@ -17,19 +16,17 @@ public class TestToscaEnricher {
 		try {
 		TDefinitions def = ToscaXmlProcess
 				.readToscaFile(TestDeployTosca.class.getResource(
-						"/cassandra.tosca.highlevel.1.xml").getFile());
+						"/cassandra_old/tosca_Cassandra_example_fakescripts.xml").getFile());
 
-		System.out.println(ToscaXmlProcess.writeToscaDefinitionToXML(def));
+		//System.out.println(ToscaXmlProcess.writeToscaDefinitionToXML(def));
 				
-//		// ENRICH
-		KnowledgeGraph kgraph = new KnowledgeGraph("/tmp/salsa_knowledge");
-		ToscaEnricher enrich = new ToscaEnricher(def, kgraph);
-		//enrich.enrichHighLevelTosca();
-		enrich.enrichHighLevelTosca();
-
-		enrich.toXMLFile("/tmp/tosca.enrich.xml");
+		// ENRICH
 		
-		//checkSalsaMapProperties();
+		ToscaEnricher enricher = new ToscaEnricher(def);
+		enricher.enrichHighLevelTosca();
+		
+		ToscaXmlProcess.writeToscaDefinitionToFile(def, "/tmp/salsa/enriched.xml");
+		
 		} catch (Exception e){
 			e.printStackTrace();
 		}

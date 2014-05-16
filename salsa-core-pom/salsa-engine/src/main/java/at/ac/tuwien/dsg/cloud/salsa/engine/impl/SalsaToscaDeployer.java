@@ -55,8 +55,9 @@ public class SalsaToscaDeployer {
 			EngineLogger.logger.error("No config file specified");
 			return null;
 		}
-		ToscaEnricher enrich= new ToscaEnricher(def, null);
-		enrich.createComplexRelationship(def);		
+		ToscaEnricher enrich = new ToscaEnricher(def);
+		//ToscaRefiner enrich= new ToscaRefiner(def, null);
+		//enrich.createComplexRelationship(def);
 		
 		// deploy all service Template 
 		List<TNodeTemplate> lst = ToscaStructureQuery.getNodeTemplatesOfTypeList(CLOUD_NODE_NAME, def);
@@ -97,6 +98,7 @@ public class SalsaToscaDeployer {
 		}
 		
 		EngineLogger.logger.info("Deployed VMs for service: " + deployID.toString());
+		
 		
 		
 		return serviceData;
@@ -201,7 +203,7 @@ public class SalsaToscaDeployer {
 				nodeData.setState(SalsaEntityState.UNDEPLOYED);
 				nodeData.setName(node.getName());
 				// add the artifact type for SOFTWARE NODE
-				if (node.getType().getLocalPart().equals(SalsaEntityType.SOFTWARE.getEntityTypeString())){
+				if (!node.getType().getLocalPart().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
 					nodeData.setArtifactType(node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart());
 				}
 				// find what is the host of this node, add to hostId

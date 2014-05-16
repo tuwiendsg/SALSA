@@ -17,12 +17,12 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaCloudServiceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaTopologyData;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.SalsaComponentInstanceData.Properties;
-import at.ac.tuwien.dsg.cloud.salsa.common.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance.Properties;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
@@ -40,12 +40,12 @@ public class TestSalsaData {
 				.getResource("/cassandra.tosca.1.xml").getFile());
 		
 		
-		SalsaCloudServiceData serviceData = new SalsaCloudServiceData();
+		CloudService serviceData = new CloudService();
 		serviceData.setId(deployID.toString());
 		serviceData.setName(def.getName());
 		serviceData.setState(SalsaEntityState.ALLOCATING);
 		// build first topo
-		SalsaTopologyData topo = new SalsaTopologyData();
+		ServiceTopology topo = new ServiceTopology();
 		String topoID = ToscaStructureQuery.getFirstServiceTemplate(def).getId();
 		topo.setId(topoID);
 		serviceData.addComponentTopology(topo);
@@ -54,8 +54,8 @@ public class TestSalsaData {
 				+ deployID.toString() + ".data");
 		
 		//submitService("/tmp/testTestId.data");
-		SalsaComponentData appnode = new SalsaComponentData();
-		SalsaComponentInstanceData node = new SalsaComponentInstanceData();
+		ServiceUnit appnode = new ServiceUnit();
+		ServiceInstance node = new ServiceInstance();
 		node.setId("seed-example");
 		node.setName("A sample node");
 		node.setInstanceId(1);
@@ -71,7 +71,7 @@ public class TestSalsaData {
 		
 	}
 	
-	public static void updateComponent(String serviceId, String topologyId, SalsaComponentInstanceData data){
+	public static void updateComponent(String serviceId, String topologyId, ServiceInstance data){
 		String url=SalsaConfiguration.getSalsaCenterEndpoint()
 				+ "/rest"
 				+ "/addcomponent"
@@ -81,7 +81,7 @@ public class TestSalsaData {
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(url);
 			
-			JAXBContext jaxbContext = JAXBContext.newInstance(SalsaComponentData.class, SalsaInstanceDescription_VM.class);	// don't need Topology or Service
+			JAXBContext jaxbContext = JAXBContext.newInstance(ServiceUnit.class, SalsaInstanceDescription_VM.class);	// don't need Topology or Service
 			Marshaller msl = jaxbContext.createMarshaller();
 			msl.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			StringWriter result = new StringWriter();

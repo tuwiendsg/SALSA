@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:Definitions xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12">
+    <ns2:ServiceTemplate>
+        <ns2:TopologyTemplate>
+            <ns2:NodeTemplate id="os"/>
+            <ns2:NodeTemplate id="bin"/>
+            <ns2:NodeTemplate id="sh"/>
+            <ns2:NodeTemplate id="jre"/>
+            <ns2:NodeTemplate id="tomcat"/>
+            <ns2:NodeTemplate id="war"/>
+            <ns2:NodeTemplate id="image"/>
+            <ns2:NodeTemplate id="software"/>
+            <ns2:RelationshipTemplate type="HOSTON">
+                <ns2:SourceElement ref="software"/>
+                <ns2:TargetElement ref="os"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate type="HOSTON">
+                <ns2:SourceElement ref="sh"/>
+                <ns2:TargetElement ref="os"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate type="HOSTON">
+                <ns2:SourceElement ref="bin"/>
+                <ns2:TargetElement ref="os"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate type="HOSTON">
+                <ns2:SourceElement ref="jre"/>
+                <ns2:TargetElement ref="os"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate type="HOSTON">
+                <ns2:SourceElement ref="tomcat"/>
+                <ns2:TargetElement ref="os"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate type="HOSTON">
+                <ns2:SourceElement ref="war"/>
+                <ns2:TargetElement ref="tomcat"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate type="HOSTON">
+                <ns2:SourceElement ref="image"/>
+                <ns2:TargetElement ref="os"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate type="LOCAL">
+                <ns2:SourceElement ref="tomcat"/>
+                <ns2:TargetElement ref="jre"/>
+            </ns2:RelationshipTemplate>
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+</ns2:Definitions>
