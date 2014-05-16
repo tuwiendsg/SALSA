@@ -194,7 +194,7 @@ public class ServiceJsonDataTree {
 		
 		// if nodeType=SOFTWARE, change it into artifactType. so if it is os, leave there
 		if (abstractNode.getArtifactType()!=null){
-			if(this.nodeType.equals(SalsaEntityType.SOFTWARE.getEntityTypeString())){
+			if(!this.nodeType.equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
 				this.nodeType=abstractNode.getArtifactType();
 			}
 		}

@@ -13,12 +13,11 @@ import java.util.UUID;
 import javax.xml.bind.JAXBException;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ServiceDeployerException;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceType;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.VMStates;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.JEC2ClientFactory;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.OpenStackTypica;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud.OpenStackJcloud;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.stratuslab.StratusLabConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
@@ -27,20 +26,35 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
-import com.xerox.amazonws.ec2.InstanceType;
-
 public class TestCloudConnector {
 	public static void main(String[] args) throws Exception {
 		// testUserData();
 		// testQuery();
 		// testAddCapaAndProperties();
-		teststratus();
-		//testDsgOpenStack();
+		//teststratus();
 		//testMultiCloudConnector();
 		//testCenterConnector();
 		//testAddCapaAndProperties();
 		//testCenterConfigurations();
+		
+		testOpenstackJcloud(); 
 	}
+	
+	private static void testOpenstackJcloud() throws Exception {
+		//MultiCloudConnector multoCon = new MultiCloudConnector(EngineLogger.logger, new File("/etc/cloudUserParameters.ini"));
+		//multoCon.launchInstance("HungTestVM", SalsaCloudProviders.DSG_OPENSTACK, "be6ae07b-7deb-4926-bfd7-b11afe228d6a", "Hungld", "",  InstanceType.DEFAULT, 1, 1);		
+		
+		OpenStackJcloud con = new OpenStackJcloud(EngineLogger.logger, "http://openstack.infosys.tuwien.ac.at/identity/v2.0/", "CELAR", "hung", "Coowcyurp8", "Hungld");		
+		//con.launchInstance("hungTestVM", "1a7a06ef-6ad8-4894-bd80-825476d13843", Arrays.asList("default"), "Hungld", "", InstanceType.DEFAULT, 1, 1);
+		//con.listImages();
+		//con.listServers();
+		//con.printServerInfo("faf683d1-f9a8-45c8-8a3a-848b9c2f0044");
+		//InstanceDescription des = con.getInstanceDescriptionByID("faf683d1-f9a8-45c8-8a3a-848b9c2f0044");
+		//System.out.println(des.getPrivateIp());
+		
+	}
+	
+	
 	
 	private static void testCenterConfigurations() throws Exception{
 		SalsaConfiguration config = new SalsaConfiguration();
@@ -102,50 +116,7 @@ public class TestCloudConnector {
 		// System.out.println(userData);
 	}
 
-	private static void testConfig() {
-		System.out.println(SalsaConfiguration.getSalsaCenterEndpoint());
-	}
-
-	 private static void testDsgOpenStack() throws ServiceDeployerException {
-	 int socketTimeout = 5000;
-	 int connectionTimeout = 3000;
-	 int connectionManagerTimeout = 6000;
-	 int maxRetries = 100;
-	 int maxConnections = 10;
-	 JEC2ClientFactory cf = new JEC2ClientFactory(
-	 EngineLogger.logger,
-	 "98fc6ca6893343039aa286f374266aae",
-	 "4f8df10b2491426485b30712958b98e6",
-	 "openstack.infosys.tuwien.ac.at",
-	 8773,
-	 socketTimeout, connectionTimeout,
-	 connectionManagerTimeout, maxRetries, maxConnections);
-	 long retryDelayMillis = 5000;
-	 int deployMaxRetries = 24;
-	 long deployWaitMillis = 1000;
 	
-	 OpenStackTypica os = new OpenStackTypica(EngineLogger.logger, cf,
-	 maxRetries,
-	 retryDelayMillis, deployMaxRetries, deployWaitMillis, "Hungld");
-	
-	 long lStartTime = System.currentTimeMillis();
-		 
-	 String newInstance = os.launchInstance("ami-00000163",
-	 Arrays.asList("default"), "salsa", "test=1", InstanceType.LARGE, 1, 1);
-	 InstanceDescription id = os.getInstanceDescriptionByID(newInstance);
-	 
-	 long lEndTime = System.currentTimeMillis();	 
-	 long difference = lEndTime - lStartTime;	 
-	 System.out.println("Elapsed milliseconds: " + difference);
-	 
-	 
-	 System.out.println(id.getInstanceId());
-	 System.out.println(id.getPrivateIp());
-	 System.out.println(id.getState());
-	 
-	 os.removeInstance(id.getInstanceId());
-	 
-	 }
 	 
 	 
 	 private static void teststratus() throws Exception{
@@ -155,7 +126,7 @@ public class TestCloudConnector {
 			
 			long lStartTime = System.currentTimeMillis();
 			
-			String id = sc.launchInstance("KBhcU87Wm5IZNOXZYGHrczGekwp", sec, "", "echo test", InstanceType.SMALL, 1, 1);
+			String id = sc.launchInstance("test","KBhcU87Wm5IZNOXZYGHrczGekwp", sec, "", "echo test", InstanceType.DEFAULT, 1, 1);
 			for (int i=0;i<10000;i++){
 				InstanceDescription des = sc.getInstanceDescriptionByID(id);
 				if (des.getState().equals(VMStates.Running)){

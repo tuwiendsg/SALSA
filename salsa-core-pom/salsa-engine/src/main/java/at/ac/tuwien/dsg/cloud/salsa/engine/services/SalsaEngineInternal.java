@@ -524,7 +524,7 @@ public class SalsaEngineInternal {
 					+ File.separator + serviceId + ".data";
 			CloudService service = SalsaXmlDataProcess
 					.readSalsaServiceFile(serviceFile);	
-			ServiceInstance rep = service.getReplicaById(topologyId, nodeId, instanceId);
+			ServiceInstance rep = service.getInstanceById(topologyId, nodeId, instanceId);
 			Capabilities capas = rep.getCapabilities();
 			if (capas == null){ // there is no capability list before, create a new
 				capas = new Capabilities();
@@ -576,7 +576,7 @@ public class SalsaEngineInternal {
 			CloudService service = SalsaXmlDataProcess
 					.readSalsaServiceFile(serviceFile);
 			logger.debug("Setting property. Read service file: " + serviceFile);
-			ServiceInstance rep = service.getReplicaById(topologyId, nodeId, instanceId);
+			ServiceInstance rep = service.getInstanceById(topologyId, nodeId, instanceId);
 						
 			Properties props = rep.getProperties();
 			if (props == null){
@@ -711,6 +711,20 @@ public class SalsaEngineInternal {
 			logger.error(e2);
 		}		
 		return Response.status(201).entity("").build();
+	}
+	
+	
+	
+	@POST
+	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/action/{actionName}")
+	public Response executeAction(
+			@PathParam("serviceId") String serviceId,
+			@PathParam("topologyId") String topologyId,
+			@PathParam("nodeId") String nodeId,
+			@PathParam("instanceId") int instanceId,
+			@PathParam("actionName") String actionName){
+		
+		return null;
 	}
 	
 		

@@ -6,15 +6,22 @@ import java.io.File;
 
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.DeploymentEngineNodeLevel;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.SalsaToscaDeployer;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.ToscaEnricher;
-import at.ac.tuwien.dsg.cloud.salsa.knowledge.architecturerefine.process.KnowledgeGraph;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 public class TestDeployTosca {
 
 	public static void main(String[] args) throws Exception {
 		testDeploySingle();
+		//testDeployFull();
 	}
+	
+	public static void testDeployFull() throws Exception{
+		TDefinitions def = ToscaXmlProcess
+				.readToscaFile("/home/hungld/test/DAASPilot/tosca_Cassandra_example_fakescripts.xml");
+		SalsaToscaDeployer td = new SalsaToscaDeployer(new File("/etc//etc/cloudUserParameters.ini"));
+		td.deployNewService(def, "TestService");
+	}
+	
 	
 	public static void testHighLevel() throws Exception {
 		TDefinitions def = ToscaXmlProcess
@@ -33,14 +40,13 @@ public class TestDeployTosca {
 	}
 	
 	public static void testDeploySingle() throws Exception{
-		String serviceid="f3596f7a-4644-46e8-ab95-a377f22dffb8";
+		String serviceid="9d6b4452-5b4b-4663-b0c6-0af03a9540c5";
 		TDefinitions def = ToscaXmlProcess
-				.readToscaFile(TestDeployTosca.class.getResource(
-						"/dataMarketTosca/dataMarketAgence_test_DSG_Subscribe.tosca.xml").getFile());
+				.readToscaFile("/home/hungld/test/DAASPilot/tosca_Cassandra_example_fakescripts.xml");
 		
-		File configFile = new File(TestDeployTosca.class.getResource("/cloudUserParameters.ini").getFile());
-		DeploymentEngineNodeLevel deployer = new DeploymentEngineNodeLevel(configFile);
-		deployer.deployVMNode(serviceid, "DataMarketAgence", "agence_os", 1, def);
+		File configFile = new File("/etc/cloudUserParameters.ini");
+		DeploymentEngineNodeLevel deployer = new DeploymentEngineNodeLevel(configFile);		
+		deployer.deployVMNode(serviceid, "DaaSService", "OS_Datanode", 1, def);
 		
 	}
 	

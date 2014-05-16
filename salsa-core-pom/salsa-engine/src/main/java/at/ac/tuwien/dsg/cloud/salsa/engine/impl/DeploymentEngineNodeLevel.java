@@ -183,10 +183,8 @@ public class DeploymentEngineNodeLevel {
 		userDataBuffer.append("apt-get -q -y install openjdk-7-jre \n");
 
 		// download full Tosca file
-		userDataBuffer.append("mkdir " + SalsaConfiguration.getWorkingDir()
-				+ " \n");
-		userDataBuffer.append("cd " + SalsaConfiguration.getWorkingDir()
-				+ " \n");
+		userDataBuffer.append("mkdir " + SalsaConfiguration.getWorkingDir()	+ " \n");
+		userDataBuffer.append("cd " + SalsaConfiguration.getWorkingDir() + " \n");
 
 		// set some variable put in variable.properties
 		userDataBuffer
@@ -216,7 +214,7 @@ public class DeploymentEngineNodeLevel {
 		// download pioneer
 		List<String> fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		for (String file : fileLst) {
-			userDataBuffer.append("wget -nv "			
+			userDataBuffer.append("wget -q "			
 					+ SalsaConfiguration.getPioneerWeb() + "/" + file + " \n");
 			userDataBuffer.append("chmod +x "+file +" \n");
 			userDataBuffer.append("cp " + file + " /usr/local/bin \n");
@@ -224,13 +222,8 @@ public class DeploymentEngineNodeLevel {
 		
 		userDataBuffer.append("export PATH=$PATH:"+SalsaConfiguration.getWorkingDir() +" \n");
 		userDataBuffer.append("echo 'export PATH=$PATH:"+SalsaConfiguration.getWorkingDir() +"' >> /etc/profile \n");
-//		userDataBuffer.append("echo 'export SALSA_SERVICE_ID="+serviceId+"' >> /etc/profile \n");
-//		userDataBuffer.append("echo 'export SALSA_NODE_ID="+nodeId+"' >> /etc/profile \n");
-//		userDataBuffer.append("echo 'export SALSA_WORKING_DIR="+SalsaConfiguration.getWorkingDir()+"' >> /etc/profile \n");
 		
-		
-		
-		// install all package dependencies
+		// install all package dependencies and ganglia
 		TNodeTemplate node = ToscaStructureQuery.getNodetemplateById(nodeId, def);
 		if (node.getProperties() != null) {
 			SalsaMappingProperties mapProp = (SalsaMappingProperties) node.getProperties().getAny();			
@@ -247,6 +240,8 @@ public class DeploymentEngineNodeLevel {
 				}
 			}
 		}
+		// install ganglia client for monitoring this VM
+		userDataBuffer.append("apt-get -y install ganglia-monitor gmetad \n");
 		// execute Pioneer
 		fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		userDataBuffer.append("echo Current dir `pwd` \n");
