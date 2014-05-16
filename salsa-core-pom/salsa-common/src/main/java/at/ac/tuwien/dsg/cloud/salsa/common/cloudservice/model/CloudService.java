@@ -68,10 +68,10 @@ public class CloudService extends SalsaEntity{
 		return null;
 	}
 	
-	public ServiceInstance getReplicaById(String topologyId, String nodeId, int replica){
+	public ServiceInstance getInstanceById(String topologyId, String nodeId, int instanceId){
 		ServiceUnit component = getComponentById(topologyId, nodeId);
 		if (component != null){
-			return component.getInstanceById(replica);
+			return component.getInstanceById(instanceId);
 		}
 		return null;
 	}

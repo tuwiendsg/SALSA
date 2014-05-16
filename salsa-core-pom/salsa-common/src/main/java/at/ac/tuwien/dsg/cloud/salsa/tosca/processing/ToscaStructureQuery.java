@@ -386,4 +386,20 @@ public class ToscaStructureQuery {
 		return null;
 	}
 	
+	public static TTopologyTemplate getTopologyTemplateOfNode(TNodeTemplate node, TDefinitions def){
+		List<TExtensibleElements> eles = def.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
+		for (TExtensibleElements element : eles) {
+			if (element.getClass().equals(TServiceTemplate.class)){
+				TServiceTemplate ser = (TServiceTemplate) element;
+				List<TEntityTemplate> entities = ser.getTopologyTemplate().getNodeTemplateOrRelationshipTemplate();
+				for (TEntityTemplate entity : entities) {
+					if (entity.getId().equals(node.getId())){
+						return ser.getTopologyTemplate();
+					}
+				}
+			}			
+		}
+		return null;
+	}
+	
 }

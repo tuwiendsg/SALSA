@@ -2,7 +2,10 @@ package at.ac.tuwien.dsg.cloud.salsa.tosca.extension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -25,26 +28,20 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.Salsa
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "SalsaInstanceDescription")
-public class SalsaInstanceDescription_Artifact {
+public class SalsaInstanceDescription_Service {
 
-	@XmlElement(name = "hosted")
-	private String hosted;
+	@XmlElement(name = "pid")
+	private String pid;
 	
-	@XmlElement(name = "artifactType")
-	private String artifactType;
-
-	@XmlElement(name = "id")
-	private String instanceId;
-
 	@XmlElement(name = "state")
-	private String state;	// running, stopped
+	private String state;
 
-	public SalsaInstanceDescription_Artifact(){
+	
+	public SalsaInstanceDescription_Service(){
 	}
 	
-	public SalsaInstanceDescription_Artifact(String hosted, String instanceId){
-		this.hosted = hosted;
-		this.instanceId = instanceId;
+	public SalsaInstanceDescription_Service(String process_id){
+		this.pid = process_id;
 	}		
 
 	public void setState(String state) {
@@ -55,41 +52,31 @@ public class SalsaInstanceDescription_Artifact {
 		return state;
 	}
 	
-	public void setInstanceId(String instanceId) {
-		this.instanceId = instanceId;
-	}
-	
-	public String getInstanceId() {
-		return instanceId;
-	}
-
-	@Override
-	public String toString() {
-		return "SalsaInstanceDescription_Artifact [hosted=" + hosted
-				+ ", artifactType=" + artifactType + ", instanceId="
-				+ instanceId + ", state=" + state + "]";
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof SalsaInstanceDescription_Artifact) {
-			return instanceId.equals(((SalsaInstanceDescription_Artifact) obj)
-					.getInstanceId());
-		}
-		return false;
-	}
-	
+		
 	
 	public void updateFromMappingProperties(SalsaMappingProperties maps){
 		for (SalsaMappingProperty	map : maps.getProperties()) {
 			if (map.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
-				this.hosted = map.get("hosted");
-				this.artifactType = map.get("artifactType");
-				this.instanceId = map.get("instanceId");								
+				this.pid = map.get("pid");
+				this.state = map.get("state");							
 			}
 		}		
 	}
 	
-	
+	public Map<String,String> exportToMap(){
+		Map<String,String> resMap = new HashMap<String, String>();
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("pid", this.pid);
+		map.put("state", this.state);
+		
+		Iterator iterator = map.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry<String, String> mapEntry = (Map.Entry<String,String>) iterator.next();
+			if (mapEntry.getValue()!=null){
+				resMap.put(mapEntry.getKey(), mapEntry.getValue());
+			}
+		}		
+		return resMap;
+	}
 
 }
