@@ -2,7 +2,9 @@ package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
@@ -23,11 +25,29 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityS
 })
 public class SalsaEntity {
 	@XmlAttribute(name = "id")
-	String id;
+	String id;	
 	@XmlAttribute(name = "name")
 	String name;	
 	@XmlAttribute(name = "state")
 	SalsaEntityState state;
+	@XmlElement(name = "monitoring")
+	SalsaEntity.Monitoring monitoring;
+	
+	@XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "", propOrder = {  "any" })
+    public static class Monitoring {
+
+        @XmlAnyElement(lax = true)
+        protected Object any;
+  
+        public Object getAny() {
+            return any;
+        }
+
+        public void setAny(Object value) {
+            this.any = value;
+        }
+    }
 	
 	public SalsaEntity(){		
 	}
@@ -50,6 +70,14 @@ public class SalsaEntity {
 	public void setState(SalsaEntityState state) {
 		this.state = state;
 	}
-	
+
+	public SalsaEntity.Monitoring getMonitoring() {
+		return monitoring;
+	}
+
+	public void setMonitoring(Object monitoring) {
+		this.monitoring = new Monitoring();
+		this.monitoring.setAny(monitoring);		
+	}
 	
 }

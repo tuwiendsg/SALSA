@@ -93,7 +93,7 @@ public class CloudService extends SalsaEntity{
 		List<ServiceInstance> repList = new ArrayList<>();
 		List<ServiceUnit> comList = getAllComponentByType(type);
 		for (ServiceUnit com : comList) {
-			repList.addAll(com.getAllInstanceList());
+			repList.addAll(com.getInstancesList());
 		}		
 		return repList;
 	}

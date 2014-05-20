@@ -100,6 +100,7 @@ public class SalsaEngineInternal {
 		}		
 		try {
 			MutualFileAccessControl.writeToFile(uploadedInputStream, tmpFile);
+			
 			TDefinitions def = ToscaXmlProcess.readToscaFile(tmpFile);
 			SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
 			CloudService service = deployer.deployNewService(def, serviceName);
@@ -118,6 +119,45 @@ public class SalsaEngineInternal {
 			return Response.status(500).entity("Error when process Tosca file. Error: " +e).build();
 		}		
 	}
+	
+	
+	
+	@PUT
+	@Path("/services/xml")
+	@Consumes(MediaType.APPLICATION_XML)
+	@Produces(MediaType.APPLICATION_XML)
+	public String deployServiceFromXML(String uploadedInputStream) {
+	
+		String tmp_id = UUID.randomUUID().toString();
+		String tmpFile="/tmp/salsa_tmp_"+tmp_id;
+				
+		try {
+			FileUtils.writeStringToFile(new File(tmpFile), uploadedInputStream);
+			
+			TDefinitions def = ToscaXmlProcess.readToscaFile(tmpFile);
+			SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
+			CloudService service = deployer.deployNewService(def, "default");
+			String output = "Deployed service. Id: " + service.getId();
+			logger.debug(output);
+			// return 201: resource created
+			return tmp_id;
+		} catch (JAXBException e){
+			logger.error("Error when parsing Tosca: " + e);
+			e.printStackTrace();
+			// return 400: bad request, the XML is malformed and could not process 
+			return "Error: bad request";
+		} catch (IOException e) {
+			logger.error("Error reading file: " + tmpFile + ". Error: " +e);
+			//return 500: intenal server error. The server cannot create and process tmp Tosca file 
+			return "Error when process Tosca file. Error: " +e.toString();
+		}		
+	}
+	
+	
+	
+	
+	
+	
 	
 	@DELETE
 	@Path("/services/{serviceId}")
@@ -182,7 +222,7 @@ public class SalsaEngineInternal {
 				ServiceTopology topo = service.getComponentTopologyById(topologyId);
 				ServiceUnit nodeData = topo.getComponentById(nodeId);			
 				ServiceInstance instanceData = nodeData.getInstanceById(instanceIdInt);
-				nodeData.getAllInstanceList().remove(instanceData);
+				nodeData.getInstancesList().remove(instanceData);
 				SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
 			} catch (Exception e){
 				logger.error(e.getMessage());
@@ -699,7 +739,7 @@ public class SalsaEngineInternal {
 			TNodeTemplate toscanode = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capa, def);
 			// get the capability of the first instance of the node which have id
 			ServiceUnit nodeData = topo.getComponentById(toscanode.getId());
-			if (nodeData.getAllInstanceList().size()==0){
+			if (nodeData.getInstancesList().size()==0){
 				return Response.status(201).entity("").build();
 			}
 			ServiceInstance nodeInstanceOfCapa = nodeData.getInstanceById(0);
@@ -729,7 +769,7 @@ public class SalsaEngineInternal {
 	
 		
 	private void updateComponentStateBasedOnInstance(ServiceUnit nodeData){
-		List<ServiceInstance> insts = nodeData.getAllInstanceList();
+		List<ServiceInstance> insts = nodeData.getInstancesList();
 		List<SalsaEntityState> states = new ArrayList<>();
 		if (insts.isEmpty()){
 			nodeData.setState(SalsaEntityState.UNDEPLOYED);

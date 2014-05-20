@@ -255,23 +255,43 @@ public class ToscaStructureQuery {
 	public static List<TNodeTemplate> getNodeTemplateWithRelationshipChain(
 			String relationShipType, TNodeTemplate node, TDefinitions def) {
 		List<TNodeTemplate> lst = new ArrayList<TNodeTemplate>();
-		if (node.getCapabilities()==null){
-			return lst;
-		}
-		List<TCapability> nodeCaps = node.getCapabilities().getCapability();
+		
 		List<TRelationshipTemplate> lstrel = getRelationshipTemplateList(relationShipType, def);
 		
+		System.out.println("SEE NODES CONNECTION");
+		for (TRelationshipTemplate rel:lstrel){
+			System.out.println("Node: " + node.getId() + ". rel: " + rel.getId());
+			TEntityTemplate entity = (TEntityTemplate) rel.getTargetElement().getRef();
+			System.out.println("Entity: " + entity.getId());
+			if (node.getId().equals(entity.getId()) && entity.getClass().equals(TNodeTemplate.class)){
+				System.out.println("Node: " + node.getId() + ". rel: " + rel.getId());
+				TNodeTemplate targetNode = (TNodeTemplate) rel.getSourceElement().getRef();
+				lst.add(targetNode);
+				System.out.println("List size: " + lst.size());
+				lst.addAll(getNodeTemplateWithRelationshipChain(relationShipType, targetNode, def)); // recursive
+			}
+		}
+		
+		if (node.getCapabilities()==null){
+			return lst;
+		}		
+		List<TCapability> nodeCaps = node.getCapabilities().getCapability();
+		System.out.println("SEE CAP-REQ CONNECTION");
 		for (TCapability cap : nodeCaps) {
+			System.out.println("Node: " + node.getId() + ". Capa: " + cap.getId());
 			for (TRelationshipTemplate rel : lstrel) {
-				TCapability relcap = (TCapability)rel.getSourceElement().getRef();
-				if (cap.getId().equals(relcap.getId())) {					
+				System.out.println("Node: " + node.getId() + ". rel: " + rel.getId());				
+				TEntityTemplate relcap = (TEntityTemplate)rel.getSourceElement().getRef();
+				if (cap.getId().equals(relcap.getId()) && cap.getClass().equals(TCapability.class)) {					
 					TRequirement relreq = (TRequirement)rel.getTargetElement().getRef();
 					TNodeTemplate neibor=getNodetemplateOfRequirementOrCapability(relreq.getId(), def);
 					lst.add(neibor);
-					lst.addAll(getNodeTemplateWithRelationshipChain(relationShipType, neibor, def));
+					System.out.println("List size: " + lst.size());
+					lst.addAll(getNodeTemplateWithRelationshipChain(relationShipType, neibor, def)); // recursive
 				}
 			}
 		}
+		
 		return lst;		
 	}
 	

@@ -3,6 +3,7 @@ package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -29,6 +30,9 @@ public class ServiceInstance extends SalsaEntity {
 	
 	@XmlAttribute(name = "replica")
 	int instanceId=0;
+	
+	@XmlAttribute(name = "uuid")
+	UUID uuid = UUID.randomUUID();
 	
 	@XmlAttribute(name = "hostedId")
 	int hostedId=0;
@@ -145,8 +149,11 @@ public class ServiceInstance extends SalsaEntity {
 	public void setCapabilities(Capabilities capabilities) {
 		this.capabilities = capabilities;
 	}
-	
-	
+		
+	public UUID getUuid() {
+		return uuid;
+	}
+
 	public String convertToXML() throws JAXBException{
 		JAXBContext jaxbContext = JAXBContext // beside data.class, addition
 				// classes for contents

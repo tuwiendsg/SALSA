@@ -126,6 +126,7 @@ public class SalsaCenterConnector {
 	public String updateNodeState(String topologyId, String nodeId, int instanceId,
 			SalsaEntityState state) {
 		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/state/{value}
+		logger.debug("Update node state for : " + serviceId +"/"+topologyId+"/"+nodeId+"/"+instanceId+"/"+state);		
 		String url = centerRestfulEndpoint 
 				+ "/services/" + serviceId 
 				+ "/topologies/" + topologyId 

@@ -125,7 +125,7 @@ public class ServiceUnit extends SalsaEntity {
 		return counter;
 	}
 
-	public List<ServiceInstance> getAllInstanceList() {
+	public List<ServiceInstance> getInstancesList() {
 		return repLst;
 	}
 	

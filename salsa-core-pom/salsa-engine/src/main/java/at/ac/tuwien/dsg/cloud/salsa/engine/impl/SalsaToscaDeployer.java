@@ -1,6 +1,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl;
 
 import generated.oasis.tosca.TCapability;
+import generated.oasis.tosca.TCapabilityType;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TEntityTemplate;
 import generated.oasis.tosca.TNodeTemplate;
@@ -209,12 +210,19 @@ public class SalsaToscaDeployer {
 				// find what is the host of this node, add to hostId
 				for (TRelationshipTemplate rela : relas_hoston) { // search on all relationship, find the host of this "node"
 															// note that, after convert, the capa and req are reverted.
-					TEntityTemplate targetReq = (TEntityTemplate)rela.getTargetElement().getRef();
-					TNodeTemplate target = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(targetReq.getId(), def);
+					TEntityTemplate targetRela = (TEntityTemplate)rela.getTargetElement().getRef();
+					TEntityTemplate sourceRela = (TEntityTemplate)rela.getSourceElement().getRef();
+					TNodeTemplate target;
+					TNodeTemplate source;
+					if (targetRela.getClass().equals(TRequirement.class)){
+						target = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(targetRela.getId(), def);
+						source = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(sourceRela.getId(), def);
+					} else {
+						target = (TNodeTemplate) sourceRela;
+						source = (TNodeTemplate) targetRela;
+					}
 					EngineLogger.logger.debug("Is the source with id: " + target.getId() + " same with " + nodeData.getId());
 					if (target.getId().equals(nodeData.getId())){
-						TCapability sourceCapa = (TCapability)rela.getSourceElement().getRef();
-						TNodeTemplate source = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(sourceCapa.getId(), def);
 						nodeData.setHostedId(source.getId());
 						EngineLogger.logger.debug("Found the host of node "+nodeData.getId() +" which is id = " + source.getId());
 					}
