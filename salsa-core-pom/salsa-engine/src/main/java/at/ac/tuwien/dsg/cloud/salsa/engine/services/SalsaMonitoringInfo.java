@@ -44,7 +44,7 @@ public class SalsaMonitoringInfo {
 			// in case of VM, fetch ganglia information and show up
 			if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
 				SalsaInstanceDescription_VM pros = (SalsaInstanceDescription_VM) instance.getProperties().getAny();
-				return getVMInformation(pros);
+				return Response.status(200).entity(getVMInformation(pros)).build();
 			} else {
 				
 			}
@@ -62,14 +62,18 @@ public class SalsaMonitoringInfo {
 	
 	
 	
-	private Response getVMInformation(SalsaInstanceDescription_VM pros){
+	protected String getVMInformation(SalsaInstanceDescription_VM pros){
 		
 			String ip = pros.getPrivateIp();
-			EngineLogger.logger.debug("Querying ganglia information and return");
-			ProcessBuilder pb = new ProcessBuilder("/usr/bin/telnet",ip,"8649");
+			EngineLogger.logger.debug("Querying ganglia information and return: " + ip);
+			//ProcessBuilder pb = new ProcessBuilder("/usr/bin/telnet",ip,"8649");
+			EngineLogger.logger.debug("Debug ganglia 1");
 			try {
-				Process p = pb.start();
+				//Process p = pb.start();
+				Process p = Runtime.getRuntime().exec("/usr/bin/telnet " + ip + " 8649");				
+				EngineLogger.logger.debug("Debug ganglia 2");
 				p.waitFor();
+				EngineLogger.logger.debug("Debug ganglia 3");
 	
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(p.getInputStream()));
@@ -77,6 +81,8 @@ public class SalsaMonitoringInfo {
 				boolean writing = false;
 				
 				String line = reader.readLine();
+				EngineLogger.logger.debug("Debug ganglia 4");
+				EngineLogger.logger.debug(line);
 				//line = reader.readLine(); line = reader.readLine(); line = reader.readLine(); // 3 first line of telnet command
 				// we write out the HOST information of GANGLIA_XML
 				while (line != null) {
@@ -93,15 +99,15 @@ public class SalsaMonitoringInfo {
 					line = reader.readLine();						
 				}
 				EngineLogger.logger.debug(output);
+				return output;
 				
-				return Response.status(200).entity(output).build();
 		} catch (IOException e) {
 			EngineLogger.logger.debug(e.toString());
-			return Response.status(500).entity("<Error>Error when query monitoring information !</Error>").build();				
+			return "<Error>Error when query monitoring information !</Error>";				
 		
 		} catch (InterruptedException e1){
 			EngineLogger.logger.debug(e1.toString());
-			return Response.status(500).entity("Error when execute command !").build();
+			return "Error when execute command to query monitoring information !";
 		}
 	}
 	

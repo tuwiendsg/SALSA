@@ -110,7 +110,7 @@ public class DeploymentEngineNodeLevel {
 				instanceDesc.getBaseImage(),
 				"",	// this is the sshKeyGen, but not need anymore. When create mcc, we pass the configFile
 				userData,
-				InstanceType.getTypeFromString(instanceDesc.getInstanceType()),
+				instanceDesc.getInstanceType(),
 				1, 1);	// deploy min instance number of node		
 		
 		// update the instance property from cloud specific to SALSA format

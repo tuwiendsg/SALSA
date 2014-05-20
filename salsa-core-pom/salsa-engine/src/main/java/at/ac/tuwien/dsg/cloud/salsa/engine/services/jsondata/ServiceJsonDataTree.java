@@ -39,6 +39,14 @@ public class ServiceJsonDataTree {
 	String id;
 	SalsaEntityState state;
 	Map<String, String> properties;
+	Object monitoring;
+	public Object getMonitoring() {
+		return monitoring;
+	}
+	public void setMonitoring(Object monitoring) {
+		this.monitoring = monitoring;
+	}
+
 	List<ServiceJsonDataTree> children;
 	boolean isAbstract=true;	// true: tosca node, false: instance node
 	String nodeType;
@@ -144,7 +152,7 @@ public class ServiceJsonDataTree {
 //		logger.debug("PI123 - The all instance list: " + data.getAllInstanceList().size());
 //		logger.debug("PI123 - The hoston instance list: " + data.getInstanceHostOn(hostOnId).size());
 		if (hostOnId < 0){
-			instances = data.getAllInstanceList();
+			instances = data.getInstancesList();
 		} else {
 			instances = data.getInstanceHostOn(hostOnId);
 		}
@@ -164,18 +172,19 @@ public class ServiceJsonDataTree {
 			ServiceJsonDataTree oneChild = new ServiceJsonDataTree(instance.getInstanceId());
 			addChild(oneChild);			
 			// get the list of host on this components, which will come after the instances
-			oneChild.loadData(instance, hostOnCompos, data, topo);
+			oneChild.loadDataInstance(instance, hostOnCompos, data, topo);
 		}
 		
 	}
 	
 	// convert instance. abstractNode is for geting TYPE, knowing how to parse properties
-	public void loadData(ServiceInstance instance, List<ServiceUnit> hostOnCompos, ServiceUnit abstractNode, ServiceTopology topo){
+	public void loadDataInstance(ServiceInstance instance, List<ServiceUnit> hostOnCompos, ServiceUnit abstractNode, ServiceTopology topo){
 		//logger.debug("Adding instance node id: " + instance.getInstanceId());
 		this.id = abstractNode.getId()+"_"+Integer.toString(instance.getInstanceId());		
 		this.setState(instance.getState());		
 		this.isAbstract = false;
 		this.setState(instance.getState());
+		this.setMonitoring(instance.getMonitoring());
 		
 		this.setNodeType(abstractNode.getType());
 		//logger.debug("Let check connectto ID ");

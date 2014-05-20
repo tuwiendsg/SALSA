@@ -126,7 +126,7 @@ public class TestCloudConnector {
 			
 			long lStartTime = System.currentTimeMillis();
 			
-			String id = sc.launchInstance("test","KBhcU87Wm5IZNOXZYGHrczGekwp", sec, "", "echo test", InstanceType.DEFAULT, 1, 1);
+			String id = sc.launchInstance("test","KBhcU87Wm5IZNOXZYGHrczGekwp", sec, "", "echo test", "000000960", 1, 1);
 			for (int i=0;i<10000;i++){
 				InstanceDescription des = sc.getInstanceDescriptionByID(id);
 				if (des.getState().equals(VMStates.Running)){

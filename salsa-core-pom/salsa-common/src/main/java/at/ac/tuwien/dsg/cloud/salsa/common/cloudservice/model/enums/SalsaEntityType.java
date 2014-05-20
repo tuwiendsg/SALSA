@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum SalsaEntityType {
 	OPERATING_SYSTEM("os"),
+	SOFTWARE("software"),
 	SERVICE("service"),
 	PROGRAM("program"),
 	ARTIFACT("artifact");
