@@ -10,8 +10,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -32,19 +39,22 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnitRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance.Capabilities;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance.Properties;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology.SalsaReplicaRelationships;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnitRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.DeploymentEngineNodeLevel;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.SalsaToscaDeployer;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterLogger;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.MutualFileAccessControl;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
@@ -183,18 +193,90 @@ public class SalsaEngineInternal {
 		}
 	}
 	
+		
 	@POST
     @Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instance-count/{quantity}")
-    @Produces(MediaType.APPLICATION_JSON)
+    //@Produces(MediaType.APPLICATION_JSON)
     public Response spawnInstance(@PathParam("serviceId") String serviceId,
                                   @PathParam("topologyId") String topologyId,
                                   @PathParam("nodeId") String nodeId,
                                   @PathParam("quantity") int quantity) {
 		SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
-		logger.debug("SPAWNING MORE INSTANCE: " + serviceId);
-		deployer.deployMoreInstance(serviceId, topologyId, nodeId, quantity);		
-		return null;
+		logger.debug("SPAWNING MORE INSTANCE: " + serviceId + "/" + topologyId + "/" + nodeId + ". Quantity:" + quantity);
+
+		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/tmp", EngineLogger.logger);
+		TDefinitions def = centerCon.getToscaDescription();
+		CloudService service = centerCon.getUpdateCloudServiceRuntime();
+		ServiceUnit node = service.getComponentById(topologyId, nodeId);
+		if (node==null){
+			EngineLogger.logger.error("May be the id of node is invalided");		
+			return Response.status(500).entity("Error: Node ID is not found.").build();
+		}
+		centerCon.updateNodeIdCounter(topologyId, nodeId, node.getIdCounter()+quantity); // update first the number + quantity		
+		String returnVal="";
+		for (int i= node.getIdCounter(); i<node.getIdCounter()+quantity; i++) {
+			//centerCon.addInstanceUnit(topologyId, nodeId, i);
+			new Thread(new asynSpawnInstances(deployer, serviceId, topologyId, nodeId, i, def, service)).start();
+			returnVal += i + " ";
+		}
+		return Response.status(201).entity(returnVal).build();
 	}
+	
+	private class asynSpawnInstances implements Runnable {
+		SalsaToscaDeployer deployer;
+		TDefinitions def;
+		CloudService service;
+		String serviceId, topoId, nodeId;
+		int instanceId;
+		asynSpawnInstances(SalsaToscaDeployer deployer, String serviceId, String topoId, String nodeId, int instanceId, TDefinitions def, CloudService service){
+			this.deployer=new SalsaToscaDeployer(configFile);			
+			this.serviceId=serviceId;
+			this.topoId=topoId;
+			this.nodeId=nodeId;
+			this.def=def;
+			this.service=service;
+			this.instanceId=instanceId;	
+		}
+
+		@Override
+		public void run() {
+			deployer.deployOneMoreInstance(serviceId, topoId, nodeId, instanceId, def, service);			
+		}		
+	}
+	
+	/**
+	 * This method add new instance deployment and metadata
+	 * @param serviceId The exist service
+	 * @param topologyId Not require at this time, but need to be presented
+	 * @param nodeId Id of node to be deployed more
+	 * @param quantity Number of instances will be deployed
+	 * @return
+	 * 
+	 */
+	@PUT
+	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}")
+	public Response deployInstance(
+			@PathParam("serviceId")String serviceId,
+			@PathParam("topologyId")String topologyId,
+			@PathParam("nodeId")String nodeId, 
+			@PathParam("instanceId")int instanceId){
+		logger.debug("Deployment request for this node: " + serviceId + " - " + nodeId +" - " + instanceId);
+		SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
+		logger.debug("PUT 1 MORE INSTANCE: " + serviceId + "/" + topologyId + "/" + nodeId);
+
+		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/tmp", EngineLogger.logger);
+		TDefinitions def = centerCon.getToscaDescription();
+		CloudService service = centerCon.getUpdateCloudServiceRuntime();
+		ServiceUnit node = service.getComponentById(topologyId, nodeId);
+		if (node==null){
+			EngineLogger.logger.error("May be the id of node is invalided");		
+			return Response.status(500).entity("Error: Node ID is not found.").build();
+		}
+		new Thread(new asynSpawnInstances(deployer, serviceId, topologyId, nodeId, instanceId, def, service)).start();
+		return Response.status(201).entity(instanceId).build();	
+		//TODO: What happen if it is fail to spawn a VM ? 
+	}
+	
 	
 	/**
 	 * Undeploy an instance
@@ -210,9 +292,9 @@ public class SalsaEngineInternal {
 			@PathParam("serviceId") String serviceId,
 			@PathParam("topologyId") String topologyId,
 			@PathParam("nodeId") String nodeId,
-			@PathParam("instanceId") String instanceId){
+			@PathParam("instanceId") int instanceId){
 		SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
-		int instanceIdInt = Integer.parseInt(instanceId);
+		int instanceIdInt = instanceId;
 		if (deployer.removeOneInstance(serviceId, topologyId, nodeId, instanceIdInt)){			
 			// remove metadata
 			try{
@@ -222,7 +304,19 @@ public class SalsaEngineInternal {
 				ServiceTopology topo = service.getComponentTopologyById(topologyId);
 				ServiceUnit nodeData = topo.getComponentById(nodeId);			
 				ServiceInstance instanceData = nodeData.getInstanceById(instanceIdInt);
-				nodeData.getInstancesList().remove(instanceData);
+				
+				// remove hosted on node
+				for (ServiceUnit unit : topo.getComponents()) {
+					if (unit.getHostedId().equals(nodeData.getId())){
+						for (ServiceInstance instance: unit.getInstancesList()){
+							if (instance.getHostedId_Integer()==instanceData.getInstanceId()){
+								unit.getInstancesList().remove(instance);
+							}
+						}
+					}
+				}
+			
+				nodeData.getInstancesList().remove(instanceData);				
 				SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
 			} catch (Exception e){
 				logger.error(e.getMessage());
@@ -288,17 +382,13 @@ public class SalsaEngineInternal {
 	@Path("/services/tosca/{serviceId}")
 	@Produces(MediaType.TEXT_XML)
 	public Response getToscaService(@PathParam("serviceId") String serviceDeployId) {
-		logger.debug("YOU ARE HERE !!");
+		logger.debug("Read Tosca file and return !");
 		if (serviceDeployId.equals("")){
-			logger.debug("YOU ARE HERE NULL !!");
 			return Response.status(400).entity("").build();
 		}
-		String fileName = CenterConfiguration.getServiceStoragePath() + "/"
-				+ serviceDeployId;
-		logger.debug("YOU ARE HERE X !!");
+		String fileName = CenterConfiguration.getServiceStoragePath() + "/"	+ serviceDeployId;
 		try {
 			String xml = FileUtils.readFileToString(new File(fileName));
-			logger.debug("YOU ARE HERE 2 !! ");
 			return Response.status(200).entity(xml).build();
 		} catch (Exception e) {
 			logger.error("Could not find service: " + serviceDeployId + ". Data did not be sent. Error: " + e.toString());
@@ -315,8 +405,7 @@ public class SalsaEngineInternal {
 	public Response submitService(
 			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail) {
-		String serviceId = fileDetail.getFileName(); // file name is the service
-														// Id
+		String serviceId = fileDetail.getFileName(); // file name is the service id
 		String uploadedFileLocation = CenterConfiguration
 				.getServiceStoragePath() + File.separator + serviceId;		
 		MutualFileAccessControl.writeToFile(uploadedInputStream, uploadedFileLocation);
@@ -463,50 +552,7 @@ public class SalsaEngineInternal {
 	 * INTERNAL SERVICES FOR INSTANCE UNITS
 	 */
 	
-	/**
-	 * This method add new instance deployment and metadata
-	 * @param serviceId The exist service
-	 * @param topologyId Not require at this time, but need to be presented
-	 * @param nodeId Id of node to be deployed more
-	 * @param quantity Number of instances will be deployed
-	 * @return
-	 * 
-	 */
-	@PUT
-	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}")
-	public Response deployInstance(
-			@PathParam("serviceId")String serviceId,
-			@PathParam("topologyId")String topologyId,
-			@PathParam("nodeId")String nodeId, 
-			@PathParam("instanceId")int instanceId){
-		logger.debug("Deployment request for this node: " + serviceId + " - " + nodeId +" - " + instanceId);
-		//SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
-		//deployer.deployMoreInstance(serviceId, topologyId, nodeId, instanceId);
-		DeploymentEngineNodeLevel dengine = new DeploymentEngineNodeLevel(configFile);
-		try {
-			String toscaFile = SalsaConfiguration.getServiceStorageDir()+"/"+serviceId;
-			String serviceFile = toscaFile + ".data";
-			TDefinitions def = ToscaXmlProcess.readToscaFile(toscaFile);			
-			//TNodeTemplate node = ToscaStructureQuery.getNodetemplateById(nodeId, def);
-			//if (node.getType().getLocalPart().equals(SalsaEntityType.OPERATING_SYSTEM)){
-			ServiceInstance instanceData = dengine.deployVMNode(serviceId, topologyId, nodeId, instanceId, def);
-			logger.debug("Deploying new instances done: " + instanceData.getInstanceId());
-			
-//			// update to metadata here
-//			SalsaCloudServiceData service = SalsaXmlDataProcess.readSalsaServiceFile(serviceFile);
-//			SalsaTopologyData topo = service.getComponentTopologyById(topologyId);
-//			SalsaComponentData compo = topo.getComponentById(nodeId);
-//			compo.addInstance(instanceData);
-//			SalsaXmlDataProcess.writeCloudServiceToFile(service, serviceFile);
-			
-		} catch(JAXBException e1){
-			logger.error(e1);
-		} catch (IOException e2){
-			logger.error(e2);
-		}
-		return Response.status(201).entity("Spawned VM").build();
-		//TODO: What happen if it is fail to spawn a VM ? 
-	}
+	
 	
 	/**
 	 * This PUT the metadata only. It is called by Pioneer which already do deployment.
@@ -525,17 +571,30 @@ public class SalsaEngineInternal {
 			@PathParam("nodeId")String nodeId){		
 		String fileName = CenterConfiguration.getServiceStoragePath()+ File.separator + serviceId + ".data";
 		try {
+			MutualFileAccessControl.lockFile();
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(fileName);
 			ServiceTopology topo = service.getComponentTopologyById(topologyId);
 			ServiceUnit compo = topo.getComponentById(nodeId);
 			ServiceInstance replicaData = data.getValue();
-			compo.addInstance(replicaData);
+			int id = replicaData.getInstanceId();
+			ServiceInstance existedInstance = compo.getInstanceById(id);			
+			if (existedInstance==null){
+				EngineLogger.logger.debug("Create new instance meta-data");
+				compo.addInstance(replicaData);
+			} else {
+				EngineLogger.logger.debug("Update old instance meta-data");
+				compo.getInstanceById(id).setHostedId_Integer(replicaData.getHostedId_Integer());
+				existedInstance = replicaData;
+			}			
 			SalsaXmlDataProcess.writeCloudServiceToFile(service, fileName);			
 		} catch(JAXBException e1){
 			logger.error(e1);
 		} catch (IOException e2){
 			logger.error(e2);
+		} finally{
+			MutualFileAccessControl.releaseFile();
 		}
+		MutualFileAccessControl.releaseFile();
 		return Response.status(201).entity("Spawned VM").build();
 		//TODO: What happen if it is fail to spawn a VM ? 
 	}
@@ -558,7 +617,7 @@ public class SalsaEngineInternal {
 			@PathParam("topologyId") String topologyId,
 			@PathParam("nodeId") String nodeId,
 			@PathParam("instanceId") int instanceId) {
-		MutualFileAccessControl.lockFile();		
+		MutualFileAccessControl.lockFile();
 		try {
 			String serviceFile = CenterConfiguration.getServiceStoragePath()
 					+ File.separator + serviceId + ".data";
@@ -664,32 +723,27 @@ public class SalsaEngineInternal {
 			@PathParam("instanceId") int instanceId, 
 			@PathParam("value") String value) {		
 		try {
+			java.util.Date date= new java.util.Date();			 
+			logger.debug("TIMESTAMP - Node: " + nodeId + "/" + instanceId + ", state: " + value + ", Time: " + date.getTime());
 			logger.debug("UPDATE NODE STATE: " + nodeId + ", instance: " + instanceId + ", state: " + value);			
 			MutualFileAccessControl.lockFile();
 			String salsaFile = CenterConfiguration.getServiceStoragePath()
 					+ File.separator + serviceId + ".data";
-			logger.debug("updateNodeState: file = " + salsaFile);
-			CloudService service = SalsaXmlDataProcess
-					.readSalsaServiceFile(salsaFile);
-			logger.debug("updateNodeState: serviceName = " + service.getName());
-			ServiceTopology topo = service
-					.getComponentTopologyById(topologyId);
+			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+			ServiceTopology topo = service.getComponentTopologyById(topologyId);
 			ServiceUnit nodeData = topo.getComponentById(nodeId);
-			logger.debug("updateNodeState: nodeId = " + nodeData.getId());
-			
 			
 			if (instanceId==-1){	// update for node data
 				logger.debug("updateNodeState: UPDATE NODE DATA STATE 1");
-				nodeData.setState(SalsaEntityState.fromString(value));
+				nodeData.setState(SalsaEntityState.fromString(value));				
 				logger.debug("updateNodeState: UPDATE NODE DATA STATE 2");
-				updateComponentStateBasedOnInstance(nodeData);	// update the Tosca node
-				logger.debug("updateNodeState: UPDATE NODE DATA STATE 3");
+				updateComponentStateBasedOnInstance(service);
 				SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);				
 			} else { // update for instance
 				ServiceInstance replicaInst = nodeData.getInstanceById(instanceId);
 				if (SalsaEntityState.fromString(value) != null) {
 					replicaInst.setState(SalsaEntityState.fromString(value));
-					updateComponentStateBasedOnInstance(nodeData);	// update the Tosca node
+					updateComponentStateBasedOnInstance(service);	// update the Tosca node
 					SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
 					// ToscaXmlProcess.writeToscaDefinitionToFile(def, toscaFile);
 				} else {
@@ -699,9 +753,9 @@ public class SalsaEngineInternal {
 									+ " deployed status: " + value).build();
 				}
 			}
+			
 		} catch (Exception e) {
-			logger.error("Could not read service for update node status: "
-					+ serviceId);
+			logger.error("Could not read service for update node status: "	+ nodeId +"/" + instanceId);
 			logger.error(e.toString());
 
 			return Response.status(500).entity("Error update node status").build();
@@ -768,31 +822,47 @@ public class SalsaEngineInternal {
 	}
 	
 		
-	private void updateComponentStateBasedOnInstance(ServiceUnit nodeData){
-		List<ServiceInstance> insts = nodeData.getInstancesList();
-		List<SalsaEntityState> states = new ArrayList<>();
+	private void updateComponentStateBasedOnInstance(SalsaEntity nodeData){		
+		Map<SalsaEntityState, Integer> rankState = new HashMap<>();
+		rankState.put(SalsaEntityState.UNDEPLOYED, 0);
+		rankState.put(SalsaEntityState.ERROR, 1);
+		rankState.put(SalsaEntityState.ALLOCATING, 2);
+		rankState.put(SalsaEntityState.CONFIGURING, 3);
+		rankState.put(SalsaEntityState.STOPPED, 4);
+		rankState.put(SalsaEntityState.RUNNING, 5);
+		rankState.put(SalsaEntityState.FINISHED, 6);
+		
+		List<SalsaEntity> insts = new ArrayList<>();
+		if (nodeData.getClass().equals(ServiceUnit.class)){	
+			List<ServiceInstance> serviceInst = ((ServiceUnit)nodeData).getInstancesList();
+			for (ServiceInstance instance : serviceInst) {
+				insts.add(instance);
+			}
+		} else if (nodeData.getClass().equals(ServiceTopology.class)){
+			List<ServiceUnit> serviceUnits = ((ServiceTopology)nodeData).getComponents();
+			for (ServiceUnit unit : serviceUnits) {
+				updateComponentStateBasedOnInstance(unit);
+				insts.add(unit);
+			}
+		} else if (nodeData.getClass().equals(CloudService.class)){
+			List<ServiceTopology> serviceTopos = ((CloudService)nodeData).getComponentTopologyList();
+			for (ServiceTopology topo : serviceTopos) {
+				updateComponentStateBasedOnInstance(topo);
+				insts.add(topo);
+			}
+		}
+		
+		int minState=6;
 		if (insts.isEmpty()){
 			nodeData.setState(SalsaEntityState.UNDEPLOYED);
 			return;
 		}
-		for (ServiceInstance inst : insts) {
-			states.add(inst.getState());
+		for (SalsaEntity inst : insts) {
+			if (minState >= rankState.get(inst.getState())){
+				//EngineLogger.logger.debug("Aggregrating state for node: " + nodeData.getId() + ", to: " + inst.getState());				
+				nodeData.setState(inst.getState());
+			}			
 		}
-		if (states.contains(SalsaEntityState.ALLOCATING) || states.contains(SalsaEntityState.CONFIGURING)){
-			nodeData.setState(SalsaEntityState.CONFIGURING);			
-			return;
-		}
-		if (states.contains(SalsaEntityState.RUNNING)){
-			nodeData.setState(SalsaEntityState.RUNNING);
-			return;
-		}
-		if (states.contains(SalsaEntityState.FINISHED)){
-			nodeData.setState(SalsaEntityState.FINISHED);
-			return;
-		}
-		
 	}
-	
-	
 	
 }

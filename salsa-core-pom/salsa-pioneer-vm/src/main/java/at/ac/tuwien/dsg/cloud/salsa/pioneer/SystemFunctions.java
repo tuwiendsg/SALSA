@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm;
+package at.ac.tuwien.dsg.cloud.salsa.pioneer;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 
-import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.PioneerLogger;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 
 public class SystemFunctions {
 	

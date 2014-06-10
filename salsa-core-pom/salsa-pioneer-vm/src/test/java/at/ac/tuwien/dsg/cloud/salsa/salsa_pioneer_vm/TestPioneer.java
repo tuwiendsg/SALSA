@@ -1,8 +1,8 @@
 package at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.PioneerLogger;
-import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.SalsaPioneerConfiguration;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 
 public class TestPioneer {
 

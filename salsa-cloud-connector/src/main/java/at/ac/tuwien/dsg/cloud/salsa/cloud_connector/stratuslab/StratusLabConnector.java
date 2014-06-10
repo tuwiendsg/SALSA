@@ -158,7 +158,7 @@ public class StratusLabConnector implements CloudInterface{
 	 * Note: sshKeyName is the file of publickey
 	 */
 	public String launchInstance(String instanceName, String imageId, List<String> securityGroups,
-			String sshKeyName, String userData, InstanceType instType,
+			String sshKeyName, String userData, String instType,
 			int minInst, int maxInst) throws ServiceDeployerException {
 		logger.debug("Launching instance with TAGs: \n" + securityGroups);
 		try {
@@ -168,7 +168,7 @@ public class StratusLabConnector implements CloudInterface{
 			String cmd[] = {					
 				this.bindir+"/stratus-run-instance",
 				"--quiet",
-				"-t", instType.getTypeId(),
+				"-t", instType,
 				"--cloud-init",
 				"ssh,"+this.public_key_file+"#x-shellscript,"+tmpUserDataFile,
 				"-c", this.config_file,

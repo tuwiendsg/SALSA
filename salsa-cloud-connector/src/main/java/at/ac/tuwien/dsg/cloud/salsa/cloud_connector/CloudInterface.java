@@ -17,7 +17,7 @@ public interface CloudInterface {
 
 	
 	public String launchInstance(String instanceName, String imageId, List<String> securityGroups,
-			String sshKeyName, String userData, InstanceType instType,
+			String sshKeyName, String userData, String instType,
 			int minInst, int maxInst) throws ServiceDeployerException;
 	
 	/**

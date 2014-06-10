@@ -10,14 +10,19 @@ import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudParameter;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudParametersUser;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceType;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.flexiant.FlexiantParameterStrings;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud.OpenStackJcloud;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud.OpenStackParameterStrings;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.stratuslab.StratusLabConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.stratuslab.StratuslabParameterStrings;
 
 // support 
+//@Component
 public class MultiCloudConnector {
 
+	//@Value("${cloudconnector.user}")
+	String username;
+	
 	Logger logger;
 	CloudInterface connector;
 	CloudParametersUser paramUser;
@@ -31,7 +36,7 @@ public class MultiCloudConnector {
 		CloudInterface cloud;
 		try {			
 			switch (provider) {
-			case DSG_OPENSTACK:
+			case DSG_OPENSTACK: {
 				CloudParameter param = paramUser.getParameter("dsg", "openstack");
 				String keystone_endpoint = param.getParameter(OpenStackParameterStrings.KEYSTONE_ENDPOINT);
 				String tenant = param.getParameter(OpenStackParameterStrings.TENANT);
@@ -45,7 +50,7 @@ public class MultiCloudConnector {
 				
 				cloud = new OpenStackJcloud(logger, keystone_endpoint, tenant, username, password, keyName);
 				break;
-			
+			}
 			
 //			case DSG_OPENSTACK:
 //				CloudParameter param = paramUser.getParameter("dsg", "openstack");
@@ -80,6 +85,7 @@ public class MultiCloudConnector {
 //						retryDelayMillis, deployMaxRetries, deployWaitMillis, sshName);
 //				break;
 			case LAL_STRATUSLAB:
+			{
 				CloudParameter param1 = paramUser.getParameter("lal", "stratuslab");
 				String user_public_key_file = param1.getParameter(StratuslabParameterStrings.user_public_key_file);
 				if (user_public_key_file==null || user_public_key_file.equals("")){
@@ -101,6 +107,18 @@ public class MultiCloudConnector {
 						+ " - " + param1.getParameter(StratuslabParameterStrings.password)
 						+ " - " + user_public_key_file);
 				break;
+			}
+			case CELAR_FLEXIANT:{
+				CloudParameter param = paramUser.getParameter("celar", "flexiant");
+				String email = param.getParameter(FlexiantParameterStrings.email);				
+				String apiUserString = param.getParameter(FlexiantParameterStrings.apiUserName);
+				String customerUUID = param.getParameter(FlexiantParameterStrings.customerUUID);
+				String password = param.getParameter(FlexiantParameterStrings.password);
+				String endpoint = param.getParameter(FlexiantParameterStrings.endpoint);
+				logger.info("Connection to Flexiant. Endpoint: " + endpoint +", uuid: " + customerUUID + ", api: " + apiUserString);
+				
+				
+			}
 			default:
 				logger.error("Undefined Cloud Connector !");
 				cloud = null;
@@ -116,7 +134,7 @@ public class MultiCloudConnector {
 	// launch an instance on a provider and return an InstanceDescription
 	public InstanceDescription launchInstance(String instancename, SalsaCloudProviders provider,
 			String imageId, String sshKeyName, String userData,
-			InstanceType instType, int minInst, int maxInst) {
+			String instType, int minInst, int maxInst) {
 		CloudInterface cloud = getCloudInplementation(provider);
 		try {
 			if (cloud != null) {

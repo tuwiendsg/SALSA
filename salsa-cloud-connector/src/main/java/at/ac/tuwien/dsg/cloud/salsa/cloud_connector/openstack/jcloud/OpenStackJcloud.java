@@ -69,7 +69,7 @@ public class OpenStackJcloud implements CloudInterface, Cloneable{
 	
 	@Override
 	public String launchInstance(String instanceName, String imageId, List<String> securityGroups,
-			String sshKeyName, String userData, InstanceType instType,
+			String sshKeyName, String userData, String instType,
 			int minInst, int maxInst) throws ServiceDeployerException {
 		LOGGER.debug("Jclouds Openstack Connector for node name: " + instanceName + ", imageId: " + imageId + ", instanceType: " + instType + "sshKeyName: " + sshKeyName);		
 		CreateServerOptions createNodeOptions = new CreateServerOptions();
@@ -79,7 +79,7 @@ public class OpenStackJcloud implements CloudInterface, Cloneable{
 	    
 	    LOGGER.debug("Jclouds Openstack - Prepare creation");
 	    
-	    ServerCreated serverCreated = serverApi.create(instanceName, imageId, "000001920", createNodeOptions);	// instance type is m1.small as default	    
+	    ServerCreated serverCreated = serverApi.create(instanceName, imageId, instType, createNodeOptions);	// instance type is m1.small as default	    
 		int maxtry=20;
 	    int tryee=0;
 	    LOGGER.debug("Jclouds Openstack - CREATED");

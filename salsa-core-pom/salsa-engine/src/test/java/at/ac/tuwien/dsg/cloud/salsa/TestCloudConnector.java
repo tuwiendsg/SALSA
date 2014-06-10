@@ -15,6 +15,7 @@ import javax.xml.bind.JAXBException;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceType;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.VMStates;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.flexiant.FlexiantConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud.OpenStackJcloud;
@@ -37,7 +38,14 @@ public class TestCloudConnector {
 		//testAddCapaAndProperties();
 		//testCenterConfigurations();
 		
-		testOpenstackJcloud(); 
+		//testOpenstackJcloud();
+		
+		testFlexiant();
+	}
+	
+	private static void testFlexiant() throws Exception {
+		FlexiantConnector flex = new FlexiantConnector();
+		flex.createNewServer("HungTestUbuntu", "a064bd97-c84c-38ef-aa37-c7391a8c8259", 1, 1);
 	}
 	
 	private static void testOpenstackJcloud() throws Exception {
@@ -47,7 +55,7 @@ public class TestCloudConnector {
 		OpenStackJcloud con = new OpenStackJcloud(EngineLogger.logger, "http://openstack.infosys.tuwien.ac.at/identity/v2.0/", "CELAR", "hung", "Coowcyurp8", "Hungld");		
 		//con.launchInstance("hungTestVM", "1a7a06ef-6ad8-4894-bd80-825476d13843", Arrays.asList("default"), "Hungld", "", InstanceType.DEFAULT, 1, 1);
 		//con.listImages();
-		//con.listServers();
+		con.listServers();
 		//con.printServerInfo("faf683d1-f9a8-45c8-8a3a-848b9c2f0044");
 		//InstanceDescription des = con.getInstanceDescriptionByID("faf683d1-f9a8-45c8-8a3a-848b9c2f0044");
 		//System.out.println(des.getPrivateIp());

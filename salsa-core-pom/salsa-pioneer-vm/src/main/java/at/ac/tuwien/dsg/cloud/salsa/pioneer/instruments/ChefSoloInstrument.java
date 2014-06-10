@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.instruments;
+package at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,7 +31,7 @@ public class ChefSoloInstrument implements InstrumentInterface {
 	}
 
 	@Override
-	public String deployArtifact(String uri, String id) {
+	public Object deployArtifact(String uri, String id) {
 		// install the artifact with chef name
 		try {	
 			String cmd = this.chefScript + " " + uri;

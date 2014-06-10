@@ -19,10 +19,183 @@ public class GenerateCloudsDescriptionTest {
     public static void main(String[] args) throws Exception {
 
         List<CloudProvider> cloudProviders = new ArrayList<CloudProvider>();
-        //dsg cloud description
-        {
+        
+        cloudProviders.add(FlexiantGeneration());
+        cloudProviders.add(DSGCloudGeneration());
+        cloudProviders.add(StratuslabGeneration());       
+        
+        String path = "/home/hungld/test/cloudproviders/";
+        for (CloudProvider provider : cloudProviders) {
+			provider.exportXML(new File(path+provider.getName()));
+		}        
+
+    }
+    
+    
+    private static CloudProvider FlexiantGeneration(){
+    	//dsg cloud description
+        
+        CloudProvider cloudProvider = new CloudProvider("fco@flexiant", CloudProvider.Type.IAAS);
+            
+            //m1.small
+            {
+                ServiceUnit utility = new ServiceUnit("VirtualInfrastructure", "VM", "4GB/3CPU");
+                cloudProvider.addServiceUnit(utility);
+
+
+                //vm resources: computing
+                {
+                    Resource resource = new Resource("Computing");
+                    resource.addProperty(new Metric("VCPU", "number"), new MetricValue(3));
+                    utility.addResourceProperty(resource);
+                }
+
+                //vm resources: memory
+                {
+                    Resource resource = new Resource("Memory");
+                    resource.addProperty(new Metric("size", "MB"), new MetricValue(4000));
+                    utility.addResourceProperty(resource);
+
+                }
+          
+            }
+
+            //m1.medium
+            {
+                ServiceUnit utility = new ServiceUnit("VirtualInfrastructure", "VM", "4GB/4CPU");
+                cloudProvider.addServiceUnit(utility);
+
+
+                //vm resources: computing
+                {
+                    Resource resource = new Resource("Computing");
+                    resource.addProperty(new Metric("VCPU", "number"), new MetricValue(4));
+                    utility.addResourceProperty(resource);
+                }
+
+                //vm resources: memory
+                {
+                    Resource resource = new Resource("Memory");
+                    resource.addProperty(new Metric("size", "MB"), new MetricValue(4000));
+                    utility.addResourceProperty(resource);
+                }
+            }
+
+            //m1.micro
+            {
+                ServiceUnit utility = new ServiceUnit("VirtualInfrastructure", "VM", "2GB/2CPU");
+                cloudProvider.addServiceUnit(utility);
+
+
+                //vm resources: computing
+                {
+                    Resource resource = new Resource("Computing");
+                    resource.addProperty(new Metric("VCPU", "number"), new MetricValue(2));
+                    utility.addResourceProperty(resource);
+                }
+
+                //vm resources: memory
+                {
+                    Resource resource = new Resource("Memory");
+                    resource.addProperty(new Metric("size", "MB"), new MetricValue(2000));
+                    utility.addResourceProperty(resource);
+                }
+
+            }
+
+            //m1.large
+            {
+                ServiceUnit utility = new ServiceUnit("VirtualInfrastructure", "VM", "4GB/2CPU");
+                cloudProvider.addServiceUnit(utility);
+
+
+                //vm resources: computing
+                {
+                    Resource resource = new Resource("Computing");
+                    resource.addProperty(new Metric("VCPU", "number"), new MetricValue(2));
+                    utility.addResourceProperty(resource);
+                }
+
+                //vm resources: memory
+                {
+                    Resource resource = new Resource("Memory");
+                    resource.addProperty(new Metric("size", "MB"), new MetricValue(4000));
+                    utility.addResourceProperty(resource);
+                }
+            }
+
+            //m1.xlarge
+            {
+                ServiceUnit utility = new ServiceUnit("VirtualInfrastructure", "VM", "1GB/1CPU");
+                cloudProvider.addServiceUnit(utility);
+
+
+                //vm resources: computing
+                {
+                    Resource resource = new Resource("Computing");
+                    resource.addProperty(new Metric("VCPU", "number"), new MetricValue(1));
+                    utility.addResourceProperty(resource);
+                }
+
+                //vm resources: memory
+                {
+                    Resource resource = new Resource("Memory");
+                    resource.addProperty(new Metric("size", "MB"), new MetricValue(1000));
+                    utility.addResourceProperty(resource);
+                }
+            }
+
+            //m1.2xlarge
+            {
+                ServiceUnit utility = new ServiceUnit("VirtualInfrastructure", "VM", "2GB/1CPU");
+                cloudProvider.addServiceUnit(utility);
+
+
+                //vm resources: computing
+                {
+                    Resource resource = new Resource("Computing");
+                    resource.addProperty(new Metric("VCPU", "number"), new MetricValue(1));
+                    utility.addResourceProperty(resource);
+                }
+
+                //vm resources: memory
+                {
+                    Resource resource = new Resource("Memory");
+                    resource.addProperty(new Metric("size", "MB"), new MetricValue(2000));
+                    utility.addResourceProperty(resource);
+                }
+            }
+
+            //m1.medium
+            {
+                ServiceUnit utility = new ServiceUnit("VirtualInfrastructure", "VM", "0.5GB/2CPU");
+                cloudProvider.addServiceUnit(utility);
+
+
+                //vm resources: computing
+                {
+                    Resource resource = new Resource("Computing");
+                    resource.addProperty(new Metric("VCPU", "number"), new MetricValue(1));
+                    utility.addResourceProperty(resource);
+                }
+
+                //vm resources: memory
+                {
+                    Resource resource = new Resource("Memory");
+                    resource.addProperty(new Metric("size", "MB"), new MetricValue(500));
+                    utility.addResourceProperty(resource);
+                }
+            }        
+        return cloudProvider;
+    	
+    }
+    
+    
+    
+    private static CloudProvider DSGCloudGeneration(){
+    	//dsg cloud description        
             CloudProvider cloudProvider = new CloudProvider("dsg@openstack", CloudProvider.Type.IAAS);
-            cloudProviders.add(cloudProvider);
+            
             //m1.tiny
             {
                 ServiceUnit utility = new ServiceUnit("VirtualInfrastructure", "VM", "m1.tiny");
@@ -343,15 +516,16 @@ public class GenerateCloudsDescriptionTest {
                     utility.addResourceProperty(resource);
                 }
             }
-        }
-
-
-        //==========================================================================================
+        return cloudProvider;
+    }
+    
+    
+    private static CloudProvider StratuslabGeneration(){
+    	 //==========================================================================================
         //lal-stratus cloud description
         
-        {
             CloudProvider cloudProvider = new CloudProvider("lal@stratuslab", CloudProvider.Type.IAAS);
-            cloudProviders.add(cloudProvider);
+            
          
             //m1.small
             {
@@ -532,12 +706,13 @@ public class GenerateCloudsDescriptionTest {
                     utility.addResourceProperty(resource);
                 }
             }
-        }
-        
-        String path = "/home/hungld/test/cloudproviders/";
-        for (CloudProvider provider : cloudProviders) {
-			provider.exportXML(new File(path+provider.getName()));
-		}        
-
+        return cloudProvider;
+    	
     }
+    
+    
+    
+    
+    
+    
 }

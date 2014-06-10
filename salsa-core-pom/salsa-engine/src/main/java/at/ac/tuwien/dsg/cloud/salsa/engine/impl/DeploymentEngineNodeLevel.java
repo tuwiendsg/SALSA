@@ -63,14 +63,18 @@ public class DeploymentEngineNodeLevel {
 	 * @param def
 	 * @return A Node with capabilities properties.
 	 */
-	public ServiceInstance deployVMNode(String serviceId, String topologyId, String nodeId, int instanceNumber, TDefinitions def) {
+	public ServiceInstance deployVMNode(String serviceId, String topologyId, String nodeId, int instanceId, TDefinitions def) {
 		EngineLogger.logger.info("Creating this VM node: " + nodeId +". Tosca ID:" + def.getId());
+		
+		java.util.Date date= new java.util.Date();
+		EngineLogger.logger.debug("TIMESTAMP - Node: " + nodeId + "/" + instanceId + ", state: Allocating(manual)" + ", Time: " + date.getTime());
+		
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/not/use/workingdir", EngineLogger.logger);				
-		TNodeTemplate enhancedNode = (TNodeTemplate) ToscaStructureQuery
-				.getNodetemplateById(nodeId, def);
+		TNodeTemplate enhancedNode = (TNodeTemplate) ToscaStructureQuery.getNodetemplateById(nodeId, def);
 		// create a replica of node and update state: PROLOG
-		ServiceInstance repData = new ServiceInstance(instanceNumber, null);
-		repData.setState(SalsaEntityState.ALLOCATING);
+//		ServiceInstance repData = new ServiceInstance(instanceId, null);
+//		repData.setState(SalsaEntityState.ALLOCATING);
+		ServiceInstance repData = centerCon.getUpdateServiceUnit(serviceId, topologyId, nodeId).getInstanceById(instanceId);		
 		
 		EngineLogger.logger.debug("YOUR ARE HERE TO DEPLOY 4");
 		
@@ -80,15 +84,15 @@ public class DeploymentEngineNodeLevel {
 		instanceDesc.updateFromMappingProperties(mapProp);
 		EngineLogger.logger.debug("YOUR ARE HERE TO DEPLOY 5");
 		// add the initiate properties to the InstanceData
-		repData.setProperties(new ServiceInstance.Properties());		
-		repData.getProperties().setAny(instanceDesc);
+//		repData.setProperties(new ServiceInstance.Properties());		
+//		repData.getProperties().setAny(instanceDesc);
 		
 		// add the component instance to server
 		//centerCon.addInstanceUnit(serviceId, topologyId, nodeId, repData);
 		
 		//enhancedNode.setState(SalsaEntityState.PROLOGUE.getNodeStateString());
 
-		String userData = prepareUserData(serviceId, topologyId, nodeId, instanceNumber, instanceDesc, def);
+		String userData = prepareUserData(serviceId, topologyId, nodeId, instanceId, instanceDesc, def);
 
 		MultiCloudConnector mcc = new MultiCloudConnector(EngineLogger.logger, configFile);
 
@@ -103,9 +107,15 @@ public class DeploymentEngineNodeLevel {
 		EngineLogger.logger.debug("DEBUG: " + nodeId + " --- "	+ instanceDesc.getInstanceType());
 		EngineLogger.logger.debug("CLOUD PROVIDER = " + instanceDesc.getProvider() +"//" + SalsaCloudProviders.fromString(instanceDesc.getProvider()));
 		
+		// add the VM data
+//		ServiceInstance data = new ServiceInstance(instanceId, null);
+//		
+//		data.setState(SalsaEntityState.ALLOCATING);
+//		centerCon.addInstanceUnitMetaData(topologyId, nodeId, data);
+		
 		// start the VM
 		InstanceDescription indes = mcc.launchInstance(
-				nodeId +"_"+instanceNumber,
+				nodeId +"_"+instanceId,
 				SalsaCloudProviders.fromString(instanceDesc.getProvider()),
 				instanceDesc.getBaseImage(),
 				"",	// this is the sshKeyGen, but not need anymore. When create mcc, we pass the configFile
@@ -119,18 +129,11 @@ public class DeploymentEngineNodeLevel {
 		EngineLogger.logger.debug(instanceDesc.getProvider()+" -- " + instanceDesc.getBaseImage() + " -- " + instanceDesc.getInstanceType()+" -- " + enhancedNode.getMinInstances());		
 		EngineLogger.logger.debug("A VM for " + nodeId + " has been created.");
 		
-		//centerCon.updateInstanceUnitProperty(topologyId, nodeId, instanceNumber, instanceDesc);
-		//centerCon.updateNodeState(topologyId, nodeId, instanceNumber, SalsaEntityState.CONFIGURING);
-		
-		ServiceInstance.Properties props = new ServiceInstance.Properties();
-		props.setAny(instanceDesc);
-		ServiceInstance data = new ServiceInstance(instanceNumber, props);
-		data.setState(SalsaEntityState.CONFIGURING);
-		
-		centerCon.addInstanceUnitMetaData(topologyId, nodeId, data);		
+		centerCon.updateInstanceUnitProperty(topologyId, nodeId, instanceId, instanceDesc);				
+		centerCon.updateNodeState(topologyId, nodeId, instanceId, SalsaEntityState.CONFIGURING);
 		return repData;
 	}
-			
+
 	private static void updateVMProperties(SalsaInstanceDescription_VM sid, InstanceDescription inst){
 		//if (inst.getReplicaFQN()!=null){ sid.setReplicaNumber(inst.getReplicaFQN().getReplicaNum());}
 		if (inst.getPrivateIp() !=null){ sid.setPrivateIp(inst.getPrivateIp().getHostName()); }
@@ -251,153 +254,9 @@ public class DeploymentEngineNodeLevel {
 		return userDataBuffer.toString();
 	}
 
-	/**
-	 * Deploy multiple VM at the first time, all node.
-	 * At first time, all the instance ids are initiate by 0
-	 * 
-	 * @param serviceId	add info to this service
-	 * @param topologyId add info to this topology
-	 * @param nodeAndReplica with each VM node, get the min instance to deploy at first time. The map is: id:number of instance
-	 * @param def the TOSCA object
-	 */
-	public void deployConcurrentVMNodes(String serviceId, String topologyId, Map<String,Integer> nodeAndReplica, TDefinitions def) {
-		EngineLogger.logger.info("Spawning multiple Virtual Machines...");
-		List<Thread> threads = new ArrayList<Thread>();
-		int replica = 0;
-		for (Map.Entry<String, Integer> map : nodeAndReplica.entrySet()) {
-			replica=0;
-			for (int i=0; i<map.getValue(); i++){		
-				Thread thread = new Thread(new deployOneVmThread(serviceId, topologyId, map.getKey(), replica, def));
-				thread.start();
-				threads.add(thread);
-				replica+=1;
-			}
-			SalsaCenterConnector cenCon = getCenterConnector(serviceId);
-			cenCon.updateNodeIdCounter(topologyId, map.getKey(), replica);
-		}
-//		try {
-//			for (Thread thread : threads) {
-//				thread.join();
-//			}
-//		} catch (InterruptedException e) {
-//		}
-		
-		ToscaXmlProcess.writeToscaDefinitionToFile(def, "/tmp/"+serviceId);
-	}
-	
-	/**
-	 * Deploy a number of VM on for the VM node
-	 * @param serviceId
-	 * @param topologyId
-	 * @param nodeId
-	 * @param quantity Number of VM to be created
-	 * @param startId The starting Id to count up
-	 * @param def 
-	 */
-	public void deployConcurentVMNodesOfOneType(String serviceId, String topologyId, String nodeId, int quantity, int startId, TDefinitions def){
-		EngineLogger.logger.info("Spawning multiple VM for node: " + nodeId);
-		List<Thread> threads = new ArrayList<Thread>();
-		int instanceId = startId;
-		for (int i = 0; i<quantity; i++) {
-			Thread thread = new Thread(new deployOneVmThread(serviceId, topologyId, nodeId, instanceId, def));
-			thread.start();
-			threads.add(thread);
-			instanceId+=1;
-		}
-		try {
-			for (Thread thread : threads) {
-				thread.join();
-			}
-		} catch (InterruptedException e) {
-		}
-	}
-	
-	
-	
-	public void deployNodeReplica(String serviceId, String topologyId, String nodeId, int startRepNum, int numberOfRep, TDefinitions def){
-		List<Thread> threads = new ArrayList<Thread>();
-		for (int i=startRepNum; i<numberOfRep; i++){
-			Thread thread = new Thread(new deployOneVmThread(serviceId, topologyId, nodeId, i, def));
-			thread.start();
-			threads.add(thread);
-		}
-		try{
-			for (Thread thread : threads) {
-				thread.join();
-			}
-		}
-		catch (InterruptedException e){			
-		}
-	}
-
-	private class deployOneVmThread implements Runnable {		
-		TDefinitions def;
-		String serviceId;
-		String topologyId;
-		String nodeId;
-		int replica;
-
-		public deployOneVmThread(String serviceId, String topologyId, String nodeId, int replica, TDefinitions def) {	
-			EngineLogger.logger.debug("Thread processind: nodeId=" + nodeId +", instance no.=" + replica);
-			this.def = def;
-			this.serviceId = serviceId;
-			this.topologyId = topologyId;
-			this.nodeId = nodeId;
-			this.replica = replica;
-		}
-
-		private synchronized ServiceInstance executeDeploymentNode() {
-			SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/tmp", EngineLogger.logger);
-			//centerCon.addInstanceUnit(serviceId, topologyId, nodeId, replica);			
-			return deployVMNode(serviceId, topologyId, nodeId, replica, def);
-			//return null;
-		}
-
-		@Override
-		public void run() {
-			executeDeploymentNode();	
-			
-		}
-
-	}
-
-	public static TRequirement convertCapabilityToRequirement(TCapability cap) {
-		TRequirement req = new TRequirement();
-		if (cap.getProperties() == null) {
-			// System.out.println("Warn: No capability to match ");
-			EngineLogger.logger.debug("No capability to match");
-		}
-		Properties pro = new Properties();
-		pro.setAny(cap.getProperties().getAny());
-		req.setProperties(pro);
-		req.setFulfilled("true");
-		return req;
-	}
 
 	public static void exportTosca(TDefinitions def, String fileName) {
 		ToscaXmlProcess.writeToscaDefinitionToFile(def, fileName);
 	}
-	
-//	public void submitService(String serviceFile){
-//		
-//			String url=SalsaConfiguration.getSalsaCenterEndpoint()
-//					+ "/rest/cloudservices/submit";
-//			EngineLogger.logger.debug("Trying to POST the service description to: " + url);
-//			HttpClient client = new DefaultHttpClient();
-//			HttpPost post = new HttpPost(url);
-//			FileBody uploadfile=new FileBody(new File(serviceFile));
-//			MultipartEntity reqEntity = new MultipartEntity();
-//			reqEntity.addPart("file", uploadfile);
-//			post.setEntity(reqEntity);
-//			try {
-//				HttpResponse response = client.execute(post);
-//				if (response.getStatusLine().getStatusCode() != 200) {
-//					EngineLogger.logger.error("Server failed to register service: " + new File(serviceFile).getName());				
-//				}				
-//			} catch (Exception e){
-//				EngineLogger.logger.error("Error to submit service: " + serviceFile);
-//			}					
-//	}
-	
 	
 }

@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.instruments;
+package at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments;
 
 import generated.oasis.tosca.TNodeTemplate;
 
@@ -22,7 +22,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.SalsaPioneerConfiguration;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 
 public class ChefInstrument implements InstrumentInterface {
 
@@ -98,7 +98,7 @@ public class ChefInstrument implements InstrumentInterface {
 	 * put the client.rc with the chef name on it
 	 */
 	@Override
-	public String deployArtifact(String uri, String instanceId) {
+	public Object deployArtifact(String uri, String instanceId) {
 		try {
 
 			StringBuffer sb = new StringBuffer();

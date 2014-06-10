@@ -1,8 +1,9 @@
-package at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.type;
+package at.ac.tuwien.dsg.cloud.salsa.pioneer.type;
 
 
 public enum SalsaArtifactType {
 	sh("sh"),
+	apt("apt-get"),
 	chef("chef"),
 	chefSolo("chef-solo");
 	
