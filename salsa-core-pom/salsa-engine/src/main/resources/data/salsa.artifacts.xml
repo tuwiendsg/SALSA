@@ -28,7 +28,7 @@
             <Operation name="pid" command="/run/apache2.pid"/>
         </Operation>
     </Artifact>
-    <Artifact name="mela">
+    <Artifact name="mela" depends-on="x,y,z">
         <Mirror>
             <ArtifactFormat>sh</ArtifactFormat>
             <Repository>salsa-repo</Repository>

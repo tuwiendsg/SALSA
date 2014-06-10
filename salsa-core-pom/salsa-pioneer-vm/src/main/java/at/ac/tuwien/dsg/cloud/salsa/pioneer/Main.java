@@ -1,19 +1,24 @@
-package at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm;
+package at.ac.tuwien.dsg.cloud.salsa.pioneer;
 
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TNodeTemplate;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.ws.Endpoint;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.PioneerLogger;
-import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.SalsaPioneerConfiguration;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.InstrumentShareData;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.services.PioneerServiceImplementation;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 
@@ -29,6 +34,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
  * 
  * @Usage: # java -jar salsa-pioneer-vm.jar <command> [options]<br>
  *         Available commands: <br>
+ *         - startserver: start the server to listen to request from salsa-engine
  *         - deploy: start deploy the higher components on top of VM <br>
  *         - checkcapa {id}: check capability <id>. return true/false <br>
  *         - getcapa {id}: return a capability String of <id> <br>
@@ -86,10 +92,20 @@ public class Main {
 		String command = args[0];
 
 		switch (command) {
+		
+		case "startserver":
+		{
+			PioneerLogger.logger.debug("Start server !");
+			InstrumentShareData.startProcessMonitor();
+			startService();
+			break;
+		}
 		case "deploy":
 			centerCon.updateNodeState(topologyId, nodeId, replica, SalsaEntityState.RUNNING);
 			deployer.deployNodeChain(thisNode);
-			// listen to
+			InstrumentShareData.startProcessMonitor();
+			// start server to listen to
+			startService();
 			break;
 		case "checkcapa":	// remote			
 			if (deployer.checkCapabilityReady(args[1])) {
@@ -138,19 +154,31 @@ public class Main {
 		}
 		case "setnodestate":
 		{
-			centerCon.updateNodeState(topologyId, args[1], replica, SalsaEntityState.fromString(args[2]));
+			//centerCon.updateNodeState(topologyId, args[1], replica, SalsaEntityState.fromString(args[2]));
 			//def = centerCon.updateTopology();
 			break;
 		}
 		case "getprop":
 		{
 			deployer.getVMProperty(args[1]);
+			break;
 		}
 		default:
 			PioneerLogger.logger.error("Unknown command: " + command);
+			break;
 		}
 
 	}
 	
-
+	private static void startService(){
+		try {
+		System.out.println("Starting the server ...");
+		String ip = InetAddress.getLocalHost().getHostAddress();
+		String address = "http://" + ip + ":9000/pioneer";
+		Endpoint.publish(address, new PioneerServiceImplementation());
+		} catch (UnknownHostException e){
+			PioneerLogger.logger.error("Unknown host exception error !");			
+		}		
+	}
+		
 }

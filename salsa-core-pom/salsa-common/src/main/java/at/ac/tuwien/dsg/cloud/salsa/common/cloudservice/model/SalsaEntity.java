@@ -34,9 +34,11 @@ public class SalsaEntity {
 	SalsaEntity.Monitoring monitoring;
 	
 	@XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {  "any" })
+    @XmlType(name = "source")
     public static class Monitoring {
-
+		@XmlAttribute(name = "name")
+		protected String source;
+		
         @XmlAnyElement(lax = true)
         protected Object any;
   

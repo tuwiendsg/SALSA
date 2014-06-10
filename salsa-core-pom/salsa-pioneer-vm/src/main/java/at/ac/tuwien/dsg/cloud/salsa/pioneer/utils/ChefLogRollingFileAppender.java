@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils;
+package at.ac.tuwien.dsg.cloud.salsa.pioneer.utils;
 
 import java.io.File;
 import java.io.IOException;

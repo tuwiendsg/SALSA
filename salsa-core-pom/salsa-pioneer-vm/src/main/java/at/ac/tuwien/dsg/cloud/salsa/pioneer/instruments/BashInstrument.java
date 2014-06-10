@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.instruments;
+package at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments;
 
 import generated.oasis.tosca.TNodeTemplate;
 
@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.PioneerLogger;
-import at.ac.tuwien.dsg.cloud.salsa.salsa_pioneer_vm.utils.SalsaPioneerConfiguration;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 
-public class BashInstrument implements InstrumentInterface {
+public class BashInstrument extends InstrumentShareData implements InstrumentInterface  {
 	TNodeTemplate node;
 
 	@Override
@@ -21,7 +21,7 @@ public class BashInstrument implements InstrumentInterface {
 	}
 
 	@Override
-	public String deployArtifact(String uri, String instanceId) {
+	public Object deployArtifact(String uri, String instanceId) {
 		String runArt = uri;
 		Process p;
 		ProcessBuilder pb = new ProcessBuilder("bash",runArt);
@@ -35,22 +35,24 @@ public class BashInstrument implements InstrumentInterface {
 		pb.directory(new File(SalsaPioneerConfiguration.getWorkingDir()+File.separator+node.getId()));
 		try {
 			p = pb.start();
+			return p;
+			// wait and check if this instance is in the removal queue
+			// addInstanceProcess(node.getId(), instanceId, p);
+			//p.waitFor();
 			
-			p.waitFor();
-			PioneerLogger.logger.debug("Executed process. Exit value: " + p.exitValue());
+//			PioneerLogger.logger.debug("Executed process. Exit value: " + p.exitValue());
 
-			BufferedReader reader = new BufferedReader(
-					new InputStreamReader(p.getInputStream()));
-			String line = reader.readLine();
-			while (line != null) {
-				line = reader.readLine();
-				PioneerLogger.logger.debug(line);
-			}
+//			BufferedReader reader = new BufferedReader(
+//					new InputStreamReader(p.getInputStream()));
+//			String line = reader.readLine();
+//			while (line != null) {
+//				line = reader.readLine();
+//				PioneerLogger.logger.debug(line);
+//			}
 		} catch (IOException e) {
 			PioneerLogger.logger.debug(e.toString());			
-
-		} catch (InterruptedException e1) {
-	}
+		} 
+		
 		return null;
 	}
 	

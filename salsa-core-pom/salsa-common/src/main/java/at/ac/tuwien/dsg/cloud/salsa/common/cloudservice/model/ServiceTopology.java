@@ -27,9 +27,12 @@ public class ServiceTopology extends SalsaEntity {
 	@XmlElement(name = "ServiceUnit")
 	List<ServiceUnit> components = new ArrayList<>();
 	
+	@XmlElement(name = "ServiceTopology")
+	List<ServiceTopology> topologies = new ArrayList<>();
+	
 	@XmlElement(name = "Relationships")
 	SalsaReplicaRelationships relationships;
-	
+
 	public static class SalsaReplicaRelationships{
 		@XmlElement(name = "Relationship")
 		List<ServiceUnitRelationship> relList = new ArrayList<>();

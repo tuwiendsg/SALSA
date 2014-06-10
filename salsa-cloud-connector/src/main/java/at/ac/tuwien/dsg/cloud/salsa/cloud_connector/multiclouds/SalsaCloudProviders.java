@@ -3,7 +3,8 @@ package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds;
 public enum SalsaCloudProviders {
 
 	DSG_OPENSTACK("dsg@openstack"),	
-	LAL_STRATUSLAB("lal@stratuslab");
+	LAL_STRATUSLAB("lal@stratuslab"),
+	CELAR_FLEXIANT("celar@flexiant");
 
 	private String providerId;
 

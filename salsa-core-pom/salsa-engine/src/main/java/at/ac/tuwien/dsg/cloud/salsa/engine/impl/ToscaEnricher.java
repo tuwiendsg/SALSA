@@ -279,27 +279,27 @@ public class ToscaEnricher {
 		}
 	}
 	
-	// generate operation for supported artifact: sh, service, war
-	private SalsaMappingProperty generateOperationsForNode(TNodeTemplate node){		
-		if (node.getType().getLocalPart().equals(SalsaEntityType.OPERATING_SYSTEM)){
-			return null;
-		}
-		SalsaMappingProperty map = new SalsaMappingProperty();
-		String artifactType = node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart();
-		String artifactRef = ToscaStructureQuery.getDeployArtifactTemplateReferenceList(node, toscaDef).get(0);
-		String file = artifactRef.substring(artifactRef.lastIndexOf('/')+1);
-		switch(artifactType){
-		case "sh": {			
-			map.put("deploy", "bash " + file);			
-			break;
-		}
-		case "jar": {
-			map.put("deploy", "java -jar " + file);			
-			break;
-		}
-		}
-		return map;
-	}
+//	// generate operation for supported artifact: sh, service, war
+//	private SalsaMappingProperty generateOperationsForNode(TNodeTemplate node){		
+//		if (node.getType().getLocalPart().equals(SalsaEntityType.OPERATING_SYSTEM)){
+//			return null;
+//		}
+//		SalsaMappingProperty map = new SalsaMappingProperty();
+//		String artifactType = node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart();
+//		String artifactRef = ToscaStructureQuery.getDeployArtifactTemplateReferenceList(node, toscaDef).get(0);
+//		String file = artifactRef.substring(artifactRef.lastIndexOf('/')+1);
+//		switch(artifactType){
+//		case "sh": {			
+//			map.put("deploy", "bash " + file);			
+//			break;
+//		}
+//		case "jar": {
+//			map.put("deploy", "java -jar " + file);			
+//			break;
+//		}
+//		}
+//		return map;
+//	}
 	
 	
 	

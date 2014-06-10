@@ -24,7 +24,7 @@ public enum SalsaEntityState {
 	private SalsaEntityState(String nodeState){
 		this.nodeState = nodeState;
 	}
-
+	
 	public String getNodeStateString() {
 		return nodeState;
 	}

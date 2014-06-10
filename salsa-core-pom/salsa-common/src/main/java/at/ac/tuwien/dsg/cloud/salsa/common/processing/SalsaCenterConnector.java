@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnitRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance.Capabilities;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
@@ -204,16 +205,16 @@ public class SalsaCenterConnector {
 	 * @param componentData
 	 *            The component object
 	 */
-	public void addInstanceUnit(String topologyId,
-			String nodeId, int instanceId) {
-		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}
-		String url = centerRestfulEndpoint 
-				+ "/services/" + serviceId
-				+ "/topologies/" + topologyId 
-				+ "/nodes/" + nodeId 
-				+ "/instances/" + instanceId;		
-		queryDataToCenter(url, HttpVerb.PUT, "", "", "");
-	}
+//	public void addInstanceUnit(String topologyId,
+//			String nodeId, int instanceId) {
+//		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}
+//		String url = centerRestfulEndpoint 
+//				+ "/services/" + serviceId
+//				+ "/topologies/" + topologyId 
+//				+ "/nodes/" + nodeId 
+//				+ "/instances/" + instanceId;		
+//		queryDataToCenter(url, HttpVerb.PUT, "", "", "");
+//	}
 	
 	public void addInstanceUnitMetaData(String topologyId,
 			String nodeId, ServiceInstance data) {
@@ -262,6 +263,11 @@ public class SalsaCenterConnector {
 			
 		}
 		return null;
+	}
+	
+	public ServiceUnit getUpdateServiceUnit(String serviceId, String topoId, String nodeId){
+		CloudService service = getUpdateCloudServiceRuntime();
+		return service.getComponentById(topoId, nodeId);
 	}
 
 	/**
@@ -489,7 +495,7 @@ public class SalsaCenterConnector {
 			return null;
 		}
 		String resStr = response.getEntity(String.class);
-		logger.debug("IN QUERY. RESULT IS: " + resStr);
+		//logger.debug("IN QUERY. RESULT IS: " + resStr);
 		return resStr;
 	}
 	

@@ -58,8 +58,8 @@ static Logger logger;
 			ServiceTopology topo = service.getFirstTopology();
 			ServiceJsonDataTree datatree = new ServiceJsonDataTree();
 			datatree.setId(service.getName());
-			datatree.setNodeType("Salsa center");			
-			datatree.setState(SalsaEntityState.RUNNING);
+			datatree.setNodeType("CLOUD SERVICE");	
+			datatree.setState(service.getState());
 			
 			//logger.debug("Create json tree with id = " + datatree.getId());
 			// firstly add all VM node

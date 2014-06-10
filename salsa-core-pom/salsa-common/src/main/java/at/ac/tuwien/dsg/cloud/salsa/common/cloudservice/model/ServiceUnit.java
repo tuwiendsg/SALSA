@@ -2,6 +2,7 @@ package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -23,7 +24,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityS
 public class ServiceUnit extends SalsaEntity {	
 	
 	@XmlElement(name = "Replica")
-	List<ServiceInstance> repLst = new ArrayList<ServiceInstance>();;
+	List<ServiceInstance> repLst = new CopyOnWriteArrayList<ServiceInstance>();;
 		
 	@XmlAttribute(name = "type")
 	String type;
@@ -39,6 +40,12 @@ public class ServiceUnit extends SalsaEntity {
 		
 	@XmlAttribute(name = "idCounter")
 	int idCounter=0;
+	
+	@XmlAttribute(name = "min")
+	int min=1;
+	
+	@XmlAttribute(name = "max")
+	int max=1;
 	
 	public void addInstance(ServiceInstance instance){
 		repLst.add(instance);
@@ -103,6 +110,22 @@ public class ServiceUnit extends SalsaEntity {
 	public void setConnecttoId(List<String> connecttoId) {
 		this.connecttoId = connecttoId;
 	}
+	
+	public int getMin() {
+		return min;
+	}
+
+	public int getMax() {
+		return max;
+	}
+	
+	public void setMin(int min) {
+		this.min = min;
+	}
+
+	public void setMax(int max) {
+		this.max = max;
+	}
 
 	public List<ServiceInstance> getInstanceByState(SalsaEntityState state){
 		List<ServiceInstance> lst = new ArrayList<>();
@@ -129,12 +152,12 @@ public class ServiceUnit extends SalsaEntity {
 		return repLst;
 	}
 	
-	public List<ServiceInstance> getInstanceHostOn(int hostOnId){
+	public List<ServiceInstance> getInstanceHostOn(int instanceIdOfHoster){
 		List<ServiceInstance> newLst = new ArrayList<>();
 		for (ServiceInstance instance : repLst) {
-			if (instance.getHostedId_Integer()==hostOnId){
+			if (instance.getHostedId_Integer()==instanceIdOfHoster){
 				newLst.add(instance);
-			}			
+			}
 		}
 		return newLst;				
 	}
