@@ -12,6 +12,10 @@ var dataSource=salsaCenterRestEndpoint + "/viewgenerator/cloudservice/xml/"+getU
 
 var refeshCount=0;
 
+var serviceId_general;
+var topo_general;
+var topologyId_general;
+
 $.ajaxSetup({
     cache: false
 });
@@ -67,6 +71,9 @@ function ShowSalsaRuntime(data){ // data is CloudService
 	var topo=data.getElementsByTagName("ServiceTopology");
 	var topologyId=topo[0].getAttribute('id');
 	
+	serviceId_general = serviceId;
+	topologyId_general = topologyId;
+	
 	var x=data.getElementsByTagName("ServiceUnit");
 	var str="";
 	for (var i = 0; i < x.length; i++) {
@@ -85,7 +92,7 @@ function ShowSalsaRuntime(data){ // data is CloudService
 		str += '<button type="button" onclick=\'deployMoreInstance("'+serviceId+'", "'+topologyId+'", "'+ x[i].getAttribute('id') +'", "'+inputboxQuantityId+'")\'>Deploy !</button> ';
 		//str += '</form>';
 		
-		str += CreateTableViewSalsaReplicaNodeTable(x[i]);
+		str += CreateTableViewSalsaReplicaNodeTable(x[i], nodeId);
 	}
 	return str;
 }
@@ -97,7 +104,7 @@ function inputQuantity(boxObj, currentvalue){
  	}
 }
 
-function CreateTableViewSalsaReplicaNodeTable(data) {   // data is Component
+function CreateTableViewSalsaReplicaNodeTable(data, nodeId) {   // data is Component
     var str = '<table class="lightPro">';
       str += '<thead><tr>';
     // header row
@@ -106,6 +113,7 @@ function CreateTableViewSalsaReplicaNodeTable(data) {   // data is Component
      str += '<th scope="col"> State </th>';
      str += '<th scope="col"> Properties </th>';
      str += '<th scope="col"> Capabilities </th>';
+     str += '<th scope="col"> Actions </th>';
      
      str += '</tr></thead>';
     
@@ -146,6 +154,11 @@ function CreateTableViewSalsaReplicaNodeTable(data) {   // data is Component
         }        
         str+='</td>';
         
+        str+='<td><button type="button" onclick="undeployInstance(\''+serviceId_general+ '\', \''+ topologyId_general +'\', \''+ nodeId +'\',\''+ x[i].getAttribute('replica') + '\')">Undeploy</button>';
+        str+='</td>';
+        
+        
+        
         str += '</tr>';        
     }
         
@@ -166,15 +179,7 @@ function getElementByTagNameToString(tagName, parentElement){
 
 function deployMoreInstance(serviceId, topologyId, nodeId, inputboxQuantityId){	
 	var quantity=document.getElementById(inputboxQuantityId).value;
-	//url = "/services/" +serviceId+"/topologies/"+topologyId+"/nodes/"+nodeId+"/instance-count/"+quantity;
-	
 	toastr.info("Requesting to deploy "+quantity+" instance(s) of node "+nodeId+" !");
-	
-// 	$.put(url, function(data) {
-// 			toastr.success("Deployed "+quantity+" instance(s) done !","Done");
-// 	    }
-// 	);
-	// /instanceunits/eeb20807-6cb6-455e-a720-30093436eecd/DataMarketAgence/agence_os/1
 	
 	$.ajax({
 	    url: salsaCenterRestEndpoint + "/services/" + serviceId +"/topologies/"+ topologyId + "/nodes/"+ nodeId +"/instance-count/" + quantity,
@@ -188,6 +193,28 @@ function deployMoreInstance(serviceId, topologyId, nodeId, inputboxQuantityId){
  	    },
 	    complete: function(xhr, textStatus) {
 	    	toastr.success("Deployed "+quantity+" instance(s) done ! Code: " + xhr.status,"Done");
+	    }
+	});
+	
+}
+
+
+function undeployInstance(serviceId, topologyId, nodeId, instanceId){	
+	toastr.info("Requesting to undeploy "+ serviceId +"/" + topologyId+"/" + nodeId+"/"+instanceId);
+// 	alert("Undeploying instance: " + serviceId +"/" + topologyId+"/" + nodeId+"/"+instanceId);
+// 	return;
+	$.ajax({
+	    url: salsaCenterRestEndpoint + "/services/" + serviceId +"/topologies/"+ topologyId + "/nodes/"+ nodeId +"/instances/" + instanceId,
+	    type: 'DELETE',
+	    async: false,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+ 	    error: function(xhr){
+ 	    	toastr.error("Unable to undeploy instance ! Code: " + xhr.status,"Error");
+ 	    },
+	    complete: function(xhr, textStatus) {
+	    	toastr.success("Undeployed instance " + nodeId + "/" + instanceId + " done ! Code: " + xhr.status,"Done");
 	    }
 	});
 	

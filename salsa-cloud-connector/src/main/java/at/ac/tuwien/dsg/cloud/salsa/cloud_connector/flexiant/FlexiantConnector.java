@@ -26,20 +26,20 @@ import com.extl.jade.user.UserService;
 
 public class FlexiantConnector {
 	
-	String userEmailAddress ;
-	String apiUserName ;
-	String customerUUID ;
-	String password ;
+	String userEmailAddress = "hungld86@gmail.com";
+	String apiUserName = "hungld86@gmail.com/65c02949-d9f8-38f3-898f-9e42776635b0";
+	String customerUUID = "65c02949-d9f8-38f3-898f-9e42776635b0";
+	String password = "thovasoi";
 	String endpoint = "https://api.sd1.flexiant.net:4442";
-	String vdcUUID ; // salsa_vdc
+	String vdcUUID = "bde1ffba-3a8e-3315-a505-3ec67e6fa771"; // salsa_vdc
 	String defaultProductOfferUUID;
 	String deploymentInstanceUUID;
-	String clusterUUID ; // VMWare cluster
+	String clusterUUID = "1ff16f43-4a82-34bf-8f07-ea6d210548ab"; // VMWare cluster
 	String sshKey = "root";
-	String networkUUID ; // default network
+	String networkUUID = "66ac8676-b258-36a8-a547-0151c110b556"; // default network
 	Logger logger;
 	String ENDPOINT_ADDRESS_PROPERTY = "https://api.sd1.flexiant.net:4442";
-	String DEFAULT_IMAGE;
+	String DEFAULT_IMAGE="a064bd97-c84c-38ef-aa37-c7391a8c8259";
 	
 	public FlexiantConnector(Logger logger, String email, String apiUserName, String cuscomerUUID, String password, String endpoint, String vdcUUID, String defaultProductOfferUUID, String deploymentInstanceUUID, String getClusterUUID, String sshKey, String networkUUID){
 		this.logger = logger;

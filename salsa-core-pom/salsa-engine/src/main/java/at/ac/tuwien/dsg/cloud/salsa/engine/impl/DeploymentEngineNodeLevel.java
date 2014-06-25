@@ -1,20 +1,14 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl;
 
-import generated.oasis.tosca.TCapability;
 import generated.oasis.tosca.TDefinitions;
-import generated.oasis.tosca.TEntityTemplate.Properties;
 import generated.oasis.tosca.TNodeTemplate;
-import generated.oasis.tosca.TRequirement;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceType;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
@@ -40,20 +34,16 @@ public class DeploymentEngineNodeLevel {
 
 	CloudInterface cloud;
 	File configFile;
+	static SalsaCenterConnector centerCon;
 	
-
-//	private static final DeploymentEngineNodeLevel INSTANCE = new DeploymentEngineNodeLevel();
+	static {		
+		String endpoint = SalsaConfiguration.getSalsaCenterEndpoint();
+		centerCon = new SalsaCenterConnector(endpoint, "", EngineLogger.logger);
+		//centerCon = JAXRSClientFactory.create(endpoint, SalsaEngineIntenalInterface.class);
+	}
 	
 	public DeploymentEngineNodeLevel(File configFile){
 		this.configFile = configFile;
-	}
-
-//	public static DeploymentEngineNodeLevel getInstance(File configFile) {
-//		return INSTANCE;
-//	}
-	
-	private SalsaCenterConnector getCenterConnector(String serviceId){
-		return new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/tmp", EngineLogger.logger);
 	}
 
 	/**
@@ -69,11 +59,7 @@ public class DeploymentEngineNodeLevel {
 		java.util.Date date= new java.util.Date();
 		EngineLogger.logger.debug("TIMESTAMP - Node: " + nodeId + "/" + instanceId + ", state: Allocating(manual)" + ", Time: " + date.getTime());
 		
-		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/not/use/workingdir", EngineLogger.logger);				
 		TNodeTemplate enhancedNode = (TNodeTemplate) ToscaStructureQuery.getNodetemplateById(nodeId, def);
-		// create a replica of node and update state: PROLOG
-//		ServiceInstance repData = new ServiceInstance(instanceId, null);
-//		repData.setState(SalsaEntityState.ALLOCATING);
 		ServiceInstance repData = centerCon.getUpdateServiceUnit(serviceId, topologyId, nodeId).getInstanceById(instanceId);		
 		
 		EngineLogger.logger.debug("YOUR ARE HERE TO DEPLOY 4");
@@ -83,35 +69,13 @@ public class DeploymentEngineNodeLevel {
 		SalsaMappingProperties mapProp = (SalsaMappingProperties) enhancedNode.getProperties().getAny();
 		instanceDesc.updateFromMappingProperties(mapProp);
 		EngineLogger.logger.debug("YOUR ARE HERE TO DEPLOY 5");
-		// add the initiate properties to the InstanceData
-//		repData.setProperties(new ServiceInstance.Properties());		
-//		repData.getProperties().setAny(instanceDesc);
-		
-		// add the component instance to server
-		//centerCon.addInstanceUnit(serviceId, topologyId, nodeId, repData);
-		
-		//enhancedNode.setState(SalsaEntityState.PROLOGUE.getNodeStateString());
 
 		String userData = prepareUserData(serviceId, topologyId, nodeId, instanceId, instanceDesc, def);
 
 		MultiCloudConnector mcc = new MultiCloudConnector(EngineLogger.logger, configFile);
 
-//		String maxInstance = enhancedNode.getMaxInstances();
-//		int maxInstanceInt = 0;
-//		if (maxInstance.equals("unbounded")) {
-//			maxInstanceInt = 100;
-//		} else {
-//			maxInstanceInt = Integer.parseInt(enhancedNode.getMaxInstances());
-//		}
-		
 		EngineLogger.logger.debug("DEBUG: " + nodeId + " --- "	+ instanceDesc.getInstanceType());
 		EngineLogger.logger.debug("CLOUD PROVIDER = " + instanceDesc.getProvider() +"//" + SalsaCloudProviders.fromString(instanceDesc.getProvider()));
-		
-		// add the VM data
-//		ServiceInstance data = new ServiceInstance(instanceId, null);
-//		
-//		data.setState(SalsaEntityState.ALLOCATING);
-//		centerCon.addInstanceUnitMetaData(topologyId, nodeId, data);
 		
 		// start the VM
 		InstanceDescription indes = mcc.launchInstance(
@@ -129,8 +93,8 @@ public class DeploymentEngineNodeLevel {
 		EngineLogger.logger.debug(instanceDesc.getProvider()+" -- " + instanceDesc.getBaseImage() + " -- " + instanceDesc.getInstanceType()+" -- " + enhancedNode.getMinInstances());		
 		EngineLogger.logger.debug("A VM for " + nodeId + " has been created.");
 		
-		centerCon.updateInstanceUnitProperty(topologyId, nodeId, instanceId, instanceDesc);				
-		centerCon.updateNodeState(topologyId, nodeId, instanceId, SalsaEntityState.CONFIGURING);
+		centerCon.updateInstanceUnitProperty(serviceId, topologyId, nodeId, instanceId, instanceDesc);				
+		centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.CONFIGURING);
 		return repData;
 	}
 
@@ -250,6 +214,8 @@ public class DeploymentEngineNodeLevel {
 		userDataBuffer.append("echo Current dir `pwd` \n");
 		userDataBuffer.append("java -jar " + fileLst.get(0) + " setnodestate "+node.getId()+" ready \n");
 		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " deploy \n");	// execute deploy script
+//		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " startserver \n");	// execute deploy script
+
 
 		return userDataBuffer.toString();
 	}

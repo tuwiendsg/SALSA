@@ -1,12 +1,16 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl;
 
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
-import javax.xml.ws.WebServiceException;
+
+import org.apache.cxf.helpers.IOUtils;
+import org.apache.cxf.io.CachedOutputStream;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaPioneerInterface;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
@@ -17,30 +21,26 @@ public class PioneerConnector {
 	URL url = null;
 	public PioneerConnector(String ip) {
 		try{
-			this.url = new URL("http://"+ ip +":9000/pioneer?wsdl");			
+			this.url = new URL("http://"+ ip +":9000/");
+			this.pioneer = JAXRSClientFactory.create("http://"+ ip +":9000/", SalsaPioneerInterface.class);
+			
 		} catch (MalformedURLException e){
 			EngineLogger.logger.error("Error when connecting to the pioneer !");			
-		}
+		}		
 	}
 
-	public String deploySoftwareNode(String nodeID, int instanceId){
+	public String deploySoftwareNode(String nodeID, int instanceId){		
 		EngineLogger.logger.debug("Try to send command to pioneer to deploy node:  " + nodeID);
-		Service service=Service.create(this.url, new QName("http://services.pioneer.salsa.cloud.dsg.tuwien.ac.at/","PioneerServiceImplementationService"));
-		this.pioneer = service.getPort(SalsaPioneerInterface.class);		
-		String result = this.pioneer.deployNode(nodeID, instanceId); 
-		return result;
+		return this.pioneer.deployNode(nodeID, instanceId);
 	}
 	
 	public String removeSoftwareNode(String nodeId, int instanceId){
 		EngineLogger.logger.debug("Try to send command to pioneer to remove node: " + nodeId +"/" + instanceId);
-		Service service=Service.create(this.url, new QName("http://services.pioneer.salsa.cloud.dsg.tuwien.ac.at/","PioneerServiceImplementationService"));
-		this.pioneer = service.getPort(SalsaPioneerInterface.class);
-		String result = this.pioneer.removeNodeInstance(nodeId, instanceId);
-		return result;
+		return this.pioneer.removeNodeInstance(nodeId, instanceId);
 	}
 	
-	public boolean checkHealth(){
-		try {
+	public boolean checkHealth2(){
+		try {			
 			HttpURLConnection connection = (HttpURLConnection) this.url.openConnection();
 			connection.setRequestMethod("HEAD");
 			int responseCode = connection.getResponseCode();
@@ -52,4 +52,13 @@ public class PioneerConnector {
 			return false;
 		}
 	}
+	
+	public boolean checkHealth(){
+		String str = this.pioneer.health();
+		if (str.equals("alive")){
+			return true;
+		}
+		return false;
+	}
+	
 }

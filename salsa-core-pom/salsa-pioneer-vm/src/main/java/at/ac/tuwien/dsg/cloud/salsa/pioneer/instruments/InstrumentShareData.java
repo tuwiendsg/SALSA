@@ -66,9 +66,9 @@ public class InstrumentShareData {
 						inst.p.exitValue();
 						PioneerLogger.logger.debug("A process finished: " + inst.p.exitValue());
 						SalsaCenterConnector con = new SalsaCenterConnector(
-								SalsaPioneerConfiguration.getSalsaCenterEndpoint(), inst.serviceId,
+								SalsaPioneerConfiguration.getSalsaCenterEndpoint(), 
 								SalsaPioneerConfiguration.getWorkingDir(), PioneerLogger.logger);
-						con.updateNodeState(inst.topoId, inst.nodeId, Integer.parseInt(inst.instanceId), SalsaEntityState.FINISHED);					
+						con.updateNodeState(inst.serviceId, inst.topoId, inst.nodeId, Integer.parseInt(inst.instanceId), SalsaEntityState.FINISHED);					
 						instances.remove(inst);
 					} catch (IllegalThreadStateException e){
 						// happen when p.exitValue about false						

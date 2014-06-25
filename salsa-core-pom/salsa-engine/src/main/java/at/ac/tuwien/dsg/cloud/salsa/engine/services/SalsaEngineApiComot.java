@@ -14,12 +14,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineApiInterface;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineIntenalInterface;
 
-import com.sun.jersey.multipart.FormDataParam;
-
+@Service
 @Path("/comot")
 public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 	static Logger logger;
@@ -35,7 +37,7 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 		logger = Logger.getLogger("EngineLogger");
 	}
 	
-	SalsaEngineInternal internalEngine = new SalsaEngineInternal();
+	SalsaEngineIntenalInterface internalEngine = new SalsaEngineInternal();
 	
 	@Override
 	@PUT
@@ -43,9 +45,33 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response deployService(
 			@PathParam("serviceName") String serviceName,
-			@FormDataParam("file") InputStream uploadedInputStream) {		
+			@Multipart("file") InputStream uploadedInputStream) {		
 		return internalEngine.deployService(serviceName, uploadedInputStream);
 	}
+	
+	@PUT
+	@Path("/services/xml")
+	@Consumes(MediaType.APPLICATION_XML)
+	@Produces(MediaType.APPLICATION_XML)
+	public String deployServiceFromXML(String uploadedInputStream){
+		return internalEngine.deployServiceFromXML(uploadedInputStream);
+	}
+	
+	
+	@POST
+	@Path("/services/{serviceId}/nodes/{nodeId}/scaleout")
+	public Response scaleOutNode(@PathParam("serviceId")String serviceId, 
+								 @PathParam("nodeId") String nodeId){
+		return internalEngine.scaleOutNode(serviceId, nodeId);
+	}
+	
+	@POST
+	@Path("/services/{serviceId}/nodes/{nodeId}/scalein")
+	public Response scaleInNode(@PathParam("serviceId")String serviceId, 
+								 @PathParam("nodeId") String nodeId){
+		return internalEngine.scaleInNode(serviceId, nodeId);
+	}
+	
 	
 	@Override
 	@DELETE

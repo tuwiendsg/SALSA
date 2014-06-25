@@ -12,8 +12,12 @@ import java.util.Properties;
 import javax.xml.bind.JAXBException;
 import javax.xml.ws.Endpoint;
 
+import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
+
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaPioneerInterface;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.InstrumentShareData;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.services.PioneerServiceImplementation;
@@ -57,7 +61,8 @@ public class Main {
 		// Some ready variables		
 		
 		if (args[0].equals("test")){
-			System.out.println("test");			
+			System.out.println("test");
+			//startLocalService();
 			return;
 		}
 		
@@ -72,7 +77,7 @@ public class Main {
 		replica = Integer.parseInt(prop.getProperty("SALSA_REPLICA")); 
 		
 		centerCon = new SalsaCenterConnector(
-				SalsaPioneerConfiguration.getSalsaCenterEndpoint(), serviceId,
+				SalsaPioneerConfiguration.getSalsaCenterEndpoint(), 
 				SalsaPioneerConfiguration.getWorkingDir(), PioneerLogger.logger);
 		
 		
@@ -80,9 +85,9 @@ public class Main {
 		PioneerLogger.logger.debug("This node ID: " + nodeId);
 		
 		
-		def = centerCon.getToscaDescription();// get the latest service description
+		def = centerCon.getToscaDescription(serviceId);// get the latest service description
 		
-		serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime();
+		serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime(serviceId);
 		
 		PioneerLogger.logger.debug("This VM is belong to service id: "+serviceRuntimeInfo.getId());
 		
@@ -97,15 +102,15 @@ public class Main {
 		{
 			PioneerLogger.logger.debug("Start server !");
 			InstrumentShareData.startProcessMonitor();
-			startService();
+			startRESTService();			
 			break;
 		}
 		case "deploy":
-			centerCon.updateNodeState(topologyId, nodeId, replica, SalsaEntityState.RUNNING);
+			centerCon.updateNodeState(serviceId, topologyId, nodeId, replica, SalsaEntityState.RUNNING);
 			deployer.deployNodeChain(thisNode);
 			InstrumentShareData.startProcessMonitor();
 			// start server to listen to
-			startService();
+			startRESTService();
 			break;
 		case "checkcapa":	// remote			
 			if (deployer.checkCapabilityReady(args[1])) {
@@ -119,13 +124,7 @@ public class Main {
 //		case "waitcapa":
 //			String capaVal = deployer.waitRelationshipReady(topologyId, replica, args[1]);
 //			System.out.println(capaVal);
-//			break;
-		case "waitreq":	// the software node when call outside couldn't recognize its instanceID
-		{
-			String reqResult = deployer.waitRequirement(args[1]);
-			System.out.println(reqResult);
-			break;
-		}
+//			break;		
 		case "setcapa":
 		{
 			// TODO: The instanceId here is for of VM. It should be change to instanceId of upper node.			
@@ -133,7 +132,7 @@ public class Main {
 			// CURRENTLY, SET CAPABILITY FOR THE FIRST INSTANCE OF THE NODE !!!
 			SalsaCapaReqString capa = new SalsaCapaReqString(args[1],  args[2]);
 			String nodeTmpId = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(args[1], def).getId();
-			centerCon.updateInstanceUnitCapability(topologyId, nodeTmpId, 0, capa);	
+			centerCon.updateInstanceUnitCapability(serviceId, topologyId, nodeTmpId, 0, capa);	
 			PioneerLogger.logger.debug("Set capability "+args[1]+" as " + args[2]);
 			break;
 		}
@@ -141,14 +140,14 @@ public class Main {
 		{
 			String capaIdGet = args[1];
 			TNodeTemplate myNodeGet = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capaIdGet, def);
-			String capaValue = centerCon.getCapabilityValue(topologyId, myNodeGet.getId(), replica, capaIdGet);
+			String capaValue = centerCon.getCapabilityValue(serviceId, topologyId, myNodeGet.getId(), replica, capaIdGet);
 			System.out.println(capaValue);
 			break;
 		}
 		case "getreq":
 		{
 			String reqIdGet = args[1];
-			String reqValue = centerCon.getRequirementValue(topologyId, nodeId, 0, reqIdGet);
+			String reqValue = centerCon.getRequirementValue(serviceId, topologyId, nodeId, 0, reqIdGet);
 			System.out.println(reqValue);
 			break;
 		}
@@ -169,16 +168,45 @@ public class Main {
 		}
 
 	}
+//	
+//	private static void startService(){
+//		try {
+//		System.out.println("Starting the server ...");
+//		String ip = InetAddress.getLocalHost().getHostAddress();
+//		String address = "http://" + ip + ":9000/pioneer";
+//		Endpoint.publish(address, new PioneerServiceImplementation());
+//		} catch (UnknownHostException e){
+//			PioneerLogger.logger.error("Unknown host exception error !");			
+//		}		
+//	}
 	
-	private static void startService(){
-		try {
-		System.out.println("Starting the server ...");
-		String ip = InetAddress.getLocalHost().getHostAddress();
-		String address = "http://" + ip + ":9000/pioneer";
-		Endpoint.publish(address, new PioneerServiceImplementation());
+	private static void startRESTService(){
+		try{
+			System.out.println("Starting the server ...");
+			String ip = InetAddress.getLocalHost().getHostAddress();
+			
+			JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
+	        sf.setResourceClasses(SalsaPioneerInterface.class);
+	        sf.setResourceProvider(SalsaPioneerInterface.class, 
+	            new SingletonResourceProvider(new PioneerServiceImplementation()));
+	        sf.setAddress("http://" + ip + ":9000/");
+	        sf.create();			
+			
 		} catch (UnknownHostException e){
 			PioneerLogger.logger.error("Unknown host exception error !");			
-		}		
+		}
 	}
+	
+//	
+//	private static void startLocalService(){		
+//		JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
+//        sf.setResourceClasses(SalsaPioneerInterface.class);
+//        sf.setResourceProvider(SalsaPioneerInterface.class, 
+//            new SingletonResourceProvider(new PioneerServiceImplementation()));
+//        sf.setAddress("http://localhost:9000/");
+//        sf.create();
+//	}
+
+	
 		
 }

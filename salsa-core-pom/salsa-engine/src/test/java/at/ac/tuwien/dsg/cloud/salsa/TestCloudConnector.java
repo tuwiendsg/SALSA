@@ -29,18 +29,10 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 public class TestCloudConnector {
 	public static void main(String[] args) throws Exception {
-		// testUserData();
-		// testQuery();
-		// testAddCapaAndProperties();
-		//teststratus();
-		//testMultiCloudConnector();
-		//testCenterConnector();
-		//testAddCapaAndProperties();
-		//testCenterConfigurations();
 		
-		//testOpenstackJcloud();
+		testOpenstackJcloud();
 		
-		testFlexiant();
+		//testFlexiant();
 	}
 	
 	private static void testFlexiant() throws Exception {
@@ -55,7 +47,8 @@ public class TestCloudConnector {
 		OpenStackJcloud con = new OpenStackJcloud(EngineLogger.logger, "http://openstack.infosys.tuwien.ac.at/identity/v2.0/", "CELAR", "hung", "Coowcyurp8", "Hungld");		
 		//con.launchInstance("hungTestVM", "1a7a06ef-6ad8-4894-bd80-825476d13843", Arrays.asList("default"), "Hungld", "", InstanceType.DEFAULT, 1, 1);
 		//con.listImages();
-		con.listServers();
+		//con.listServers();
+		con.listImages();
 		//con.printServerInfo("faf683d1-f9a8-45c8-8a3a-848b9c2f0044");
 		//InstanceDescription des = con.getInstanceDescriptionByID("faf683d1-f9a8-45c8-8a3a-848b9c2f0044");
 		//System.out.println(des.getPrivateIp());
@@ -71,14 +64,7 @@ public class TestCloudConnector {
 		System.out.println(config.getSalsaCenterEndpointForCloudProvider(SalsaCloudProviders.LAL_STRATUSLAB));
 	}
 	
-	private static void testCenterConnector() throws Exception{
-		String serviceId = "8ee4aae3-91c2-4952-973e-7c53b6807da8";
-		SalsaCenterConnector con = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), serviceId, "/tmp", EngineLogger.logger);
-		con.updateNodeIdCounter("DataMarketAgence", "agence_os", 10);
 		
-	}
-
-	
 
 	private static void testMultiCloudConnector() {
 		String conf = TestCloudConnector.class.getResource(
@@ -90,17 +76,7 @@ public class TestCloudConnector {
 		mcc.removeInstance(SalsaCloudProviders.LAL_STRATUSLAB, "2167");
 	}
 
-	private static void testAddCapaAndProperties() {
-		SalsaCenterConnector con = new SalsaCenterConnector(
-				"http://134.158.75.65:8080/salsa-center-services",
-				"91d29974-b01f-4f20-9590-7fedca4c9695", "", EngineLogger.logger);
-
-		SalsaCapaReqString capa = new SalsaCapaReqString(
-				"seedCap_IP_test", "10.0.0.41");
-		con.updateInstanceUnitCapability("DataMarketAgence", "agence", 29, capa);
-
-	}
-
+	
 	private static void testQuery() throws IOException, JAXBException {
 		TDefinitions def = ToscaXmlProcess
 				.readToscaFile("/tmp/33052803-d3de-4239-8d6a-105639366950");

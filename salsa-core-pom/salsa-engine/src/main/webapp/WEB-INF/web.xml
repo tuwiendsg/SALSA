@@ -18,19 +18,24 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>  
+  <display-name>SALSA</display-name>
+  <context-param>
+  	<param-name>contextConfigLocation</param-name>
+  	<param-value>WEB-INF/beans.xml</param-value>
+  </context-param>
+  <listener>
+  	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  
   <servlet>
-  	<servlet-name>salsa_engine_serverlet</servlet-name>
-  	<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-  	<init-param>
-  		<param-name>com.sun.jersey.config.property.packages</param-name>
-  		<param-value>at.ac.tuwien.dsg.cloud.salsa.engine.services</param-value>
-  	</init-param>
-  <load-on-startup>1</load-on-startup>
+  	<servlet-name>SalsaEngineServlet</servlet-name>
+  	<display-name>Salsa Engine Servlet</display-name>
+  	<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+  	<load-on-startup>1</load-on-startup>
   </servlet>  
   
   <servlet-mapping>
-  	<servlet-name>salsa_engine_serverlet</servlet-name>
+  	<servlet-name>SalsaEngineServlet</servlet-name>
   	<url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
 </web-app>

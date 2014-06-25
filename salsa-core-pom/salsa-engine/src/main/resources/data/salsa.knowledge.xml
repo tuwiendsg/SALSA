@@ -2,7 +2,18 @@
 <ns2:Definitions xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12">
     <ns2:ServiceTemplate>
         <ns2:TopologyTemplate>
-            <ns2:NodeTemplate id="os"/>
+            <ns2:NodeTemplate id="os">
+            	<ns2:Properties>
+					<MappingProperties>		
+						<MappingProperty type="os">
+							<property name="instanceType">000000960</property>
+							<property name="provider">dsg@openstack</property> <!-- lal@stratuslab / dsg@openstack -->
+							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property> <!-- KBhcU87Wm5IZNOXZYGHrczGekwp / ami-00000163 -->
+							<property name="packages"></property> <!-- use comma between package name -->
+						</MappingProperty>
+					</MappingProperties>
+				</ns2:Properties>
+            </ns2:NodeTemplate>
             <ns2:NodeTemplate id="bin"/>
             <ns2:NodeTemplate id="sh"/>
             <ns2:NodeTemplate id="jre"/>
