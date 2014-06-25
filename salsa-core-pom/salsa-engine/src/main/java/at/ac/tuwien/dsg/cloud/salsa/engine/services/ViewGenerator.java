@@ -20,6 +20,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
@@ -37,7 +38,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-
+@Service
 @Path("/viewgenerator")
 public class ViewGenerator {
 static Logger logger;
@@ -55,20 +56,22 @@ static Logger logger;
 		try {
 			String salsaFile = CenterConfiguration.getServiceStoragePath() + "/"	+ serviceDeployId + ".data";
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
-			ServiceTopology topo = service.getFirstTopology();
+			
 			ServiceJsonDataTree datatree = new ServiceJsonDataTree();
 			datatree.setId(service.getName());
 			datatree.setNodeType("CLOUD SERVICE");	
 			datatree.setState(service.getState());
 			
-			//logger.debug("Create json tree with id = " + datatree.getId());
-			// firstly add all VM node
-			List<ServiceUnit> components = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
-			for (ServiceUnit compo : components) {
-				ServiceJsonDataTree componode = new ServiceJsonDataTree();
-				componode.loadData(compo, -1, topo);	// -1 will not check instance id
-				datatree.addChild(componode);				
+			List<ServiceTopology> topos = service.getComponentTopologyList();
+			for (ServiceTopology topo : topos) {
+				List<ServiceUnit> components = topo.getComponentsByType(SalsaEntityType.OPERATING_SYSTEM);
+				for (ServiceUnit compo : components) {
+					ServiceJsonDataTree componode = new ServiceJsonDataTree();
+					componode.loadData(compo, -1, topo);	// -1 will not check instance id
+					datatree.addChild(componode);	
+				}
 			}
+			
 			datatree.compactData();	// parent=null for root node
 			Gson json = new GsonBuilder().setPrettyPrinting().create();
 			
@@ -99,20 +102,21 @@ static Logger logger;
 				enrichWithGangliaInfo(service);
 			}
 			
-			ServiceTopology topo = service.getFirstTopology();
 			ServiceJsonDataTree datatree = new ServiceJsonDataTree();
 			datatree.setId(service.getName());
 			datatree.setState(SalsaEntityState.RUNNING);
 			
-			//logger.debug("Create json tree with id = " + datatree.getId());
-			// firstly add all VM node
-			List<ServiceUnit> components = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
-			for (ServiceUnit compo : components) {
-				ServiceJsonDataTree componode = new ServiceJsonDataTree();
-				componode.loadData(compo, -1, topo);	// -1 will not check instance id
-				datatree.addChild(componode);
-				//logger.debug("add a child node: " + componode.getId());
+			List<ServiceTopology> topos = service.getComponentTopologyList();
+			for (ServiceTopology topo : topos) {
+				List<ServiceUnit> components = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
+				for (ServiceUnit compo : components) {
+					ServiceJsonDataTree componode = new ServiceJsonDataTree();
+					componode.loadData(compo, -1, topo);	// -1 will not check instance id
+					datatree.addChild(componode);
+					//logger.debug("add a child node: " + componode.getId());
+				}
 			}
+			
 			
 			
 			

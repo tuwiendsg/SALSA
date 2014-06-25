@@ -3,7 +3,9 @@ package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeServiceContext;
@@ -44,6 +46,7 @@ public class OpenStackJcloud implements CloudInterface, Cloneable{
 	String keyName;
 	
 	final String region = "myregion";
+	Map<String, String> mapFlavorName = new HashMap<String, String>();
 	
 	public OpenStackJcloud(Logger logger,String endpoint, String tenant, String username, String password, String keyName){
 		//logger.info(Configuration.getCloudAPIType()+" "+Configuration.getCloudUser()+" "+Configuration.getCloudPassword()+" "+Configuration.getCloudAPIEndpoint());
@@ -63,6 +66,7 @@ public class OpenStackJcloud implements CloudInterface, Cloneable{
 	        
 	        for (Resource flavor : client.getFlavorApiForZone(region).list().concat()) {
 	            System.out.println( flavor.getId()+" "+flavor.getName());
+	            mapFlavorName.put(flavor.getName(), flavor.getId());
 	          }
 	        
 	}

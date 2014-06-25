@@ -10,6 +10,7 @@ package generated.oasis.tosca;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -81,7 +82,7 @@ public class TTopologyTemplate
      */
     public List<TEntityTemplate> getNodeTemplateOrRelationshipTemplate() {
         if (nodeTemplateOrRelationshipTemplate == null) {
-            nodeTemplateOrRelationshipTemplate = new ArrayList<TEntityTemplate>();
+            nodeTemplateOrRelationshipTemplate = new CopyOnWriteArrayList<TEntityTemplate>();
         }
         return this.nodeTemplateOrRelationshipTemplate;
     }

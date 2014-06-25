@@ -24,7 +24,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityS
 public class ServiceUnit extends SalsaEntity {	
 	
 	@XmlElement(name = "Replica")
-	List<ServiceInstance> repLst = new CopyOnWriteArrayList<ServiceInstance>();;
+	List<ServiceInstance> repLst = new CopyOnWriteArrayList<ServiceInstance>();
 		
 	@XmlAttribute(name = "type")
 	String type;
@@ -47,9 +47,12 @@ public class ServiceUnit extends SalsaEntity {
 	@XmlAttribute(name = "max")
 	int max=1;
 	
+	@XmlAttribute(name = "artifactURL")
+	String artifactURL;
+	
 	public void addInstance(ServiceInstance instance){
 		repLst.add(instance);
-	}
+	}	
 	
 	public ServiceInstance getInstanceById(int instance){
 		for (ServiceInstance node : repLst) {
@@ -125,6 +128,14 @@ public class ServiceUnit extends SalsaEntity {
 
 	public void setMax(int max) {
 		this.max = max;
+	}
+	
+	public String getArtifactURL() {
+		return artifactURL;
+	}
+
+	public void setArtifactURL(String artifactURL) {
+		this.artifactURL = artifactURL;
 	}
 
 	public List<ServiceInstance> getInstanceByState(SalsaEntityState state){

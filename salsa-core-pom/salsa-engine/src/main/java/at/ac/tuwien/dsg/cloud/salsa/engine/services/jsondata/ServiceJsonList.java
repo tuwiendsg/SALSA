@@ -90,5 +90,20 @@ public class ServiceJsonList {
 			serviceId = id;
 			deployTime = deploytime;
 		}
+		public String getServiceName() {
+			return serviceName;
+		}
+		public String getServiceId() {
+			return serviceId;
+		}
+		public String getDeployTime() {
+			return deployTime;
+		}
+		
 	}
+
+	public List<ServiceInfo> getServicesList() {
+		return services;
+	}
+	
 }

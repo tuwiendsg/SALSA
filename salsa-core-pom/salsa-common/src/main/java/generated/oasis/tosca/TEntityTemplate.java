@@ -125,6 +125,9 @@ public abstract class TEntityTemplate
      *     
      */
     public void setProperties(TEntityTemplate.Properties value) {
+    	if (this.properties==null){
+    		this.properties = new Properties();
+    	}
         this.properties = value;
     }
 

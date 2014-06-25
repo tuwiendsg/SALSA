@@ -19,6 +19,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.async.TimeoutDeferredResultProcessingInterceptor;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
@@ -71,6 +72,7 @@ public class ArtifactDeployer {
 
 			List<TNodeTemplate> upperNodes = ToscaStructureQuery
 					.getNodeTemplateWithRelationshipChain("HOSTON", thisNode, def);
+									
 			logger.debug("Chain for node: " + thisNode.getId());
 			for (TNodeTemplate chainNode : upperNodes) {
 				//SalsaInstanceDescription_Artifact artiProps = new SalsaInstanceDescription_Artifact();			
@@ -82,26 +84,31 @@ public class ArtifactDeployer {
 				// Get the number of node to be deploy
 				int quantity = chainNode.getMinInstances();
 				logger.debug("Number of instance to deploy: " + quantity);
-				serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime();
+				serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime(serviceId);
+				
 				int startId=serviceRuntimeInfo.getComponentById(topologyId, chainNode.getId()).getIdCounter();
-				logger.debug("Starting ID: " + startId);
-				centerCon.updateNodeIdCounter(topologyId, chainNode.getId(), startId+quantity);
+				logger.debug("Starting ID: " + startId);				
+				centerCon.updateNodeIdCounter(serviceId, topologyId, chainNode.getId(), startId+quantity);
+				
+				// calculate the quantity of node to be deploy
+				ServiceUnit unit = serviceRuntimeInfo.getComponentById(topologyId, chainNode.getId());
+				int existInstanceNumber = unit.getInstanceHostOn(hostedVmInstanceId).size();
 				
 				List<Integer> instanceIdList = new ArrayList<>();
 				// Create quantity node instances(instance of software) for this chainNode(software)
-				for (int i=startId; i<startId+quantity; i++){
+				for (int i=startId; i<startId+quantity-existInstanceNumber; i++){
 					instanceIdList.add(i);
 					ServiceInstance data = new ServiceInstance(i);
 					data.setHostedId_Integer(hostedVmInstanceId);
 					data.setState(SalsaEntityState.ALLOCATING);	// waiting for other conditions
-					centerCon.addInstanceUnitMetaData(topologyId, chainNode.getId(), data);	// add the 					
+					centerCon.addInstanceUnitMetaData(serviceId, topologyId, chainNode.getId(), data);	// add the 					
 				}
 				waitingForCapabilities(chainNode, def);
 				// wait for downloading and configuring artifact itself
 				logger.debug("OK, we have " + instanceIdList.size() + " of instances");
 				for (Integer i : instanceIdList) {
 					logger.debug("Set status for instance " + i + " to CONFIGURING !");
-					centerCon.updateNodeState(topologyId, chainNode.getId(), i, SalsaEntityState.CONFIGURING);
+					centerCon.updateNodeState(serviceId, topologyId, chainNode.getId(), i, SalsaEntityState.CONFIGURING);
 				}
 				downloadNodeArtifacts(chainNode, def);
 				// execute multi threads for multi instance
@@ -114,36 +121,30 @@ public class ArtifactDeployer {
 		
 		public String deploySingleNode(TNodeTemplate node, int instanceId){
 			logger.debug("Starting deploy node: "+node.getId());
-			// don't need it ? setting state for ServiceUnit, not for Instance. Set -1 as instanceId will do the job
-			//centerCon.updateNodeState(topologyId, node.getId(), -1, SalsaEntityState.ALLOCATING);
 							
 			// Get the number of node to be deploy
 			int quantity = 1;
 			logger.debug("Number of instance to deploy: " + quantity);
-			serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime();
+			serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime(serviceId);
 			//int startId=serviceRuntimeInfo.getComponentById(topologyId, node.getId()).getIdCounter();
 			logger.debug("Instance ID: " + instanceId);
 			//centerCon.updateNodeIdCounter(topologyId, node.getId(), startId+quantity);
-			
-			
-//			ServiceInstance data = new ServiceInstance(startId);
-//			data.setHostedId_Integer(replica);
-//			data.setState(SalsaEntityState.ALLOCATING);	// waiting for other conditions
-//			centerCon.addInstanceUnitMetaData(topologyId, node.getId(), data);	// add the 					
 			
 			waitingForCapabilities(node, def);
 			// wait for downloading and configuring artifact itself
 			
 			
 			logger.debug("Set status for instance " + instanceId + " to CONFIGURING !");
-			centerCon.updateNodeState(topologyId, node.getId(), instanceId, SalsaEntityState.CONFIGURING);
+			centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.CONFIGURING);
 			
 			downloadNodeArtifacts(node, def);
 			// deploy the artifact
 			logger.debug("Executing the deployment for node: " + node.getId() +", instance: " + instanceId);
-			centerCon.updateNodeState(topologyId, node.getId(), instanceId, SalsaEntityState.RUNNING);
+			centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.RUNNING);
+
+			//centerCon.updateInstanceUnitCapability(serviceId, topologyId, nodeId, instanceId, capa);
 			runNodeArtifacts(node, Integer.toString(instanceId), def);
-			//centerCon.updateNodeState(topologyId, node.getId(), startId, SalsaEntityState.FINISHED);
+			//centerCon.updateNodeState(topologyId, node.getId(), startId, SalsaEntityState.FINISHED);			
 			return Integer.toString(instanceId);
 		}
 		
@@ -158,7 +159,7 @@ public class ArtifactDeployer {
 			
 			for (Integer i : instanceIds){
 				logger.debug("STARTING Thread for node ID :" + i);		
-				centerCon.updateNodeState(topologyId, node.getId(), i, SalsaEntityState.RUNNING);
+				centerCon.updateNodeState(serviceId, topologyId, node.getId(), i, SalsaEntityState.RUNNING);
 				Thread thread = new Thread(new deployOneArtifactThread(node, i, def));
 				thread.start();
 				threads.add(thread);	
@@ -182,7 +183,7 @@ public class ArtifactDeployer {
 			private synchronized void executeDeploymentNode() {
 				logger.debug("Executing the deployment for node: " + node.getId() +", instance: " + instanceId );
 				runNodeArtifacts(node, Integer.toString(instanceId), def);
-				centerCon.updateNodeState(topologyId, node.getId(), instanceId, SalsaEntityState.FINISHED);
+				centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.FINISHED);
 			}
 
 			@Override
@@ -191,7 +192,13 @@ public class ArtifactDeployer {
 				
 			}
 
-		}		
+		}
+		
+		
+		private void waitingForConnecttoRelationship(TNodeTemplate node, TDefinitions def){
+			
+		}
+		
 		
 		// waiting for capabilities and fulfill requirements
 		private void waitingForCapabilities(TNodeTemplate node, TDefinitions def) {
@@ -205,12 +212,14 @@ public class ArtifactDeployer {
 				logger.debug("Waiting for capability: "+cap.getId());
 				String value = waitRelationshipReady(topologyId, hostedVmInstanceId, cap, req);
 			}
+			logger.debug("Trying to get relationship host on");
 			List<TRelationshipTemplate> relas = ToscaStructureQuery.getRelationshipTemplateList(SalsaRelationshipType.HOSTON.getRelationshipTypeString(), def);
+			logger.debug("relas.size: " + relas.size());
 			for (TRelationshipTemplate rela : relas) {
 				if (rela.getSourceElement().getRef().equals(node)){
 					TNodeTemplate hostNode = (TNodeTemplate) rela.getTargetElement().getRef();
 					hostNode.getId();
-					CloudService service = centerCon.getUpdateCloudServiceRuntime();
+					CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 					SalsaEntityState state = SalsaEntityState.CONFIGURING;
 					while (state!=SalsaEntityState.RUNNING && state!=SalsaEntityState.FINISHED){
 						state = service.getComponentTopologyList().get(0).getComponentById(hostNode.getId()).getState();
@@ -310,8 +319,29 @@ public class ArtifactDeployer {
 			default:
 				instrument = new BashInstrument();
 				break;
-			}			
-				
+			}		
+			
+			
+			// if this node is part of CONNECTTO, send the IP before running artifact
+			if (node.getCapabilities()!=null){
+				logger.debug("This node has ConnectTo capability, set it !");
+				for (TCapability capa : node.getCapabilities().getCapability()){
+					TRequirement req = ToscaStructureQuery.getRequirementSuitsCapability(capa, def);
+					TRelationshipTemplate rela = ToscaStructureQuery.getRelationshipBetweenTwoCapaReq(capa, req, def);
+					if (rela.getType().getLocalPart().equals(SalsaRelationshipType.CONNECTTO.getRelationshipTypeString())){
+						try{
+							logger.debug("Sending the IP of this node to the capability of CONNECTTO");						
+							String ip = InetAddress.getLocalHost().getHostAddress();
+							SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), ip);				
+							centerCon.updateInstanceUnitCapability(serviceId, topologyId, node.getId(), 0, capaString);
+						} catch (UnknownHostException e){
+							PioneerLogger.logger.error("Cannot get the IP of the host of node: " + node.getId());
+						}
+					}
+				}
+			}
+			
+			PioneerLogger.logger.debug("ArtifactDeploy prepare to initiate node.");
 			instrument.initiate(node);
 			Object monitorObj = instrument.deployArtifact(runArt, instanceId);
 			PioneerLogger.logger.debug("The artifact class is: " + monitorObj.getClass().toString());
@@ -320,24 +350,7 @@ public class ArtifactDeployer {
 				InstrumentShareData.addInstanceProcess(serviceId, topologyId, node.getId(), instanceId, (Process)monitorObj); 
 			}
 			
-			// if this node is part of CONNECTTO, send the IP
-			if (node.getCapabilities()==null){
-				return;
-			}
-			for (TCapability capa : node.getCapabilities().getCapability()){
-				TRequirement req = ToscaStructureQuery.getRequirementSuitsCapability(capa, def);
-				TRelationshipTemplate rela = ToscaStructureQuery.getRelationshipBetweenTwoCapaReq(capa, req, def);
-				if (rela.getType().getLocalPart().equals(SalsaRelationshipType.CONNECTTO.getRelationshipTypeString())){
-					try{
-						logger.debug("Sending the IP of this node to the capability of CONNECTTO");						
-						String ip = InetAddress.getLocalHost().getHostAddress();
-						SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), ip);				
-						centerCon.updateInstanceUnitCapability(topologyId, node.getId(), 0, capaString);
-					} catch (UnknownHostException e){
-						PioneerLogger.logger.error("Cannot get the IP of the host of node: " + node.getId());
-					}
-				}
-			}
+			
 		}
 		
 		/*
@@ -356,7 +369,7 @@ public class ArtifactDeployer {
 			
 			// check if there are a replica of node with Ready state
 			// it doesn't care about which node, just check if existing ONE replica
-			CloudService service = centerCon.getUpdateCloudServiceRuntime();
+			CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 			ServiceUnit component = service.getComponentById(topologyId, node.getId());			
 			int number=component.getInstanceNumberByState(SalsaEntityState.RUNNING)+component.getInstanceNumberByState(SalsaEntityState.FINISHED);
 			logger.debug("Check capability. Checking component id " + component.getId() + "  -- " + number +" number of running or finished instances.");			
@@ -384,8 +397,10 @@ public class ArtifactDeployer {
 //			return false;
 		}
 		
+		
+		
 		// can handle null value (see SalsaCenterConnector)
-		public String waitRelationshipReady(String topoId, int replica, TCapability capa, TRequirement req){
+		private String waitRelationshipReady(String topoId, int replica, TCapability capa, TRequirement req){
 			TRelationshipTemplate rela = ToscaStructureQuery.getRelationshipBetweenTwoCapaReq(capa, req, def);			
 			while (!checkCapabilityReady(capa.getId())){
 				try{
@@ -399,13 +414,13 @@ public class ArtifactDeployer {
 			logger.debug("WaitRelationshipReady Mar4 - capa: " + capa.getId());
 			TNodeTemplate nodeOfCapa = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capa, def);
 			
-			String value=centerCon.getCapabilityValue(topoId, nodeOfCapa.getId(), 0, capa.getId());	// note: 0 is the ID of the first node, which provide the capability
+			String value=centerCon.getCapabilityValue(serviceId, topoId, nodeOfCapa.getId(), 0, capa.getId());	// note: 0 is the ID of the first node, which provide the capability
 			logger.debug("waitRelationshipReady - Get the value is: " + value);
 			while (value==null){
 				try{
 					logger.debug("waitRelationshipReady - Get the value is: " + value);
 					Thread.sleep(5000);
-					value=centerCon.getCapabilityValue(topoId, nodeOfCapa.getId(), 0, capa.getId());
+					value=centerCon.getCapabilityValue(serviceId, topoId, nodeOfCapa.getId(), 0, capa.getId());
 					
 				} catch (InterruptedException e) {}
 			}
@@ -431,22 +446,22 @@ public class ArtifactDeployer {
 		
 		// cannot handle null, so always return of requirement has not been updated
 		// only use for CONNECTTO relationship. (not works with HOSTON relationship)
-		@Deprecated
-		public String waitRequirement(String reqId){			
-			TRequirement req = (TRequirement)ToscaStructureQuery.getRequirementOrCapabilityById(reqId, def);
-			TCapability capa = ToscaStructureQuery.getCapabilitySuitsRequirement(req, def);
-			
-			if (capa != null){				
-				while (!checkCapabilityReady(capa.getId())){
-					try{
-						Thread.sleep(5000);				
-					} catch (InterruptedException e) {}
-				}
-				// if the capa for the req ready, query the req
-				return centerCon.getRequirementValue(topologyId, nodeId, hostedVmInstanceId, reqId);
-			}
-			return null;
-		}
+//		@Deprecated
+//		private String waitRequirement(String reqId){			
+//			TRequirement req = (TRequirement)ToscaStructureQuery.getRequirementOrCapabilityById(reqId, def);
+//			TCapability capa = ToscaStructureQuery.getCapabilitySuitsRequirement(req, def);
+//			
+//			if (capa != null){				
+//				while (!checkCapabilityReady(capa.getId())){
+//					try{
+//						Thread.sleep(5000);				
+//					} catch (InterruptedException e) {}
+//				}
+//				// if the capa for the req ready, query the req
+//				return centerCon.getRequirementValue(serviceId, topologyId, nodeId, hostedVmInstanceId, reqId);
+//			}
+//			return null;
+//		}
 		
 		
 		public String getVMProperty(String propName){

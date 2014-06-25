@@ -27,7 +27,7 @@ public class SalsaEntity {
 	@XmlAttribute(name = "id")
 	String id;	
 	@XmlAttribute(name = "name")
-	String name;	
+	String name;
 	@XmlAttribute(name = "state")
 	SalsaEntityState state;
 	@XmlElement(name = "monitoring")

@@ -35,90 +35,21 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.5</version>
 		</dependency>
-		
-<!-- 		<dependency> -->
-<!-- 			<groupId>ch.usi.cloud.controller.api</groupId> -->
-<!-- 			<artifactId>typica</artifactId> -->
-<!-- 			<version>1.7.2</version> -->
-<!-- 		</dependency> -->
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.google.code.typica</groupId> -->
-<!-- 			<artifactId>typica</artifactId> -->
-<!-- 			<version>1.7.2</version> -->
-<!-- 		</dependency> -->
-		
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
-		
-	
-<!-- 	<dependency> -->
-<!-- 	<groupId>com.google.guava</groupId> -->
-<!-- 	<artifactId>guava</artifactId> -->
-<!-- 	<version>13.0-rc1</version> -->
-<!-- </dependency> -->
 
-	<dependency>
-		<groupId>org.json</groupId>
-		<artifactId>json</artifactId>
-		<version>20140107</version>
-	</dependency>
-	
-<!-- <dependency> -->
-<!--   <groupId>org.pacesys</groupId> -->
-<!--   <artifactId>openstack4j</artifactId> -->
-<!--   <version>1.0.0</version> -->
-<!-- </dependency> -->
-
-
-<!-- <dependency> -->
-<!--   <groupId>org.pacesys</groupId> -->
-<!--   <artifactId>openstack4j</artifactId> -->
-<!--   <version>1.0.1-SNAPSHOT</version> -->
-  
-<!-- </dependency> -->
-
-
-            
-<!--              	<dependency> -->
-<!-- 			<groupId>org.jclouds.api</groupId> -->
-<!-- 			<artifactId>openstack-nova-ec2</artifactId> -->
-<!-- 			<version>1.5.4</version> -->
-<!-- 		</dependency> -->
-
-<!-- 		 <dependency> -->
-<!--       <groupId>org.jclouds.api</groupId> -->
-<!--       <artifactId>openstack-keystone</artifactId> -->
-<!--       <version>${jclouds.version}</version> -->
-<!--     </dependency> -->
-    
-<!--      <dependency> -->
-<!--       <groupId>org.jclouds.api</groupId> -->
-<!--       <artifactId>openstack-nova</artifactId> -->
-<!--       <version>${jclouds.version}</version> -->
-<!--     </dependency> -->
-		
 		<dependency>
 			<groupId>org.apache.jclouds.api</groupId>
 			<artifactId>openstack-nova-ec2</artifactId>
 			<version>1.7.2</version>
 		</dependency>
-		
-		
-
-<!-- 	<dependency> -->
-<!-- 	<groupId>com.jcraft</groupId> -->
-<!-- 	<artifactId>jsch</artifactId> -->
-<!-- 	<version>0.1.50</version> -->
-<!-- </dependency> -->
-
-
 
 	</dependencies>
-	
+
 	<build>
 		<finalName>salsa-cloud-connector</finalName>
 		<plugins>
@@ -132,13 +63,13 @@
 			</plugin>
 		</plugins>
 	</build>
-	
-	
+
+
 	<repositories>
 		<repository>
 			<id>infosys-repo</id>
 			<url>http://www.infosys.tuwien.ac.at/mvn</url>
 		</repository>
 	</repositories>
-	
+
 </project>

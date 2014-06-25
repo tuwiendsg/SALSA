@@ -50,12 +50,12 @@ public class CloudService extends SalsaEntity{
 		this.componentTopology.remove(topo);
 	}
 	
-	public ServiceTopology getFirstTopology(){
-		if (componentTopology.isEmpty()){
-			return null;
-		}
-		return componentTopology.get(0);
-	}
+//	public ServiceTopology getFirstTopology(){
+//		if (componentTopology.isEmpty()){
+//			return null;
+//		}
+//		return componentTopology.get(0);
+//	}
 	
 	
 	public ServiceUnit getComponentById(String topologyId, String nodeId){
@@ -64,6 +64,18 @@ public class CloudService extends SalsaEntity{
 				if (topo != null){
 					return topo.getComponentById(nodeId);
 				}			
+		}
+		return null;
+	}
+	
+	public ServiceUnit getComponentById(String nodeId){
+		if (componentTopology != null){
+			for (ServiceTopology topo : componentTopology) {
+				ServiceUnit unit = getComponentById(topo.getId(), nodeId);
+				if (unit!=null){
+					return unit;
+				}
+			}
 		}
 		return null;
 	}
@@ -96,5 +108,16 @@ public class CloudService extends SalsaEntity{
 			repList.addAll(com.getInstancesList());
 		}		
 		return repList;
+	}
+	
+	public ServiceTopology getTopologyOfNode(String serviceUnitId){
+		for (ServiceTopology topo : componentTopology) {
+			for (ServiceUnit tmpUnit : topo.getComponents()) {
+				if (tmpUnit.getId().equals(serviceUnitId)){
+					return topo;
+				}
+			}
+		}
+		return null;
 	}
 }

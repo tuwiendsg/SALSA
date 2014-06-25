@@ -67,6 +67,8 @@ public class ToscaXmlProcess {
 		StringReader reader = new StringReader(xml);
 		return (TDefinitions) um.unmarshal(reader);	
 	}
+	
+	
 
 	/**
 	 * Write Tosca definitions to file
@@ -159,6 +161,24 @@ public class ToscaXmlProcess {
 			return null;
 		}
 	}
+	
+	/**
+	 * Read the XML and parse to Tosca object
+	 * @param xml The XML string
+	 * @return	The TDefinitions object
+	 * @throws JAXBException
+	 * @throws IOException
+	 */
+	public static TNodeTemplate readToscaNodeTemplateFromString(String xml)
+			throws JAXBException, IOException {		
+		JAXBContext context = getJaxbContextForTosca();						
+		Unmarshaller um = context.createUnmarshaller();
+		StringReader reader = new StringReader(xml);
+		return (TNodeTemplate) um.unmarshal(reader);	
+	}
+	
+	
+	
 
 	public static void printToscaNodeTemplateDependencies(TNodeTemplate node) {
 		writeToscaElementToFile(node, "/tmp/toscaNode");

@@ -14,10 +14,10 @@ public class TestToscaEnricher {
 
 	public static void main(String[] args) {
 		try {
-		TDefinitions def = ToscaXmlProcess
-				.readToscaFile(TestDeployTosca.class.getResource(
-						"/cassandra_old/tosca_Cassandra_example_fakescripts.xml").getFile());
-
+//		TDefinitions def = ToscaXmlProcess
+//				.readToscaFile(TestDeployTosca.class.getResource(
+//						"/cassandra_old/tosca_Cassandra_example_fakescripts.xml").getFile());
+		TDefinitions def = ToscaXmlProcess.readToscaFile("/home/hungld/test/DAASPilot/tosca_DaaS_high_level_with_SYBL.xml");
 		//System.out.println(ToscaXmlProcess.writeToscaDefinitionToXML(def));
 				
 		// ENRICH

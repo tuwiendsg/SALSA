@@ -3,7 +3,6 @@ package at.ac.tuwien.dsg.cloud.salsa.tosca.processing;
 import generated.oasis.tosca.TArtifactReference;
 import generated.oasis.tosca.TArtifactTemplate;
 import generated.oasis.tosca.TCapability;
-import generated.oasis.tosca.TCapabilityType;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TDeploymentArtifact;
 import generated.oasis.tosca.TEntityTemplate;
@@ -20,15 +19,15 @@ import java.util.List;
 public class ToscaStructureQuery {
 	
 	
-	public static TServiceTemplate getFirstServiceTemplate(TDefinitions def){
-		List<TExtensibleElements> lst=def.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
-		for (TExtensibleElements element : lst) {
-			if (element.getClass().equals(TServiceTemplate.class)){
-				return (TServiceTemplate)element;
-			}
-		}
-		return null;		
-	}
+//	public static TServiceTemplate getFirstServiceTemplate(TDefinitions def){
+//		List<TExtensibleElements> lst=def.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
+//		for (TExtensibleElements element : lst) {
+//			if (element.getClass().equals(TServiceTemplate.class)){
+//				return (TServiceTemplate)element;
+//			}
+//		}
+//		return null;		
+//	}
 	
 	public static List<TServiceTemplate> getServiceTemplateList(TDefinitions def){
 		List<TExtensibleElements> lst=def.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
@@ -39,6 +38,16 @@ public class ToscaStructureQuery {
 			}
 		}
 		return serviceLst;
+	}
+	
+	public static TTopologyTemplate getTopologyTemplate(String topoID, TDefinitions def){
+		List<TServiceTemplate> sers = getServiceTemplateList(def);
+		for (TServiceTemplate ser : sers) {
+			if (ser.getId().equals(topoID)){
+				return ser.getTopologyTemplate();
+			}
+		}
+		return null;
 	}
 	
 		
@@ -116,7 +125,7 @@ public class ToscaStructureQuery {
 	
 	
 	public static TEntityTemplate getRequirementOrCapabilityById(String id, TDefinitions def){
-		List<TNodeTemplate> lst = getNodeTemplateList(getFirstServiceTemplate(def));
+		List<TNodeTemplate> lst = getNodeTemplateList(def);
 		for (TNodeTemplate node : lst) {
 			if (node.getCapabilities() !=null){
 				List<TCapability> lisReqCap = node.getCapabilities().getCapability();
@@ -141,16 +150,40 @@ public class ToscaStructureQuery {
 	 * @return
 	 */
 	public static List<TNodeTemplate> getNodeTemplateList(TDefinitions def){
-		return getNodeTemplateList(getFirstServiceTemplate(def));
+		List<TExtensibleElements> serviceTemplates = def.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
+		List<TNodeTemplate> nodes = new ArrayList<>();
+		for (TExtensibleElements st : serviceTemplates) {
+			if (st.getClass().equals(TServiceTemplate.class)){
+				TTopologyTemplate topo = ((TServiceTemplate) st).getTopologyTemplate();
+				for (TEntityTemplate entity : topo.getNodeTemplateOrRelationshipTemplate()) {
+					if (entity.getClass().equals(TNodeTemplate.class)){
+						nodes.add((TNodeTemplate) entity);
+					}					
+				}
+			}
+		}
+		return nodes;
 	}
 	
 	/**
-	 * Get list of RelationshipTemplate from first ServiceTemplate
+	 * Get list of RelationshipTemplate from all the ServiceTemplate
 	 * @param def
 	 * @return
 	 */
 	public static List<TRelationshipTemplate> getRelationshipTemplateList(TDefinitions def){
-		return getRelationshipTemplateList(getFirstServiceTemplate(def));
+		List<TExtensibleElements> ees = def.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
+		List<TRelationshipTemplate> relas = new ArrayList<>();
+		for (TExtensibleElements ee : ees) {
+			if (ee.getClass().equals(TServiceTemplate.class)){
+				TTopologyTemplate topo = ((TServiceTemplate) ee).getTopologyTemplate();
+				for (TEntityTemplate entity : topo.getNodeTemplateOrRelationshipTemplate()) {
+					if (entity.getClass().equals(TRelationshipTemplate.class)){
+						relas.add((TRelationshipTemplate) entity);
+					}					
+				}
+			}
+		}
+		return relas;
 	}
 	
 	/**
@@ -159,7 +192,19 @@ public class ToscaStructureQuery {
 	 * @return
 	 */
 	public static List<TRelationshipTemplate> getRelationshipTemplateList(String type, TDefinitions def){
-		return getRelationshipTemplateList(type, getFirstServiceTemplate(def));
+		List<TExtensibleElements> serviceTemplates = def.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
+		List<TRelationshipTemplate> relas = new ArrayList<>();
+		for (TExtensibleElements st : serviceTemplates) {
+			if (st.getClass().equals(TServiceTemplate.class)){
+				TTopologyTemplate topo = ((TServiceTemplate) st).getTopologyTemplate();
+				for (TEntityTemplate entity : topo.getNodeTemplateOrRelationshipTemplate()) {
+					if (entity.getClass().equals(TRelationshipTemplate.class) && entity.getType().getLocalPart().equals(type)){
+						relas.add((TRelationshipTemplate) entity);
+					}					
+				}
+			}
+		}
+		return relas;
 	}
 	
 	
@@ -293,6 +338,21 @@ public class ToscaStructureQuery {
 		}
 		
 		return lst;		
+	}
+	
+	public static TNodeTemplate getHostOnNode(TNodeTemplate node, TDefinitions def){
+		List<TRelationshipTemplate> relas = getRelationshipTemplateList(def);
+		for (TRelationshipTemplate rela : relas) {
+			if (rela.getSourceElement().getRef().getClass().equals(TNodeTemplate.class)){
+				TNodeTemplate source = (TNodeTemplate)rela.getSourceElement().getRef();
+				if (source.getId().equals(node.getId())){
+					return (TNodeTemplate)rela.getTargetElement().getRef(); 
+				}
+			}			
+		}
+		return null;
+				
+		
 	}
 	
 	

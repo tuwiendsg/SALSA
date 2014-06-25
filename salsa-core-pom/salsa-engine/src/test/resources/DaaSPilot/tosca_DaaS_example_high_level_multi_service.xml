@@ -7,39 +7,26 @@
 	targetNamespace="http://tempuri.org"
 	id="DaaSApp">
 	
-	<tosca:ServiceTemplate id="DemoApp">
-		
+	<tosca:ServiceTemplate id="Main">
 		<tosca:TopologyTemplate>
 			<tosca:NodeTemplate id="DataEndServiceTopologyService" type="DataEndServiceTopology" />
 			<tosca:NodeTemplate id="EventProcessingServiceTopologyService" type="EventProcessingServiceTopology" />
 			<tosca:RelationshipTemplate name="Directed Relation" id="directedRelation" type="CONNECTTO">
 				<tosca:SourceElement ref="DataEndService_capa" />
 				<tosca:TargetElement ref="DataEndService_req" />
-			</tosca:RelationshipTemplate>
-			
+			</tosca:RelationshipTemplate>			
 		</tosca:TopologyTemplate>
 	</tosca:ServiceTemplate>
 	
 
-	<tosca:ServiceTemplate id="DataEndServiceTopology">
+	<tosca:ServiceTemplate id="DataEndServiceTopology" substitutableNodeType="DataEndServiceTopologyService">
 		<tosca:BoundaryDefinitions>
 			<tosca:Capabilities><tosca:Capability ref="DataEndService_capa"/></tosca:Capabilities>			
 		</tosca:BoundaryDefinitions>
 		<tosca:TopologyTemplate>
 			<tosca:NodeTemplate id="DataControllerServiceUnit"
 				name="DataControllerServiceUnit" type="software"
-				minInstances="1" maxInstances="1">				
-				<tosca:Properties>
-					<!-- fuzzy requirement for VM target type -->		
-					 <MappingProperties>					 	
-					 	<MappingProperty type="os">
-							<property name="instanceType">000000960</property>
-							<property name="provider">dsg@openstack</property> 
-							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property> 
-							<property name="packages">openjdk-7-jre,ganglia-monitor,gmetad</property>
-						</MappingProperty>
-					</MappingProperties>
-				</tosca:Properties>				
+				minInstances="1" maxInstances="1">						
 				<tosca:Capabilities>				
 					<tosca:Capability name="DataEnd service IP" type="variable" id="DataEndService_capa"></tosca:Capability>
 				</tosca:Capabilities>
@@ -48,17 +35,7 @@
 				</tosca:DeploymentArtifacts>
 			</tosca:NodeTemplate>
 			
-			<tosca:NodeTemplate id="DataNodeServiceUnit" name="DataNodeServiceUnit" type="software" minInstances="1" maxInstances="unbounded">
-				<tosca:Properties>
-					<MappingProperties>						
-						<MappingProperty type="os">
-							<property name="instanceType">000000960</property>
-							<property name="provider">dsg@openstack</property> 
-							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property> 
-							<property name="packages">openjdk-7-jre,ganglia-monitor,gmetad</property>
-						</MappingProperty>
-					</MappingProperties>
-				</tosca:Properties>			
+			<tosca:NodeTemplate id="DataNodeServiceUnit" name="DataNodeServiceUnit" type="software" minInstances="1" maxInstances="unbounded">					
 				<tosca:DeploymentArtifacts>
 					<tosca:DeploymentArtifact artifactType="sh" name="Deployment script" artifactRef="deployDataNode"/>
 				</tosca:DeploymentArtifacts>
@@ -72,7 +49,7 @@
 	</tosca:ServiceTemplate>
 
 
-	<tosca:ServiceTemplate id="EventProcessingServiceTopology">
+	<tosca:ServiceTemplate id="EventProcessingServiceTopology" substitutableNodeType="EventProcessingServiceTopologyService">
 		<tosca:BoundaryDefinitions>
 			<tosca:Requirements>
 				<tosca:Requirement ref="DataEndService_req"/>
@@ -80,30 +57,12 @@
 		</tosca:BoundaryDefinitions>
 		<tosca:TopologyTemplate>
 			<tosca:NodeTemplate id="LoadBalancerServiceUnit" type="software" name="LoadBalancerServiceUnit">
-				 <MappingProperties>						
-						<MappingProperty type="os">
-							<property name="instanceType">000000960</property>
-							<property name="provider">dsg@openstack</property> 
-							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property> 
-							<property name="packages">openjdk-7-jre,ganglia-monitor,gmetad</property>
-						</MappingProperty>
-					</MappingProperties>
 				<tosca:DeploymentArtifacts>		
                     <tosca:DeploymentArtifact name="deploy" artifactType="sh" artifactRef="tosca:deployLoadBalancer"/>                
 				</tosca:DeploymentArtifacts>
 			</tosca:NodeTemplate>
 			
 			<tosca:NodeTemplate id="EventProcessingServiceUnit" type="software" name="EventProcessingServiceUnit">
-				<tosca:Properties>
-					<MappingProperties>
-						<MappingProperty type="os">
-							<property name="instanceType">000000960</property>
-							<property name="provider">dsg@openstack</property> 
-							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property> 
-							<property name="packages">openjdk-7-jre,ganglia-monitor,gmetad</property>
-						</MappingProperty>
-					</MappingProperties>
-				</tosca:Properties>
 				<tosca:Requirements>
 					<tosca:Requirement name="DataEnd IP" type="variable" id="DataEndService_req"></tosca:Requirement>
 				</tosca:Requirements>		
@@ -128,6 +87,11 @@
 				<tosca:SourceElement ref="LoadBalancerServiceUnit" />
 				<tosca:TargetElement ref="EventProcessingServiceUnit" />
 			</tosca:RelationshipTemplate>
+			
+			<tosca:RelationshipTemplate name="Directed Relation" id="directedRelation" type="CONNECTTO">
+				<tosca:SourceElement ref="DataEndService_capa" />
+				<tosca:TargetElement ref="DataEndService_req" />
+			</tosca:RelationshipTemplate>	
 									
 		</tosca:TopologyTemplate>
 	</tosca:ServiceTemplate>

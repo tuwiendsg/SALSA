@@ -25,8 +25,10 @@ function createListTable(data){
          str += '<td>' + data[i].serviceName + '</td>';
          str += '<td><a href="'+currentURL+'?id='+data[i].serviceId+'">' + data[i].serviceId + '</a></td>';
          str += '<td>' + data[i].deployTime + '</td>';
-         str += '<td><button type="button" onclick="deregisterService(\''+data[i].serviceId+'\')">undeploy</button>';
-
+         str += '<td>';
+         	str += '<button type="button" onclick="deregisterService(\''+data[i].serviceId+'\')">Undeploy</button>';
+         	str += '<button type="button" onclick="showServiceByGET(\''+data[i].serviceId+'\')">Show Tosca</button>';
+         str += '</td>';
          str += '</tr>';
         
       }
@@ -56,17 +58,12 @@ function deregisterService(serviceId){
 	       toastr.info("Removed service "+ serviceId +" !");
 	    }
 	});
-	
-	
-	
-// 	$.get(url, function(data) {
-// 		       //location.reload();
-// 		       $.getJSON(listSource,  function(json){ 
-// 			  		$('#list').html(createListTable(json.services)).fadeIn();
-// 			  	});
-// 		       toastr.info("Removed service "+ serviceId +" !");
-// 		    }
-// 		);
+}
+
+function showServiceByGET(serviceId){
+  var url = 'rest/services/tosca/' + serviceId;
+  var win = window.open(url, '_blank'); // GET Method
+  win.focus();	
 }
 
 
