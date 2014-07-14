@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tosca:Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:elasticity="http://www.example.org/NewXMLSchema" 
+	xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12"
+	xmlns:salsa="http://example.com"
+	xsi:schemaLocation="http://docs.oasis-open.org/tosca/ns/2011/12 TOSCA-v1.0.xsd"
+	targetNamespace="http://tempuri.org"
+	id="SalsaExample">
+
+	<!-- The Tomcat node and VM node will be generate at deployment time -->	
+
+	<tosca:ServiceTemplate id="SampleService">
+		<tosca:TopologyTemplate>
+			<tosca:NodeTemplate id="policeApp"
+				name="policeApp" type="war"
+				minInstances="1" maxInstances="1">			
+
+				<tosca:Properties>
+					<MappingProperties>		
+						<MappingProperty type="os">
+							<property name="instanceType">000000960</property>
+							<property name="provider">dsg@openstack</property> 
+							<property name="baseImage">29913e4b-4a25-4545-a0af-94e661c7150c</property> 
+							<property name="packages">openjdk-7-jre</property> 
+						</MappingProperty>
+					</MappingProperties>
+				</tosca:Properties>	
+							
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="war" name="Deployment script" artifactRef="deployWar"/>
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+
+		</tosca:TopologyTemplate>		
+		
+	</tosca:ServiceTemplate>
+	
+	<tosca:ArtifactTemplate id="deployWar" type="war">		
+		<tosca:ArtifactReferences>
+			<tosca:ArtifactReference
+				reference="http://128.130.172.215/salsa/upload/files/ASE/PoliceDaaS.war" />				
+		</tosca:ArtifactReferences>
+	</tosca:ArtifactTemplate>
+	
+</tosca:Definitions>
