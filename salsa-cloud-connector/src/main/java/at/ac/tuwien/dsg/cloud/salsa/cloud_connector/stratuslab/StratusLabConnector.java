@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
+import javax.print.attribute.standard.MediaSize.Engineering;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
@@ -175,6 +177,12 @@ public class StratusLabConnector implements CloudInterface{
 				imageId
 			};		
 		// result should be: ID, IP (e.g. "323, 134.158.75.215")
+			StringBuilder builder = new StringBuilder();
+			for(String s : cmd) {
+			    builder.append(s+" ");
+			}
+			
+			logger.debug("Stratus cmd: " + builder.toString());
 		String result[] = ProcessUtils.execGetOutput(cmd,this.env.toArray(new String[env.size()])).split(",");
 		if (result.length > 1){
 			return result[0].trim();	// the Stratuslab ID of new VM

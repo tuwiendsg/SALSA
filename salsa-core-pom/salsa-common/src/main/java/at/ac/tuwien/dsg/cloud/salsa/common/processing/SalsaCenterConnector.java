@@ -155,7 +155,7 @@ public class SalsaCenterConnector {
 		System.out.println("Try to get capability value of capaid: " + capaId);
 		CloudService service = getUpdateCloudServiceRuntime(serviceId);
 		System.out.println("Checking topo/node/inst-id: " + topoId +"/" + nodeId +"/" + replica);
-		ServiceInstance rep = service.getInstanceById(topoId, nodeId, replica);
+		ServiceInstance rep = service.getInstanceById(nodeId, replica);
 		System.out.println("Get this instance: " + rep.getInstanceId());
 		Capabilities capas = rep.getCapabilities();
 		
@@ -233,6 +233,10 @@ public class SalsaCenterConnector {
 //			logger.error(e.toString());
 //		}
 	}
+	
+	public void unqueueActions(String serviceID, String topologyId, String nodeId, int instnanceId, String actionName){
+		engine.unqueueAction(serviceID, topologyId, nodeId, instnanceId, actionName);
+	}
 
 	public void addRelationship(String serviceId, String topologyId, ServiceUnitRelationship rela) {
 		// /services/{serviceId}/topologies/{topologyId}/relationship
@@ -251,9 +255,9 @@ public class SalsaCenterConnector {
 	 */
 	public CloudService getUpdateCloudServiceRuntime(String serviceId) {
 		try {
-			System.out.println("getUpdateCloudServiceRuntime. Service id: " + serviceId);
+			//System.out.println("getUpdateCloudServiceRuntime. Service id: " + serviceId);
 			String xml = getUpdateCloudServiceRuntimeXML(serviceId);
-//			logger.debug("IN getUpdateCloudServiceRuntime. XML: " + xml);
+			//logger.debug("IN getUpdateCloudServiceRuntime. XML: " + xml);
 			if (xml == null) {
 				return null;
 			} else {
@@ -285,7 +289,6 @@ public class SalsaCenterConnector {
 	public String getUpdateCloudServiceRuntimeXML(String serviceId) {
 		// /services/{serviceId}
 		String url = centerRestfulEndpoint + "/services/" + serviceId;
-		System.out.println("Get update service XML with url: " + url);
 		Response res = engine.getService(serviceId);
 		
 		return inputStreamToString((InputStream)res.getEntity());
@@ -472,7 +475,7 @@ public class SalsaCenterConnector {
 			 
 			String output;
 			String result = "";
-			System.out.println("Output from Server .... \n");
+			
 			while ((output = br.readLine()) != null) {
 				System.out.println(output);
 				result+=output;
@@ -491,7 +494,7 @@ public class SalsaCenterConnector {
 		try {
 			String output;
 			String result = "";
-			System.out.println("Output from Server .... \n");
+			
 			while ((output = br.readLine()) != null) {
 				//System.out.println(output);
 				result+=output;
@@ -519,6 +522,12 @@ public class SalsaCenterConnector {
 		String url = centerRestfulEndpoint + "/instanceunits/" + serviceId
 				+ "/" + topologyId + "/" + nodeId + "/" + instanceId;
 		return queryDataToCenter1(url, HttpVerb.DELETE, "", "", "");		
+	}
+	
+	public String logMessage(String data){
+		logger.debug("Sending log message to salsa-engine: " + data);
+		Response res =  engine.logMessage(data);		
+		return "Logged";		
 	}
 	
 	

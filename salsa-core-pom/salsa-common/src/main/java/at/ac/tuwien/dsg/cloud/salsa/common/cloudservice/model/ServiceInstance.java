@@ -43,6 +43,11 @@ public class ServiceInstance extends SalsaEntity {
 	@XmlElement(name = "Capabilities")
 	protected Capabilities capabilities;
 	
+//	@XmlElement(name = "actionqueue")
+//	protected List<String> actionqueue = new ArrayList<>();
+	
+	
+	
 //	@XmlElement(name = "Requirements")
 //	protected Capabilities requirements;
 	
@@ -153,6 +158,18 @@ public class ServiceInstance extends SalsaEntity {
 	public UUID getUuid() {
 		return uuid;
 	}
+	
+//	public void queueAction(String action){
+//		this.actionqueue.add(action);
+//	}
+//	
+//	public void unqueueAction(String action){
+//		this.actionqueue.remove(action);
+//	}
+//	
+//	public List<String> getActionqueue() {
+//		return actionqueue;
+//	}
 
 	public String convertToXML() throws JAXBException{
 		JAXBContext jaxbContext = JAXBContext // beside data.class, addition

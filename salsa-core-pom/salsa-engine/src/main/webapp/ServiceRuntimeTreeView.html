@@ -41,6 +41,7 @@ var svg = d3.select("#treeViewDiv").append("svg")
     
 function showTheTree(){
 	d3.json(treeDataSource, function(error, flare) {
+		if (error) return "error";
 	  root = flare;
 	  root.x0 = height / 2;
 	  root.y0 = 0;	
@@ -154,7 +155,7 @@ function update(source) {
 	        		return "VIRTUAL MACHINE";
 	        	}
 	        	if (d.nodeType=="os" && d.isAbstract==false){
-	        		return "INSTANCE";
+	        		return "VM INSTANCE";
 	        	}
 	        	if (d.nodeType=="chef" && d.isAbstract==false){
 	        		return "CHEF CLIENT";

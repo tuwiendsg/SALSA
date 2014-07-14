@@ -24,6 +24,7 @@ public class InstanceDescription {
 	private String privateDNS;
 	private String publicDNS;
 	private VMStates state;
+	private int quota = 0;
 
 	// return new InstanceDescription(instanceID,
 	// InetAddress.getByName(instance.getPrivateIpAddress()),
@@ -48,7 +49,7 @@ public class InstanceDescription {
 	
 	public InstanceDescription(String instanceId,
 			InetAddress privateIp, InetAddress publicIp, String privateDNS,
-			String publicDNS) {
+			String publicDNS, int quota) {
 
 		
 		this.instanceId = instanceId;
@@ -57,6 +58,7 @@ public class InstanceDescription {
 		this.privateDNS = privateDNS;
 		this.publicDNS = publicDNS;
 		this.state = VMStates.Pending;
+		this.quota = quota;
 	}
 
 	
@@ -83,6 +85,11 @@ public class InstanceDescription {
 		this.privateDNS = new String(inst.privateDNS);
 		this.publicDNS = new String(inst.publicDNS);
 
+	}
+
+	
+	public int getQuota() {
+		return quota;
 	}
 
 	public String getInstanceId() {

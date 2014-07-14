@@ -20,4 +20,8 @@ public interface SalsaPioneerInterface {
 	@GET
 	@Path("/health")
 	String health();
+	
+	@GET
+	@Path("/info")
+	String info();
 }

@@ -54,6 +54,9 @@ public class SalsaInstanceDescription_VM {
 	@XmlElement(name = "state")
 	private String state;
 	
+	@XmlElement(name="quota")
+	private int quota;
+	
 	@XmlElement(name = "Packages")
 	PackagesDependencies packagesDependencies;
 
@@ -77,8 +80,15 @@ public class SalsaInstanceDescription_VM {
 	}
 
 	
+	public int getQuota() {
+		return quota;
+	}
 
-//	public int getReplicaNumber() {
+	public void setQuota(int quota) {
+		this.quota = quota;
+	}
+
+	//	public int getReplicaNumber() {
 //		return replicaNumber;
 //	}
 	public void setInstanceId(String instanceId) {

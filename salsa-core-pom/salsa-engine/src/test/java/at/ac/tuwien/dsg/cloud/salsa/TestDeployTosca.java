@@ -4,6 +4,7 @@ import generated.oasis.tosca.TDefinitions;
 
 import java.io.File;
 
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.DeploymentEngineNodeLevel;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.SalsaToscaDeployer;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
@@ -13,9 +14,16 @@ public class TestDeployTosca {
 	public static void main(String[] args) throws Exception {
 		//testDeploySingle();
 		//testDeployFull();
-
+		testConvertTosca();
 	}
 	
+	public static void testConvertTosca() throws Exception{
+		//TDefinitions def = ToscaXmlProcess.readToscaFile("/home/hungld/test/DAASPilot/tosca_DaaS_example_low_level_1_topology_DOCKER.xml");
+		TDefinitions def = ToscaXmlProcess.readToscaFile("/tmp/salsa/enriched.xml");
+		//SalsaToscaDeployer td = new SalsaToscaDeployer(new File("/etc//etc/cloudUserParameters.ini"));
+		CloudService service = SalsaToscaDeployer.buildRuntimeDataFromTosca(def);
+		System.out.println(service.getId());
+	}
 	
 	public static void testDeployFull() throws Exception{
 		TDefinitions def = ToscaXmlProcess

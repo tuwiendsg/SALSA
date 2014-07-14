@@ -50,11 +50,12 @@ public class ServiceUnit extends SalsaEntity {
 	@XmlAttribute(name = "artifactURL")
 	String artifactURL;
 	
+	
 	public void addInstance(ServiceInstance instance){
 		repLst.add(instance);
 	}	
 	
-	public ServiceInstance getInstanceById(int instance){
+	public ServiceInstance getInstanceById(int instance){		
 		for (ServiceInstance node : repLst) {
 			if (node.getInstanceId() == instance){
 				return node;
