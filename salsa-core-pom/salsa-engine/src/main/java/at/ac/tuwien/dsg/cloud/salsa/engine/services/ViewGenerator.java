@@ -104,7 +104,8 @@ static Logger logger;
 			
 			ServiceJsonDataTree datatree = new ServiceJsonDataTree();
 			datatree.setId(service.getName());
-			datatree.setState(SalsaEntityState.RUNNING);
+			datatree.setNodeType("CLOUD SERVICE");
+			datatree.setState(service.getState());
 			
 			List<ServiceTopology> topos = service.getComponentTopologyList();
 			for (ServiceTopology topo : topos) {

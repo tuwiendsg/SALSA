@@ -12,7 +12,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum SalsaEntityState {
 	UNDEPLOYED("undeployed"),
-	ALLOCATING("allocating"),	
+	ALLOCATING("allocating"),
+	STAGING("staging"),
 	CONFIGURING("configuring"),
 	STOPPED("stopped"),
 	RUNNING("running"),

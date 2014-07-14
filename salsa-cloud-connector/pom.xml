@@ -47,6 +47,18 @@
 			<artifactId>openstack-nova-ec2</artifactId>
 			<version>1.7.2</version>
 		</dependency>
+		
+		<dependency>
+		  <groupId>org.apache.cxf</groupId>
+		  <artifactId>cxf-rt-rs-client</artifactId>
+		  <version>3.0.0-milestone1</version>
+		</dependency>
+		
+		<dependency>
+		  <groupId>org.apache.cxf</groupId>
+		  <artifactId>cxf-rt-transports-http-hc</artifactId>
+		  <version>3.0.0-milestone1</version>
+		</dependency>
 
 	</dependencies>
 

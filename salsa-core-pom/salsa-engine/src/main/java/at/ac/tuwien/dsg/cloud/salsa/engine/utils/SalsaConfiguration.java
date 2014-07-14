@@ -1,5 +1,6 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.utils;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -19,9 +20,15 @@ public class SalsaConfiguration {
 			configuration.load(is);
 			logger = Logger.getLogger("deploymentLogger");
 			
+			//(new File(getWorkingDir())).mkdirs();
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	public static String getRepoPrefix(){
+		return configuration.getProperty("SALSA_REPO");
 	}
 	
 	public static String getPioneerFiles(){

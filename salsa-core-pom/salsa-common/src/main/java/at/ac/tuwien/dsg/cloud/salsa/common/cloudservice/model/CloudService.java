@@ -80,6 +80,14 @@ public class CloudService extends SalsaEntity{
 		return null;
 	}
 	
+	public ServiceInstance getInstanceById(String nodeId, int instanceId){
+		ServiceUnit component = getComponentById(nodeId);
+		if (component != null){
+			return component.getInstanceById(instanceId);
+		}
+		return null;
+	}
+	
 	public ServiceInstance getInstanceById(String topologyId, String nodeId, int instanceId){
 		ServiceUnit component = getComponentById(topologyId, nodeId);
 		if (component != null){
@@ -97,6 +105,14 @@ public class CloudService extends SalsaEntity{
 		List<ServiceUnit> comList = new ArrayList<>();
 		for (ServiceTopology topo : componentTopology) {
 			comList.addAll(topo.getComponentsByType(type));
+		}
+		return comList;
+	}
+	
+	public List<ServiceUnit> getAllComponent(){
+		List<ServiceUnit> comList = new ArrayList<>();
+		for (ServiceTopology topo : componentTopology) {
+			comList.addAll(topo.getComponents());
 		}
 		return comList;
 	}

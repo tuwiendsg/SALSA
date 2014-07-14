@@ -7,10 +7,13 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum SalsaEntityType {
 	OPERATING_SYSTEM("os"),
+	DOCKER("docker"),
 	SOFTWARE("software"),
 	SERVICE("service"),
 	PROGRAM("program"),
-	ARTIFACT("artifact");
+	ARTIFACT("artifact"),
+	WAR("war"),
+	TOMCAT("tomcat");
 	
 	private String entityType;
 	

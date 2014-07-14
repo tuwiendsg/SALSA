@@ -30,14 +30,17 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 public class TestCloudConnector {
 	public static void main(String[] args) throws Exception {
 		
-		testOpenstackJcloud();
+		//testOpenstackJcloud();
 		
-		//testFlexiant();
+		testFlexiant();
 	}
 	
 	private static void testFlexiant() throws Exception {
-		FlexiantConnector flex = new FlexiantConnector();
-		flex.createNewServer("HungTestUbuntu", "a064bd97-c84c-38ef-aa37-c7391a8c8259", 1, 1);
+		FlexiantConnector flex = new FlexiantConnector(EngineLogger.logger, "hungld86@gmail.com", "65c02949-d9f8-38f3-898f-9e42776635b0", "thovasoi", "https://api.sd1.flexiant.net:4442", "bde1ffba-3a8e-3315-a505-3ec67e6fa771", "886ae014-0613-3cc8-a790-16251471e624", "/opt/id_rsa_hung.pub");
+		System.setProperty("jsse.enableSNIExtension", "false");
+		//String id = flex.createServerJade("HungTestUbuntu1", "a064bd97-c84c-38ef-aa37-c7391a8c8259", 1, 1);
+		String id = flex.launchInstance("HungTest", "a064bd97-c84c-38ef-aa37-c7391a8c8259", null, null, "touch /tmp/testHung", null, 1, 1);
+		System.out.println(id);
 	}
 	
 	private static void testOpenstackJcloud() throws Exception {

@@ -7,16 +7,21 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.ws.Endpoint;
 
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity.Actions;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity.Actions.Action;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaPioneerInterface;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.InstrumentShareData;
@@ -100,16 +105,20 @@ public class Main {
 		
 		case "startserver":
 		{
-			PioneerLogger.logger.debug("Start server !");
+			PioneerLogger.logger.debug("Start server !");			
+			centerCon.updateNodeState(serviceId, topologyId, nodeId, replica, SalsaEntityState.RUNNING);
+			centerCon.logMessage("Start pioneer: " + nodeId + "/" + replica);
 			InstrumentShareData.startProcessMonitor();
-			startRESTService();			
+			startPullingThread();
+			startRESTService();
 			break;
 		}
 		case "deploy":
 			centerCon.updateNodeState(serviceId, topologyId, nodeId, replica, SalsaEntityState.RUNNING);
-			deployer.deployNodeChain(thisNode);
+			centerCon.logMessage("Start pioneer: " + nodeId + "/" + replica);
+			//deployer.deployNodeChain(thisNode);			
 			InstrumentShareData.startProcessMonitor();
-			// start server to listen to
+			startPullingThread();
 			startRESTService();
 			break;
 		case "checkcapa":	// remote			
@@ -189,7 +198,8 @@ public class Main {
 	        sf.setResourceClasses(SalsaPioneerInterface.class);
 	        sf.setResourceProvider(SalsaPioneerInterface.class, 
 	            new SingletonResourceProvider(new PioneerServiceImplementation()));
-	        sf.setAddress("http://" + ip + ":9000/");
+	        //sf.setAddress("http://" + ip + ":9000/");
+	        sf.setAddress("http://0.0.0.0:9000/");	        
 	        sf.create();			
 			
 		} catch (UnknownHostException e){
@@ -207,6 +217,81 @@ public class Main {
 //        sf.create();
 //	}
 
+	public static void startPullingThread(){
+		PioneerLogger.logger.debug("Start the thread for waiting the command ...");
+		Thread thread = new Thread(new pullingTaskThread());
+		thread.start();
+	}
+	
+	private static boolean checkIfPioneerIsInCharge(ServiceUnit unit, ServiceInstance instance, CloudService service){		
+		if (unit.getType().equals(SalsaEntityType.WAR.getEntityTypeString())){
+			ServiceUnit hostedUnit = service.getComponentById(unit.getHostedId());
+			ServiceInstance hostedInstance = hostedUnit.getInstanceById(instance.getHostedId_Integer());
+			if (hostedUnit.getHostedId().equals(nodeId) && hostedInstance.getInstanceId()==replica){
+				return true;
+			}			
+		}
+		return false;
+	}
+	
+	private static class pullingTaskThread implements Runnable {		
+		
+		@Override
+		public void run() {
+			// monitor here
+			PioneerLogger.logger.debug("Thread for pulling STAGE ServiceInstance is started...");		
+			while (true){
+				SalsaCenterConnector con = new SalsaCenterConnector(SalsaPioneerConfiguration.getSalsaCenterEndpoint(), 
+										SalsaPioneerConfiguration.getWorkingDir(), PioneerLogger.logger);
+				
+				CloudService service = con.getUpdateCloudServiceRuntime(serviceId);
+				List<ServiceUnit> units = service.getAllComponent();
+				for (ServiceUnit unit : units) {
+					// case that node is hosted directly on pioneer node
+					if (unit.getHostedId().equals(nodeId)){
+						List<ServiceInstance> instances = unit.getInstanceHostOn(replica);						
+						for (ServiceInstance instance : instances) {
+							if (instance.getState().equals(SalsaEntityState.STAGING)){
+								PioneerLogger.logger.debug("RETRIEVE A STAGING NODE: " + unit.getId() + "/" + instance.getInstanceId());								
+								PioneerServiceImplementation pioneer = new PioneerServiceImplementation();
+								con.logMessage("Pioneer on node: " + nodeId + "/" + replica +" will deploy node: " + unit.getId() +"/"+ instance.getInstanceId());
+								pioneer.deployNode(unit.getId(), instance.getInstanceId());
+							}
+							
+							// check action queue of the instance
+							List<Action> actions = instance.getActions();
+							for (Action action : actions) {
+								PioneerLogger.logger.debug("Execute an action on a service instance");								
+								con.unqueueActions(serviceId, topologyId, nodeId, instance.getInstanceId(), action.getName());								
+								String cmd = action.getCommand();
+								ArtifactDeployer.executeCommand(cmd);
+							}
+						}
+					}
+					// check 2 levels up, e.g pioneer is at VM/docker, them tomcat, node is a war
+					if (unit.getType().equals(SalsaEntityType.WAR.getEntityTypeString())){
+						ServiceUnit hostedUnit = service.getComponentById(unit.getHostedId());
+						if (hostedUnit.getHostedId().equals(nodeId)){
+							for (ServiceInstance instance : unit.getInstancesList()) {
+								ServiceInstance hostedInst = hostedUnit.getInstanceById(instance.getHostedId_Integer());
+								if (hostedInst.getHostedId_Integer()==replica && instance.getState().equals(SalsaEntityState.STAGING)){
+									PioneerLogger.logger.debug("RETRIEVE A STAGING NODE: " + unit.getId() + "/" + instance.getInstanceId());								
+									PioneerServiceImplementation pioneer = new PioneerServiceImplementation();
+									pioneer.deployNode(unit.getId(), instance.getInstanceId());
+								}
+							}
+						}
+					}
+					
+				}
+				try{
+					Thread.sleep(5000);
+				} catch (InterruptedException e){}				
+			}
+		}
+
+	}
+	
 	
 		
 }

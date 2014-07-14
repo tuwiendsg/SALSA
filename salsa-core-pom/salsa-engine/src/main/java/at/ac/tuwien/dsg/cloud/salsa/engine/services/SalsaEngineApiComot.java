@@ -52,8 +52,7 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 	@PUT
 	@Path("/services/xml")
 	@Consumes(MediaType.APPLICATION_XML)
-	@Produces(MediaType.APPLICATION_XML)
-	public String deployServiceFromXML(String uploadedInputStream){
+	public Response deployServiceFromXML(String uploadedInputStream){
 		return internalEngine.deployServiceFromXML(uploadedInputStream);
 	}
 	

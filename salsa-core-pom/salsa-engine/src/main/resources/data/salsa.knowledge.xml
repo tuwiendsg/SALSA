@@ -3,26 +3,35 @@
     <ns2:ServiceTemplate>
         <ns2:TopologyTemplate>
             <ns2:NodeTemplate id="os">
-            	<ns2:Properties>
-					<MappingProperties>		
-						<MappingProperty type="os">
-							<property name="instanceType">000000960</property>
-							<property name="provider">dsg@openstack</property> <!-- lal@stratuslab / dsg@openstack -->
-							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property> <!-- KBhcU87Wm5IZNOXZYGHrczGekwp / ami-00000163 -->
-							<property name="packages"></property> <!-- use comma between package name -->
-						</MappingProperty>
-					</MappingProperties>
-				</ns2:Properties>
+            	
             </ns2:NodeTemplate>
             <ns2:NodeTemplate id="bin"/>
             <ns2:NodeTemplate id="sh"/>
             <ns2:NodeTemplate id="jre"/>
-            <ns2:NodeTemplate id="tomcat"/>
+            <ns2:NodeTemplate id="tomcat">
+            	<ns2:Properties>
+            		<MappingProperties>
+            			<MappingProperty type="action">
+            				<property name="deploy"><![CDATA[apt-get -y install tomcat7]]></property>
+            				<property name="undeploy"><![CDATA[apt-get -y erase tomcat7]]></property>            				
+            				<property name="start"><![CDATA[service tomcat7 start]]></property>
+            				<property name="stop"><![CDATA[service tomcat7 stop]]></property>
+            			</MappingProperty>
+            		</MappingProperties>
+            	</ns2:Properties>
+            </ns2:NodeTemplate>
+            
+            
             <ns2:NodeTemplate id="war"/>
             <ns2:NodeTemplate id="image"/>
             <ns2:NodeTemplate id="software"/>
+            <ns2:NodeTemplate id="docker" />
             <ns2:RelationshipTemplate type="HOSTON">
                 <ns2:SourceElement ref="software"/>
+                <ns2:TargetElement ref="os"/>
+            </ns2:RelationshipTemplate>
+             <ns2:RelationshipTemplate type="HOSTON">
+                <ns2:SourceElement ref="docker"/>
                 <ns2:TargetElement ref="os"/>
             </ns2:RelationshipTemplate>
             <ns2:RelationshipTemplate type="HOSTON">

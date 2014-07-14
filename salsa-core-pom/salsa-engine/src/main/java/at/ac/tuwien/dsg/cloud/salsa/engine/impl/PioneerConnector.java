@@ -54,9 +54,13 @@ public class PioneerConnector {
 	}
 	
 	public boolean checkHealth(){
-		String str = this.pioneer.health();
-		if (str.equals("alive")){
-			return true;
+		try {
+			String str = this.pioneer.health();
+			if (str.equals("alive")){
+				return true;
+			}
+		} catch (Exception e){
+			return false;
 		}
 		return false;
 	}

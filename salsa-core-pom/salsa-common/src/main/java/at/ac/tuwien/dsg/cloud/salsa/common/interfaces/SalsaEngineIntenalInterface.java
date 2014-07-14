@@ -44,9 +44,8 @@ public interface SalsaEngineIntenalInterface {
 			@Multipart("file") InputStream uploadedInputStream);
 	@PUT
 	@Path("/services/xml")
-	@Consumes(MediaType.APPLICATION_XML)
-	@Produces(MediaType.APPLICATION_XML)
-	public String deployServiceFromXML(String uploadedInputStream);
+	@Consumes(MediaType.APPLICATION_XML)	
+	public Response deployServiceFromXML(String uploadedInputStream);
 	
 	@DELETE
 	@Path("/services/{serviceId}")
@@ -69,6 +68,12 @@ public interface SalsaEngineIntenalInterface {
 	@Path("/services/{serviceId}/nodes/{nodeId}/scalein")
 	public Response scaleInNode(@PathParam("serviceId")String serviceId, 
 								 @PathParam("nodeId") String nodeId);
+	
+	@POST
+	@Path("/services/{serviceId}/vmnodes/{ip}/scalein")
+	public Response scaleInVM(@PathParam("serviceId")String serviceId, 
+								 @PathParam("ip") String vmIp);
+	
 	
 	@POST
     @Path("/services/{serviceId}/topologies/{topologyId}")
@@ -98,6 +103,8 @@ public interface SalsaEngineIntenalInterface {
 			@PathParam("topologyId")String topologyId,
 			@PathParam("nodeId")String nodeId, 
 			@PathParam("instanceId")int instanceId);
+	
+
 
 	/**
 	 * Undeploy an instance
@@ -259,12 +266,26 @@ public interface SalsaEngineIntenalInterface {
 			@PathParam("reqId") String reqId);
 
 	@POST
-	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/action/{actionName}")
-	public Response executeAction(
+	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/action_queue/{actionName}")
+	public Response queueAction(			
 			@PathParam("serviceId") String serviceId,
 			@PathParam("topologyId") String topologyId,
 			@PathParam("nodeId") String nodeId,
 			@PathParam("instanceId") int instanceId,
 			@PathParam("actionName") String actionName);
+	
+	@POST
+	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/action_unqueue/{actionName}")
+	public Response unqueueAction(
+			@PathParam("serviceId") String serviceId,
+			@PathParam("topologyId") String topologyId,
+			@PathParam("nodeId") String nodeId,
+			@PathParam("instanceId") int instanceId,
+			@PathParam("actionName") String actionName);
+	
+	
+	@POST
+	@Path("/log")
+	public Response logMessage(String data);
 
 }

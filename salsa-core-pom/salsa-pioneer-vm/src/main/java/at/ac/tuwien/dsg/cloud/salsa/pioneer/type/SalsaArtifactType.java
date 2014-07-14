@@ -5,7 +5,8 @@ public enum SalsaArtifactType {
 	sh("sh"),
 	apt("apt-get"),
 	chef("chef"),
-	chefSolo("chef-solo");
+	chefSolo("chef-solo"),
+	war("war");
 	
 	private String prop;
 	

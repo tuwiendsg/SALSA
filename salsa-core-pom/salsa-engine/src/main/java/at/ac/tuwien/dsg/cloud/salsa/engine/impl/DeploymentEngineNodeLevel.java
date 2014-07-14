@@ -105,7 +105,8 @@ public class DeploymentEngineNodeLevel {
 		if (inst.getPrivateDNS()!=null){ sid.setPrivateDNS(inst.getPrivateDNS()); }
 		if (inst.getPublicDNS() !=null){ sid.setPublicDNS(inst.getPublicDNS()); }
 		//if (inst.getState()     !=null){ sid.setState(inst.getState()); }
-		if (inst.getInstanceId()!=null){ sid.setInstanceId(inst.getInstanceId()); }		
+		if (inst.getInstanceId()!=null){ sid.setInstanceId(inst.getInstanceId()); }
+		sid.setQuota(inst.getQuota());
 	}
 	
 	// TODO: Implement - Not completed yet
@@ -213,8 +214,8 @@ public class DeploymentEngineNodeLevel {
 		fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		userDataBuffer.append("echo Current dir `pwd` \n");
 		userDataBuffer.append("java -jar " + fileLst.get(0) + " setnodestate "+node.getId()+" ready \n");
-		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " deploy \n");	// execute deploy script
-//		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " startserver \n");	// execute deploy script
+//		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " deploy \n");	// execute deploy script
+		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " startserver \n");	
 
 
 		return userDataBuffer.toString();

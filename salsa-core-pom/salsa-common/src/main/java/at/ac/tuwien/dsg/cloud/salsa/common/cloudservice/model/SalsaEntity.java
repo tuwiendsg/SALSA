@@ -1,5 +1,8 @@
 package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -7,7 +10,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity.Actions.Action;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 
 /**
@@ -32,6 +37,35 @@ public class SalsaEntity {
 	SalsaEntityState state;
 	@XmlElement(name = "monitoring")
 	SalsaEntity.Monitoring monitoring;
+	
+	@XmlElement(name = "actions")
+	Actions actions = new Actions();
+	
+	
+	
+	
+	@XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "actions")
+	public static class Actions {
+		@XmlElement(name = "action")
+		List<Action> actions = new ArrayList<>();
+		
+		public static class Action{
+			@XmlAttribute
+			protected String name;
+			@XmlElement	
+	        protected String command;
+			
+			public String getName() {
+				return name;
+			}
+			
+			public String getCommand() {
+				return command;
+			}
+		}
+		
+	}
 	
 	@XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "source")
@@ -81,5 +115,53 @@ public class SalsaEntity {
 		this.monitoring = new Monitoring();
 		this.monitoring.setAny(monitoring);		
 	}
+	
+	
+	public class CDATAAdapter extends XmlAdapter<String, String> {
+		 
+	    @Override
+	    public String marshal(String v) throws Exception {
+	        return "<![CDATA[" + v + "]]>";
+	    }
+	 
+	    @Override
+	    public String unmarshal(String v) throws Exception {
+	        return v.trim();
+	    }
+	}
+
+	public List<Action> getActions() {
+		return actions.actions;
+	}
+	
+	public String getAction(String name){
+		for (Action action : actions.actions) {
+			if (action.getName().equals(name)){
+				return action.getCommand();
+			}
+		}
+		return null;
+	}
+	
+	public void addAction(String name, String cmd){
+		Action action = new Action();
+		action.name = name;
+		action.command = cmd;
+		this.actions.actions.add(action);
+	}
+
+	public void addAction(Action action){
+		Action ac = new Action();
+		ac.name = action.getName();
+		ac.command = action.getCommand();
+		this.actions.actions.add(ac);
+	}
+	
+	public void removeAction(Action action){
+		this.actions.actions.remove(action);
+	}
+	
+	
+	
 	
 }

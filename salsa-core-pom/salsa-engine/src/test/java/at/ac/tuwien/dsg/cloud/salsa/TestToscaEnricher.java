@@ -5,9 +5,15 @@ import generated.oasis.tosca.TEntityTemplate.Properties;
 import generated.oasis.tosca.TNodeTemplate;
 import generated.oasis.tosca.TServiceTemplate;
 import generated.oasis.tosca.TTopologyTemplate;
+
+import java.util.Iterator;
+import java.util.Map;
+
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.ToscaEnricher;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.SalsaMappingProperty;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 public class TestToscaEnricher {
@@ -17,13 +23,28 @@ public class TestToscaEnricher {
 //		TDefinitions def = ToscaXmlProcess
 //				.readToscaFile(TestDeployTosca.class.getResource(
 //						"/cassandra_old/tosca_Cassandra_example_fakescripts.xml").getFile());
-		TDefinitions def = ToscaXmlProcess.readToscaFile("/home/hungld/test/DAASPilot/tosca_DaaS_high_level_with_SYBL.xml");
+		//TDefinitions def = ToscaXmlProcess.readToscaFile("/home/hungld/test/DAASPilot/tosca_DaaS_high_level_with_SYBL.xml");
+		TDefinitions def = ToscaXmlProcess.readToscaFile("/home/hungld/test/salsacenter/PoliceDaaSTosca/policeTomcat.xml");
 		//System.out.println(ToscaXmlProcess.writeToscaDefinitionToXML(def));
 				
 		// ENRICH
 		
 		ToscaEnricher enricher = new ToscaEnricher(def);
 		enricher.enrichHighLevelTosca();
+		
+		TNodeTemplate node = ToscaStructureQuery.getNodetemplateById("tomcat_OF_policeApp", def);
+		SalsaMappingProperties maps = (SalsaMappingProperties) node.getProperties().getAny();
+		for (SalsaMappingProperty p : maps.getProperties()) {
+			
+			Iterator it = p.getMapData().entrySet().iterator();
+		    while (it.hasNext()) {
+		        Map.Entry pairs = (Map.Entry)it.next();
+		        System.out.println(pairs.getKey() + " = " + pairs.getValue());
+		        it.remove(); // avoids a ConcurrentModificationException
+		    }
+			
+		}
+		
 		
 		ToscaXmlProcess.writeToscaDefinitionToFile(def, "/tmp/salsa/enriched.xml");
 		

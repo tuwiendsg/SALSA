@@ -1,6 +1,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.tosca.extension;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -110,6 +111,14 @@ public class SalsaMappingProperties{
 			for (Map.Entry<String, String> entry : map.entrySet()) {
 			   properties.add(new Property(entry.getKey(),entry.getValue()));
 			}
+		}
+		
+		public Map<String, String> getMapData(){
+			Map<String, String> map = new HashMap<String, String>();
+			for (Property p : this.properties) {
+				map.put(p.name, p.value);
+			}
+			return map;
 		}
 
 		public static class Property{

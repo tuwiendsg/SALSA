@@ -1,6 +1,8 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl;
 
+import generated.oasis.tosca.TArtifactReference;
 import generated.oasis.tosca.TArtifactTemplate;
+import generated.oasis.tosca.TArtifactTemplate.ArtifactReferences;
 import generated.oasis.tosca.TCapability;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TDeploymentArtifact;
@@ -37,6 +39,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.artifact.RepositoryFormat;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaRelationshipType;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.SalsaMappingProperty;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
@@ -100,8 +103,10 @@ public class ToscaEnricher {
 					}
 				}
 
-				cleanEmptyProperties(nodeLst);
+				//cleanEmptyProperties(nodeLst);
 				cleanLOCALRelationship(topo);
+				
+				enrichArtifactRepo(SalsaConfiguration.getRepoPrefix()+"/" + toscaDef.getId());
 				
 				addOSNodeConfig(topo);
 				
@@ -164,10 +169,12 @@ public class ToscaEnricher {
 			topo.getNodeTemplateOrRelationshipTemplate().add(nextNode);		
 			
 			Artifact art = this.artifactList.searchArtifact(nextNode.getId());
+			// refine some fields
 			nextNode.setType(new QName(nextNode.getId()));
 			nextNode.setId(nextNode.getId() + "_OF_" + node.getId());
 			nextNode.setMinInstances(1);
 			nextNode.setMaxInstances("unbounded");
+			
 			if (art != null){	// some node have artifact. some node like os doesn't
 				String artId = "Artifact_" + nextNode.getId();
 				
@@ -294,13 +301,15 @@ public class ToscaEnricher {
 		List<TRelationshipTemplate> relaList = ToscaStructureQuery
 				.getRelationshipTemplateList(knowledgeTopo);
 		for (TRelationshipTemplate rela : relaList) {
-			TNodeTemplate source = (TNodeTemplate) rela.getSourceElement()
-					.getRef();
+			TNodeTemplate source = (TNodeTemplate) rela.getSourceElement().getRef();
 			if (source.getId().equals(node.getType().getLocalPart())) {
 				TNodeTemplate newNode = new TNodeTemplate();
-				TNodeTemplate refNode = (TNodeTemplate) rela.getTargetElement()
-						.getRef();
+				TNodeTemplate refNode = (TNodeTemplate) rela.getTargetElement().getRef();
 				newNode.setId(refNode.getId());
+				if (refNode.getProperties()!=null && refNode.getProperties().getAny()!=null){
+					newNode.setProperties(new Properties());
+					newNode.getProperties().setAny((refNode.getProperties().getAny()));
+				}						
 				return newNode;
 			}
 		}
@@ -320,30 +329,38 @@ public class ToscaEnricher {
 		System.out.println("moving " + node1.getId() + " to " + node2.getId());
 		SalsaMappingProperties p1 = (SalsaMappingProperties) node1
 				.getProperties().getAny();
-
-		SalsaMappingProperties p2 = new SalsaMappingProperties();
-		List<SalsaMappingProperty> fixedListP1 = new ArrayList<>(
-				p1.getProperties());
+		
+		List<SalsaMappingProperty> fixedListP1 = new ArrayList<>(p1.getProperties());
+		
+		SalsaMappingProperties newProp = null;
+		if (node2.getProperties()!=null){
+			newProp = (SalsaMappingProperties) node2.getProperties().getAny();
+		} else {
+			newProp = new SalsaMappingProperties();			
+		}
+		
 		for (SalsaMappingProperty prop : fixedListP1) {
 			if (!prop.getType().equals(keepType)
 					&& !prop.getType().equals("BundleConfig")
-					&& !prop.getType().equals("Operations")) { // move from
+					&& !prop.getType().equals("Operations")
+					&& !prop.getType().equals("action")) { // move from
 																// req.prop ==>
 																// node.prop
-				p2.getProperties().add(prop);
+				//p2.getProperties().add(prop);
+				newProp.getProperties().add(prop);
 				p1.getProperties().remove(prop);
 			}
 		}
-		Properties newProp = new Properties();
-		newProp.setAny(p2);
-		node2.setProperties(newProp);
+		
+		Properties toscaProp = new Properties();
+		toscaProp.setAny(newProp);
+		node2.setProperties(toscaProp);
 	}
 
 	private void cleanEmptyProperties(List<TNodeTemplate> nodeLst) {
 		for (TNodeTemplate node : nodeLst) {
 			if (node.getProperties() != null) {
-				SalsaMappingProperties maps = (SalsaMappingProperties) node
-						.getProperties().getAny();
+				SalsaMappingProperties maps = (SalsaMappingProperties) node.getProperties().getAny();
 				if (maps.getProperties().size() == 0) {
 					node.setProperties(null);
 				}
@@ -366,6 +383,7 @@ public class ToscaEnricher {
 	
 	private void addOSNodeConfig(TTopologyTemplate topo){		
 		List<TEntityTemplate> entities = topo.getNodeTemplateOrRelationshipTemplate();
+		boolean found=false;
 		for (TEntityTemplate enti : entities) {
 			if (enti.getType().getLocalPart().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
 				System.out.println("Checking OS configuration for node: " + enti.getId());
@@ -383,7 +401,7 @@ public class ToscaEnricher {
 						System.out.println("debug 3");
 						maps = new SalsaMappingProperties();
 					}					
-					boolean found=false;
+					found=false;
 					for (SalsaMappingProperty imap : maps.getProperties()) {
 						System.out.println("debug 4");
 						if (imap.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
@@ -395,31 +413,34 @@ public class ToscaEnricher {
 						continue;
 					}
 				}
-				System.out.println("Start write out some configuration for node: " + enti.getId());
-				// can put some optimization processing here, now get the default values
-				InputStream input = ToscaEnricher.class.getResourceAsStream("/cloudconfig.default.properties");
-				java.util.Properties prop = new java.util.Properties();
-				try{
-					prop.load(input);
-				} catch (IOException e){
-					EngineLogger.logger.error("Couldn't find the default cloud configuration file.");
-					return;
-				}
-				String provider = prop.getProperty("provider");
-				String instanceType = prop.getProperty("instanceType");
-				String baseImage = prop.getProperty("baseImage");
-				String packages = "";
 				
-				System.out.println("Write the configuration: " + provider + ", " + instanceType + ", " + baseImage);
-				
-				Map<String,String>map = new HashMap<>();
-				map.put("provider", provider);
-				map.put("instanceType", instanceType);
-				map.put("baseImage", baseImage);
-				map.put("packages", packages);
-				maps.put(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString(), map);
-				
-				node.getProperties().setAny(maps);
+				if (!found){
+					System.out.println("Start write out some configuration for node: " + enti.getId());
+					// can put some optimization processing here, now get the default values
+					InputStream input = ToscaEnricher.class.getResourceAsStream("/cloudconfig.default.properties");
+					java.util.Properties prop = new java.util.Properties();
+					try{
+						prop.load(input);
+					} catch (IOException e){
+						EngineLogger.logger.error("Couldn't find the default cloud configuration file.");
+						return;
+					}
+					String provider = prop.getProperty("provider");
+					String instanceType = prop.getProperty("instanceType");
+					String baseImage = prop.getProperty("baseImage");
+					String packages = "";
+					
+					System.out.println("Write the configuration: " + provider + ", " + instanceType + ", " + baseImage);
+					
+					Map<String,String>map = new HashMap<>();
+					map.put("provider", provider);
+					map.put("instanceType", instanceType);
+					map.put("baseImage", baseImage);
+					map.put("packages", packages);
+					maps.put(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString(), map);
+					
+					node.getProperties().setAny(maps);
+				} //if !found
 			}
 		}
 	}
@@ -470,6 +491,21 @@ public class ToscaEnricher {
 			//topo.getNodeTemplateOrRelationshipTemplate().add(rela);
 			
 		}
+	}
+	
+	private void enrichArtifactRepo(String prefixRepo){
+		for (TExtensibleElements ee : toscaDef.getServiceTemplateOrNodeTypeOrNodeTypeImplementation()) {
+			if (ee.getClass().equals(TArtifactTemplate.class)){
+				for (TArtifactReference ref : ((TArtifactTemplate) ee).getArtifactReferences().getArtifactReference()) {
+					String refstr = ref.getReference();
+					if (!refstr.startsWith("http://") && !refstr.startsWith("file://")){						
+						refstr = refstr.startsWith("/") ? refstr.substring(1) : refstr;
+						ref.setReference(prefixRepo + "/" + refstr);
+					}
+				}
+			}
+		}
+		
 	}
 	
 	

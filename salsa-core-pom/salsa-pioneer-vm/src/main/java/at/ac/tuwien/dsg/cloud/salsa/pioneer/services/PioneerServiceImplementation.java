@@ -3,7 +3,10 @@ package at.ac.tuwien.dsg.cloud.salsa.pioneer.services;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TNodeTemplate;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -23,6 +26,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
 	
 	@Override
 	public String deployNode(String nodeID, int instanceId){
+		
 		PioneerLogger.logger.debug("Recieve command to deploy node: " + nodeID);
 		
 		Properties prop = new Properties();
@@ -35,25 +39,49 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
 		String serviceId = prop.getProperty("SALSA_SERVICE_ID");
 		String topologyId = prop.getProperty("SALSA_TOPOLOGY_ID");
 		String vm_nodeId = prop.getProperty("SALSA_NODE_ID"); // this node
-		int thisInstanceId = Integer.parseInt(prop.getProperty("SALSA_REPLICA"));
+		int vm_instanceId = Integer.parseInt(prop.getProperty("SALSA_REPLICA"));
 		
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(
 				SalsaPioneerConfiguration.getSalsaCenterEndpoint(), 
 				SalsaPioneerConfiguration.getWorkingDir(), PioneerLogger.logger);
 		TDefinitions def = centerCon.getToscaDescription(serviceId);// get the latest service description		
 		CloudService serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime(serviceId);
-		
-		ArtifactDeployer deployer = new ArtifactDeployer(serviceId, topologyId, nodeID, thisInstanceId, def, centerCon, serviceRuntimeInfo);
+				
+		ArtifactDeployer deployer = new ArtifactDeployer(serviceId, topologyId, nodeID, vm_instanceId, def, centerCon, serviceRuntimeInfo);
 		TNodeTemplate thisNode = ToscaStructureQuery.getNodetemplateById(nodeID, def);
 				
 		return deployer.deploySingleNode(thisNode, instanceId);		
 	}
-	
-	
+
 	
 	@Override
 	public String health(){
 		PioneerLogger.logger.debug("Health checked, Pioneer server is alive !");
+		return "alive";
+	}
+	
+	@Override
+	public String info(){
+		PioneerLogger.logger.debug("Querying info of the pioneer ");
+		
+	    try {
+	    	BufferedReader br = new BufferedReader(new FileReader(SalsaPioneerConfiguration.getSalsaVariableFile()));
+	        StringBuilder sb = new StringBuilder();
+	        String line = br.readLine();
+
+	        while (line != null) {
+	            sb.append(line);
+	            sb.append("\n");
+	            line = br.readLine();
+	        }
+	        br.close();
+	        return sb.toString();
+	    } catch (FileNotFoundException e1){
+	    	PioneerLogger.logger.error(e1.toString());
+	    } catch (IOException e2){
+	    	PioneerLogger.logger.error(e2.toString());
+	    } 
+		
 		return "alive";
 	}
 
@@ -86,5 +114,6 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
 		deployer.removeSingleNodeInstance(nodeForRemove, Integer.toString(instanceId));		
 		return null;
 	}
+	
 	
 }
