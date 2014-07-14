@@ -59,6 +59,14 @@
 		  <artifactId>cxf-rt-transports-http-hc</artifactId>
 		  <version>3.0.0-milestone1</version>
 		</dependency>
+		
+		<dependency>
+		  <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+		  <artifactId>flexiant-jade-user</artifactId>
+		  <version>0.0.1-SNAPSHOT</version>
+		  <scope>system</scope>
+		  <systemPath>${project.basedir}/lib/flexiant-jade-user-0.0.1-SNAPSHOT.jar</systemPath>
+		</dependency>
 
 	</dependencies>
 
