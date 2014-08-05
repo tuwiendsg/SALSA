@@ -254,23 +254,32 @@ public class SalsaCenterConnector {
 	 * @return the CloudService instance.
 	 */
 	public CloudService getUpdateCloudServiceRuntime(String serviceId) {
-		try {
-			//System.out.println("getUpdateCloudServiceRuntime. Service id: " + serviceId);
-			String xml = getUpdateCloudServiceRuntimeXML(serviceId);
-			//logger.debug("IN getUpdateCloudServiceRuntime. XML: " + xml);
-			if (xml == null) {
-				return null;
-			} else {
-				return SalsaXmlDataProcess.readSalsaServiceXml(xml);
+		// some time it's false to get the Cloud Service because of error, retry 10 time:
+		for (int i=0; i<10; i++){
+			try {
+				//System.out.println("getUpdateCloudServiceRuntime. Service id: " + serviceId);
+				String xml = getUpdateCloudServiceRuntimeXML(serviceId);
+				//logger.debug("IN getUpdateCloudServiceRuntime. XML: " + xml);
+				if (xml != null) {
+					return SalsaXmlDataProcess.readSalsaServiceXml(xml);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (JAXBException e1) {
+				logger.error("Error to parse ServiceRuntime file. Error: " + e1);
+				e1.printStackTrace();				
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JAXBException e1) {
-			logger.error("Error to parse ServiceRuntime file. Error: " + e1);
-			e1.printStackTrace();
-			
+			sleep(1000);
 		}
 		return null;
+	}
+	
+	public void sleep(int minisec){
+		try{ 
+			Thread.sleep(minisec);
+		} catch (InterruptedException e){
+			e.printStackTrace();
+		}
 	}
 	
 	public ServiceUnit getUpdateServiceUnit(String serviceId, String topoId, String nodeId){
@@ -289,12 +298,19 @@ public class SalsaCenterConnector {
 	public String getUpdateCloudServiceRuntimeXML(String serviceId) {
 		// /services/{serviceId}
 		String url = centerRestfulEndpoint + "/services/" + serviceId;
-		Response res = engine.getService(serviceId);
-		
-		return inputStreamToString((InputStream)res.getEntity());
-		
+		Response res = engine.getService(serviceId);		
+		return inputStreamToString((InputStream)res.getEntity());		
 		//return queryDataToCenter1(url, HttpVerb.GET, "","", MediaType.TEXT_XML);
 	}
+	
+//	public String getUpdateCloudServiceRuntimeXMLAndLock(String serviceId){
+//		Response res = engine.getServiceAndLock(serviceId);		
+//		return inputStreamToString((InputStream)res.getEntity());
+//	}
+//	
+//	public void releaseGetCloudServiceLock(String serviceId){
+//		engine.getServiceToUnLock(serviceId);
+//	}
 
 	/*
 	 * Get the json contain a list of deployed service Id

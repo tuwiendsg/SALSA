@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:jaxrs="http://cxf.apache.org/jaxrs" 
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+  
+  <context:property-placeholder location="classpath:salsa.engine.properties"/>
+  <context:component-scan base-package="at.ac.tuwien.dsg.cloud.salsa"/>
+  
+  <jaxrs:server id="engineService" address="/">
+    <jaxrs:serviceBeans>
+      <ref bean="engineBean" />
+      <ref bean="viewBean" />
+      <ref bean="monitorBean" />
+    </jaxrs:serviceBeans>
+  </jaxrs:server>
+ 
+  <bean id="engineBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineInternal" />
+  <bean id="viewBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.ViewGenerator" />
+  <bean id="monitorBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaMonitoringInfo" /> 
+   
+</beans>

@@ -1,6 +1,5 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.utils;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
 

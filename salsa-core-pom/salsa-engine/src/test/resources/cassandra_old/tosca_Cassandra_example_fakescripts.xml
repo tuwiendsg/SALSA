@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tosca:Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:elasticity="http://www.example.org/NewXMLSchema" 
+	xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12"
+	xmlns:salsa="http://example.com"
+	xsi:schemaLocation="http://docs.oasis-open.org/tosca/ns/2011/12 TOSCA-v1.0.xsd"
+	targetNamespace="http://tempuri.org"
+	id="DaaSApp">
+	
+	<tosca:ServiceTemplate id="DaaSService">
+		
+		<tosca:TopologyTemplate>
+		
+<!-- DESCRIPTION FOR CASSANDRA CLUSTER -->
+			<tosca:NodeTemplate id="CassandraHead"
+				name="Cassandra head node" type="software"
+				minInstances="1" maxInstances="1">
+				<tosca:Properties>
+                    <MappingProperties>
+                    	<MappingProperty type="BundleConfig">
+		                    <property name="version">lastest</property>
+		                    <property name="argument">-Xmx2g -Xms2g -Des.index.store.type=memory</property>
+		                    <property name="environment"></property>
+		                    <property name="logging-directory">/var/log/cassandra</property>
+                    	</MappingProperty>
+                    	
+                    	<MappingProperty type="Operations">                    		 
+                    		 <property name="start">donothing.sh</property>
+                    		 <property name="stop">donothing.sh</property>
+                    	</MappingProperty>
+                    	
+						<MappingProperty type="os">
+							<property name="instanceType">000001920</property>	<!-- new DSG: image 5287914e-8857-4f0e-b01b-0f8b68fb902d, flavor: 000001920 -->
+							<property name="provider">dsg@openstack</property> <!-- lal@stratuslab / dsg@openstack -->
+							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property> <!-- KBhcU87Wm5IZNOXZYGHrczGekwp / ami-00000163 -->
+							<property name="packages">openjdk-7-jre</property> <!-- use comma between package -->
+							<property name="plugins">mela-dataservice</property>					
+						</MappingProperty>
+					</MappingProperties>
+                </tosca:Properties>				
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="sh" name="Deployment script" artifactRef="deployCassandraHead"/>
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate id="CassandraNode" name="Cassandra data node" type="software" minInstances="1" maxInstances="unbounded">
+			 	<tosca:Properties>
+                    <MappingProperties>						
+						<MappingProperty type="os">
+							<property name="instanceType">000001920</property>
+							<property name="provider">dsg@openstack</property> 
+							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property> 
+							<property name="packages">openjdk-7-jre</property>
+							<property name="plugins">mela-dataservice</property> 
+						</MappingProperty>
+					</MappingProperties>
+                </tosca:Properties>
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="sh" name="Deployment script" artifactRef="deployCassandraNode"/>
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			
+			<tosca:RelationshipTemplate name="Relation" type="CONNECTTO" id="head2datanode">
+				<tosca:SourceElement ref="CassandraHeadIP_capa"/>
+				<tosca:TargetElement ref="CassandraHeadIP_req"/>
+			</tosca:RelationshipTemplate>						
+							
+		</tosca:TopologyTemplate>
+	</tosca:ServiceTemplate>
+	
+<!-- DEPLOYMENT ARTIFACTS DESCRIPTION -->   
+	<tosca:ArtifactTemplate id="deployCassandraHead" type="sh">		
+        <tosca:ArtifactReferences>
+            <tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/daas/fakescripts/donothing.sh"/>
+        </tosca:ArtifactReferences>
+    </tosca:ArtifactTemplate>
+    
+    <tosca:ArtifactTemplate id="deployCassandraNode" type="sh">       
+        <tosca:ArtifactReferences>
+            <tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/daas/fakescripts/donothing.sh"/>
+        </tosca:ArtifactReferences>
+    </tosca:ArtifactTemplate>
+    
+   
+</tosca:Definitions>

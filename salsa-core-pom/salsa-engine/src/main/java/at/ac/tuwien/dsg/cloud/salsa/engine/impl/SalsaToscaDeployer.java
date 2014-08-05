@@ -207,23 +207,8 @@ public class SalsaToscaDeployer {
 	 */
 	public boolean deployOneMoreInstance(String serviceId, String topologyId,
 			String nodeId, int instanceId, TDefinitions def,
-			CloudService service) {
-		int count = 0;
-		while (orchestating) {
-			try {
-				EngineLogger.logger.debug("Orchestrating blocked: " + nodeId
-						+ "/" + instanceId);
-				Thread.sleep(1);
-				count++;
-				if (count > 10) {
-					orchestating = false;
-				}
-			} catch (Exception e) {
-			}
-		}
-		orchestating = true;
-		CloudService newservice = centerCon
-				.getUpdateCloudServiceRuntime(serviceId);
+			CloudService service) {		
+		CloudService newservice = centerCon.getUpdateCloudServiceRuntime(serviceId);
 		ServiceUnit node = newservice.getComponentById(topologyId, nodeId);
 		EngineLogger.logger.debug("Node type: " + node.getType() + ". String: "
 				+ SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString());
@@ -232,32 +217,50 @@ public class SalsaToscaDeployer {
 
 		if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
 			if (node.getInstanceNumber() >= node.getMax()) {
-				EngineLogger.logger.error("Not enough cloud resource quota for this node: " + nodeId + ". Quit !");
-				orchestating = false;		
+				EngineLogger.logger.error("Not enough cloud resource quota for this node: " + nodeId + ". Quit !");				
 				return false;	// out of quota
 //			} else {
 //				// check number of OS instance with type 
 //				Map<String, Integer> instNum = new HashMap<>();
 //				for (ServiceInstance inst : node.getInstancesList()) {
 //					SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) inst.getProperties().getAny();
-//					
 //				}
 			}			
 			else {
 				centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId, repData);
-				new Thread(new deployOneVmThread(serviceId, topologyId, nodeId,
-						instanceId, def)).start();
-				orchestating = false;		
+				new Thread(new deployOneVmThread(serviceId, topologyId, nodeId,	instanceId, def)).start();
+				//DeploymentEngineNodeLevel engine = new DeploymentEngineNodeLevel(configFile);
+				//engine.deployVMNode(serviceId, topologyId, nodeId,instanceId, def);				
 				return true;
 			}
 		} else {
-			centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId,
-					repData);
-			orchestating = false;
-			return deployOneMoreInstance_Artifact(topologyId, nodeId, instanceId, def,
-					newservice);
+			int count = 0;
+			while (orchestating) {
+				try {
+					EngineLogger.logger.debug("Orchestrating blocked: " + nodeId + "/" + instanceId + ". Count: " + count);
+					Thread.sleep(1000);
+					count++;
+					if (count > 50) {	// maximum 5 secs
+						orchestating = false;
+					}
+				} catch (Exception e) {
+				}
+			}
+			setLock();
+			centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId, repData);
+			boolean result = deployOneMoreInstance_Artifact(serviceId, topologyId, nodeId, instanceId, def);
+			releaseLock();
+			return result;
 		}
 		
+	}
+	
+	private static synchronized void setLock(){
+		orchestating = true;
+	}
+	
+	private static synchronized void releaseLock(){
+		orchestating = false;
 	}
 
 	public boolean firstDeploymentService(String serviceId, String topologyId,
@@ -279,19 +282,15 @@ public class SalsaToscaDeployer {
 		return true;
 	}
 
-	private boolean deployOneMoreInstance_Artifact(String topologyId,
-			String nodeId, int instanceId, TDefinitions def,
-			CloudService service) {
-
+	private boolean deployOneMoreInstance_Artifact(String serviceId, String topologyId,
+			String nodeId, int instanceId, TDefinitions def) {
+		CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 		// find the hosted node of this node
-		EngineLogger.logger
-				.debug("Start the deployment of software stacks. Node id: "
-						+ nodeId);
+		EngineLogger.logger.debug("Start the deployment of software stacks. Node id: " + nodeId);
 
 		ServiceUnit unit = service.getComponentById(topologyId, nodeId);
 		EngineLogger.logger.debug("NodeId: " + unit.getId());
-		ServiceUnit hostedUnit = service.getComponentById(topologyId,
-				unit.getHostedId());
+		ServiceUnit hostedUnit = service.getComponentById(topologyId,	unit.getHostedId());
 		EngineLogger.logger.debug("Hosted id:  " + hostedUnit.getId());
 		// decide which hostedUnit will be used, or create another one
 		List<ServiceInstance> hostedInstances = hostedUnit.getInstancesList();
@@ -300,40 +299,36 @@ public class SalsaToscaDeployer {
 		for (ServiceInstance hostedInst : hostedInstances) {
 			// List<ServiceInstance> instancesNumOnThisNode =
 			// unit.getInstanceHostOn(hostedInst.getInstanceId());
+			EngineLogger.logger.debug("There are " + hostedInstances.size() + "instance(s) for " + hostedUnit.getId());
 			EngineLogger.logger.debug("On node: " + hostedUnit.getId() + "/"
 					+ hostedInst.getInstanceId() + " currently has "
 					+ unit.getInstanceHostOn(hostedInst.getInstanceId()).size()
 					+ " node " + unit.getId());
-			if (unit.getInstanceHostOn(hostedInst.getInstanceId()).size() < unit
-					.getMax()) {
+			if (unit.getInstanceHostOn(hostedInst.getInstanceId()).size() < unit.getMax()) {
 				suitableHostedInstance = hostedInst;
 				hostInstanceId = hostedInst.getInstanceId();
-				EngineLogger.logger
-						.debug("DEPLOY MORE INSTANCE. FOUND EXISTED HOST: "
-								+ hostedUnit.getId() + "/" + hostInstanceId);
+				EngineLogger.logger.debug("DEPLOY MORE INSTANCE. FOUND EXISTED HOST: " + hostedUnit.getId() + "/" + hostInstanceId);
 				break;
 			}
 		}
 		CloudService newService = null;
 		// if there is no suitable host, create new one:
 		if (suitableHostedInstance == null) {
-			EngineLogger.logger
-					.debug("DEPLOY MORE INSTANCE. No existing host node, create new node: "
+			EngineLogger.logger.debug("DEPLOY MORE INSTANCE. No existing host node, create new node: "
 							+ hostedUnit.getId() + " to deploy: " + nodeId);
 			SalsaEngineIntenalInterface serviceLayerDeployer = new SalsaEngineInternal();
-			Response res = serviceLayerDeployer.spawnInstance(service.getId(),
-					topologyId, hostedUnit.getId(), 1);
-			if (res.getStatus() == 201) {
-				try {
-					Thread.sleep(2000);
-				} catch (Exception e) {
-				} // wait a bit for the node is update
-				hostInstanceId = Integer.parseInt(((String) res.getEntity())
-						.trim());
-				EngineLogger.logger.debug("Just add new data of the instance: "
-						+ hostedUnit.getId() + "/" + hostInstanceId);
-				newService = centerCon.getUpdateCloudServiceRuntime(service
-						.getId());
+			Response res = serviceLayerDeployer.spawnInstance(service.getId(), topologyId, hostedUnit.getId(), 1);
+			if (res.getStatus() == 201) {				
+				hostInstanceId = Integer.parseInt(((String) res.getEntity()).trim());
+				EngineLogger.logger.debug("Just add new data of the instance: "	+ hostedUnit.getId() + "/" + hostInstanceId);				
+				ServiceInstance hostInstance = null;
+				while (hostInstance==null){	// wait for host instance
+					newService = centerCon.getUpdateCloudServiceRuntime(service.getId());
+					hostInstance = newService.getInstanceById(hostedUnit.getId(), hostInstanceId);
+					try {
+						Thread.sleep(2000);
+					} catch (Exception e) {	}
+				}				
 			} else {
 				EngineLogger.logger.debug("Could not create host node "
 						+ hostedUnit.getId() + "/" + hostInstanceId
@@ -362,6 +357,7 @@ public class SalsaToscaDeployer {
 		EngineLogger.logger.debug("Hosted node: " + hostedUnit.getId() + "/"
 				+ suitableHostedInstance.getInstanceId() + " type: "
 				+ hostedUnit.getType());
+		releaseLock();
 
 		// if host in OS or DOCKER, set the status to STAGING. a Pioneer will
 		// take it

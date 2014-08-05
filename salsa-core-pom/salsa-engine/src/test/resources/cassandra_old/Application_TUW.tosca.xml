@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tosca:Definitions id="idvalue0" targetNamespace="http://www.example.com/tosca/ServiceTemplates/YCSB_Cassandra" xmlns:ns1="http://www.example.com/tosca/Types/CELAR" xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://docs.oasis-open.org/tosca/ns/2011/12 TOSCA-v1.0.xsd ">
+
+
+  <tosca:ServiceTemplate id="idvalue1">
+    <tosca:TopologyTemplate>
+      <tosca:NodeTemplate id="YCSB_Client" type="ns1:YCSBNode" maxInstances="3" />
+      <tosca:NodeTemplate id="java_YCSB" type="ns1:java"></tosca:NodeTemplate>
+	  <tosca:NodeTemplate id="VM_YCSB" type="ns1:VM" maxInstances="3">
+	  	<tosca:Properties>
+	  		<!-- Here we can put custom VM configuration. Below is sample data -->
+	  		<n1:MappingProperties>
+	  			<property name="name">VM_YCSB</property>
+	  			<property name="provider">flexiant</property> 
+	  			<property name="CPU">2</property>
+	  			<property name="RAM">2048</property>
+	  			<property name="disk">20</property>
+	  			<property name="network">default</property>	
+				<property name="baseImage">a064bd97-c84c-38ef-aa37-c7391a8c8259</property> 
+	  		</n1:MappingProperties>
+	  	</tosca:Properties>
+	  </tosca:NodeTemplate>
+	  <tosca:RelationshipTemplate type="ns1:HostOn" id="YCSB_HostOn_VM">
+	  	<tosca:SourceElement ref="YCSB_Client"/>
+	  	<tosca:TargetElement ref="VM_YCSB"/>
+	  </tosca:RelationshipTemplate>
+	  <tosca:RelationshipTemplate type="ns1:HostOn" id="java_YCSB_HostOn_VM">
+	  	<tosca:SourceElement ref="java_YCSB"/>
+	  	<tosca:TargetElement ref="VM_YCSB"/>
+	  </tosca:RelationshipTemplate>
+	  <tosca:RelationshipTemplate type="ns1:Local" id="YCSB_require_java">
+	  	<tosca:SourceElement ref="YCSB_Client"/>
+	  	<tosca:TargetElement ref="java_YCSB"/>
+	  </tosca:RelationshipTemplate>
+	  
+      <tosca:NodeTemplate type="ns1:CassandraSeedNode" id="Cassandra_Seed" maxInstances="1" />
+      <tosca:NodeTemplate id="java_Seed" type="ns1:java"/>
+	  <tosca:NodeTemplate id="VM_Seed" type="ns1:VM" maxInstances="3">
+	  	<tosca:Properties>	  		
+	  		<n1:MappingProperties>
+	  			<property name="name">VM_Seed</property>
+	  			<property name="provider">flexiant</property> 
+	  			<property name="CPU">2</property>
+	  			<property name="RAM">4096</property>
+	  			<property name="disk">20</property>
+	  			<property name="network">default</property>	
+				<property name="baseImage">a064bd97-c84c-38ef-aa37-c7391a8c8259</property> 
+	  		</n1:MappingProperties>
+	  	</tosca:Properties>
+	  </tosca:NodeTemplate>
+	  <tosca:RelationshipTemplate type="ns1:HostOn" id="Seed_HostOn_VM">
+	  	<tosca:SourceElement ref="Cassandra_Seed"/>
+	  	<tosca:TargetElement ref="VM_Seed"/>
+	  </tosca:RelationshipTemplate>
+	  <tosca:RelationshipTemplate type="ns1:HostOn" id="java_Seed_HostOn_VM">
+	  	<tosca:SourceElement ref="java_Seed"/>
+	  	<tosca:TargetElement ref="VM_Seed"/>
+	  </tosca:RelationshipTemplate>
+	  <tosca:RelationshipTemplate type="ns1:Local" id="Seed_require_java">
+	  	<tosca:SourceElement ref="Cassandra_Seed"/>
+	  	<tosca:TargetElement ref="java_Seed"/>
+	  </tosca:RelationshipTemplate>
+      
+
+      <tosca:NodeTemplate type="ns1:Cassandra_Node" id="Cassandra_Node" maxInstances="5"/>
+      <tosca:NodeTemplate id="java_Node" type="ns1:java"/>
+	  <tosca:NodeTemplate id="VM_Node" type="ns1:VM" maxInstances="3">
+	  	<tosca:Properties>
+	  		<!-- Here we can put custom VM configuration. Below is sample data -->
+	  		<n1:MappingProperties type="VM">
+	  			<property name="name">VM_Node</property>
+	  			<property name="provider">flexiant</property> 
+	  			<property name="CPU">1</property>
+	  			<property name="RAM">1024</property>
+	  			<property name="disk">20</property>
+	  			<property name="network">default</property>	
+				<property name="baseImage">a064bd97-c84c-38ef-aa37-c7391a8c8259</property> 
+	  		</n1:MappingProperties>
+	  	</tosca:Properties>
+	  </tosca:NodeTemplate>
+	  <tosca:RelationshipTemplate type="ns1:HostOn" id="Node_HostOn_VM">
+	  	<tosca:SourceElement ref="Cassandra_Node"/>
+	  	<tosca:TargetElement ref="VM_Node"/>
+	  </tosca:RelationshipTemplate>
+	  <tosca:RelationshipTemplate type="ns1:HostOn" id="java_Node_HostOn_VM">
+	  	<tosca:SourceElement ref="java_Node"/>
+	  	<tosca:TargetElement ref="VM_Node"/>
+	  </tosca:RelationshipTemplate>
+	  <tosca:RelationshipTemplate type="ns1:Local" id="Node_require_java">
+	  	<tosca:SourceElement ref="Cassandra_Node"/>
+	  	<tosca:TargetElement ref="java_Node"/>
+	  </tosca:RelationshipTemplate>
+      
+
+	  <tosca:RelationshipTemplate type="ns1:ConnectTo" id="NodeConnectToSeed">
+	  	<tosca:SourceElement ref="Cassandra_Seed"/>
+	  	<tosca:TargetElement ref="Cassandra_Node"/>
+	  </tosca:RelationshipTemplate>
+	  
+	  <tosca:RelationshipTemplate type="ns1:LoadDependency" id="NodeLoadBalanceWithSeed">
+	  	<tosca:Properties>
+	  		<n1:MappingProperties type="LoadDependency">
+	  			<property name="source">latency</property>
+	  			<property name="target">throughput</property>	  			 
+	  		</n1:MappingProperties>
+	  	</tosca:Properties>
+	  	<tosca:SourceElement ref="Cassandra_Seed">
+	  	<tosca:TargetElement ref="Cassandra_Node"/>
+	  </tosca:RelationshipTemplate>
+	  
+    </tosca:TopologyTemplate>
+  </tosca:ServiceTemplate>
+
+	
+ <tosca:NodeTypeImplementation nodeType="ns1:VM_Flexiant" name="VMNodeImplementation"> 
+  	<tosca:ImplementationArtifacts>
+  		<tosca:ImplementationArtifact
+  			artifactType="ns1:ImageArtifact" interfaceName="lifecycle"
+  			operationName="install" artifactRef="VM_Image">
+  		</tosca:ImplementationArtifact>
+  	</tosca:ImplementationArtifacts>
+  </tosca:NodeTypeImplementation>
+  
+  <tosca:NodeTypeImplementation nodeType="ns1:java" name="javaNodeImplementation">
+  	<tosca:ImplementationArtifacts>
+  		<tosca:ImplementationArtifact
+  			artifactType="ns1:ScriptArtifact" interfaceName="lifecycle"
+  			operationName="install" artifactRef="java_install">
+  		</tosca:ImplementationArtifact>
+  		</tosca:ImplementationArtifacts>
+  </tosca:NodeTypeImplementation>
+
+  <tosca:NodeTypeImplementation nodeType="ns1:YCSBNode" name="YCSBNodeImplementation">
+  	<tosca:ImplementationArtifacts>
+  		<tosca:ImplementationArtifact
+  			artifactType="ns1:ScriptArtifact" interfaceName="lifecycle"
+  			operationName="install" artifactRef="YCSB_Client_install">
+  		</tosca:ImplementationArtifact>
+  		
+  	</tosca:ImplementationArtifacts></tosca:NodeTypeImplementation>
+
+  <tosca:NodeTypeImplementation nodeType="ns1:CassandraSeedNode" name="CassandraSeedNodeImplementation">
+  	<tosca:ImplementationArtifacts>
+  		<tosca:ImplementationArtifact
+  			artifactType="ns1:ScriptArtifact" interfaceName="lifecycle"
+  			operationName="install" artifactRef="Cassandra_Node_install">
+  		</tosca:ImplementationArtifact>
+  	</tosca:ImplementationArtifacts></tosca:NodeTypeImplementation>
+
+  <tosca:NodeTypeImplementation nodeType="ns1:CassandraNode" name="CassandraNodeImplementation">
+  	<tosca:ImplementationArtifacts>
+  		<tosca:ImplementationArtifact
+  			artifactType="ns1:ScriptArtifact" interfaceName="lifecycle"
+  			operationName="install" artifactRef="Cassandra_SeedNode_install">
+  		</tosca:ImplementationArtifact>
+  	</tosca:ImplementationArtifacts></tosca:NodeTypeImplementation>
+
+  <tosca:ArtifactTemplate type="ns1:ScriptArtifact" id="YCSB_Client_install">
+  	<tosca:ArtifactReferences>
+  		<tosca:ArtifactReference reference="Scripts/YCSB_Client.sh"></tosca:ArtifactReference>
+  	</tosca:ArtifactReferences>
+  </tosca:ArtifactTemplate>
+
+  <tosca:ArtifactTemplate type="ns1:ScriptArtifact" id="Cassandra_SeedNode_install">
+  	<tosca:ArtifactReferences>
+  		<tosca:ArtifactReference reference="Scripts/Cassandra_SeedNode.sh"></tosca:ArtifactReference>
+  	</tosca:ArtifactReferences>
+  </tosca:ArtifactTemplate>
+
+  <tosca:ArtifactTemplate type="ns1:ScriptArtifact" id="Cassandra_Node_install">
+  	<tosca:ArtifactReferences>
+  		<tosca:ArtifactReference reference="Scripts/Cassandra_Node.sh"></tosca:ArtifactReference>
+  	</tosca:ArtifactReferences>
+  </tosca:ArtifactTemplate>
+  
+  <tosca:ArtifactTemplate type="ns1:ScriptArtifact" id="VM_install">
+  	<tosca:ArtifactReferences>
+  		<tosca:ArtifactReference reference="a064bd97-c84c-38ef-aa37-c7391a8c8259"></tosca:ArtifactReference>
+  	</tosca:ArtifactReferences>
+  </tosca:ArtifactTemplate>
+  
+</tosca:Definitions>

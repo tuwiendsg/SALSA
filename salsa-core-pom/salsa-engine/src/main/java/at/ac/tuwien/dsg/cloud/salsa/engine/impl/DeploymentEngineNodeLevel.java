@@ -148,7 +148,7 @@ public class DeploymentEngineNodeLevel {
 
 		// install java. It ad-hoc, will be improve later
 		userDataBuffer.append("apt-get -q update \n");
-		userDataBuffer.append("apt-get -q -y install openjdk-7-jre \n");
+		userDataBuffer.append("apt-get -q -y install openjdk-7-jre-headless \n");
 
 		// download full Tosca file
 		userDataBuffer.append("mkdir " + SalsaConfiguration.getWorkingDir()	+ " \n");
