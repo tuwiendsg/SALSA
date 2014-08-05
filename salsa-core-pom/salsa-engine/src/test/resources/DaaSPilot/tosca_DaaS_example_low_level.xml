@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tosca:Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:elasticity="http://www.example.org/NewXMLSchema" 
+	xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12"
+	xmlns:salsa="http://example.com"
+	xsi:schemaLocation="http://docs.oasis-open.org/tosca/ns/2011/12 TOSCA-v1.0.xsd"
+	targetNamespace="http://tempuri.org"
+	id="DaaSApp">
+	
+	<tosca:ServiceTemplate id="DaaSService">
+		
+		<tosca:TopologyTemplate>
+		
+<!-- DESCRIPTION FOR CASSANDRA CLUSTER -->
+			<tosca:NodeTemplate id="CassandraHead"
+				name="Cassandra head node" type="software"
+				minInstances="1" maxInstances="1">
+				<tosca:Capabilities>
+					<tosca:Capability name="Data controller IP" type="variable" id="CassandraHeadIP_capa"></tosca:Capability>
+				</tosca:Capabilities>
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="sh" name="Deployment script" artifactRef="deployCassandraHead"/>
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate id="CassandraNode" name="Cassandra data node" type="software" minInstances="1" maxInstances="unbounded">			
+				<tosca:Requirements>
+					<tosca:Requirement name="Connect to data controller" type="variable" id="CassandraHeadIP_req"></tosca:Requirement>
+				</tosca:Requirements>				
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="sh" name="Deployment script" artifactRef="deployCassandraNode"/>
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate type="os" id="OS_HeadNode" minInstances="1" maxInstances="1">
+				 <tosca:Properties>
+                    <MappingProperties>						
+						<MappingProperty type="os">
+							<property name="instanceType">000000960</property>	<!-- new DSG: image 5287914e-8857-4f0e-b01b-0f8b68fb902d, flavor: 000001920 -->
+							<property name="provider">dsg@openstack</property> <!-- lal@stratuslab / dsg@openstack -->
+<!-- image with salsa and ganglia: 8f1428ac-f239-42e0-ab35-137f6e234101 
+	 base image: 				   5287914e-8857-4f0e-b01b-0f8b68fb902d  -->
+							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property> <!-- stratuslab base: KBhcU87Wm5IZNOXZYGHrczGekwp -->
+							<property name="packages">openjdk-7-jre,ganglia-monitor,gmetad</property> <!-- use comma between package -->
+						</MappingProperty>
+					</MappingProperties>
+                </tosca:Properties>
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate type="os" id="OS_Datanode" minInstances="1" maxInstances="3">
+				 <tosca:Properties>
+                    <MappingProperties>						
+						<MappingProperty type="os">
+							<property name="instanceType">000000960</property>
+							<property name="provider">dsg@openstack</property> 
+							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>	
+							<property name="packages">openjdk-7-jre</property>
+						</MappingProperty>
+					</MappingProperties>
+                </tosca:Properties>
+			</tosca:NodeTemplate>
+
+			<tosca:RelationshipTemplate name="Relation" type="CONNECTTO" id="head2datanode">
+				<tosca:SourceElement ref="CassandraHeadIP_capa"/>
+				<tosca:TargetElement ref="CassandraHeadIP_req"/>
+			</tosca:RelationshipTemplate>						
+			<tosca:RelationshipTemplate name="Relation" type="HOSTON" id="data2os">
+				<tosca:SourceElement ref="CassandraHead"/>
+				<tosca:TargetElement ref="OS_HeadNode" />
+			</tosca:RelationshipTemplate>
+			<tosca:RelationshipTemplate name="Relation" type="HOSTON" id="controller2os">
+				<tosca:SourceElement ref="CassandraNode"/>
+				<tosca:TargetElement ref="OS_Datanode" />
+			</tosca:RelationshipTemplate>
+
+
+<!-- DESCRIBE WEB SERVICE -->
+			<tosca:NodeTemplate id="LoadBalancer" type="software" name="Load Balancer">
+				<tosca:Capabilities>
+					<tosca:Capability name="Load balancer IP" type="variable" id="LoadBalancerIP_capa"></tosca:Capability>
+				</tosca:Capabilities>
+				<tosca:DeploymentArtifacts>				
+                    <tosca:DeploymentArtifact name="deploy" artifactType="sh" artifactRef="deployLoadBalancer"/>                
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate id="EventProcessing" type="software" name="Event Processing">
+				<tosca:Requirements>
+					<tosca:Requirement name="Get Load balancer IP" type="variable" id="LoadBalancerIp_req"></tosca:Requirement>
+					<tosca:Requirement name="Get Cassandra headnode IP" type="variable" id="CassandraHeadIp_req2"></tosca:Requirement>
+				</tosca:Requirements>				
+				<tosca:DeploymentArtifacts>				
+                    <tosca:DeploymentArtifact name="deploy" artifactType="sh" artifactRef="tosca:deployEventProcessing"/>                
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate type="docker" id="docker_host_EP" />
+			
+			<tosca:NodeTemplate type="os" id="OS_LoadBalancer">			
+				 <tosca:Properties>
+                    <MappingProperties>						
+						<MappingProperty type="os">
+							<property name="instanceType">000000960</property>
+							<property name="provider">dsg@openstack</property> 
+							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property> 
+							<property name="packages">openjdk-7-jre,ganglia-monitor,gmetad</property>
+						</MappingProperty>
+					</MappingProperties>
+                </tosca:Properties>
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate type="os" id="OS_EventProcessing">
+				 <tosca:Properties>
+                    <MappingProperties>						
+						<MappingProperty type="os">
+							<property name="instanceType">000000960</property>
+							<property name="provider">dsg@openstack</property> 
+							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property> 
+							<property name="packages">openjdk-7-jre</property>
+						</MappingProperty>
+					</MappingProperties>
+                </tosca:Properties>
+			</tosca:NodeTemplate>
+			
+			<tosca:RelationshipTemplate name="Relation" type="CONNECTTO" id="loadbalancer2EventProcessing">
+				<tosca:SourceElement ref="LoadBalancerIP_capa" />
+				<tosca:TargetElement ref="LoadBalancerIp_req" />
+			</tosca:RelationshipTemplate>
+			
+			<tosca:RelationshipTemplate type="HOSTON" id="loadbalancer2os" >							
+				<tosca:SourceElement ref="LoadBalancer"/>
+				<tosca:TargetElement ref="OS_LoadBalancer" />
+			</tosca:RelationshipTemplate>
+
+			<tosca:RelationshipTemplate type="HOSTON" id="EventProcessing2os" >							
+				<tosca:SourceElement ref="EventProcessing"/>
+				<tosca:TargetElement ref="docker_host_EP" />
+			</tosca:RelationshipTemplate>
+			
+			<tosca:RelationshipTemplate type="HOSTON" id="docker2os" >							
+				<tosca:SourceElement ref="docker_host_EP"/>
+				<tosca:TargetElement ref="OS_EventProcessing" />
+			</tosca:RelationshipTemplate>
+
+			
+<!-- RELATIONSHIP BETWEEN WEB SERVICE AND CASSANDRA-HEAD -->
+			<tosca:RelationshipTemplate name="Relation" type="CONNECTTO" id="EventProcessing2CassandraHead">
+				<tosca:SourceElement ref="CassandraHeadIP_capa" />
+				<tosca:TargetElement ref="CassandraHeadIp_req2" />
+			</tosca:RelationshipTemplate>
+									
+		</tosca:TopologyTemplate>
+	</tosca:ServiceTemplate>
+	
+<!-- DEPLOYMENT ARTIFACTS DESCRIPTION -->
+	<tosca:ArtifactTemplate id="deployCassandraHead" type="sh">
+        <tosca:ArtifactReferences>
+            <tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/daas/deployCassandraHead.sh"/>
+        </tosca:ArtifactReferences>
+    </tosca:ArtifactTemplate>
+    
+    <tosca:ArtifactTemplate id="deployCassandraNode" type="sh">       
+        <tosca:ArtifactReferences>
+            <tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/daas/deployCassandraNode.sh"/>
+        </tosca:ArtifactReferences>
+    </tosca:ArtifactTemplate>
+    
+    <tosca:ArtifactTemplate id="deployLoadBalancer" type="sh">       
+        <tosca:ArtifactReferences>
+            <tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/daas/deployLoadBalancer.sh"/>
+        </tosca:ArtifactReferences>
+    </tosca:ArtifactTemplate>
+    
+    <tosca:ArtifactTemplate id="deployEventProcessing" type="sh">       
+        <tosca:ArtifactReferences>
+            <tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/daas/deployEventProcessing.sh"/>
+        </tosca:ArtifactReferences>
+    </tosca:ArtifactTemplate>
+    
+    <tosca:ArtifactTemplate id="deployEventProcessing" type="sh">       
+        <tosca:ArtifactReferences>
+            <tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/pioneer/installdocker.sh"/>
+        </tosca:ArtifactReferences>
+    </tosca:ArtifactTemplate>
+	
+</tosca:Definitions>

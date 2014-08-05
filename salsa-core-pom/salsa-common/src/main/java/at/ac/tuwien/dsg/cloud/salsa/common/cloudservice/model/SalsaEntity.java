@@ -39,7 +39,7 @@ public class SalsaEntity {
 	SalsaEntity.Monitoring monitoring;
 	
 	@XmlElement(name = "actions")
-	Actions actions = new Actions();
+	Actions actions = null;
 	
 	
 	
@@ -131,10 +131,16 @@ public class SalsaEntity {
 	}
 
 	public List<Action> getActions() {
+		if (this.actions==null){
+			this.actions = new Actions();
+		}
 		return actions.actions;
 	}
 	
-	public String getAction(String name){
+	public String getAction(String name){		
+		if (this.actions==null){
+			return null;
+		}
 		for (Action action : actions.actions) {
 			if (action.getName().equals(name)){
 				return action.getCommand();
@@ -144,6 +150,9 @@ public class SalsaEntity {
 	}
 	
 	public void addAction(String name, String cmd){
+		if (this.actions==null){
+			this.actions = new Actions();
+		}
 		Action action = new Action();
 		action.name = name;
 		action.command = cmd;
@@ -151,6 +160,9 @@ public class SalsaEntity {
 	}
 
 	public void addAction(Action action){
+		if (this.actions==null){
+			this.actions = new Actions();
+		}
 		Action ac = new Action();
 		ac.name = action.getName();
 		ac.command = action.getCommand();
@@ -158,6 +170,9 @@ public class SalsaEntity {
 	}
 	
 	public void removeAction(Action action){
+		if (this.actions==null){
+			return;
+		}
 		this.actions.actions.remove(action);
 	}
 	

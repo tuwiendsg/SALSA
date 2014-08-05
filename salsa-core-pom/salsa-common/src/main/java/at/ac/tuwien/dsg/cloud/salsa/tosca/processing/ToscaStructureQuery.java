@@ -16,8 +16,6 @@ import generated.oasis.tosca.TTopologyTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
-
 public class ToscaStructureQuery {
 	
 	

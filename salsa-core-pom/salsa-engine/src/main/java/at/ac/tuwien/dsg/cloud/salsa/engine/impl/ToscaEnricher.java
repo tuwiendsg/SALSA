@@ -2,7 +2,6 @@ package at.ac.tuwien.dsg.cloud.salsa.engine.impl;
 
 import generated.oasis.tosca.TArtifactReference;
 import generated.oasis.tosca.TArtifactTemplate;
-import generated.oasis.tosca.TArtifactTemplate.ArtifactReferences;
 import generated.oasis.tosca.TCapability;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TDeploymentArtifact;

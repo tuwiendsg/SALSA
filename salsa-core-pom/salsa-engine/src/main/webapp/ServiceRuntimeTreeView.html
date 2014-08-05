@@ -142,6 +142,23 @@ function update(source) {
 	          return str; 
 	        }
 	      });
+ 		
+//  		// the context menu
+//  		$('svg rect').contextmenu({
+// 		    delegate: ".node",
+// 		    menu: [
+// 		        {title: "Copy", cmd: "copy", uiIcon: "ui-icon-copy"},
+// 		        {title: "----"},
+// 		        {title: "More", children: [
+// 		            {title: "Sub 1", cmd: "sub1"},
+// 		            {title: "Sub 2", cmd: "sub1"}
+// 		            ]}
+// 		        ],
+// 		    select: function(event, ui) {
+// 		    	var d = this.__data__;
+// 		    	alert("select " + ui.cmd + " on " + ui.target.text());
+// 		    }
+// 		});
 	  
 		nodeEnter.append("text")	// show the TITLE text of the block
 	  	    .attr("dx", 0)

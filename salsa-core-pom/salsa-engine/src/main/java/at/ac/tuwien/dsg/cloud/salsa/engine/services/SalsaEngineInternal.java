@@ -41,7 +41,6 @@ import org.springframework.stereotype.Service;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity.Actions;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity.Actions.Action;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance.Capabilities;
@@ -421,14 +420,22 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 	/*
 	 * INTERNAL SERVICES FOR CLOUD SERVICES
 	 */
+	//static boolean getServiceLocked=false;
 	
 	@Override
-	public Response getService( String serviceDeployId) {		
+	public Response getService(String serviceDeployId) {		
 		if (serviceDeployId.equals("")){		
 			return Response.status(400).entity("").build();
 		}
-		String fileName = CenterConfiguration.getServiceStoragePath() + "/"
-				+ serviceDeployId+".data";		
+		String fileName = CenterConfiguration.getServiceStoragePath() + "/" + serviceDeployId+".data";
+		// wait for unlock !
+//		int count=0;
+//		while (!getServiceLocked && count < 50){ // wait for maximum 5 sec and release the lock 			
+//			try{
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {}
+//		}
+//		getServiceLocked=false;
 		try {
 			String xml = FileUtils.readFileToString(new File(fileName));		
 			return Response.status(200).entity(xml).build();
@@ -437,6 +444,20 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 			return Response.status(500).entity("").build();
 		}
 	}
+	
+//	@Override
+//	public Response getServiceAndLock(@PathParam("serviceId")String serviceDeployId){
+//		getServiceLocked = true;
+//		return getService(serviceDeployId);
+//	}
+//	
+//	@Override
+//	public Response getServiceToUnLock(@PathParam("serviceId")String serviceDeployId){
+//		getServiceLocked=false;
+//		return Response.status(200).entity("done").build();
+//	}
+	
+	
 
 	@Override
 	public Response getToscaService(String serviceDeployId) {

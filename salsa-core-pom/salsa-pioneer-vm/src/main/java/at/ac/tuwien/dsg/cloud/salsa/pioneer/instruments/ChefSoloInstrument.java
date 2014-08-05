@@ -23,7 +23,7 @@ public class ChefSoloInstrument implements InstrumentInterface {
 			installChefAndGit();
 			// download salsa script
 			// http://128.130.172.215:8080/nexus-2.8.0-05/service/local/repositories/salsa-artifacts/content/chef/chef-solo-install/1.0/chef-solo-install-1.0.sh
-			Process p = Runtime.getRuntime().exec("wget -q -L http://128.130.172.215:8080/nexus-2.8.0-05/service/local/repositories/salsa-artifacts/content/chef/chef-solo-install/1.0/chef-solo-install-1.0.sh");
+			Process p = Runtime.getRuntime().exec("wget -q -L http://128.130.172.215/salsa/upload/files/pioneer/chef-solo-install-1.0.sh");
 			p.waitFor();
 		} catch (Exception e){
 			LOGGER.error(e.toString());
@@ -35,7 +35,7 @@ public class ChefSoloInstrument implements InstrumentInterface {
 		// install the artifact with chef name
 		try {	
 			String cmd = this.chefScript + " " + uri;
-			Process p = Runtime.getRuntime().exec("");
+			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
 		} catch (Exception e){
 			

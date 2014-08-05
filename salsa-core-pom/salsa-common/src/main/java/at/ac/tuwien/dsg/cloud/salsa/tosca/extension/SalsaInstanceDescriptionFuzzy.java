@@ -6,8 +6,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaFuzzyValues;
-
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")

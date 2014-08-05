@@ -12,7 +12,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBElement;
 
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.springframework.stereotype.Service;
@@ -132,6 +131,16 @@ public interface SalsaEngineIntenalInterface {
 	@Path("/services/{serviceId}")
 	@Produces(MediaType.TEXT_XML)
 	public Response getService(@PathParam("serviceId")String serviceDeployId);
+	
+//	@GET
+//	@Path("/services/{serviceId}/lock")
+//	@Produces(MediaType.TEXT_XML)
+//	public Response getServiceAndLock(@PathParam("serviceId")String serviceDeployId);
+//	
+//	@GET
+//	@Path("/services/{serviceId}/unlock")
+//	@Produces(MediaType.TEXT_XML)
+//	public Response getServiceToUnLock(@PathParam("serviceId")String serviceDeployId);
 
 	/**
 	 * Get service description in TOSCA

@@ -1,15 +1,9 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl;
 
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
-
-import org.apache.cxf.helpers.IOUtils;
-import org.apache.cxf.io.CachedOutputStream;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaPioneerInterface;
