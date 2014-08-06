@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceType;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ServiceDeployerException;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.VMStates;
 
@@ -65,7 +64,7 @@ public class OpenStackJcloud implements CloudInterface, Cloneable{
 	        
 	        
 	        for (Resource flavor : client.getFlavorApiForZone(region).list().concat()) {
-	            System.out.println( flavor.getId()+" "+flavor.getName());
+	           // System.out.println( flavor.getId()+" "+flavor.getName());
 	            mapFlavorName.put(flavor.getName(), flavor.getId());
 	          }
 	        

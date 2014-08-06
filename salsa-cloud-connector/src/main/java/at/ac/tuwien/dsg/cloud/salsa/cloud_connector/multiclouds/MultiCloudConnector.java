@@ -9,7 +9,6 @@ import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudParameter;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudParametersUser;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceType;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.flexiant.FlexiantParameterStrings;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud.OpenStackJcloud;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud.OpenStackParameterStrings;

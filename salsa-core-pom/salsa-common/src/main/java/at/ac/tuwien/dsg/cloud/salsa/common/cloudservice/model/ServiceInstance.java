@@ -35,7 +35,7 @@ public class ServiceInstance extends SalsaEntity {
 	UUID uuid = UUID.randomUUID();
 	
 	@XmlAttribute(name = "hostedId")
-	int hostedId=0;
+	int hostedId=2147483647;	// by default, it is hosted on nothing
 	
 	@XmlElement(name = "Properties")
 	protected ServiceInstance.Properties properties;	

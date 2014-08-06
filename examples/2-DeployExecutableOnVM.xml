@@ -8,9 +8,24 @@
 	id="SalsaExample">
 	
 	<tosca:ServiceTemplate id="SampleService">
+		<tosca:Properties>
+			<MappingProperties>
+    			<MappingProperty type="action">
+    				<property name="write3times"><![CDATA[helloWorld.writeDate; helloWorld.writeDate]]></property>
+    				<property name="random"><![CDATA[echo $RANDOM >> /tmp/test.random.txt]]></property>            				
+    			</MappingProperty>
+    		</MappingProperties>
+		</tosca:Properties>
 		<tosca:TopologyTemplate>
 			<tosca:NodeTemplate id="helloWorld"	name="Hello World" type="software">
-							
+				<tosca:Properties>
+					<MappingProperties>
+            			<MappingProperty type="action">
+            				<property name="writeDate"><![CDATA[/bin/date >> /tmp/test.date.txt]]></property>
+            				<property name="random"><![CDATA[echo $RANDOM >> /tmp/test.random.txt]]></property>            				
+            			</MappingProperty>
+            		</MappingProperties>
+				</tosca:Properties>
 				<tosca:DeploymentArtifacts>
 					<tosca:DeploymentArtifact artifactType="sh" name="Deployment script" artifactRef="deployScript"/>
 				</tosca:DeploymentArtifacts>

@@ -235,7 +235,7 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 		int counter = 0;
 		while (instance==null || !(instance.getState().equals(SalsaEntityState.RUNNING) || instance.getState().equals(SalsaEntityState.FINISHED))){
 			try {
-				if (counter>200){
+				if (counter>300){
 					break;
 				}
 				Thread.sleep(3000);

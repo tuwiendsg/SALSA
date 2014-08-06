@@ -16,7 +16,6 @@ import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ServiceDeployerException;
 
-import com.extl.jade.user.Condition;
 import com.extl.jade.user.ExtilityException;
 import com.extl.jade.user.FilterCondition;
 import com.extl.jade.user.Job;
@@ -45,12 +44,12 @@ public class FlexiantConnector implements CloudInterface{
 	String vdcUUID; 
 	String defaultProductOfferUUID;
 	String deploymentInstanceUUID;
-	String clusterUUID ;
+	String clusterUUID ="1ff16f43-4a82-34bf-8f07-ea6d210548ab";
 	String sshKey;
-	String networkUUID ; 
+	String networkUUID="66ac8676-b258-36a8-a547-0151c110b556" ; 
 	Logger logger;
-	String ENDPOINT_ADDRESS_PROPERTY ;
-	String DEFAULT_IMAGE;
+	//String ENDPOINT_ADDRESS_PROPERTY ;
+	String DEFAULT_IMAGE="a064bd97-c84c-38ef-aa37-c7391a8c8259";
 	
 	UserService service;
 	
