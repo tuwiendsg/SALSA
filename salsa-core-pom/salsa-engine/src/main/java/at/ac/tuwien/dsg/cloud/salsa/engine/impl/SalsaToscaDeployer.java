@@ -17,6 +17,8 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
+import org.jclouds.compute.strategy.GetImageStrategy;
+
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
@@ -214,6 +216,7 @@ public class SalsaToscaDeployer {
 				+ SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString());
 		ServiceInstance repData = new ServiceInstance(instanceId, null);
 		repData.setState(SalsaEntityState.ALLOCATING);
+		repData.setHostedId_Integer(2147483647);
 
 		if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
 			if (node.getInstanceNumber() >= node.getMax()) {
@@ -298,12 +301,17 @@ public class SalsaToscaDeployer {
 		int hostInstanceId = 0;
 		for (ServiceInstance hostedInst : hostedInstances) {
 			// List<ServiceInstance> instancesNumOnThisNode =
-			// unit.getInstanceHostOn(hostedInst.getInstanceId());
-			EngineLogger.logger.debug("There are " + hostedInstances.size() + "instance(s) for " + hostedUnit.getId());
+			// unit.getInstanceHostOn(hostedInst.getInstanceId());			
+			EngineLogger.logger.debug("There are " + hostedInstances.size() + " instance(s) for " + hostedUnit.getId());
 			EngineLogger.logger.debug("On node: " + hostedUnit.getId() + "/"
 					+ hostedInst.getInstanceId() + " currently has "
 					+ unit.getInstanceHostOn(hostedInst.getInstanceId()).size()
 					+ " node " + unit.getId());
+			String ids = "->";
+			for (ServiceInstance instanceTmp : unit.getInstanceHostOn(hostedInst.getInstanceId())) {
+				ids += instanceTmp.getInstanceId() +", ";
+			}
+			EngineLogger.logger.debug("And their IDs are: " + ids);
 			if (unit.getInstanceHostOn(hostedInst.getInstanceId()).size() < unit.getMax()) {
 				suitableHostedInstance = hostedInst;
 				hostInstanceId = hostedInst.getInstanceId();
@@ -338,9 +346,7 @@ public class SalsaToscaDeployer {
 		}
 
 		// for testing, get the first OSNode:
-		EngineLogger.logger
-				.debug("DEPLOY MORE INSTANCE. FOUND EXISTED HOST (2nd time): "
-						+ hostInstanceId);
+		EngineLogger.logger.debug("DEPLOY MORE INSTANCE. FOUND EXISTED HOST (2nd time): " + hostInstanceId);
 		newService = centerCon.getUpdateCloudServiceRuntime(service.getId());
 		suitableHostedInstance = newService.getInstanceById(topologyId,
 				hostedUnit.getId(), hostInstanceId);
@@ -371,13 +377,10 @@ public class SalsaToscaDeployer {
 			data.setHostedId_Integer(hostInstanceId);
 			data.setState(SalsaEntityState.ALLOCATING); // waiting for other
 														// conditions
-			centerCon.addInstanceUnitMetaData(service.getId(), topologyId,
-					nodeId, data);
+			centerCon.addInstanceUnitMetaData(service.getId(), topologyId, nodeId, data);
 			// waiting for hostInstance become RUNNING or FINISH
-			while (!suitableHostedInstance.getState().equals(
-					SalsaEntityState.RUNNING)
-					&& !suitableHostedInstance.getState().equals(
-							SalsaEntityState.FINISHED)) {
+			while (!suitableHostedInstance.getState().equals(SalsaEntityState.RUNNING)
+					&& !suitableHostedInstance.getState().equals(SalsaEntityState.FINISHED)) {
 				try {
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {

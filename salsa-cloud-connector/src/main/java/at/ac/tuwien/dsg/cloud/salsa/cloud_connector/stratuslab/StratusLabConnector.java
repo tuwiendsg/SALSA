@@ -11,14 +11,11 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
-import javax.print.attribute.standard.MediaSize.Engineering;
-
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceType;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ServiceDeployerException;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.VMStates;
 
