@@ -42,6 +42,23 @@
 <p>SALSA is a framework that provide automatic features for configuring and orchestrating distributed applications on multi-cloud system. SALSA can be used by application providers and application controllers to manage the application at deployment time and at runtime. The framework enables the configuration on different levels of application structure and deployment stacks, which provide fine-grained or full view about the application.
 <img src="http://tuwiendsg.github.io/SALSA/images/informationModel.png" alt="Information model">
 On the application structure, SALSA supports the configuration on the whole application, group of components or a single component, which are represented by the cloud service, service topology, service unit and service instance. On the deployment stacks, SALSA supports the configuration on different stack, including the virtual machine, the application container (e.g. docker), the web container (e.g. Tomcat) and the application.</p>
+
+<h1>
+<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>Example</h1>
+
+<h1>
+<a name="prototype" class="anchor" href="#prototype"><span class="octicon octicon-link"></span></a>Prototype</h1>
+
+<p>In order to use SALSA, user need to configure the followings:</p>
+
+<ol>
+<li><p><strong>Compile</strong> the source and check two artifact: salsa-engine.war and salsa-pioneer-vm-0.0.1-SNAPSHOT-executable.jar.</p></li>
+<li><p><strong>Deploy</strong> the .war file on a Tomcat server and copy the .jar to a public place to be able to access, e.g. on a HTTP server.</p></li>
+<li><p><strong>Configure SALSA parameter</strong>: /etc/salsa.engine.properties. An example of this configuration is on the <code>salsa-engine/src/main/resources</code> folder. Most of the parameters can be left as default, except the URL of the RESTful service and link to the salsa-pioneer artifact.</p></li>
+<li><p><strong>Configure user parameter</strong>: /etc/cloudUserParameters.ini. This file configure the parameter to access to cloud providers which users registered. At current version, SALSA supports single user, then we maintain one configuration file for the whole system. As the parameter are different between providers, please refer to the example in the <code>resources</code> folder.</p></li>
+<li><p><strong>Access to the web interface</strong> at the URL: <code>http://&lt;tomcatIP&gt;:8080/salsa-engine</code>. On this page, user can upload a TOSCA and executes the first deployment of the application. The web interface provides basic deploy and undeploy operations on different level of application structure.</p></li>
+<li><p>** Access to the API** at the URL <code>http://&lt;tomcatIP&gt;:8080/salsa-engine/rest</code> to have configuration features. The API can be referred on <a href="https://github.com/tuwiendsg/SALSA/tree/master/salsa-core-pom/salsa-common/src/main/java/at/ac/tuwien/dsg/cloud/salsa/common/interfaces">salsa-common/interfaces pakage</a>.</p></li>
+</ol>
       </section>
     </div>
 
