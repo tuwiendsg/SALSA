@@ -1,35 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
+
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>SALSA by tuwiendsg</title>
+    <meta name="description" content="SALSA : A Framework for Dynamic Orchestration and Configuration Application on Multi-cloud">
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>SALSA</title>
   </head>
+
   <body>
-    <div class="wrapper">
-      <header>
-        <h1 class="header">SALSA</h1>
-        <p class="header">A Framework for Dynamic Orchestration and Configuration Application on Multi-cloud</p>
 
-        <ul>
-          <li class="download"><a class="buttons" href="https://github.com/tuwiendsg/SALSA/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/tuwiendsg/SALSA/tarball/master">Download TAR</a></li>
-          <li><a class="buttons github" href="https://github.com/tuwiendsg/SALSA">View On GitHub</a></li>
-        </ul>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/tuwiendsg/SALSA">View on GitHub</a>
 
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/tuwiendsg">tuwiendsg</a></p>
+          <h1 id="project_title">SALSA</h1>
+          <h2 id="project_tagline">A Framework for Dynamic Orchestration and Configuration Application on Multi-cloud</h2>
 
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/tuwiendsg/SALSA/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/tuwiendsg/SALSA/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
 
-      </header>
-      <section>
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
         <h1>
 <a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>Abstract</h1>
 
@@ -47,11 +48,14 @@
 <h1>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h1>
 
-<p>Below is the description of the Cassandra cluster configuration. </p>
+<h2>
+<a name="application-description" class="anchor" href="#application-description"><span class="octicon octicon-link"></span></a>Application description</h2>
+
+<p>Below is an example of description of the Cassandra cluster configuration using TOSCA description. The TOSCA contains some SALSA specific definition for node type and artifact type, and the custom Properties.</p>
 
 <div class="highlight highlight-XML"><pre><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;tosca:Definitions</span> <span class="na">xmlns:tosca=</span><span class="s">"http://docs.oasis-open.org/tosca/ns/2011/12"</span> <span class="na">xmlns:salsa=</span><span class="s">"http://example.com"</span> <span class="na">id=</span><span class="s">"DaaSApp"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;tosca:ServiceTemplate</span> <span class="na">id=</span><span class="s">"DaaSService"</span><span class="nt">&gt;</span>        
+<span class="nt">&lt;tosca:Definitions</span> <span class="na">xmlns:tosca=</span><span class="s">"http://docs.oasis-open.org/tosca/ns/2011/12"</span> <span class="na">xmlns:salsa=</span><span class="s">"http://example.com"</span> <span class="na">id=</span><span class="s">"CassandraApp"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;tosca:ServiceTemplate</span> <span class="na">id=</span><span class="s">"CassandraTopology"</span><span class="nt">&gt;</span>      
         <span class="nt">&lt;tosca:TopologyTemplate&gt;</span>        
             <span class="nt">&lt;tosca:NodeTemplate</span> <span class="na">id=</span><span class="s">"CassandraSeed"</span>  <span class="na">name=</span><span class="s">"Cassandra seed node"</span> <span class="na">type=</span><span class="s">"salsa:software"</span> <span class="na">minInstances=</span><span class="s">"1"</span> <span class="na">maxInstances=</span><span class="s">"1"</span><span class="nt">&gt;</span>
                 <span class="nt">&lt;tosca:DeploymentArtifacts&gt;</span>
@@ -103,20 +107,41 @@
             <span class="nt">&lt;tosca:ArtifactReference</span> <span class="na">reference=</span><span class="s">"http://128.130.172.215/salsa/upload/files/DaasService/deployCassandraNode.sh"</span><span class="nt">/&gt;</span>
         <span class="nt">&lt;/tosca:ArtifactReferences&gt;</span>
     <span class="nt">&lt;/tosca:ArtifactTemplate&gt;</span>
-
-    <span class="nt">&lt;tosca:ArtifactTemplate</span> <span class="na">id=</span><span class="s">"deployMelaService"</span> <span class="na">type=</span><span class="s">"sh"</span><span class="nt">&gt;</span>       
-        <span class="nt">&lt;tosca:ArtifactReferences&gt;</span>
-            <span class="nt">&lt;tosca:ArtifactReference</span> <span class="na">reference=</span><span class="s">"http://128.130.172.215/salsa/upload/files/daas/fakescripts/donothing.sh"</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/tosca:ArtifactReferences&gt;</span>
-    <span class="nt">&lt;/tosca:ArtifactTemplate&gt;</span>
 <span class="nt">&lt;/tosca:Definitions&gt;</span>
 </pre></div>
 
 <h2>
-<a name="application-description" class="anchor" href="#application-description"><span class="octicon octicon-link"></span></a>Application description</h2>
-
-<h2>
 <a name="api-calls" class="anchor" href="#api-calls"><span class="octicon octicon-link"></span></a>API calls</h2>
+
+<p>Deploy a new application</p>
+
+<blockquote>
+<p>curl -X POST -d "" <a href="http://example.org:8080/salsa-engine/rest/services/CassandraApp">http://example.org:8080/salsa-engine/rest/services/CassandraApp</a></p>
+</blockquote>
+
+<p>Get the runtime information in JSON:</p>
+
+<blockquote>
+<p>curl -X GET <a href="http://example.org:8080/salsa-engine/rest/services/CassandraApp">http://example.org:8080/salsa-engine/rest/services/CassandraApp</a></p>
+</blockquote>
+
+<p>Deploy 3 more Cassandra Node:</p>
+
+<blockquote>
+<p>curl -X POST <a href="http://example.org:8080/salsa-engine/rest/services/CassandraApp/topologies/CassandraTopology/instance-count/3">http://example.org:8080/salsa-engine/rest/services/CassandraApp/topologies/CassandraTopology/instance-count/3</a></p>
+</blockquote>
+
+<p>Delete the Cassandra Node instance with ID is 2</p>
+
+<blockquote>
+<p>curl -X DELETE <a href="http://example.org:8080/salsa-engine/rest/services/CassandraApp/topologies/CassandraTopology/nodes/CassandraNode/instances/2">http://example.org:8080/salsa-engine/rest/services/CassandraApp/topologies/CassandraTopology/nodes/CassandraNode/instances/2</a></p>
+</blockquote>
+
+<p>Execute a custom action on an instance (implementation is in progress)</p>
+
+<blockquote>
+<p>curl -X DELETE <a href="http://example.org:8080/salsa-engine/rest/services/CassandraApp/topologies/CassandraTopology/nodes/CassandraNode/instances/1/actions/%7BactionName%7D">http://example.org:8080/salsa-engine/rest/services/CassandraApp/topologies/CassandraTopology/nodes/CassandraNode/instances/1/actions/{actionName}</a></p>
+</blockquote>
 
 <h1>
 <a name="experiments" class="anchor" href="#experiments"><span class="octicon octicon-link"></span></a>Experiments</h1>
@@ -132,29 +157,31 @@
 </ol><h1>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
 
-<h2>
-<a name="web-interface" class="anchor" href="#web-interface"><span class="octicon octicon-link"></span></a>Web interface</h2>
-
 <p><strong>Access to the web interface</strong> at the URL: <code>http://&lt;tomcatIP&gt;:8080/salsa-engine</code>. On this page, user can upload a TOSCA and executes the first deployment of the application. The web interface provides basic deploy and undeploy operations on different level of application structure.</p>
-
-<h2>
-<a name="restful-api" class="anchor" href="#restful-api"><span class="octicon octicon-link"></span></a>RESTful API</h2>
 
 <p><strong>Access to the API</strong> at the URL <code>http://&lt;tomcatIP&gt;:8080/salsa-engine/rest</code> to have configuration features. The API can be referred on <a href="https://github.com/tuwiendsg/SALSA/tree/master/salsa-core-pom/salsa-common/src/main/java/at/ac/tuwien/dsg/cloud/salsa/common/interfaces">salsa-common/interfaces pakage</a>.</p>
 
 <h1>
 <a name="screenshots" class="anchor" href="#screenshots"><span class="octicon octicon-link"></span></a>Screenshots</h1>
 
+<p>The graph shows the configuration status of the application.</p>
+
 <h1>
 <a name="contact" class="anchor" href="#contact"><span class="octicon octicon-link"></span></a>Contact</h1>
 
 <p>Please contact Le Duc Hung <a href="mailto:d.le@dsg.tuwien.ac.at">d.le@dsg.tuwien.ac.at</a> for any kind of issue.</p>
       </section>
-      <footer>
-        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">SALSA maintained by <a href="https://github.com/tuwiendsg">tuwiendsg</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		
+
+    
+
   </body>
 </html>
