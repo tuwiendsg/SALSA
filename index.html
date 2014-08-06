@@ -115,7 +115,7 @@
 <p>Deploy a new application</p>
 
 <blockquote>
-<p>curl -X POST -d "" <a href="http://example.org:8080/salsa-engine/rest/services/CassandraApp">http://example.org:8080/salsa-engine/rest/services/CassandraApp</a></p>
+<p>curl -X POST -d "The TOSCA description" <a href="http://example.org:8080/salsa-engine/rest/services/CassandraApp">http://example.org:8080/salsa-engine/rest/services/CassandraApp</a></p>
 </blockquote>
 
 <p>Get the runtime information in JSON:</p>
@@ -139,7 +139,7 @@
 <p>Execute a custom action on an instance (implementation is in progress)</p>
 
 <blockquote>
-<p>curl -X DELETE <a href="http://example.org:8080/salsa-engine/rest/services/CassandraApp/topologies/CassandraTopology/nodes/CassandraNode/instances/1/actions/%7BactionName%7D">http://example.org:8080/salsa-engine/rest/services/CassandraApp/topologies/CassandraTopology/nodes/CassandraNode/instances/1/actions/{actionName}</a></p>
+<p>curl -X POST <a href="http://example.org:8080/salsa-engine/rest/services/CassandraApp/topologies/CassandraTopology/nodes/CassandraNode/instances/1/actions/%7BactionName%7D">http://example.org:8080/salsa-engine/rest/services/CassandraApp/topologies/CassandraTopology/nodes/CassandraNode/instances/1/actions/{actionName}</a></p>
 </blockquote>
 
 <h1>
