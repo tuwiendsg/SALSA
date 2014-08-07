@@ -19,7 +19,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineApiInterface;
-import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineIntenalInterface;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineServiceIntenal;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 
 @Service
 @Path("/comot")
@@ -37,7 +38,7 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 		logger = Logger.getLogger("EngineLogger");
 	}
 	
-	SalsaEngineIntenalInterface internalEngine = new SalsaEngineInternal();
+	SalsaEngineServiceIntenal engine = new SalsaEngineImplAll();
 	
 	@Override
 	@PUT
@@ -45,38 +46,38 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response deployService(
 			@PathParam("serviceName") String serviceName,
-			@Multipart("file") InputStream uploadedInputStream) {		
-		return internalEngine.deployService(serviceName, uploadedInputStream);
+			@Multipart("file") InputStream uploadedInputStream) throws SalsaEngineException{		
+		return engine.deployService(serviceName, uploadedInputStream);
 	}
 	
 	@PUT
 	@Path("/services/xml")
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response deployServiceFromXML(String uploadedInputStream){
-		return internalEngine.deployServiceFromXML(uploadedInputStream);
+	public Response deployServiceFromXML(String uploadedInputStream) throws SalsaEngineException{
+		return engine.deployServiceFromXML(uploadedInputStream);
 	}
 	
 	
 	@POST
 	@Path("/services/{serviceId}/nodes/{nodeId}/scaleout")
 	public Response scaleOutNode(@PathParam("serviceId")String serviceId, 
-								 @PathParam("nodeId") String nodeId){
-		return internalEngine.scaleOutNode(serviceId, nodeId);
+								 @PathParam("nodeId") String nodeId) throws SalsaEngineException{
+		return engine.scaleOutNode(serviceId, nodeId);
 	}
 	
 	@POST
 	@Path("/services/{serviceId}/nodes/{nodeId}/scalein")
 	public Response scaleInNode(@PathParam("serviceId")String serviceId, 
-								 @PathParam("nodeId") String nodeId){
-		return internalEngine.scaleInNode(serviceId, nodeId);
+								 @PathParam("nodeId") String nodeId) throws SalsaEngineException{
+		return engine.scaleInNode(serviceId, nodeId);
 	}
 	
 	
 	@Override
 	@DELETE
 	@Path("/services/{serviceId}")
-	public Response undeployService(@PathParam("serviceId")String serviceId){
-		return internalEngine.undeployService(serviceId);
+	public Response undeployService(@PathParam("serviceId")String serviceId) throws SalsaEngineException {
+		return engine.undeployService(serviceId);
 	}
 	
 	@Override
@@ -86,8 +87,8 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
     public Response spawnInstance(@PathParam("serviceId") String serviceId,
                                   @PathParam("topologyId") String topologyId,
                                   @PathParam("nodeId") String nodeId,
-                                  @PathParam("quantity") int quantity) {
-		return internalEngine.spawnInstance(serviceId, topologyId, nodeId, quantity);
+                                  @PathParam("quantity") int quantity) throws SalsaEngineException {
+		return engine.spawnInstance(serviceId, topologyId, nodeId, quantity);
 	}
 	
 	/**
@@ -112,8 +113,8 @@ public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 	@Override
 	@GET
 	@Path("/services/{serviceId}")
-	public Response fetchStatus(@PathParam("serviceId") String serviceId) {		
-		return internalEngine.getService(serviceId);
+	public Response fetchStatus(@PathParam("serviceId") String serviceId) throws SalsaEngineException {		
+		return engine.getService(serviceId);
 	}
 	
 	

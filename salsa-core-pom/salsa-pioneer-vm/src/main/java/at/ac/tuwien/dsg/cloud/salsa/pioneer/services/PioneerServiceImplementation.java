@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaPioneerInterface;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.ArtifactDeployer;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
@@ -25,7 +26,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 public class PioneerServiceImplementation implements SalsaPioneerInterface {
 	
 	@Override
-	public String deployNode(String nodeID, int instanceId){
+	public String deployNode(String nodeID, int instanceId) {
 		
 		PioneerLogger.logger.debug("Recieve command to deploy node: " + nodeID);
 		
@@ -44,13 +45,22 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(
 				SalsaPioneerConfiguration.getSalsaCenterEndpoint(), 
 				SalsaPioneerConfiguration.getWorkingDir(), PioneerLogger.logger);
-		TDefinitions def = centerCon.getToscaDescription(serviceId);// get the latest service description		
-		CloudService serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime(serviceId);
+		TDefinitions def = centerCon.getToscaDescription(serviceId);// get the latest service description
+		CloudService serviceRuntimeInfo;
+		try {
+			serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime(serviceId);
+		} catch (SalsaEngineException e){
+			return "";
+		}
 				
 		ArtifactDeployer deployer = new ArtifactDeployer(serviceId, topologyId, nodeID, vm_instanceId, def, centerCon, serviceRuntimeInfo);
 		TNodeTemplate thisNode = ToscaStructureQuery.getNodetemplateById(nodeID, def);
-				
-		return deployer.deploySingleNode(thisNode, instanceId);		
+		String newId="";
+		try {
+			newId = deployer.deploySingleNode(thisNode, instanceId);
+		} catch (SalsaEngineException e){			
+		}
+		return newId;
 	}
 
 	
@@ -105,9 +115,13 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(
 				SalsaPioneerConfiguration.getSalsaCenterEndpoint(), 
 				SalsaPioneerConfiguration.getWorkingDir(), PioneerLogger.logger);
-		TDefinitions def = centerCon.getToscaDescription(serviceId);// get the latest service description		
-		CloudService serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime(serviceId);
-		
+		TDefinitions def = centerCon.getToscaDescription(serviceId);// get the latest service description
+		CloudService serviceRuntimeInfo;
+		try {
+			serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime(serviceId);
+		} catch (SalsaEngineException e){
+			return "";
+		}		
 		ArtifactDeployer deployer = new ArtifactDeployer(serviceId, topologyId, nodeID, thisInstanceId, def, centerCon, serviceRuntimeInfo);
 		TNodeTemplate nodeForRemove = ToscaStructureQuery.getNodetemplateById(nodeID, def);
 		

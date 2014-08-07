@@ -15,12 +15,10 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +28,8 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaRelationshipType;
-import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaPioneerInterface;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.StacksConfigurator.DockerConfigurator;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.AptGetInstrument;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.BashInstrument;
@@ -46,8 +44,6 @@ import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.SalsaMappingProperty;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 
 public class ArtifactDeployer {
@@ -73,7 +69,7 @@ public class ArtifactDeployer {
 	
 	// Deploy upper nodes which are hosted on the current VM node
 		public void deployNodeChain(TNodeTemplate thisNode)
-				throws IOException {
+				throws IOException, SalsaEngineException {
 			// download full topology from web
 			//def = centerCon.updateTopology();
 			//PioneerLogger.logger.debug("Update topology service: " + def.getId());
@@ -130,7 +126,7 @@ public class ArtifactDeployer {
 		}
 		
 		
-		public String deploySingleNode(TNodeTemplate node, int instanceId){
+		public String deploySingleNode(TNodeTemplate node, int instanceId) throws SalsaEngineException{
 			logger.debug("Starting deploy node: "+node.getId() + "/" + instanceId);
 			centerCon.logMessage("Deploy Single Node: " + node.getId() + "/" + instanceId + " of service: " + serviceId);
 			serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime(serviceId);			
@@ -228,7 +224,7 @@ public class ArtifactDeployer {
 				this.instanceId = instanceId;
 			}
 
-			private synchronized void executeDeploymentNode() {
+			private synchronized void executeDeploymentNode() throws SalsaEngineException {
 				logger.debug("Executing the deployment for node: " + node.getId() +", instance: " + instanceId );
 				//runNodeArtifacts(node, Integer.toString(instanceId), def);
 				deploySingleNode(node, instanceId);
@@ -237,7 +233,11 @@ public class ArtifactDeployer {
 
 			@Override
 			public void run() {
-				executeDeploymentNode();	
+				try {
+					executeDeploymentNode();
+				} catch (SalsaEngineException e){
+					PioneerLogger.logger.error(e.getMessage());
+				}
 				
 			}
 
@@ -245,7 +245,7 @@ public class ArtifactDeployer {
 		
 		
 		// waiting for capabilities and fulfill requirements
-		private void waitingForCapabilities(TNodeTemplate node, TDefinitions def) {
+		private void waitingForCapabilities(TNodeTemplate node, TDefinitions def) throws SalsaEngineException {
 			if (node.getRequirements()==null){
 				return;	// node have no requirement
 			}
@@ -415,7 +415,7 @@ public class ArtifactDeployer {
 		 * CHECK THE STATE OF THE FIRST INSTANCE OF THE COMPONENT
 		 * CURRENTLY, instanceId is not need, but future.
 		 */
-		public boolean checkCapabilityReady(String capaId) {
+		public boolean checkCapabilityReady(String capaId) throws SalsaEngineException {
 			logger.debug("Check capability for capaid: " + capaId);
 			TNodeTemplate node = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capaId, def);
 			if (node==null){	// capaId is not valid
@@ -443,7 +443,7 @@ public class ArtifactDeployer {
 		
 		
 		// can handle null value (see SalsaCenterConnector)
-		private String waitRelationshipReady(String topoId, int replica, TCapability capa, TRequirement req){
+		private String waitRelationshipReady(String topoId, int replica, TCapability capa, TRequirement req) throws SalsaEngineException{
 			TRelationshipTemplate rela = ToscaStructureQuery.getRelationshipBetweenTwoCapaReq(capa, req, def);			
 			while (!checkCapabilityReady(capa.getId())){
 				try{
@@ -486,7 +486,7 @@ public class ArtifactDeployer {
 		}
 		
 		
-		public String getVMProperty(String propName){
+		public String getVMProperty(String propName) throws SalsaEngineException{
 			String res="";
 			ServiceInstance nodeData = serviceRuntimeInfo.getComponentById(topologyId, nodeId).getInstanceById(hostedVmInstanceId);			
 			SalsaInstanceDescription_VM vm= (SalsaInstanceDescription_VM)nodeData.getProperties().getAny();

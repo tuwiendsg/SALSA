@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -54,9 +53,10 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityT
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.rSYBL.deploymentDescription.AssociatedVM;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.rSYBL.deploymentDescription.DeploymentDescription;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.rSYBL.deploymentDescription.DeploymentUnit;
-import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineIntenalInterface;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineServiceIntenal;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.SalsaToscaDeployer;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterConfiguration;
@@ -69,8 +69,8 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 @Service
-@Path("/")
-public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
+//@Path("/")
+public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	static Logger logger;
 	static File configFile;
 	SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
@@ -80,7 +80,7 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 		if (tmpFile.exists()) {
 			configFile = tmpFile;
 		} else {
-			configFile = new File(SalsaEngineInternal.class.getResource("/cloudUserParameters.ini").getFile());
+			configFile = new File(SalsaEngineImplAll.class.getResource("/cloudUserParameters.ini").getFile());
 		}
 		logger = Logger.getLogger("EngineLogger");
 	}
@@ -89,12 +89,8 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 	 * MAIN SERVICES TO EXPOSE TO USERS
 	 */
 	
-	
-
 	@Override
-	public Response deployService(
-			 String serviceName, 
-			 InputStream uploadedInputStream) {
+	public Response deployService( String serviceName, InputStream uploadedInputStream) throws SalsaEngineException{
 		logger.debug("Recieved deployment request with name: " + serviceName);
 		String tmp_id = UUID.randomUUID().toString();
 		String tmpFile="/tmp/salsa_tmp_"+tmp_id;
@@ -136,7 +132,7 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 	
 	
 	@Override
-	public Response deployServiceFromXML(String uploadedInputStream) {	
+	public Response deployServiceFromXML(String uploadedInputStream) throws SalsaEngineException {	
 		String tmp_id = UUID.randomUUID().toString();
 		String tmpFile="/tmp/salsa_tmp_"+tmp_id;
 				
@@ -169,7 +165,7 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 	 * @see at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineIntenalInterface#undeployService(java.lang.String)
 	 */
 	@Override
-	public Response undeployService(String serviceId){
+	public Response undeployService(String serviceId) throws SalsaEngineException {
 		logger.debug("DELETING SERVICE: " + serviceId);		
 		if (deployer.cleanAllService(serviceId)) {
 			// deregister service here
@@ -199,7 +195,7 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
    public Response spawnInstance( String serviceId,
                                    String topologyId,
                                    String nodeId,
-                                   int quantity) {
+                                   int quantity) throws SalsaEngineException{
 		logger.debug("SPAWNING MORE INSTANCE: " + serviceId + "/" + topologyId + "/" + nodeId + ". Quantity:" + quantity);
 
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
@@ -221,7 +217,7 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 	}
 	
 	@Override
-	public Response scaleOutNode(String serviceId, String nodeId){
+	public Response scaleOutNode(String serviceId, String nodeId) throws SalsaEngineException{
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
 		CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 		ServiceTopology topo = service.getTopologyOfNode(nodeId);
@@ -264,7 +260,7 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 		return Response.status(201).entity(vm.getPrivateIp()).build();
 	}
 	
-	public Response scaleInNode(String serviceId, String nodeId){
+	public Response scaleInNode(String serviceId, String nodeId) throws SalsaEngineException{
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
 		CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 		ServiceTopology topo = service.getTopologyOfNode(nodeId);
@@ -276,7 +272,7 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 		return Response.status(404).entity("Found no instance to remove").build();
 	}
 	
-	public Response scaleInVM(String serviceId,String vmIp){
+	public Response scaleInVM(String serviceId,String vmIp) throws SalsaEngineException{
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
 		CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 		for (ServiceTopology topo : service.getComponentTopologyList()) {
@@ -327,7 +323,11 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 
 		@Override
 		public void run() {
-			deployer.deployOneMoreInstance(serviceId, topoId, nodeId, instanceId, def, service);			
+			try {
+				deployer.deployOneMoreInstance(serviceId, topoId, nodeId, instanceId, def, service);
+			} catch (SalsaEngineException e){
+				EngineLogger.logger.error(e.getMessage());
+			}
 		}		
 	}
 	
@@ -337,7 +337,7 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 			String serviceId,
 			String topologyId,
 			String nodeId, 
-			int instanceId){
+			int instanceId) throws SalsaEngineException{
 		logger.debug("Deployment request for this node: " + serviceId + " - " + nodeId +" - " + instanceId);
 		logger.debug("PUT 1 MORE INSTANCE: " + serviceId + "/" + topologyId + "/" + nodeId);
 
@@ -360,7 +360,7 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 			 String serviceId,
 			 String topologyId,
 			 String nodeId,
-			 int instanceId){
+			 int instanceId) throws SalsaEngineException{
 		int instanceIdInt = instanceId;
 		if (deployer.removeOneInstance(serviceId, topologyId, nodeId, instanceIdInt)){			
 			// remove metadata
@@ -423,7 +423,7 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 	//static boolean getServiceLocked=false;
 	
 	@Override
-	public Response getService(String serviceDeployId) {		
+	public Response getService(String serviceDeployId) throws SalsaEngineException {		
 		if (serviceDeployId.equals("")){		
 			return Response.status(400).entity("").build();
 		}
@@ -441,7 +441,7 @@ public class SalsaEngineInternal implements SalsaEngineIntenalInterface {
 			return Response.status(200).entity(xml).build();
 		} catch (Exception e) {
 			logger.error("Could not find service: " + serviceDeployId + ". Data did not be sent. Error: " + e.toString());
-			return Response.status(500).entity("").build();
+			throw new SalsaEngineException("Could not find service: " + serviceDeployId , false);			
 		}
 	}
 	

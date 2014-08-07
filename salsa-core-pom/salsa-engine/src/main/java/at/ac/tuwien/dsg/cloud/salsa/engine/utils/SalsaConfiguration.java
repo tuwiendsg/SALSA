@@ -1,5 +1,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.utils;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -10,13 +12,19 @@ import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProvid
 public class SalsaConfiguration {
 	private static Properties configuration;
 	static Logger logger;
+	static String CONFIG_FILE="/etc/salsa.engine.properties";
 	
 	static {
 		configuration = new Properties();
 		try {
-			InputStream is = SalsaConfiguration.class.getClassLoader()
-					.getResourceAsStream("salsa.engine.properties");
-			configuration.load(is);
+			
+			File f = new File(CONFIG_FILE);
+			if (f.exists()) {
+				configuration.load(new FileReader(f));
+			} else {
+				InputStream is = SalsaConfiguration.class.getClassLoader().getResourceAsStream("salsa.engine.properties");
+				configuration.load(is);
+			}			
 			logger = Logger.getLogger("deploymentLogger");
 			
 			//(new File(getWorkingDir())).mkdirs();

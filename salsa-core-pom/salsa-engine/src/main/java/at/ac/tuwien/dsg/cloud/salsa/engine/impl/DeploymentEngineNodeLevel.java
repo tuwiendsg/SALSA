@@ -14,6 +14,7 @@ import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProvid
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
@@ -53,7 +54,7 @@ public class DeploymentEngineNodeLevel {
 	 * @param def
 	 * @return A Node with capabilities properties.
 	 */
-	public ServiceInstance deployVMNode(String serviceId, String topologyId, String nodeId, int instanceId, TDefinitions def) {
+	public ServiceInstance deployVMNode(String serviceId, String topologyId, String nodeId, int instanceId, TDefinitions def) throws SalsaEngineException{
 		EngineLogger.logger.info("Creating this VM node: " + nodeId +". Tosca ID:" + def.getId());
 		
 		java.util.Date date= new java.util.Date();
@@ -132,11 +133,7 @@ public class DeploymentEngineNodeLevel {
 		// TODO: Build recipe base on node
 		userDataBuffer.append("");
 		userDataBuffer.append("");
-		
-		
-		
-		
-		
+				
 		return userDataBuffer.toString();
 	}
 	
