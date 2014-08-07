@@ -24,6 +24,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityS
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaPioneerInterface;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.InstrumentShareData;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.services.PioneerServiceImplementation;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
@@ -62,7 +63,7 @@ public class Main {
 	private static SalsaCenterConnector centerCon;
 	private static CloudService serviceRuntimeInfo;
 
-	public static void main(String[] args) throws IOException, JAXBException {
+	public static void main(String[] args) throws IOException, JAXBException, SalsaEngineException {
 		// Some ready variables		
 		
 		if (args[0].equals("test")){
@@ -237,14 +238,18 @@ public class Main {
 	private static class pullingTaskThread implements Runnable {		
 		
 		@Override
-		public void run() {
+		public void run()  {
 			// monitor here
 			PioneerLogger.logger.debug("Thread for pulling STAGE ServiceInstance is started...");		
 			while (true){
 				SalsaCenterConnector con = new SalsaCenterConnector(SalsaPioneerConfiguration.getSalsaCenterEndpoint(), 
 										SalsaPioneerConfiguration.getWorkingDir(), PioneerLogger.logger);
-				
-				CloudService service = con.getUpdateCloudServiceRuntime(serviceId);
+				CloudService service;
+				try {
+					service = con.getUpdateCloudServiceRuntime(serviceId);
+				} catch (SalsaEngineException e){
+					return;
+				}
 				List<ServiceUnit> units = service.getAllComponent();
 				for (ServiceUnit unit : units) {
 					// case that node is hosted directly on pioneer node

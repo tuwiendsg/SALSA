@@ -17,6 +17,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector.HttpVerb;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 
 public class TestExp2 {
@@ -45,7 +46,7 @@ public class TestExp2 {
 	//3ee1bd18-32c3-4d35-acd0-c52a820b0c33/
 	//topologies/DataMarketAgence/
 	//nodes/agence_os/instances/323
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SalsaEngineException {
 		//expSinusoidalShapheData();
 		//expLinearData();
 		

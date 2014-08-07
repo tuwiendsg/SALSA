@@ -19,15 +19,12 @@ import org.springframework.stereotype.Service;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnitRelationship;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 
 @Service
 @Path("/")
-public interface SalsaEngineIntenalInterface {
-
-	@GET
-	@Path("/health")
-	public String health();
+public interface SalsaEngineServiceIntenal {
 	
 	/**
 	 * This service deploys the whole Tosca file.
@@ -40,39 +37,138 @@ public interface SalsaEngineIntenalInterface {
 	@Path("/services/{serviceName}")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response deployService(@PathParam("serviceName") String serviceName,
-			@Multipart("file") InputStream uploadedInputStream);
+			@Multipart("file") InputStream uploadedInputStream) throws SalsaEngineException;
+	
+	/**
+	 * Deploy new service by submitting the XML directly in the data
+	 * @param uploadedInputStream
+	 * @return
+	 */
 	@PUT
 	@Path("/services/xml")
 	@Consumes(MediaType.APPLICATION_XML)	
-	public Response deployServiceFromXML(String uploadedInputStream);
+	public Response deployServiceFromXML(String uploadedInputStream) throws SalsaEngineException;
 	
+	/**
+	 * Remove the whole cloud service 
+	 * @param serviceId
+	 * @return
+	 */
 	@DELETE
 	@Path("/services/{serviceId}")
-	public Response undeployService(@PathParam("serviceId") String serviceId);
-
+	public Response undeployService(@PathParam("serviceId") String serviceId) throws SalsaEngineException;
+	
+	
+	/**
+	 * This service deploy a number of service units
+	 * @param serviceId
+	 * @param topologyId
+	 * @param nodeId
+	 * @param quantity
+	 * @return
+	 */
 	@POST
     @Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instance-count/{quantity}")
 	//@Produces(MediaType.APPLICATION_JSON)
 	public Response spawnInstance(@PathParam("serviceId")String serviceId, 
 			@PathParam("topologyId")String topologyId,
 			 @PathParam("nodeId") String nodeId, 
-			 @PathParam("quantity") int quantity);
-
+			 @PathParam("quantity") int quantity) throws SalsaEngineException;
+	
+	/**
+	 * This method does scale out, is used by rSYBL
+	 * @param serviceId
+	 * @param nodeId
+	 * @return
+	 */
 	@POST
 	@Path("/services/{serviceId}/nodes/{nodeId}/scaleout")
 	public Response scaleOutNode(@PathParam("serviceId")String serviceId, 
-								 @PathParam("nodeId") String nodeId);
+								 @PathParam("nodeId") String nodeId) throws SalsaEngineException;
 	
+	/**
+	 * This method does scale in, is used by rSYBL
+	 * @param serviceId
+	 * @param nodeId
+	 * @return
+	 */
 	@POST
 	@Path("/services/{serviceId}/nodes/{nodeId}/scalein")
 	public Response scaleInNode(@PathParam("serviceId")String serviceId, 
-								 @PathParam("nodeId") String nodeId);
+								 @PathParam("nodeId") String nodeId) throws SalsaEngineException;
 	
+	/**
+	 * This method do scale in at the VM level, by taking the VM's IP
+	 * @param serviceId
+	 * @param vmIp
+	 * @return
+	 */
 	@POST
 	@Path("/services/{serviceId}/vmnodes/{ip}/scalein")
 	public Response scaleInVM(@PathParam("serviceId")String serviceId, 
-								 @PathParam("ip") String vmIp);
+								 @PathParam("ip") String vmIp) throws SalsaEngineException;
 	
+		
+	/**
+	 * This method will destroy an instance, regardless it is a VM or a software
+	 * @param serviceId
+	 * @param topologyId
+	 * @param nodeId
+	 * @param instanceId
+	 * @return
+	 */
+	@DELETE
+	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}")
+	public Response destroyInstance(@PathParam("serviceId")String serviceId, 
+			@PathParam("topologyId")String topologyId,
+			@PathParam("nodeId") String nodeId, 
+			@PathParam("instanceId")int instanceId) throws SalsaEngineException;
+	
+	/**
+	 * Get service description in SALSA XML format
+	 * 
+	 * @param serviceName
+	 *            The deployment ID of service
+	 * @return XML document of service
+	 */
+	@GET
+	@Path("/services/{serviceId}")
+	@Produces(MediaType.TEXT_XML)
+	public Response getService(@PathParam("serviceId")String serviceDeployId) throws SalsaEngineException;
+	
+	/**
+	 * Get service description in TOSCA
+	 * 
+	 * @param serviceName
+	 *            The deployment ID of service
+	 * @return XML document of service
+	 */
+	@GET
+	@Path("/services/tosca/{serviceId}")
+	@Produces(MediaType.TEXT_XML)
+	public Response getToscaService(@PathParam("serviceId")String serviceDeployId);
+	
+	@GET
+	@Path("/services/tosca/{serviceId}/syblapp")
+	@Produces(MediaType.TEXT_XML)
+	public Response getServiceSYBL_APP_DESP(@PathParam("serviceId")String serviceDeployId);
+	
+	
+	@GET
+	@Path("/services/tosca/{serviceId}/sybl")
+	@Produces(MediaType.TEXT_XML)
+	public Response getServiceSYBL_DEP_DESP(@PathParam("serviceId")String serviceDeployId);
+	
+	
+	
+	
+	
+	
+
+	@GET
+	@Path("/health")
+	public String health();
+		
 	
 	@POST
     @Path("/services/{serviceId}/topologies/{topologyId}")
@@ -101,37 +197,9 @@ public interface SalsaEngineIntenalInterface {
 	public Response deployInstance(@PathParam("serviceId") String serviceId, 
 			@PathParam("topologyId")String topologyId,
 			@PathParam("nodeId")String nodeId, 
-			@PathParam("instanceId")int instanceId);
+			@PathParam("instanceId")int instanceId) throws SalsaEngineException;
 	
 
-
-	/**
-	 * Undeploy an instance
-	 * @param serviceId
-	 * @param topologyId
-	 * @param nodeId
-	 * @param instanceId
-	 * @return
-	 */
-	@DELETE
-	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}")
-	public Response destroyInstance(@PathParam("serviceId")String serviceId, 
-			@PathParam("topologyId")String topologyId,
-			@PathParam("nodeId") String nodeId, 
-			@PathParam("instanceId")int instanceId);
-
-	/**
-	 * Get service description
-	 * 
-	 * @param serviceName
-	 *            The deployment ID of service
-	 * @return XML document of service
-	 */
-	@GET
-	@Path("/services/{serviceId}")
-	@Produces(MediaType.TEXT_XML)
-	public Response getService(@PathParam("serviceId")String serviceDeployId);
-	
 //	@GET
 //	@Path("/services/{serviceId}/lock")
 //	@Produces(MediaType.TEXT_XML)
@@ -141,29 +209,6 @@ public interface SalsaEngineIntenalInterface {
 //	@Path("/services/{serviceId}/unlock")
 //	@Produces(MediaType.TEXT_XML)
 //	public Response getServiceToUnLock(@PathParam("serviceId")String serviceDeployId);
-
-	/**
-	 * Get service description in TOSCA
-	 * 
-	 * @param serviceName
-	 *            The deployment ID of service
-	 * @return XML document of service
-	 */
-	@GET
-	@Path("/services/tosca/{serviceId}")
-	@Produces(MediaType.TEXT_XML)
-	public Response getToscaService(@PathParam("serviceId")String serviceDeployId);
-	
-	@GET
-	@Path("/services/tosca/{serviceId}/syblapp")
-	@Produces(MediaType.TEXT_XML)
-	public Response getServiceSYBL_APP_DESP(@PathParam("serviceId")String serviceDeployId);
-	
-	
-	@GET
-	@Path("/services/tosca/{serviceId}/sybl")
-	@Produces(MediaType.TEXT_XML)
-	public Response getServiceSYBL_DEP_DESP(@PathParam("serviceId")String serviceDeployId);
 	
 	
 	/**
