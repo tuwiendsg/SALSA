@@ -9,6 +9,7 @@ import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudParameter;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudParametersUser;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.flexiant.FlexiantConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.flexiant.FlexiantParameterStrings;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud.OpenStackJcloud;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud.OpenStackParameterStrings;
@@ -51,38 +52,6 @@ public class MultiCloudConnector {
 				break;
 			}
 			
-//			case DSG_OPENSTACK:
-//				CloudParameter param = paramUser.getParameter("dsg", "openstack");
-//
-//				// default value. Should get from contributed method later.
-//				int socketTimeout = 5000;
-//				int connectionTimeout = 3000;
-//				int connectionManagerTimeout = 6000;
-//				int maxRetries = 10;
-//				int maxConnections = 10;
-//				System.out
-//						.println(param.getParameter(OpenStackParameterStrings.SECRET_KEY)
-//								+ " - "
-//								+ param.getParameter(OpenStackParameterStrings.ACCESS_KEY)
-//								+ "-"
-//								+ param.getParameter(OpenStackParameterStrings.END_POINT));
-//
-//				JEC2ClientFactory cf = new JEC2ClientFactory(
-//						logger,
-//						param.getParameter(OpenStackParameterStrings.ACCESS_KEY),
-//						param.getParameter(OpenStackParameterStrings.SECRET_KEY),
-//						param.getParameter(OpenStackParameterStrings.END_POINT),
-//						Integer.parseInt(param
-//								.getParameter(OpenStackParameterStrings.PORT)),
-//						socketTimeout, connectionTimeout,
-//						connectionManagerTimeout, maxRetries, maxConnections);
-//				long retryDelayMillis = 5000;
-//				int deployMaxRetries = 24;
-//				long deployWaitMillis = 10000;
-//				String sshName = param.getParameter(OpenStackParameterStrings.SSH_KEY_NAME);
-//				cloud = new OpenStackTypica(logger, cf, maxRetries,
-//						retryDelayMillis, deployMaxRetries, deployWaitMillis, sshName);
-//				break;
 			case LAL_STRATUSLAB:
 			{
 				CloudParameter param1 = paramUser.getParameter("lal", "stratuslab");
@@ -107,16 +76,23 @@ public class MultiCloudConnector {
 						+ " - " + user_public_key_file);
 				break;
 			}
-			case CELAR_FLEXIANT:{
+			case CELAR_FLEXIANT:
+			{
 				CloudParameter param = paramUser.getParameter("celar", "flexiant");
 				String email = param.getParameter(FlexiantParameterStrings.email);				
-				String apiUserString = param.getParameter(FlexiantParameterStrings.apiUserName);
 				String customerUUID = param.getParameter(FlexiantParameterStrings.customerUUID);
 				String password = param.getParameter(FlexiantParameterStrings.password);
 				String endpoint = param.getParameter(FlexiantParameterStrings.endpoint);
-				logger.info("Connection to Flexiant. Endpoint: " + endpoint +", uuid: " + customerUUID + ", api: " + apiUserString);
+				String vdcUUID = param.getParameter(FlexiantParameterStrings.vdcUUID);
 				
+				String defaultProductOfferUUID = param.getParameter(FlexiantParameterStrings.defaultProductOfferUUID);
+				String clusterUUID = param.getParameter(FlexiantParameterStrings.clusterUUID);
+				String networkUUID = param.getParameter(FlexiantParameterStrings.networkUUID);
+				String sshKey = param.getParameter(FlexiantParameterStrings.sshkey);
+				logger.info("Connection to Flexiant. Endpoint: " + endpoint +", uuid: " + customerUUID);
 				
+				cloud = new FlexiantConnector(logger, email, customerUUID, password, endpoint, vdcUUID, defaultProductOfferUUID, clusterUUID, networkUUID, sshKey);
+				break;
 			}
 			default:
 				logger.error("Undefined Cloud Connector !");
