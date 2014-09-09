@@ -67,12 +67,20 @@
 		  <version>3.0.0-milestone1</version>
 		</dependency>
 		
+<!-- 		<dependency> -->
+<!-- 		  <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId> -->
+<!-- 		  <artifactId>flexiant-jade-user</artifactId> -->
+<!-- 		  <version>0.0.1-SNAPSHOT</version> -->
+<!-- 		  <scope>system</scope> -->
+<!-- 		  <systemPath>${project.basedir}/lib/flexiant-jade-user-0.0.1-SNAPSHOT.jar</systemPath> -->
+<!-- 		</dependency> -->
+		
 		<dependency>
 		  <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
 		  <artifactId>flexiant-jade-user</artifactId>
 		  <version>0.0.1-SNAPSHOT</version>
-		  <scope>system</scope>
-		  <systemPath>${project.basedir}/lib/flexiant-jade-user-0.0.1-SNAPSHOT.jar</systemPath>
+<!-- 		  <scope>system</scope> -->
+<!-- 		  <systemPath>${project.basedir}/lib/flexiant-jade-user-0.0.1-SNAPSHOT.jar</systemPath> -->
 		</dependency>
 
 	</dependencies>
@@ -96,6 +104,10 @@
 		<repository>
 			<id>infosys-repo</id>
 			<url>http://www.infosys.tuwien.ac.at/mvn</url>
+		</repository>
+		<repository>
+		    <id>my</id>
+		    <url>file://${project.basedir}/lib</url>
 		</repository>
 	</repositories>
 

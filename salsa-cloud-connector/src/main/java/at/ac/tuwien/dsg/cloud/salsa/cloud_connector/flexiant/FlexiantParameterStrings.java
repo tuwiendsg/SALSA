@@ -5,10 +5,14 @@ import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ParameterStringsEnumInterfac
 
 public enum FlexiantParameterStrings implements ParameterStringsEnumInterface {
 	email("email"),
-	apiUserName("apiUserName"),
-	customerUUID("customerUUID"),
+	customerUUID("customerUUID"),	
 	password("password"),
-	endpoint("endpoint");
+	endpoint("endpoint"),
+	vdcUUID("vdcUUID"),
+	defaultProductOfferUUID("defaultProductOfferUUID"),
+	clusterUUID("clusterUUID"),
+	networkUUID("networkUUID"),
+	sshkey("sshkey");
 	
 	private String value;
 	
