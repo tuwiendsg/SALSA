@@ -30,8 +30,8 @@ public class SalsaEngineServiceExceptionMapper implements ExceptionMapper<SalsaE
     	} else {
     		ErrorResponse er = new ErrorResponse().withCode(404).withMessage("Salsa Client Error: " + exception.getMessage());
     		String json = gson.toJson(er);
-       		return Response.serverError().type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
-    	}    	
+       		return Response.status(Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    	}
     }
 
     class ErrorResponse {
@@ -69,11 +69,11 @@ public class SalsaEngineServiceExceptionMapper implements ExceptionMapper<SalsaE
             return this;
         }
         
-        @Override
-    	public String toString() {
-    	   return "ErrorResponse [error-code=" + code + ", error-message=" + message + ", document-uri="
-    		+ documentationUri + "]";
-    	}
+//        @Override
+//    	public String toString() {
+//    	   return "ErrorResponse [error-code=" + code + ", error-message=" + message + ", document-uri="
+//    		+ documentationUri + "]";
+//    	}
         
     }
     
