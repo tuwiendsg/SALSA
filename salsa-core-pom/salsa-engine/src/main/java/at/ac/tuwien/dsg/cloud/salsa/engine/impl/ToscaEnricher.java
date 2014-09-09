@@ -171,8 +171,8 @@ public class ToscaEnricher {
 			// refine some fields
 			nextNode.setType(new QName(nextNode.getId()));
 			nextNode.setId(nextNode.getId() + "_OF_" + node.getId());
-			nextNode.setMinInstances(1);
-			nextNode.setMaxInstances("unbounded");
+//			nextNode.setMinInstances(1);
+//			nextNode.setMaxInstances("unbounded");
 			
 			if (art != null){	// some node have artifact. some node like os doesn't
 				String artId = "Artifact_" + nextNode.getId();
@@ -308,6 +308,8 @@ public class ToscaEnricher {
 				if (refNode.getProperties()!=null && refNode.getProperties().getAny()!=null){
 					newNode.setProperties(new Properties());
 					newNode.getProperties().setAny((refNode.getProperties().getAny()));
+					newNode.setMinInstances(refNode.getMinInstances());
+					newNode.setMaxInstances(refNode.getMaxInstances());
 				}						
 				return newNode;
 			}
@@ -439,6 +441,8 @@ public class ToscaEnricher {
 					maps.put(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString(), map);
 					
 					node.getProperties().setAny(maps);
+					node.setMinInstances(1);
+					node.setMaxInstances("unbounded");
 				} //if !found
 			}
 		}

@@ -68,9 +68,14 @@ public class SalsaConfiguration {
 	}
 	
 	public static String getSalsaCenterEndpointForCloudProvider(SalsaCloudProviders provider){
-		String configKey = "SALSA_CENTER_ENDPOINT_@_"+provider.getCloudProviderString();
-		System.out.println(configKey);
-		return configuration.getProperty(configKey);
+		if (provider==SalsaCloudProviders.DSG_OPENSTACK){
+			return configuration.getProperty("SALSA_CENTER_ENDPOINT_LOCAL");
+		} else {
+			return configuration.getProperty("SALSA_CENTER_ENDPOINT");
+		}
+//		String configKey = "SALSA_CENTER_ENDPOINT_@_"+provider.getCloudProviderString();
+//		System.out.println(configKey);
+//		return configuration.getProperty(configKey);
 	}
 	
 	public static String getServiceStorageDir(){
