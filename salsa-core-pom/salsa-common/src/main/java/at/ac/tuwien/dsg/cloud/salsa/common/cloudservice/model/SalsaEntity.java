@@ -8,11 +8,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity.Actions.Action;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 
 /**
@@ -38,35 +38,13 @@ public class SalsaEntity {
 	@XmlElement(name = "monitoring")
 	SalsaEntity.Monitoring monitoring;
 	
-	@XmlElement(name = "actions")
-	Actions actions = null;
+	@XmlElement(name = "ConfigurationCapabilities")
+	SalsaEntity.ConfigurationCapabilities confCapa;
 	
+	@XmlElement(name = "ConfigurationCapabilitiesQueue")
+	List<String> capaQueue = new ArrayList<>();
 	
-	
-	
-	@XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "actions")
-	public static class Actions {
-		@XmlElement(name = "action")
-		List<Action> actions = new ArrayList<>();
 		
-		public static class Action{
-			@XmlAttribute
-			protected String name;
-			@XmlElement	
-	        protected String command;
-			
-			public String getName() {
-				return name;
-			}
-			
-			public String getCommand() {
-				return command;
-			}
-		}
-		
-	}
-	
 	@XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "source")
     public static class Monitoring {
@@ -84,6 +62,22 @@ public class SalsaEntity {
             this.any = value;
         }
     }
+	
+	@XmlAccessorType(XmlAccessType.FIELD)
+	@XmlType(name = "")
+	@XmlRootElement(name = "ConfigurationCapabilities")
+	public static class ConfigurationCapabilities{
+		@XmlElement(name = "ConfigurationCapability")
+		List<ConfigurationCapability> configurationCapabilties = null;
+
+		public List<ConfigurationCapability> getConfigurationCapabilties() {
+			if (this.configurationCapabilties==null){
+				this.configurationCapabilties = new ArrayList<>();
+			}
+			return configurationCapabilties;
+		}		
+	}
+	
 	
 	public SalsaEntity(){		
 	}
@@ -130,53 +124,41 @@ public class SalsaEntity {
 	    }
 	}
 
-	public List<Action> getActions() {
-		if (this.actions==null){
-			this.actions = new Actions();
-		}
-		return actions.actions;
-	}
 	
-	public String getAction(String name){		
-		if (this.actions==null){
+	public SalsaEntity.ConfigurationCapabilities getConfCapaList() {
+		return confCapa;
+	}
+
+	public ConfigurationCapability getCapabilityByName(String name){		
+		if (this.confCapa==null){
 			return null;
 		}
-		for (Action action : actions.actions) {
-			if (action.getName().equals(name)){
-				return action.getCommand();
+		for (ConfigurationCapability capa : this.confCapa.getConfigurationCapabilties()) {
+			if (capa.getName().equals(name)){
+				return capa;
 			}
 		}
 		return null;
 	}
 	
-	public void addAction(String name, String cmd){
-		if (this.actions==null){
-			this.actions = new Actions();
-		}
-		Action action = new Action();
-		action.name = name;
-		action.command = cmd;
-		this.actions.actions.add(action);
+	public void queueAction(String capaName){
+		capaQueue.add(capaName);
+	}
+	
+	public void unqueueAction(){
+		capaQueue.remove(0);
+	}
+	
+	public void addConfigurationCapability(ConfigurationCapability conf){
+		this.confCapa.configurationCapabilties.add(conf);
 	}
 
-	public void addAction(Action action){
-		if (this.actions==null){
-			this.actions = new Actions();
-		}
-		Action ac = new Action();
-		ac.name = action.getName();
-		ac.command = action.getCommand();
-		this.actions.actions.add(ac);
+	public SalsaEntity.ConfigurationCapabilities getConfiguationCapapabilities() {
+		return confCapa;
 	}
-	
-	public void removeAction(Action action){
-		if (this.actions==null){
-			return;
-		}
-		this.actions.actions.remove(action);
-	}
-	
-	
-	
+
+	public void setConfiguationCapapabilities(SalsaEntity.ConfigurationCapabilities confCapa) {
+		this.confCapa = confCapa;
+	}	
 	
 }

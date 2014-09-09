@@ -26,6 +26,8 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 @Path("/")
 public interface SalsaEngineServiceIntenal {
 	
+	// INTERFACES FOR SALSA USERS TO DEPLOY AND MANAGE THEIR APPLICATION
+		
 	/**
 	 * This service deploys the whole Tosca file.
 	 * The form which is posted to service must contain all parameters
@@ -76,40 +78,6 @@ public interface SalsaEngineServiceIntenal {
 			 @PathParam("quantity") int quantity) throws SalsaEngineException;
 	
 	/**
-	 * This method does scale out, is used by rSYBL
-	 * @param serviceId
-	 * @param nodeId
-	 * @return
-	 */
-	@POST
-	@Path("/services/{serviceId}/nodes/{nodeId}/scaleout")
-	public Response scaleOutNode(@PathParam("serviceId")String serviceId, 
-								 @PathParam("nodeId") String nodeId) throws SalsaEngineException;
-	
-	/**
-	 * This method does scale in, is used by rSYBL
-	 * @param serviceId
-	 * @param nodeId
-	 * @return
-	 */
-	@POST
-	@Path("/services/{serviceId}/nodes/{nodeId}/scalein")
-	public Response scaleInNode(@PathParam("serviceId")String serviceId, 
-								 @PathParam("nodeId") String nodeId) throws SalsaEngineException;
-	
-	/**
-	 * This method do scale in at the VM level, by taking the VM's IP
-	 * @param serviceId
-	 * @param vmIp
-	 * @return
-	 */
-	@POST
-	@Path("/services/{serviceId}/vmnodes/{ip}/scalein")
-	public Response scaleInVM(@PathParam("serviceId")String serviceId, 
-								 @PathParam("ip") String vmIp) throws SalsaEngineException;
-	
-		
-	/**
 	 * This method will destroy an instance, regardless it is a VM or a software
 	 * @param serviceId
 	 * @param topologyId
@@ -148,6 +116,44 @@ public interface SalsaEngineServiceIntenal {
 	@Produces(MediaType.TEXT_XML)
 	public Response getToscaService(@PathParam("serviceId")String serviceDeployId);
 	
+	
+	// INTERFACES FOR rSYBL
+	
+	
+	/**
+	 * This method does scale out, is used by rSYBL
+	 * @param serviceId
+	 * @param nodeId
+	 * @return
+	 */
+	@POST
+	@Path("/services/{serviceId}/nodes/{nodeId}/scaleout")
+	public Response scaleOutNode(@PathParam("serviceId")String serviceId, 
+								 @PathParam("nodeId") String nodeId) throws SalsaEngineException;
+	
+	/**
+	 * This method does scale in, is used by rSYBL
+	 * @param serviceId
+	 * @param nodeId
+	 * @return
+	 */
+	@POST
+	@Path("/services/{serviceId}/nodes/{nodeId}/scalein")
+	public Response scaleInNode(@PathParam("serviceId")String serviceId, 
+								 @PathParam("nodeId") String nodeId) throws SalsaEngineException;
+	
+	/**
+	 * This method do scale in at the VM level, by taking the VM's IP
+	 * @param serviceId
+	 * @param vmIp
+	 * @return
+	 */
+	@POST
+	@Path("/services/{serviceId}/vmnodes/{ip}/scalein")
+	public Response scaleInVM(@PathParam("serviceId")String serviceId, 
+								 @PathParam("ip") String vmIp) throws SalsaEngineException;
+	
+	
 	@GET
 	@Path("/services/tosca/{serviceId}/syblapp")
 	@Produces(MediaType.TEXT_XML)
@@ -160,11 +166,8 @@ public interface SalsaEngineServiceIntenal {
 	public Response getServiceSYBL_DEP_DESP(@PathParam("serviceId")String serviceDeployId);
 	
 	
+	// INTERFACE FOR THE CLOUD CONNECTOR AND THE PIONEER TO CONNECT TO
 	
-	
-	
-	
-
 	@GET
 	@Path("/health")
 	public String health();
@@ -198,17 +201,6 @@ public interface SalsaEngineServiceIntenal {
 			@PathParam("topologyId")String topologyId,
 			@PathParam("nodeId")String nodeId, 
 			@PathParam("instanceId")int instanceId) throws SalsaEngineException;
-	
-
-//	@GET
-//	@Path("/services/{serviceId}/lock")
-//	@Produces(MediaType.TEXT_XML)
-//	public Response getServiceAndLock(@PathParam("serviceId")String serviceDeployId);
-//	
-//	@GET
-//	@Path("/services/{serviceId}/unlock")
-//	@Produces(MediaType.TEXT_XML)
-//	public Response getServiceToUnLock(@PathParam("serviceId")String serviceDeployId);
 	
 	
 	/**
