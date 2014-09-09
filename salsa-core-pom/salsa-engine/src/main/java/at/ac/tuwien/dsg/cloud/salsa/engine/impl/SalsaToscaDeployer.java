@@ -20,6 +20,8 @@ import javax.ws.rs.core.Response;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ConfigurationCapability;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity.ConfigurationCapabilities;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
@@ -150,19 +152,22 @@ public class SalsaToscaDeployer {
 		enricher.enrichHighLevelTosca();
 
 		// register service, all state is INITIAL
-		String fullToscaFile = SalsaConfiguration.getServiceStorageDir() + "/"
-				+ deployID.toString();
+		String fullToscaFile = SalsaConfiguration.getServiceStorageDir() + "/" 	+ deployID.toString();
 
 		ToscaXmlProcess.writeToscaDefinitionToFile(def, fullToscaFile);
 
+		EngineLogger.logger.debug("debugggg Sep 8 - 1");
+		
 		// register service running data
 		String fullSalsaDataFile = SalsaConfiguration.getServiceStorageDir()
 				+ "/" + deployID.toString() + ".data";
+		EngineLogger.logger.debug("debugggg Sep 8 - 2");
 		CloudService serviceData = buildRuntimeDataFromTosca(def);
+		EngineLogger.logger.debug("debugggg Sep 8 - 3");
 		serviceData.setId(deployID.toString());
 		serviceData.setName(def.getId());
-		SalsaXmlDataProcess.writeCloudServiceToFile(serviceData,
-				fullSalsaDataFile);
+		SalsaXmlDataProcess.writeCloudServiceToFile(serviceData, fullSalsaDataFile);
+		EngineLogger.logger.debug("debugggg Sep 8 - 4");
 
 		// here find all the TOP node
 		List<ServiceUnit> nodes = serviceData.getAllComponent();
@@ -249,9 +254,10 @@ public class SalsaToscaDeployer {
 			}
 			setLock();
 			centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId, repData);
-			boolean result = deployOneMoreInstance_Artifact(serviceId, topologyId, nodeId, instanceId, def);
 			releaseLock();
-			return result;
+			new Thread(new deployOneSoftwareThread(serviceId, topologyId, nodeId, instanceId, def)).start();
+			
+			return true;
 		}
 		
 	}
@@ -281,9 +287,24 @@ public class SalsaToscaDeployer {
 		}
 		return true;
 	}
-
+	
 	private boolean deployOneMoreInstance_Artifact(String serviceId, String topologyId,
 			String nodeId, int instanceId, TDefinitions def) throws SalsaEngineException {
+//		int count = 0;
+//		while (orchestating) {
+//			try {
+//				EngineLogger.logger.debug("Orchestrating blocked: " + nodeId + "/" + instanceId + ". Count: " + count);
+//				Thread.sleep(1000);
+//				count++;
+//				if (count > 50) {	// maximum 5 secs
+//					orchestating = false;
+//				}
+//			} catch (Exception e) {
+//			}
+//		}
+//		setLock();
+		
+		
 		CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 		// find the hosted node of this node
 		EngineLogger.logger.debug("Start the deployment of software stacks. Node id: " + nodeId);
@@ -556,7 +577,6 @@ public class SalsaToscaDeployer {
 			// replica);
 			EngineLogger.logger.debug("Debug 4 - execute deployment node");
 			DeploymentEngineNodeLevel engine = new DeploymentEngineNodeLevel(configFile);
-			EngineLogger.logger.debug("Debug 5 - execute deployment node");
 			return engine.deployVMNode(serviceId, topologyId, nodeId,instanceId, def);
 		}
 
@@ -569,7 +589,33 @@ public class SalsaToscaDeployer {
 				
 			}
 		}
+	}
+	
+	private class deployOneSoftwareThread implements Runnable {
+		TDefinitions def;
+		String serviceId;
+		String topologyId;
+		String nodeId;
+		int instanceId;
 
+		public deployOneSoftwareThread(String serviceId, String topologyId,
+				String nodeId, int instanceId, TDefinitions def) {
+			EngineLogger.logger.debug("Thread processind: nodeId=" + nodeId
+					+ ", instance no.=" + instanceId);
+			this.def = def;
+			this.serviceId = serviceId;
+			this.topologyId = topologyId;
+			this.nodeId = nodeId;
+			this.instanceId = instanceId;
+		}
+		@Override
+		public void run() {			
+			try {
+				deployOneMoreInstance_Artifact(serviceId, topologyId, nodeId, instanceId, def);
+			} catch (SalsaEngineException e){
+				EngineLogger.logger.error(e.getMessage());
+			}
+		}
 	}
 
 	public boolean removeOneInstance(String serviceId, String topologyId,
@@ -636,8 +682,7 @@ public class SalsaToscaDeployer {
 		EngineLogger.logger.debug("Building runtime from Tosca file");
 		CloudService service = new CloudService();
 		service.setState(SalsaEntityState.UNDEPLOYED);
-		List<TServiceTemplate> serviceTemplateLst = ToscaStructureQuery
-				.getServiceTemplateList(def);
+		List<TServiceTemplate> serviceTemplateLst = ToscaStructureQuery.getServiceTemplateList(def);
 		for (TServiceTemplate st : serviceTemplateLst) {
 			ServiceTopology topo = new ServiceTopology();
 			topo.setId(st.getId());
@@ -667,20 +712,21 @@ public class SalsaToscaDeployer {
 				// add the artifact type for SOFTWARE NODE
 				// if
 				// (!node.getType().getLocalPart().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
-				if (node.getType().getLocalPart()
-						.equals(SalsaEntityType.SOFTWARE.getEntityTypeString())) {
-					nodeData.setArtifactType(node.getDeploymentArtifacts()
-							.getDeploymentArtifact().get(0).getArtifactType()
-							.getLocalPart());
-					String artID = node.getDeploymentArtifacts()
-							.getDeploymentArtifact().get(0).getArtifactRef()
-							.getLocalPart();
-					String directURL = ToscaStructureQuery
-							.getArtifactTemplateById(artID, def)
-							.getArtifactReferences().getArtifactReference()
-							.get(0).getReference();
-					nodeData.setArtifactURL(directURL);
+				if (node.getType().getLocalPart().equals(SalsaEntityType.SOFTWARE.getEntityTypeString())) {
+					if (node.getDeploymentArtifacts()!=null && node.getDeploymentArtifacts().getDeploymentArtifact().size()!=0){
+						nodeData.setArtifactType(node.getDeploymentArtifacts()
+								.getDeploymentArtifact().get(0).getArtifactType().getLocalPart());
+						String artID = node.getDeploymentArtifacts()
+								.getDeploymentArtifact().get(0).getArtifactRef()
+								.getLocalPart();
+						String directURL = ToscaStructureQuery
+								.getArtifactTemplateById(artID, def)
+								.getArtifactReferences().getArtifactReference()
+								.get(0).getReference();
+						nodeData.setArtifactURL(directURL);
+					}
 				}
+				EngineLogger.logger.debug("debugggg Sep 8.1 - 1");
 				// find what is the host of this node, add to hostId
 				for (TRelationshipTemplate rela : relas_hoston) { // search on
 																	// all
@@ -717,6 +763,7 @@ public class SalsaToscaDeployer {
 								+ source.getId());
 					}
 				}
+				EngineLogger.logger.debug("debugggg Sep 8.1 - 2");
 				// find the connect to node, add it to connecttoId
 				// this node will be the requirement, connect to capability
 				// (reverse with the Tosca)
@@ -761,33 +808,16 @@ public class SalsaToscaDeployer {
 						}
 					}
 				}
-
-				// manipulate properties actions
-				if (node.getProperties() != null
-						&& node.getProperties().getAny() != null) {
-					SalsaMappingProperties props = (SalsaMappingProperties) node
-							.getProperties().getAny();
-					for (SalsaMappingProperty mp : props.getProperties()) {
-						if (mp.getType().equals("action")) {
-							Iterator<Map.Entry<String, String>> it = mp
-									.getMapData().entrySet().iterator();
-							while (it.hasNext()) {
-								Map.Entry<String, String> pairs = (Map.Entry<String, String>) it
-										.next();
-								System.out.println(pairs.getKey() + "///"
-										+ pairs.getValue());
-								nodeData.addAction(pairs.getKey(),
-										pairs.getValue());
-								it.remove(); // avoids a
-												// ConcurrentModificationException
-							}
-						}
-					}
-				}
-
+				EngineLogger.logger.debug("debugggg Sep 8.1 - 3");
+				// manipulate properties ConfigurationCapabilities
+//				if (node.getProperties() != null && node.getProperties().getAny() != null) {					
+//					ConfigurationCapabilities capa = (ConfigurationCapabilities) node.getProperties().getAny();
+//					nodeData.setConfiguationCapapabilities(capa);				
+//				}
+				
 				topo.addComponent(nodeData);
 			}
-
+			EngineLogger.logger.debug("debugggg Sep 8.1 - last");
 			service.addComponentTopology(topo);
 		}
 		return service;

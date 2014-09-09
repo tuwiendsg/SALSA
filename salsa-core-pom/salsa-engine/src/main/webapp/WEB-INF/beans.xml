@@ -27,5 +27,18 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
   <bean id="monitorBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaMonitoringInfo" />
   <bean id="exceptionBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineServiceExceptionMapper" />
    
+<!-- 	<bean id="swaggerConfig" class="com.wordnik.swagger.jaxrs.config.BeanConfig"> -->
+<!-- 	    <property name="resourcePackage" value="at.ac.tuwien.dsg.cloud.salsa.common.interfaces"/> -->
+<!-- 	    <property name="version" value="0.1.0"/> -->
+<!-- 	    <property name="basePath" value="http://localhost:8080/salsa-engine/rest"/> -->
+<!-- 	    <property name="title" value="SALSA Engine service"/> -->
+<!-- 	    <property name="description" value="A service for configuration cloud applications" /> -->
+<!-- 	    <property name="contact" value="d.le@dsg.tuwien.ac.at"/> -->
+<!-- 	    <property name="license" value="Apache 2.0 License"/> -->
+<!-- 	    <property name="licenseUrl" value="http://www.apache.org/licenses/LICENSE-2.0.html"/> -->
+<!-- 	    <property name="scan" value="true"/> -->
+<!-- 	</bean> -->
+   
+   
    
 </beans>

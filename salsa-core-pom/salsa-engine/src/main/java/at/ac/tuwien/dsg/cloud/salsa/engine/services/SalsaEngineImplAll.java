@@ -39,8 +39,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ConfigurationCapability;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity.Actions.Action;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance.Capabilities;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance.Properties;
@@ -183,6 +183,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
     		}			
 		} else {
 			// return 404: not found the service to be undeployed
+			logger.error("Could not found service to deregister: " + serviceId);
 			return Response.status(404).entity("Error: Fail to clean service: " + serviceId).build();
 		}
 	}
@@ -441,6 +442,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			return Response.status(200).entity(xml).build();
 		} catch (Exception e) {
 			logger.error("Could not find service: " + serviceDeployId + ". Data did not be sent. Error: " + e.toString());
+			logger.debug("THROWING AN EXCEPTION OF FALUT TO GET SERVICE !");
 			throw new SalsaEngineException("Could not find service: " + serviceDeployId , false);			
 		}
 	}
@@ -936,14 +938,12 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 			ServiceTopology topo = service.getComponentTopologyById(topologyId);
-			ServiceUnit nodeData = topo.getComponentById(nodeId);			
+			ServiceUnit nodeData = topo.getComponentById(nodeId);	
 			
-			for (Action action : nodeData.getActions()) {
-				if (action.getName().equals(actionName)){
-					ServiceInstance instance = nodeData.getInstanceById(instanceId);
-					instance.addAction(action);
-				}
-			}			
+			ConfigurationCapability confCapa = nodeData.getCapabilityByName(actionName);
+			ServiceInstance instance = nodeData.getInstanceById(instanceId);
+			instance.queueAction(actionName);
+						
 			SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);			
 		} catch (Exception e){
 			logger.error(e.toString());
@@ -952,7 +952,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		}
 		finally {
 			MutualFileAccessControl.releaseFile();
-		}	
+		}
 			
 		return Response.status(201).entity("ok").build();
 	}
@@ -971,11 +971,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			ServiceTopology topo = service.getComponentTopologyById(topologyId);
 			ServiceUnit nodeData = topo.getComponentById(nodeId);			
 			ServiceInstance instance = nodeData.getInstanceById(instanceId);
-			for (Action action : instance.getActions()) {
-				if (action.getName().equals(actionName)){
-					instance.removeAction(action);
-				}
-			}			
+			instance.unqueueAction();
+			
 			SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);			
 		} catch (Exception e){
 			logger.error(e.toString());
