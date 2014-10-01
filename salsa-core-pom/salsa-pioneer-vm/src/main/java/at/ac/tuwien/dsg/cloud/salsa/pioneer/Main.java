@@ -16,8 +16,6 @@ import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity.Actions;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity.Actions.Action;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
@@ -263,14 +261,15 @@ public class Main {
 								pioneer.deployNode(unit.getId(), instance.getInstanceId());
 							}
 							
-							// check action queue of the instance
-							List<Action> actions = instance.getActions();
-							for (Action action : actions) {
-								PioneerLogger.logger.debug("Execute an action on a service instance");								
-								con.unqueueActions(serviceId, topologyId, nodeId, instance.getInstanceId(), action.getName());								
-								String cmd = action.getCommand();
-								ArtifactDeployer.executeCommand(cmd);
-							}
+							// TODO: Implement the checking capability and execute
+							// check action queue of the instance							
+//							List<Action> actions = instance.getActions();
+//							for (Action action : actions) {
+//								PioneerLogger.logger.debug("Execute an action on a service instance");								
+//								con.unqueueActions(serviceId, topologyId, nodeId, instance.getInstanceId(), action.getName());								
+//								String cmd = action.getCommand();
+//								ArtifactDeployer.executeCommand(cmd);
+//							}
 						}
 					}
 					// check 2 levels up, e.g pioneer is at VM/docker, them tomcat, node is a war
