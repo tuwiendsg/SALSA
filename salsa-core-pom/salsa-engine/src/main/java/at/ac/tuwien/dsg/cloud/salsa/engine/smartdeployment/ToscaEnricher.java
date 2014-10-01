@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.engine.impl;
+package at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment;
 
 import generated.oasis.tosca.TArtifactReference;
 import generated.oasis.tosca.TArtifactTemplate;
