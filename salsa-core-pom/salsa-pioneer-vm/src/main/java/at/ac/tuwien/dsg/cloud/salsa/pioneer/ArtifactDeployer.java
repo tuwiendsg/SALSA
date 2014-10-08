@@ -267,7 +267,7 @@ public class ArtifactDeployer {
 					CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 					SalsaEntityState state = SalsaEntityState.CONFIGURING;
 					while (state!=SalsaEntityState.RUNNING && state!=SalsaEntityState.FINISHED){
-						state = service.getComponentTopologyList().get(0).getComponentById(hostNode.getId()).getState();
+						state = service.getComponentById(hostNode.getId()).getState();
 						try{
 							Thread.sleep(3000);							
 						} catch (InterruptedException e) {}
@@ -430,7 +430,9 @@ public class ArtifactDeployer {
 			// check if there are a replica of node with Ready state
 			// it doesn't care about which node, just check if existing ONE replica
 			CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
-			ServiceUnit component = service.getComponentById(topologyId, node.getId());			
+			logger.debug("checkCapabilityReady - service: " + service.getId());
+			ServiceUnit component = service.getComponentById(node.getId());	// no topology as parameter, so we can check crossing to other topology			
+			logger.debug("checkCapabilityReady - service unit: " + component.getId());
 			int number=component.getInstanceNumberByState(SalsaEntityState.RUNNING)+component.getInstanceNumberByState(SalsaEntityState.FINISHED);
 			logger.debug("Check capability. Checking component id " + component.getId() + "  -- " + number +" number of running or finished instances.");			
 			if (number == 0){

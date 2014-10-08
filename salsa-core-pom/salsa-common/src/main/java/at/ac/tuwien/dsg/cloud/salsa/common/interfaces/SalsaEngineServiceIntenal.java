@@ -155,12 +155,6 @@ public interface SalsaEngineServiceIntenal {
 	
 	
 	@GET
-	@Path("/services/tosca/{serviceId}/syblapp")
-	@Produces(MediaType.TEXT_XML)
-	public Response getServiceSYBL_APP_DESP(@PathParam("serviceId")String serviceDeployId);
-	
-	
-	@GET
 	@Path("/services/tosca/{serviceId}/sybl")
 	@Produces(MediaType.TEXT_XML)
 	public Response getServiceSYBL_DEP_DESP(@PathParam("serviceId")String serviceDeployId);

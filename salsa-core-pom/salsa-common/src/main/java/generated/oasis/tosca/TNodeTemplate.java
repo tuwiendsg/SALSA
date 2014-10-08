@@ -120,7 +120,8 @@ public class TNodeTemplate
 //    private String state = "prologue";
 //    @XmlAttribute(name = "salsa")	// node will be handle by Salsa
 //    private boolean salsa = false;
-        
+    @XmlAttribute(name = "reference")
+    protected String reference;
     
 	
 //	public String getState() {

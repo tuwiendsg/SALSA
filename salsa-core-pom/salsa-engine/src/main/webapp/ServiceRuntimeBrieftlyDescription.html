@@ -1,17 +1,31 @@
-<h3>List deployed services</h3>
-<div id="list">Loading ...</div>
+<h3>Service brief information</h3>
+<div id="description" style="margin-left:45px;">Loading ...</div>
 
 <script type="text/javascript">
-var listSource=salsaCenterRestEndpoint+"/viewgenerator/cloudservice/json/list";
-
+var listSource=salsaCenterRestEndpoint+"/viewgenerator/cloudservice/json/brief/"+getURLParameter("id");
 $.getJSON(listSource,  function(json){ 
-	$('#list').html(createListTable(json.services)).fadeIn();
+	$('#description').html(showServiceInfo(json)).fadeIn();
+// 	var description = document.getElementById("description");
+// 	description.innerHTML=showServiceInfo(json);
 });
+
+function showServiceInfo(data){
+	var str = "";
+
+	for (var property in data) {
+		str += property + ': <b>' + data[property]+'</b><br/> ';
+
+	}		
+	str += '<button onclick="deregisterService(\''+getURLParameter("id")+'\')">Undeploy</button>';
+ 	str += '<button onclick="showServiceByGET(\''+getURLParameter("id")+'\')">Show Tosca</button>';
+	str += '<button onclick="history.go(-1)">Go back to the list</button>';
+
+	return str;
+}
 
 function createListTable(data){
 	 var str = '<table class="lightPro">';
-	 //var currentURL= [location.protocol, '//', location.host, location.pathname].join('');
-	 var currentURL= location.pathname;
+	 var currentURL= [location.protocol, '//', location.host, location.pathname].join('');
     str += '<thead><tr>';
    for (var index in data[0]) {
        str += '<th scope="col">' + index + '</th>';

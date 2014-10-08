@@ -50,6 +50,9 @@ public class ServiceUnit extends SalsaEntity {
 	@XmlAttribute(name = "artifactURL")
 	String artifactURL;
 	
+	@XmlAttribute(name = "reference")
+	String reference;
+	
 	
 	public void addInstance(ServiceInstance instance){
 		repLst.add(instance);
@@ -137,6 +140,14 @@ public class ServiceUnit extends SalsaEntity {
 
 	public void setArtifactURL(String artifactURL) {
 		this.artifactURL = artifactURL;
+	}
+	
+	public String getReference() {
+		return reference;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
 	}
 
 	public List<ServiceInstance> getInstanceByState(SalsaEntityState state){

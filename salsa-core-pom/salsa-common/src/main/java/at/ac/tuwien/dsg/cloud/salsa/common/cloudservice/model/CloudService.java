@@ -60,7 +60,7 @@ public class CloudService extends SalsaEntity{
 	
 	public ServiceUnit getComponentById(String topologyId, String nodeId){
 		if (componentTopology != null){
-			ServiceTopology topo = getComponentTopologyById(topologyId);
+			ServiceTopology topo = getComponentTopologyById(topologyId);			
 				if (topo != null){
 					return topo.getComponentById(nodeId);
 				}			
