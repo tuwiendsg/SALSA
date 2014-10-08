@@ -479,11 +479,6 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	}
 	
 	@Override
-	public Response getServiceSYBL_APP_DESP(String serviceDeployId){		
-		return Response.status(500).entity("").build();
-	}
-	
-	@Override
 	public Response getServiceSYBL_DEP_DESP(String serviceId){
 		String salsaFile = CenterConfiguration.getServiceStoragePath()
 				+ File.separator + serviceId + ".data";

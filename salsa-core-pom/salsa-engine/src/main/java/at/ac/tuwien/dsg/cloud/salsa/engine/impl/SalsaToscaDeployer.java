@@ -183,8 +183,7 @@ public class SalsaToscaDeployer {
 				}
 			}
 			if (getIt) {
-				EngineLogger.logger.debug("Orchestating: Get top node: "
-						+ node.getId());
+				EngineLogger.logger.debug("Orchestating: Get top node: " + node.getId());
 				topNodes.add(node);
 			}
 		}

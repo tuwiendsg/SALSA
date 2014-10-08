@@ -16,6 +16,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -134,6 +135,9 @@ public class ServiceJsonDataTree {
 	}
 	
 	public void addProperty(String key, String value){
+		if (this.properties == null){
+			this.properties = new HashMap<String, String>();
+		}
 		this.properties.put(key, value);
 	}
 	
@@ -235,7 +239,8 @@ public class ServiceJsonDataTree {
 		if (this.children!=null) {		
 			if (!this.getChidren().isEmpty()){								
 				for (ServiceJsonDataTree child : this.getChidren()) {
-					if (!child.isAbstract && !child.getNodeType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
+					if (!child.isAbstract){
+							// && !child.getNodeType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
 						cleanChildren.add(child);
 					}
 				}
@@ -249,7 +254,7 @@ public class ServiceJsonDataTree {
 				
 				List<ServiceJsonDataTree> toRemove=new ArrayList<>();
 				for (ServiceJsonDataTree child : this.getChidren()) {
-					if (child.isAbstract && !child.getNodeType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
+					if (child.isAbstract && !child.getNodeType().equals("TOPOLOGY")){
 						toRemove.add(child);
 					}
 				}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Repositories>
+    <repoList name="salsa-repo" format="maven2" endpoint="http://128.130.172.215:8080/nexus-2.8.0-05/service/local/artifact/maven/redirect?"/>
+    <repoList name="github" format="git" endpoint="https://github.com/"/>
+    <repoList name="dsg-openstack-image" format="nova" endpoint="http://openstack.infosys.tuwien.ac.at:8774/v2/9fee130e30784e33a7d3c9bd4f5a60ce"/>
+    <repoList name="local" format="apt" endpoint="localhost"/>
+</Repositories>

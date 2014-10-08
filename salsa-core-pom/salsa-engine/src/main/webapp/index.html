@@ -12,6 +12,7 @@
 <script src="scripts/jquery.tipsy.js"></script> <!-- Tooltips -->
 <script src="scripts/jquery-ui-1.10.4.custom.min.js"></script> <!-- jquery.ui for box -->
 <script src="scripts/jquery.ui-contextmenu.js"></script>
+<script src="scripts/spin.js"></script>
 
 
 <link href="css/toastr.css" rel="stylesheet"/>
@@ -54,7 +55,8 @@
   		  "hideMethod": "fadeOut"
   		};
     
-    var salsaCenterRestEndpoint="http://128.130.172.215:8080/salsa-engine/rest"; 
+    //var salsaCenterRestEndpoint="http://128.130.172.215:8080/salsa-engine/rest";
+    var salsaCenterRestEndpoint="/salsa-engine/rest";
     
 </script>
 
@@ -66,31 +68,65 @@
 window.onload = loadPart;
 
 function loadPart(){
-	$("#deploymentForm").load("DeploymentForm.html");
-	$("#serviceRuntimeList").load("ServiceRuntimeList.html");
-
-	if (!!getURLParameter("id")){
-		$("#serviceRuntimeTable").load("ServiceRuntimeTable.html");
-		$("#treeView").load("ServiceRuntimeTreeView.html");
+	if (!!getURLParameter("id")){		
+		$("#serviceRuntimeList").load("ServiceRuntimeBrieftlyDescription.html");
+		$("#serviceRuntimeTable").load("ServiceRuntimeTable.html");		
+		showAppStructure();
+	} else {
+		$("#deploymentForm").load("DeploymentForm.html");
+		$("#serviceRuntimeList").load("ServiceRuntimeList.html");
 	}
-			
-	
-	//$("#serviceTemplateTable").load("ServiceTemplateTable.html");
 }
 
+function showDeploymentInfo(){
+	//$("#treeView").load("ServiceRuntimeTreeView.html");
+	var treeDiv = document.getElementById("treeView");
+	treeDiv.innerHTML = "";
+	var button = document.createElement('input');
+	button.type = "button";
+	button.value = "Switch to application structure view";
+	button.setAttribute("name", "switchAppStructure");
+	button.setAttribute("onClick", "showAppStructure();");
+	treeDiv.appendChild(button);
+	
+	var iframe = document.createElement('iframe');	
+    iframe.setAttribute('src', "/salsa-engine/ServiceRuntimeTreeView.html?id=" + getURLParameter("id"));
+    iframe.setAttribute('style', 'width:100%; height:100%; overflow:hidden; box-shadow: 0px 0px 4px 4px #ffffff;');
+    iframe.setAttribute('frameborder', '0');
+    
+    treeDiv.appendChild(iframe);
+}
 
+function showAppStructure(){
+	//$("#treeView").load("ServiceRuntimeTreeView_Simple.html");	
+	var treeDiv = document.getElementById("treeView");	
+	treeDiv.innerHTML = "";
+	var button = document.createElement('input');
+	button.type = "button";
+	button.value = "Switch to deployment information view";
+	button.setAttribute("name", "switchAppStructure");
+	button.setAttribute("onClick", "showDeploymentInfo();");
+	treeDiv.appendChild(button);
+	
+	var iframe = document.createElement('iframe');
+    iframe.setAttribute('src', "/salsa-engine/ServiceRuntimeTreeView_Simple.html?id=" + getURLParameter("id"));
+    iframe.setAttribute('style', 'width:100%; height:100%; overflow:hidden; box-shadow: 0px 0px 4px 4px #ffffff;');
+    iframe.setAttribute('frameborder', '0');
+    
+    treeDiv.appendChild(iframe);
+}
 
 
 </script>
 <div>
-	<div style="float:left;">
+	<div style="float:left; width: 100%;">
 		<div id="deploymentForm"></div>
 		<hr/>
 		<div id="serviceRuntimeList"></div>
+		<hr/>		
+		<div id="treeView" style="width: 100%; height: auto;"></div>
 		<hr/>
-		<div id="treeView"></div>
-		<hr/>
-		<div id="serviceRuntimeTable"></div>		
+		<div id="serviceRuntimeTable"></div>
 	</div>
 	<div style="float:left;">
 		<div id="serviceTemplateTable"></div>
