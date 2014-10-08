@@ -149,12 +149,8 @@ public class ServiceJsonDataTree {
 		this.isAbstract = true;
 		this.setNodeType(data.getType());
 		this.connectto=data.getConnecttoId();
-		//logger.debug("On abstract, Connectto size: " + this.connectto.size());
 				
 		List<ServiceInstance> instances;
-//		logger.debug("PI123 - nodeid:" + data.getId() +" which hoston " + hostOnId);
-//		logger.debug("PI123 - The all instance list: " + data.getAllInstanceList().size());
-//		logger.debug("PI123 - The hoston instance list: " + data.getInstanceHostOn(hostOnId).size());
 		if (hostOnId < 0){
 			instances = data.getInstancesList();
 		} else {
@@ -162,10 +158,8 @@ public class ServiceJsonDataTree {
 		}
 		List<ServiceUnit> hostOnCompos = new ArrayList<>();
 		for (ServiceUnit compo : topo.getComponents()) {
-//			logger.debug("Comparing this id: " + data.getId() + " and other abstact node id: " + compo.getId() +" which has hosted id: " + compo.getHostedId() );
 			if (compo.getHostedId().equals(data.getId())){	// compare ID on TOSCA node
 				hostOnCompos.add(compo);
-//				logger.debug("Then add to hostOnCompos !");
 			}
 		}
 //		logger.debug("This abstract node has instances: " + instances.size());
@@ -177,8 +171,7 @@ public class ServiceJsonDataTree {
 			addChild(oneChild);			
 			// get the list of host on this components, which will come after the instances
 			oneChild.loadDataInstance(instance, hostOnCompos, data, topo);
-		}
-		
+		}		
 	}
 	
 	// convert instance. abstractNode is for geting TYPE, knowing how to parse properties
@@ -189,6 +182,7 @@ public class ServiceJsonDataTree {
 		this.isAbstract = false;
 		this.setState(instance.getState());
 		this.setMonitoring(instance.getMonitoring());
+		
 		
 		this.setNodeType(abstractNode.getType());
 		//logger.debug("Let check connectto ID ");
@@ -230,6 +224,10 @@ public class ServiceJsonDataTree {
 			ServiceJsonDataTree newNode = new ServiceJsonDataTree();
 			newNode.loadData(compo, instance.getInstanceId(), topo);
 			addChild(newNode);
+		}
+		// add one more property to show the reference if need
+		if (abstractNode.getReference()!=null){
+			this.addProperty("reference", abstractNode.getReference()+"/"+instance.getInstanceId());
 		}
 	}
 	
