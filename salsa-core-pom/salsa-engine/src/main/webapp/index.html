@@ -87,6 +87,7 @@ function showDeploymentInfo(){
 	button.value = "Switch to application structure view";
 	button.setAttribute("name", "switchAppStructure");
 	button.setAttribute("onClick", "showAppStructure();");
+	button.setAttribute("style", "margin-left:45px;");
 	treeDiv.appendChild(button);
 	
 	var iframe = document.createElement('iframe');	
@@ -106,6 +107,7 @@ function showAppStructure(){
 	button.value = "Switch to deployment information view";
 	button.setAttribute("name", "switchAppStructure");
 	button.setAttribute("onClick", "showDeploymentInfo();");
+	button.setAttribute("style", "margin-left:45px;");	
 	treeDiv.appendChild(button);
 	
 	var iframe = document.createElement('iframe');

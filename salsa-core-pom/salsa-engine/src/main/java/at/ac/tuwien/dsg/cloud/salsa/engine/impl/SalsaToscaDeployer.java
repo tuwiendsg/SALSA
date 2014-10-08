@@ -860,36 +860,29 @@ public class SalsaToscaDeployer {
 	}
 
 	public boolean cleanAllService(String serviceId) throws SalsaEngineException {
-		// TODO: implement it
-		// List<TNodeTemplate> lst =
-		// ToscaStructureQuery.getNodeTemplatesOfTypeList("OPERATING_SYSTEM",
-		// def);
-		CloudService service = centerCon
-				.getUpdateCloudServiceRuntime(serviceId);
+		CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 		if (service == null) {
-			EngineLogger.logger
-					.error("Cannot clean service. Service description is not found.");
+			EngineLogger.logger.error("Cannot clean service. Service description is not found.");
 			throw new SalsaEngineException("Cannot clean service. Service description is not found for service: " + serviceId, false);
 		}
-		List<ServiceInstance> repLst = service
-				.getAllReplicaByType(SalsaEntityType.OPERATING_SYSTEM);
-		for (ServiceInstance rep : repLst) {
-			if (rep.getProperties() != null) {
-				SalsaInstanceDescription_VM instance = (SalsaInstanceDescription_VM) rep
-						.getProperties().getAny();
-				MultiCloudConnector cloudCon = new MultiCloudConnector(
-						EngineLogger.logger, configFile);
-				String providerName = instance.getProvider();
-				String instanceId = instance.getInstanceId();
-				EngineLogger.logger
-						.debug("Removing virtual machine. Provider: "
-								+ providerName + "InstanceId: " + instanceId);
-				cloudCon.removeInstance(
-						SalsaCloudProviders.fromString(providerName),
-						instanceId);
+		
+		List<ServiceUnit> suList = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
+		for (ServiceUnit su : suList) {
+			if (su.getReference() == null){
+				List<ServiceInstance> repLst = su.getInstancesList();
+				//List<ServiceInstance> repLst = service.getAllReplicaByType(SalsaEntityType.OPERATING_SYSTEM);
+				for (ServiceInstance rep : repLst) {
+					if (rep.getProperties() != null) {
+						SalsaInstanceDescription_VM instance = (SalsaInstanceDescription_VM) rep.getProperties().getAny();
+						MultiCloudConnector cloudCon = new MultiCloudConnector(EngineLogger.logger, configFile);
+						String providerName = instance.getProvider();
+						String instanceId = instance.getInstanceId();
+						EngineLogger.logger.debug("Removing virtual machine. Provider: " + providerName + "InstanceId: " + instanceId);
+						cloudCon.removeInstance(SalsaCloudProviders.fromString(providerName),instanceId);
+					}
+				}
 			}
-		}
-		// centerCon.deregisterService();
+		}		
 		return true;
 	}
 
