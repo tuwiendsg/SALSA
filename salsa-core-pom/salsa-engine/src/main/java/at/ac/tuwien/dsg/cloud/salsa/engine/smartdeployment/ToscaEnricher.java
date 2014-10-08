@@ -173,6 +173,10 @@ public class ToscaEnricher {
 			nextNode.setId(nextNode.getId() + "_OF_" + node.getId());
 //			nextNode.setMinInstances(1);
 //			nextNode.setMaxInstances("unbounded");
+			if (node.getReference()!=null){
+				String[] ref = node.getReference().split("/");				
+				nextNode.setReference(ref[0] + "/" + nextNode.getId());		
+			}
 			
 			if (art != null){	// some node have artifact. some node like os doesn't
 				String artId = "Artifact_" + nextNode.getId();

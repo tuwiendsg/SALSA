@@ -123,22 +123,13 @@ public class TNodeTemplate
     @XmlAttribute(name = "reference")
     protected String reference;
     
+	public String getReference() {
+		return reference;
+	}
 	
-//	public String getState() {
-//		return state;
-//	}
-//
-//	public void setState(String state) {
-//		this.state = state;
-//	}
-//
-//	public boolean isSalsa() {
-//		return salsa;
-//	}
-//
-//	public void setSalsa(boolean salsa) {
-//		this.salsa = salsa;
-//	}
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
 
 	/**
      * Gets the value of the requirements property.
