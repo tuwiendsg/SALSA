@@ -17,6 +17,9 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
@@ -45,12 +48,10 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 public class SalsaToscaDeployer {
 
 	// some hard-code variables
-	static final String CLOUD_NODE_NAME = SalsaEntityType.OPERATING_SYSTEM
-			.getEntityTypeString();
+	static final String CLOUD_NODE_NAME = SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString();
 	File configFile;
 	static SalsaCenterConnector centerCon = new SalsaCenterConnector(
-			SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp",
-			EngineLogger.logger);
+			SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
 
 	public SalsaToscaDeployer(File config) {
 		configFile = config;
@@ -187,16 +188,63 @@ public class SalsaToscaDeployer {
 				topNodes.add(node);
 			}
 		}
-
+		
+		// clone data of all reference node
+		for (ServiceUnit unit : nodes){
+			ServiceUnit refUnit = getReferenceServiceUnit(unit);
+			if (refUnit != null){
+				EngineLogger.logger.debug("orchestrateNewService-Clone ref data for node: " + unit.getId());				
+				updateInstancesForReferenceNode(refUnit, serviceName, serviceData.getTopologyOfNode(unit.getId()).getId(), unit.getId());
+			}
+		}
+		
+		// deploy new node
 		SalsaEngineServiceIntenal serviceInternal = new SalsaEngineImplAll();
 		for (ServiceUnit unit : topNodes) {
-			EngineLogger.logger.debug("Orchestating: Creating top node: "
-					+ unit.getId());
-			serviceInternal.spawnInstance(serviceData.getId(), serviceData
-					.getTopologyOfNode(unit.getId()).getId(), unit.getId(), 1);
+			ServiceUnit refUnit = getReferenceServiceUnit(unit);
+			if (refUnit == null){		// not a reference
+				EngineLogger.logger.debug("Orchestating: Creating top node: " + unit.getId());
+				serviceInternal.spawnInstance(serviceData.getId(), serviceData.getTopologyOfNode(unit.getId()).getId(), unit.getId(), 1);
+			} 
 		}
-
 		return serviceData;
+	}
+	
+	private void updateInstancesForReferenceNode(ServiceUnit sourceSU, String targetServiceID, String targetTopoID, String targetSUID){		
+		for (ServiceInstance instance : sourceSU.getInstancesList()) {
+			EngineLogger.logger.debug("Adding instance to: " + targetServiceID + "/" + targetSUID + "/" + instance.getInstanceId());
+			Object tmpProp = null;
+			if (instance.getProperties() != null){
+				tmpProp = instance.getProperties().getAny();
+			}
+			instance.setProperties(null);
+			centerCon.addInstanceUnitMetaData(targetServiceID, targetTopoID, targetSUID, instance);
+			if (tmpProp != null){
+				centerCon.updateInstanceUnitProperty(targetServiceID, targetTopoID, targetSUID, instance.getInstanceId(), tmpProp);
+			}
+		}
+	}
+	
+	private ServiceUnit getReferenceServiceUnit(ServiceUnit input) throws SalsaEngineException {
+		EngineLogger.logger.debug("Checking the reference for ServiceUnit: " + input.getId());
+		if (input.getReference()==null){
+			EngineLogger.logger.debug("Checking the reference for ServiceUnit: " + input.getId() + " => Not be a reference node.");
+			return null;
+		}
+		EngineLogger.logger.debug("Checking the referece for ServiceUnit: " + input.getId() + " => We got the reference string: " + input.getReference());
+		String[] refStr = input.getReference().split("/");
+		if (refStr.length<2){
+			EngineLogger.logger.debug("Checking the referece for ServiceUnit: " + input.getId() + " => Bad reference string, should be serviceID/serviceunitID, but length=" + refStr.length);
+			return null;
+		}		
+		CloudService service = centerCon.getUpdateCloudServiceRuntime(refStr[0]);
+		if (service !=null){
+			EngineLogger.logger.debug("Checking the reference for ServiceUnit: " + input.getId() + " => FOUND !");
+			return service.getComponentById(refStr[1]);
+		} else {
+			EngineLogger.logger.debug("Checking the reference for ServiceUnit: " + input.getId() + " => A reference but could not find the target service to refer to.");
+			return null;
+		}
 	}
 
 	static boolean orchestating = false;
@@ -690,20 +738,17 @@ public class SalsaToscaDeployer {
 			List<TNodeTemplate> nodes = ToscaStructureQuery
 					.getNodeTemplateList(st); // all other nodes
 			List<TRelationshipTemplate> relas_hoston = ToscaStructureQuery
-					.getRelationshipTemplateList(SalsaRelationshipType.HOSTON
-							.getRelationshipTypeString(), st);
+					.getRelationshipTemplateList(SalsaRelationshipType.HOSTON.getRelationshipTypeString(), st);
 			List<TRelationshipTemplate> relas_connectto = ToscaStructureQuery
-					.getRelationshipTemplateList(
-							SalsaRelationshipType.CONNECTTO
-									.getRelationshipTypeString(), st);
+					.getRelationshipTemplateList(SalsaRelationshipType.CONNECTTO.getRelationshipTypeString(), st);
 			EngineLogger.logger.debug("Number of HostOn relationships: "
 					+ relas_hoston.size());
 			for (TNodeTemplate node : nodes) {
-				ServiceUnit nodeData = new ServiceUnit(node.getId(), node
-						.getType().getLocalPart());
+				ServiceUnit nodeData = new ServiceUnit(node.getId(), node.getType().getLocalPart());				
 				nodeData.setState(SalsaEntityState.UNDEPLOYED);
 				nodeData.setName(node.getName());
 				nodeData.setMin(node.getMinInstances());
+				nodeData.setReference(node.getReference());
 				if (node.getMaxInstances().equals("unbounded")) {
 					nodeData.setMax(10); // max for experiments
 				} else {
@@ -714,11 +759,8 @@ public class SalsaToscaDeployer {
 				// (!node.getType().getLocalPart().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
 				if (node.getType().getLocalPart().equals(SalsaEntityType.SOFTWARE.getEntityTypeString())) {
 					if (node.getDeploymentArtifacts()!=null && node.getDeploymentArtifacts().getDeploymentArtifact().size()!=0){
-						nodeData.setArtifactType(node.getDeploymentArtifacts()
-								.getDeploymentArtifact().get(0).getArtifactType().getLocalPart());
-						String artID = node.getDeploymentArtifacts()
-								.getDeploymentArtifact().get(0).getArtifactRef()
-								.getLocalPart();
+						nodeData.setArtifactType(node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart());
+						String artID = node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactRef().getLocalPart();
 						String directURL = ToscaStructureQuery
 								.getArtifactTemplateById(artID, def)
 								.getArtifactReferences().getArtifactReference()
@@ -728,13 +770,7 @@ public class SalsaToscaDeployer {
 				}
 				EngineLogger.logger.debug("debugggg Sep 8.1 - 1");
 				// find what is the host of this node, add to hostId
-				for (TRelationshipTemplate rela : relas_hoston) { // search on
-																	// all
-																	// relationship,
-																	// find the
-																	// host of
-																	// this
-																	// "node"
+				for (TRelationshipTemplate rela : relas_hoston) { // search on all relationship, find the host of this "node"
 					// note that, after convert, the capa and req are reverted.
 					TEntityTemplate targetRela = (TEntityTemplate) rela
 							.getTargetElement().getRef();

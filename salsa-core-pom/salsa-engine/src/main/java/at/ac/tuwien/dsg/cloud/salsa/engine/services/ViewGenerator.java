@@ -75,7 +75,8 @@ static Logger logger;
 				topoNode.setAbstract(true);
 				topoNode.setId(topo.getId());
 				topoNode.setNodeType("TOPOLOGY");
-				topoNode.addProperty("Number of service units", topo.getComponents().size()+"");				
+				topoNode.addProperty("Number of service units", topo.getComponents().size()+"");
+				topoNode.setState(topo.getState());
 				datatree.addChild(topoNode);
 				List<ServiceUnit> components = topo.getComponentsByType(SalsaEntityType.OPERATING_SYSTEM);				
 				for (ServiceUnit compo : components) {					

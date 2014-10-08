@@ -50,7 +50,7 @@ public class ServiceJsonList {
 		try {
 		for (File file : fl) {			
 			Date modifiedTime = new Date(file.lastModified());
-			CenterLogger.logger.debug("File modified time: "+file.lastModified());	
+			//CenterLogger.logger.debug("File modified time: "+file.lastModified());	
 			SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd yyyy 'at' HH:mm");
 			
 			String modTime = sdf.format(modifiedTime);
@@ -59,9 +59,8 @@ public class ServiceJsonList {
 			String fileName = CenterConfiguration.getServiceStoragePath()
 					+ File.separator + serviceId + ".data";
 			try {
-				CloudService service = SalsaXmlDataProcess
-						.readSalsaServiceFile(fileName);
-				CenterLogger.logger.debug("ListService:"+service.getName());
+				CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(fileName);
+				//CenterLogger.logger.debug("ListService:"+service.getName());
 				if (service.getName() != null ){
 					serviceName = service.getName();
 				}

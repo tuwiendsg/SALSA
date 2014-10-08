@@ -615,15 +615,21 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			String serviceId,
 			String topologyId,
 			String nodeId){
+		EngineLogger.logger.debug("addInstanceUnitMetaData. STARTING: " + serviceId +"/"+topologyId +"/"+nodeId+"/"+data.getInstanceId());
 		String fileName = CenterConfiguration.getServiceStoragePath()+ File.separator + serviceId + ".data";
 		try {
 			MutualFileAccessControl.lockFile();
+			EngineLogger.logger.debug("addInstanceUnitMetaData. STARTING TO TRY BLOCK");
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(fileName);
+			EngineLogger.logger.debug("addInstanceUnitMetaData. Compo.id" + service.getId());
 			ServiceTopology topo = service.getComponentTopologyById(topologyId);
+			EngineLogger.logger.debug("addInstanceUnitMetaData. Compo.id" + topo.getId());
 			ServiceUnit compo = topo.getComponentById(nodeId);
+			EngineLogger.logger.debug("addInstanceUnitMetaData. Compo.id" + compo.getId());
 			ServiceInstance replicaData = data;//.getValue();
+			EngineLogger.logger.debug("addInstanceUnitMetaData. Instance id: " + replicaData.getId());
 			int id = replicaData.getInstanceId();
-			ServiceInstance existedInstance = compo.getInstanceById(id);			
+			ServiceInstance existedInstance = compo.getInstanceById(id);
 			if (existedInstance==null){
 				EngineLogger.logger.debug("Create new instance meta-data");
 				compo.addInstance(replicaData);
@@ -631,7 +637,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 				EngineLogger.logger.debug("Update old instance meta-data");
 				compo.getInstanceById(id).setHostedId_Integer(replicaData.getHostedId_Integer());
 				existedInstance = replicaData;
-			}			
+			}
+			EngineLogger.logger.debug("addInstanceUnitMetaData. writing down service id: " + service.getId());
 			SalsaXmlDataProcess.writeCloudServiceToFile(service, fileName);			
 		} catch(JAXBException e1){
 			logger.error(e1);
