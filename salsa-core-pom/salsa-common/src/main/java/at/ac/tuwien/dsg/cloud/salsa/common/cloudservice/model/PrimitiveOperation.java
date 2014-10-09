@@ -1,12 +1,24 @@
 package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Primitive")
 public class PrimitiveOperation {
+	@XmlAttribute(name = "name")
 	String name;
 	// for performing the operation
+	@XmlAttribute(name = "type")
 	ExecutionType executionType = ExecutionType.SCRIPT;
+	@XmlElement(name = "executionREF")
 	String executionREF = "/bin/date";
+	@XmlElement(name = "executionParameter")
 	String executionParameter = "";
+	@XmlElement(name = "executionOutput")
 	String executionOutput = "";
 		
 		
