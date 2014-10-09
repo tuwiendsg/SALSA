@@ -11,6 +11,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.PrimitiveOperation;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
@@ -32,7 +33,8 @@ public class SalsaXmlDataProcess {
 							ServiceInstance.class,
 							SalsaInstanceDescription_VM.class,	// describe VM
 							SalsaCapaReqString.class,
-							ServiceUnitRelationship.class);	// capability
+							ServiceUnitRelationship.class,
+							PrimitiveOperation.class);	// capability
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
