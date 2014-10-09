@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
@@ -38,11 +39,12 @@ public class SalsaEntity {
 	@XmlElement(name = "monitoring")
 	SalsaEntity.Monitoring monitoring;
 	
-	@XmlElement(name = "ConfigurationCapabilities")
-	SalsaEntity.ConfigurationCapabilities confCapa;
-	
 	@XmlElement(name = "ConfigurationCapabilitiesQueue")
 	List<String> capaQueue = new ArrayList<>();
+	
+	@XmlElementWrapper(name="Primitives")
+	@XmlElement(name = "Primitive")
+	List<PrimitiveOperation> primitive = new ArrayList<PrimitiveOperation>();
 	
 		
 	@XmlAccessorType(XmlAccessType.FIELD)
@@ -62,22 +64,6 @@ public class SalsaEntity {
             this.any = value;
         }
     }
-	
-	@XmlAccessorType(XmlAccessType.FIELD)
-	@XmlType(name = "")
-	@XmlRootElement(name = "ConfigurationCapabilities")
-	public static class ConfigurationCapabilities{
-		@XmlElement(name = "ConfigurationCapability")
-		List<ConfigurationCapability> configurationCapabilties = null;
-
-		public List<ConfigurationCapability> getConfigurationCapabilties() {
-			if (this.configurationCapabilties==null){
-				this.configurationCapabilties = new ArrayList<>();
-			}
-			return configurationCapabilties;
-		}		
-	}
-	
 	
 	public SalsaEntity(){		
 	}
@@ -111,8 +97,7 @@ public class SalsaEntity {
 	}
 	
 	
-	public class CDATAAdapter extends XmlAdapter<String, String> {
-		 
+	public class CDATAAdapter extends XmlAdapter<String, String> {		 
 	    @Override
 	    public String marshal(String v) throws Exception {
 	        return "<![CDATA[" + v + "]]>";
@@ -123,23 +108,6 @@ public class SalsaEntity {
 	        return v.trim();
 	    }
 	}
-
-	
-	public SalsaEntity.ConfigurationCapabilities getConfCapaList() {
-		return confCapa;
-	}
-
-	public ConfigurationCapability getCapabilityByName(String name){		
-		if (this.confCapa==null){
-			return null;
-		}
-		for (ConfigurationCapability capa : this.confCapa.getConfigurationCapabilties()) {
-			if (capa.getName().equals(name)){
-				return capa;
-			}
-		}
-		return null;
-	}
 	
 	public void queueAction(String capaName){
 		capaQueue.add(capaName);
@@ -149,16 +117,16 @@ public class SalsaEntity {
 		capaQueue.remove(0);
 	}
 	
-	public void addConfigurationCapability(ConfigurationCapability conf){
-		this.confCapa.configurationCapabilties.add(conf);
+	public void addPrimitiveOperation(PrimitiveOperation opp){
+		this.primitive.add(opp);
 	}
 
-	public SalsaEntity.ConfigurationCapabilities getConfiguationCapapabilities() {
-		return confCapa;
+	public List<PrimitiveOperation> getPrimitive() {
+		return primitive;
 	}
 
-	public void setConfiguationCapapabilities(SalsaEntity.ConfigurationCapabilities confCapa) {
-		this.confCapa = confCapa;
-	}	
+	public void setPrimitive(List<PrimitiveOperation> primitive) {
+		this.primitive = primitive;
+	}
 	
 }

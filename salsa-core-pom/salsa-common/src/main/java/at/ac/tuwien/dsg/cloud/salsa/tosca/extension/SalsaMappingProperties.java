@@ -75,6 +75,15 @@ public class SalsaMappingProperties{
 		return null;
 	}
 	
+	public SalsaMappingProperty getByType(String type){
+		for (SalsaMappingProperty p : properties) {
+			if (p.getType().equals(type)){
+				return p;
+			}
+		}
+		return null;
+	}
+	
 	public static class SalsaMappingProperty {
 		@XmlAttribute(name="type")
 		String mytype;
@@ -99,6 +108,10 @@ public class SalsaMappingProperties{
 				}
 			}
 			return null;
+		}
+		
+		public List<Property> getPropertiesList() {
+			return properties;
 		}
 
 		public void put(String key, String value) {
@@ -134,6 +147,16 @@ public class SalsaMappingProperties{
 				this.name = name;
 				this.value = value;
 			}
+
+			public String getName() {
+				return name;
+			}
+
+			public String getValue() {
+				return value;
+			}
+			
+			
 			
 		}
 		
