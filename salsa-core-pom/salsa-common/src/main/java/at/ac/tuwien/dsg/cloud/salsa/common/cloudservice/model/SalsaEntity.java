@@ -65,6 +65,15 @@ public class SalsaEntity {
         }
     }
 	
+	public PrimitiveOperation getPrimitiveByName(String name){
+		for (PrimitiveOperation po : primitive) {
+			if (po.name.equals(name)){
+				return po;						
+			}
+		}
+		return null;
+	}
+	
 	public SalsaEntity(){		
 	}
 	

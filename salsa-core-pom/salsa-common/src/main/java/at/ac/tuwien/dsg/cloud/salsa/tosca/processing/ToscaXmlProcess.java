@@ -31,8 +31,7 @@ public class ToscaXmlProcess {
 				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString.class,
 				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM.class,
 				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.ScriptArtifactProperties.class,		
-				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.class,
-				at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity.ConfigurationCapabilities.class);
+				at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.class);
 		return context;
 	}
 	
