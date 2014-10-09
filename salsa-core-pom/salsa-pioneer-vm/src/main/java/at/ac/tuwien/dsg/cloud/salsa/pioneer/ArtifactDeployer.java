@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ConfigurationCapability;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.PrimitiveOperation;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
@@ -324,12 +324,12 @@ public class ArtifactDeployer {
 					PioneerLogger.logger.debug("node " + node.getId()+" have null artifact");
 					// try to get script from the actions
 					ServiceUnit unit = serviceRuntimeInfo.getComponentById(node.getId());
-					ConfigurationCapability cc = unit.getCapabilityByName("deploy");					
-					if (!cc.equals(null)){
-						if (cc.getMechanism().getExecutionType().equals(ConfigurationCapability.ExecutionType.command)){
-							PioneerLogger.logger.debug("Deploying component by command: " + cc.getMechanism().getExecutionRef());
-							executeCommand(cc.getMechanism().getExecutionRef());
-						}
+					PrimitiveOperation po = unit.getPrimitiveByName("deploy");										
+					if (!po.equals(null)){
+						if (po.getExecutionType().equals(PrimitiveOperation.ExecutionType.SCRIPT)){
+							PioneerLogger.logger.debug("Deploying component by command: " + po.getExecutionREF());
+							executeCommand(po.getExecutionREF());
+						}						
 					}
 					return;
 				}

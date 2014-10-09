@@ -39,7 +39,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ConfigurationCapability;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance.Capabilities;
@@ -942,7 +941,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			ServiceTopology topo = service.getComponentTopologyById(topologyId);
 			ServiceUnit nodeData = topo.getComponentById(nodeId);	
 			
-			ConfigurationCapability confCapa = nodeData.getCapabilityByName(actionName);
+			//ConfigurationCapability confCapa = nodeData.getCapabilityByName(actionName);
 			ServiceInstance instance = nodeData.getInstanceById(instanceId);
 			instance.queueAction(actionName);
 						
