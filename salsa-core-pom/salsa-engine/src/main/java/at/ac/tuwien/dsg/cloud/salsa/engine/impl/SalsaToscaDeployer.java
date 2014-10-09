@@ -11,20 +11,15 @@ import generated.oasis.tosca.TServiceTemplate;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ConfigurationCapability;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity.ConfigurationCapabilities;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.PrimitiveOperation;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
@@ -42,6 +37,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.SalsaMappingProperty;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.SalsaMappingProperty.Property;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
@@ -753,6 +749,19 @@ public class SalsaToscaDeployer {
 					nodeData.setMax(10); // max for experiments
 				} else {
 					nodeData.setMax(Integer.parseInt(node.getMaxInstances()));
+				}
+				// Get the action property if there is. Just support command pattern
+				// TODO: Support complex action.
+				if (node.getProperties()!=null){
+					if (node.getProperties().getAny()!=null){
+						SalsaMappingProperties props = (SalsaMappingProperties) node.getProperties().getAny();
+						SalsaMappingProperty p = props.getByType("action");
+						if (p!=null){
+							for (Property pp : p.getPropertiesList()) {
+								nodeData.addPrimitiveOperation(PrimitiveOperation.newCommandType(pp.getName(), pp.getValue()));
+							}
+						}						
+					}
 				}
 				// add the artifact type for SOFTWARE NODE
 				// if

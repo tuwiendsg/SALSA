@@ -115,6 +115,9 @@ public abstract class TEntityTemplate
      *     
      */
     public TEntityTemplate.Properties getProperties() {
+    	if(this.properties==null){
+    		this.properties = new TEntityTemplate.Properties();
+    	}
         return properties;
     }
 

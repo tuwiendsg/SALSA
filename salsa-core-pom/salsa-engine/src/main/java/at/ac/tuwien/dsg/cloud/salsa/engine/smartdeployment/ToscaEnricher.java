@@ -67,16 +67,13 @@ public class ToscaEnricher {
 
 			knowledgeTopo = ((TServiceTemplate) knowledgeBase.getServiceTemplateOrNodeTypeOrNodeTypeImplementation().get(0)).getTopologyTemplate();
 			
-			artifactList.importFromXML(ToscaEnricher.class.getResource(
-					"/data/salsa.artifacts.xml").getFile());
-			repoList.importFromXML(ToscaEnricher.class.getResource(
-					"/data/salsa.repo.xml").getFile());
+			artifactList.importFromXML(ToscaEnricher.class.getResource("/data/salsa.artifacts.xml").getFile());
+			repoList.importFromXML(ToscaEnricher.class.getResource("/data/salsa.repo.xml").getFile());
 
 		} catch (IOException e1) {
 			EngineLogger.logger.error("Not found knowledge base file. " + e1);
 		} catch (JAXBException e2) {
-			EngineLogger.logger
-					.error("Error when parsing knowledge base file. " + e2);
+			EngineLogger.logger.error("Error when parsing knowledge base file. " + e2);
 		}
 	}
 
@@ -325,41 +322,47 @@ public class ToscaEnricher {
 	 * Mode all properties which not belong to node1 to node2 node2.properties
 	 * will be deleted and replace with new one
 	 */
-	private void moveProperties(TNodeTemplate node1, TNodeTemplate node2,
-			String keepType) {
-		if (node1.getProperties() == null
-				|| node1.getProperties().getAny() == null) {
+	private void moveProperties(TNodeTemplate node1, TNodeTemplate node2, String keepType) {
+		if (node1.getProperties() == null || node1.getProperties().getAny() == null) {
 			return;
 		}
 		System.out.println("moving " + node1.getId() + " to " + node2.getId());
-		SalsaMappingProperties p1 = (SalsaMappingProperties) node1
-				.getProperties().getAny();
+		SalsaMappingProperties p1 = (SalsaMappingProperties) node1.getProperties().getAny();
 		
+		EngineLogger.logger.debug("movingProperties - 1");
 		List<SalsaMappingProperty> fixedListP1 = new ArrayList<>(p1.getProperties());
-		
+		EngineLogger.logger.debug("movingProperties - 2");
 		SalsaMappingProperties newProp = null;
-		if (node2.getProperties()!=null){
+		if (node2.getProperties()!=null && node2.getProperties().getAny()!=null){
+			EngineLogger.logger.debug("movingProperties - 2-1");
 			newProp = (SalsaMappingProperties) node2.getProperties().getAny();
+			if (newProp==null){
+				EngineLogger.logger.debug("movingProperties - 2-1-1-1-1-1");
+			}
 		} else {
+			EngineLogger.logger.debug("movingProperties - 2-2");
 			newProp = new SalsaMappingProperties();			
 		}
-		
+		EngineLogger.logger.debug("movingProperties - 3");
 		for (SalsaMappingProperty prop : fixedListP1) {
 			if (!prop.getType().equals(keepType)
 					&& !prop.getType().equals("BundleConfig")
 					&& !prop.getType().equals("Operations")
-					&& !prop.getType().equals("action")) { // move from
-																// req.prop ==>
-																// node.prop
+					&& !prop.getType().equals("action")) { // move from req.prop ==> node.prop
+				EngineLogger.logger.debug("movingProperties - 4");
 				//p2.getProperties().add(prop);
 				newProp.getProperties().add(prop);
+				EngineLogger.logger.debug("movingProperties - 4-1");
 				p1.getProperties().remove(prop);
+				EngineLogger.logger.debug("movingProperties - 4-2");
 			}
 		}
-		
+		EngineLogger.logger.debug("movingProperties - 5");
 		Properties toscaProp = new Properties();
 		toscaProp.setAny(newProp);
+		EngineLogger.logger.debug("movingProperties - 6");
 		node2.setProperties(toscaProp);
+		EngineLogger.logger.debug("movingProperties - 7");
 	}
 
 	private void cleanEmptyProperties(List<TNodeTemplate> nodeLst) {
@@ -444,9 +447,11 @@ public class ToscaEnricher {
 					map.put("packages", packages);
 					maps.put(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString(), map);
 					
+					EngineLogger.logger.debug("Map of properties is created");
 					node.getProperties().setAny(maps);
 					node.setMinInstances(1);
 					node.setMaxInstances("unbounded");
+					EngineLogger.logger.debug("Done adding configuration");
 				} //if !found
 			}
 		}
@@ -511,8 +516,7 @@ public class ToscaEnricher {
 					}
 				}
 			}
-		}
-		
+		}		
 	}
 	
 	
