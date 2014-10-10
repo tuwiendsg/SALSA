@@ -27,6 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -201,16 +208,17 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
 		TDefinitions def = centerCon.getToscaDescription(serviceId);
 		CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
-		ServiceUnit node = service.getComponentById(topologyId, nodeId);
+		ServiceUnit node = service.getComponentById(nodeId);		
 		if (node==null){
 			EngineLogger.logger.error("May be the id of node is invalided");		
 			return Response.status(500).entity("Error: Node ID is not found.").build();
 		}
-		centerCon.updateNodeIdCounter(serviceId, topologyId, nodeId, node.getIdCounter()+quantity); // update first the number + quantity		
+		String correctTopologyID = service.getTopologyOfNode(node.getId()).getId();
+		centerCon.updateNodeIdCounter(serviceId, correctTopologyID, nodeId, node.getIdCounter()+quantity); // update first the number + quantity		
 		String returnVal="";
 		for (int i= node.getIdCounter(); i<node.getIdCounter()+quantity; i++) {
 			//centerCon.addInstanceUnit(topologyId, nodeId, i);
-			new Thread(new asynSpawnInstances(deployer, serviceId, topologyId, nodeId, i, def, service)).start();
+			new Thread(new asynSpawnInstances(deployer, serviceId, correctTopologyID, nodeId, i, def, service)).start();
 			returnVal += i + " ";
 		}
 		return Response.status(201).entity(returnVal).build();
@@ -344,12 +352,13 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
 		TDefinitions def = centerCon.getToscaDescription(serviceId);
 		CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
-		ServiceUnit node = service.getComponentById(topologyId, nodeId);
+		ServiceUnit node = service.getComponentById(nodeId);
 		if (node==null){
 			EngineLogger.logger.error("May be the id of node is invalided");		
 			return Response.status(500).entity("Error: Node ID is not found.").build();
 		}
-		new Thread(new asynSpawnInstances(deployer, serviceId, topologyId, nodeId, instanceId, def, service)).start();
+		String correctTopologyID = service.getTopologyOfNode(node.getId()).getId();
+		new Thread(new asynSpawnInstances(deployer, serviceId, correctTopologyID, nodeId, instanceId, def, service)).start();
 		return Response.status(201).entity(instanceId).build();	
 		//TODO: What happen if it is fail to spawn a VM ? 
 	}
@@ -368,12 +377,12 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 				MutualFileAccessControl.lockFile();
 				String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
 				CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
-				ServiceTopology topo = service.getComponentTopologyById(topologyId);
-				ServiceUnit nodeData = topo.getComponentById(nodeId);			
+				//ServiceTopology topo = service.getComponentTopologyById(topologyId);
+				ServiceUnit nodeData = service.getComponentById(nodeId);			
 				ServiceInstance instanceData = nodeData.getInstanceById(instanceIdInt);
 				
 				// remove hosted on node
-				for (ServiceUnit unit : topo.getComponents()) {
+				for (ServiceUnit unit : service.getAllComponent()) {
 					if (unit.getHostedId().equals(nodeData.getId())){
 						for (ServiceInstance instance: unit.getInstancesList()){
 							if (instance.getHostedId_Integer()==instanceData.getInstanceId()){
@@ -414,6 +423,23 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		}
 		
 		return true;
+	}
+	
+	@POST
+    @Path("/services/{serviceId}/topologies/{topologyId}/deploy")
+	//@Produces(MediaType.APPLICATION_JSON)
+	public Response deployTopology(@PathParam("serviceId")String serviceId, 
+			@PathParam("topologyId")String topologyId) throws SalsaEngineException{
+		// TODO: implement
+		return null;
+	}
+	
+	@DELETE
+    @Path("/services/{serviceId}/topologies/{topologyId}/deploy")
+	//@Produces(MediaType.APPLICATION_JSON)
+	public Response undeployTopology(@PathParam("serviceId")String serviceId, 
+			@PathParam("topologyId")String topologyId) throws SalsaEngineException{
+		return null;
 	}
 	
 		
@@ -819,13 +845,13 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			SalsaXmlDataProcess.writeCloudServiceToFile(service, serviceFile);
 			
 		} catch (JAXBException e) {
-			logger.error("Cannot parse the service file: " + serviceId);
+			logger.error("updateInstanceUnitProperties - Cannot parse the service file: " + serviceId);
 			logger.error(e);
-			return Response.status(404).entity("Error update node property").build();
+			return Response.status(404).entity("updateInstanceUnitProperties - Error update node property").build();
 		} catch (IOException e1){
-			logger.error("Could not read service for update property: " + serviceId);
+			logger.error("updateInstanceUnitProperties - Could not read service for update property: " + serviceId);
 			logger.error(e1);
-			return Response.status(500).entity("Error update node property").build();
+			return Response.status(500).entity("updateInstanceUnitProperties - Error update node property").build();
 		}
 		finally {
 			MutualFileAccessControl.releaseFile();

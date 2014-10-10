@@ -1,6 +1,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.utils;
 
 
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +9,7 @@ public class EngineLogger {
 	public static Logger logger ;
 	
 	static{		
-       // PropertyConfigurator.configure(EngineLogger.class.getResourceAsStream("/log4j.properties"));
+        PropertyConfigurator.configure(EngineLogger.class.getResourceAsStream("/log4j.properties"));
         logger = LoggerFactory.getLogger("EngineLogger");		
 	}
 }

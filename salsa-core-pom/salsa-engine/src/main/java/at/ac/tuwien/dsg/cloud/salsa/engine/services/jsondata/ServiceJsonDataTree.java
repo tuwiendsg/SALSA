@@ -154,7 +154,7 @@ public class ServiceJsonDataTree {
 		if (hostOnId < 0){
 			instances = data.getInstancesList();
 		} else {
-			instances = data.getInstanceHostOn(hostOnId);
+			instances = data.getInstanceHostOn(hostOnId);	// if load a instance for a abstract, the instance must be on hosted on another instance.
 		}
 		List<ServiceUnit> hostOnCompos = new ArrayList<>();
 		for (ServiceUnit compo : topo.getComponents()) {
@@ -164,14 +164,25 @@ public class ServiceJsonDataTree {
 		}
 //		logger.debug("This abstract node has instances: " + instances.size());
 //		logger.debug("This abstract node host on abstractnode: " + hostOnCompos.size());
-		// updatethe list of instance to this "children" 
+		// update the list of instance to this "children" 
 		for (ServiceInstance instance : instances) {
 //			logger.debug("Work with instance id: " + instance.getInstanceId());
 			ServiceJsonDataTree oneChild = new ServiceJsonDataTree(instance.getInstanceId());
-			addChild(oneChild);			
+			addChild(oneChild);
 			// get the list of host on this components, which will come after the instances
 			oneChild.loadDataInstance(instance, hostOnCompos, data, topo);
-		}		
+		}
+		// if there is no instance of a node type, create a fake node of UNDEPLOYMENT and load data
+		if (instances.isEmpty()){	
+			ServiceJsonDataTree oneChild = new ServiceJsonDataTree("x");
+			addChild(oneChild);
+			ServiceInstance fakeInstance = new ServiceInstance();
+			fakeInstance.setId(data.getId());
+			fakeInstance.setState(SalsaEntityState.UNDEPLOYED);
+			fakeInstance.setHostedId_Integer(0);
+			fakeInstance.setInstanceId(0);			
+			oneChild.loadDataInstance(fakeInstance, hostOnCompos, data, topo);
+		}
 	}
 	
 	// convert instance. abstractNode is for geting TYPE, knowing how to parse properties
@@ -232,7 +243,7 @@ public class ServiceJsonDataTree {
 	}
 	
 	// remove the abstract node, return instance children
-	public List<ServiceJsonDataTree> compactData(){		
+	public List<ServiceJsonDataTree> compactData(){
 		List<ServiceJsonDataTree> cleanChildren=new ArrayList<>();
 		if (this.children!=null) {		
 			if (!this.getChidren().isEmpty()){								
@@ -253,12 +264,19 @@ public class ServiceJsonDataTree {
 				List<ServiceJsonDataTree> toRemove=new ArrayList<>();
 				for (ServiceJsonDataTree child : this.getChidren()) {
 					if (child.isAbstract && !child.getNodeType().equals("TOPOLOGY")){
-						toRemove.add(child);
+						// if there is no instance of the abstract node, keep it and put state undeployed.
+//						if (child.getChidren()==null || child.getChidren().isEmpty()){							
+//							child.isAbstract=false;
+//							child.state = SalsaEntityState.UNDEPLOYED;
+//							cleanChildren.add(child);
+//						} else {
+							toRemove.add(child);
+//						}
 					}
 				}
 				this.getChidren().removeAll(toRemove);
 			}
-		}
+		} 
 		return cleanChildren;
 	}
 	
