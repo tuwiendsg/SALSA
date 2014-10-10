@@ -198,7 +198,7 @@ public class SalsaToscaDeployer {
 		SalsaEngineServiceIntenal serviceInternal = new SalsaEngineImplAll();
 		for (ServiceUnit unit : topNodes) {
 			ServiceUnit refUnit = getReferenceServiceUnit(unit);
-			if (refUnit == null){		// not a reference
+			if (refUnit == null && unit.getMin()>0){		// not a reference and min > 0
 				EngineLogger.logger.debug("Orchestating: Creating top node: " + unit.getId());
 				serviceInternal.spawnInstance(serviceData.getId(), serviceData.getTopologyOfNode(unit.getId()).getId(), unit.getId(), 1);
 			} 
@@ -666,7 +666,8 @@ public class SalsaToscaDeployer {
 			String nodeId, int instanceId) throws SalsaEngineException {
 		CloudService service = centerCon
 				.getUpdateCloudServiceRuntime(serviceId);
-		ServiceUnit node = service.getComponentById(topologyId, nodeId);
+		ServiceUnit node = service.getComponentById(nodeId);
+		topologyId = service.getTopologyOfNode(node.getId()).getId();
 		// remove VM node by invoke MultiCloudConnector
 		if (node.getType().equals(
 				SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {

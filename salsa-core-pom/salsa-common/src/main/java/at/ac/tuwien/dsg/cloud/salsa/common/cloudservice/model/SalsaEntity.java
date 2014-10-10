@@ -44,7 +44,7 @@ public class SalsaEntity {
 	
 	@XmlElementWrapper(name="Primitives")
 	@XmlElement(name = "Primitive")
-	List<PrimitiveOperation> primitive = new ArrayList<PrimitiveOperation>();
+	List<PrimitiveOperation> primitive;
 	
 		
 	@XmlAccessorType(XmlAccessType.FIELD)
@@ -66,9 +66,11 @@ public class SalsaEntity {
     }
 	
 	public PrimitiveOperation getPrimitiveByName(String name){
-		for (PrimitiveOperation po : primitive) {
-			if (po.name.equals(name)){
-				return po;						
+		if (primitive!=null){		
+			for (PrimitiveOperation po : primitive) {
+				if (po.name.equals(name)){
+					return po;						
+				}
 			}
 		}
 		return null;
@@ -127,6 +129,9 @@ public class SalsaEntity {
 	}
 	
 	public void addPrimitiveOperation(PrimitiveOperation opp){
+		if (this.primitive==null){
+			this.primitive = new ArrayList<PrimitiveOperation>();
+		}
 		this.primitive.add(opp);
 	}
 

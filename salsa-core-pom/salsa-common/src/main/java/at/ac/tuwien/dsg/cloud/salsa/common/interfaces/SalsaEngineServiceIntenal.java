@@ -116,6 +116,32 @@ public interface SalsaEngineServiceIntenal {
 	@Produces(MediaType.TEXT_XML)
 	public Response getToscaService(@PathParam("serviceId")String serviceDeployId);
 	
+	/**
+	 * Batch deploy all the services in the topology
+	 * @param serviceId
+	 * @param topologyId
+	 * @return
+	 * @throws SalsaEngineException
+	 */
+	@POST
+    @Path("/services/{serviceId}/topologies/{topologyId}/deploy")
+	//@Produces(MediaType.APPLICATION_JSON)
+	public Response deployTopology(@PathParam("serviceId")String serviceId, 
+			@PathParam("topologyId")String topologyId) throws SalsaEngineException;
+	
+	/**
+	 * Batch undeploy all the services in the topology
+	 * @param serviceId
+	 * @param topologyId
+	 * @return
+	 * @throws SalsaEngineException
+	 */
+	@DELETE
+    @Path("/services/{serviceId}/topologies/{topologyId}/deploy")
+	//@Produces(MediaType.APPLICATION_JSON)
+	public Response undeployTopology(@PathParam("serviceId")String serviceId, 
+			@PathParam("topologyId")String topologyId) throws SalsaEngineException;
+	
 	
 	// INTERFACES FOR rSYBL
 	
