@@ -163,7 +163,11 @@ function update(source) {
 	        	if (d.isAbstract==true){
 	    			return "#C3DFF8";
 	    		} else {
-	    			return "white";
+	    			if (d.state=="UNDEPLOYED"){
+	    				return "#ECF1F5";	
+	    			} else {
+	    				return "white";
+	    			}
 	    		}
 	        });
 		

@@ -304,7 +304,7 @@ public interface SalsaEngineServiceIntenal {
 			@PathParam("instanceId") int instanceId);
 
 	/**
-	 * Update a replica's state.
+	 * Update a deployment's state.
 	 * 
 	 * @param serviceId
 	 * @param topologyId
@@ -316,6 +316,15 @@ public interface SalsaEngineServiceIntenal {
 	@POST
 	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/state/{value}")
 	public Response updateNodeState(
+			@PathParam("serviceId")String serviceId,
+			@PathParam("topologyId") String topologyId,
+			@PathParam("nodeId")String nodeId,
+			@PathParam("instanceId")int instanceId,
+			@PathParam("value") String value);
+	
+	@POST
+	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/instancestate/{value}")
+	public Response updateInstanceState(
 			@PathParam("serviceId")String serviceId,
 			@PathParam("topologyId") String topologyId,
 			@PathParam("nodeId")String nodeId,
