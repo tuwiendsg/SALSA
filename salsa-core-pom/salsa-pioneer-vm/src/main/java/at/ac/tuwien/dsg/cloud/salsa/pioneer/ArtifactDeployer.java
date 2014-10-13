@@ -229,7 +229,7 @@ public class ArtifactDeployer {
 				logger.debug("Executing the deployment for node: " + node.getId() +", instance: " + instanceId );
 				//runNodeArtifacts(node, Integer.toString(instanceId), def);
 				deploySingleNode(node, instanceId);
-				centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.FINISHED);
+				centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.DEPLOYED);
 			}
 
 			@Override
@@ -266,7 +266,7 @@ public class ArtifactDeployer {
 					hostNode.getId();
 					CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 					SalsaEntityState state = SalsaEntityState.CONFIGURING;
-					while (state!=SalsaEntityState.RUNNING && state!=SalsaEntityState.FINISHED){
+					while (state!=SalsaEntityState.RUNNING && state!=SalsaEntityState.DEPLOYED){
 						state = service.getComponentById(hostNode.getId()).getState();
 						try{
 							Thread.sleep(3000);							
@@ -434,7 +434,7 @@ public class ArtifactDeployer {
 			logger.debug("checkCapabilityReady - service: " + service.getId());
 			ServiceUnit component = service.getComponentById(node.getId());	// no topology as parameter, so we can check crossing to other topology			
 			logger.debug("checkCapabilityReady - service unit: " + component.getId());
-			int number=component.getInstanceNumberByState(SalsaEntityState.RUNNING)+component.getInstanceNumberByState(SalsaEntityState.FINISHED);
+			int number=component.getInstanceNumberByState(SalsaEntityState.RUNNING)+component.getInstanceNumberByState(SalsaEntityState.DEPLOYED);
 			logger.debug("Check capability. Checking component id " + component.getId() + "  -- " + number +" number of running or finished instances.");			
 			if (number == 0){
 				logger.debug("CHECK CAPABILITY FALSE. " + number);				

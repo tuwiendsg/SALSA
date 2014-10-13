@@ -71,7 +71,7 @@ function loadPart(){
 	if (!!getURLParameter("id")){		
 		$("#serviceRuntimeList").load("ServiceRuntimeBrieftlyDescription.html");
 		$("#serviceRuntimeTable").load("ServiceRuntimeTable.html");		
-		showAppStructure();
+		showDeploymentInfo();
 	} else {
 		$("#deploymentForm").load("DeploymentForm.html");
 		$("#serviceRuntimeList").load("ServiceRuntimeList.html");

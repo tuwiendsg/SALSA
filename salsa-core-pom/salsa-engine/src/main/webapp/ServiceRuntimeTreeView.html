@@ -215,11 +215,15 @@ function update(source) {
 	        		return "VIRTUAL MACHINE";
 	        	}
 	        	if (d.nodeType=="os" && d.isAbstract==false){
-	        		return "VM INSTANCE";
+	        		return "VIRTUAL MACHINE";
 	        	}
 	        	if (d.nodeType=="chef" && d.isAbstract==false){
 	        		return "CHEF CLIENT";
 	        	}
+	        	if (d.nodeType=="sh" && d.isAbstract==false){
+	        		return "ARTIFACT";
+	        	}
+	        	
 	        	return d.nodeType.toUpperCase();
 	    	});
 	
@@ -240,7 +244,7 @@ function update(source) {
     		.attr("fill", function(d){
   			switch (d.state){
 	  			case 'RUNNING':
-	  			case 'FINISHED':
+	  			case 'DEPLOYED':
 		  			return "green";
 		  			break;
 	  			case 'UNDEPLOYED':

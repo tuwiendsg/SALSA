@@ -4,9 +4,16 @@
 <script type="text/javascript">
 var listSource=salsaCenterRestEndpoint+"/viewgenerator/cloudservice/json/list";
 
-$.getJSON(listSource,  function(json){ 
-	$('#list').html(createListTable(json.services)).fadeIn();
-});
+function getDataAndShow(){
+	$.getJSON(listSource,  function(json){ 
+		$('#list').html(createListTable(json.services)).fadeIn();
+	});	
+	setTimeout(function(){
+		  getDataAndShow();
+	  }, 3000);
+}
+
+getDataAndShow();
 
 function createListTable(data){
 	 var str = '<table class="lightPro">';

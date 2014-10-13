@@ -10,15 +10,15 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "SalsaEntityStateEnum")
 @XmlEnum
-public enum SalsaEntityState {
-	NOTRUN("notrun"),
+public enum SalsaEntityState { //	UNDEPLOYED("undeployed"),
+	UNDEPLOYED("undeployed"),
 	ALLOCATING("allocating"),
 	STAGING("staging"),
 	STAGING_ACTION("staging_action"),
 	CONFIGURING("configuring"),
 //	STOPPED("stopped"),	
 	RUNNING("running"),	// the deployment action is executed
-	FINISHED("finished"), // deployed
+	DEPLOYED("deployed"), // deployed
 	ERROR("error");
 	
 	private String nodeState;

@@ -1,6 +1,8 @@
 package at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -27,9 +29,11 @@ public class InstrumentShareData {
 			String instURL = inst.serviceId+"/"+inst.topoId+"/"+inst.nodeId+"/"+inst.instanceId;
 			PioneerLogger.logger.debug("This is in the list: " + instURL);
 			if (instURL.equals(instanceURL)){
-				// try to write "return" to stdin of the process before destroying
+				// try to write "return" to stdin of the process before destroying because some artifacts is stopped by pressing enter
 				try{
-					inst.p.getOutputStream().write("\n".getBytes());
+					BufferedWriter out = new BufferedWriter(new OutputStreamWriter(inst.p.getOutputStream()));
+					out.newLine();
+					out.flush();
 				} catch (IOException e){
 					PioneerLogger.logger.error("Error: Cannot write character to stdin of the process. " + e);
 				}
@@ -75,7 +79,7 @@ public class InstrumentShareData {
 						SalsaCenterConnector con = new SalsaCenterConnector(
 								SalsaPioneerConfiguration.getSalsaCenterEndpoint(), 
 								SalsaPioneerConfiguration.getWorkingDir(), PioneerLogger.logger);
-						con.updateNodeState(inst.serviceId, inst.topoId, inst.nodeId, Integer.parseInt(inst.instanceId), SalsaEntityState.FINISHED);					
+						con.updateNodeState(inst.serviceId, inst.topoId, inst.nodeId, Integer.parseInt(inst.instanceId), SalsaEntityState.DEPLOYED);					
 						instances.remove(inst);
 					} catch (IllegalThreadStateException e){
 						// happen when p.exitValue about false						
