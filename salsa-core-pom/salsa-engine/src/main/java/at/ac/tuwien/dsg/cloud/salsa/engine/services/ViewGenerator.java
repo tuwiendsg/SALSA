@@ -79,7 +79,7 @@ static Logger logger;
 				topoNode.setState(topo.getState());
 				datatree.addChild(topoNode);
 				List<ServiceUnit> components = topo.getComponentsByType(SalsaEntityType.OPERATING_SYSTEM);				
-				for (ServiceUnit compo : components) {					
+				for (ServiceUnit compo : components) {
 					ServiceJsonDataTree componode = new ServiceJsonDataTree();
 					componode.loadData(compo, -1, topo);	// -1 will not check instance id
 					topoNode.addChild(componode);
@@ -87,6 +87,7 @@ static Logger logger;
 			}
 			
 			datatree.compactData();	// parent=null for root node
+			datatree.reduceLargeNumberOfInstances();
 			Gson json = new GsonBuilder().setPrettyPrinting().create();
 			
 			return json.toJson(datatree);

@@ -240,7 +240,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		ServiceInstance instance = unit.getInstanceById(Integer.parseInt(instanceId));
 		
 		int counter = 0;
-		while (instance==null || !(instance.getState().equals(SalsaEntityState.RUNNING) || instance.getState().equals(SalsaEntityState.FINISHED))){
+		while (instance==null || !(instance.getState().equals(SalsaEntityState.RUNNING) || instance.getState().equals(SalsaEntityState.DEPLOYED))){
 			try {
 				if (counter>300){
 					break;
@@ -429,20 +429,51 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	}
 	
 	@POST
-    @Path("/services/{serviceId}/topologies/{topologyId}/deploy")
+    @Path("/services/{serviceId}/topologies/{topologyId}")
 	//@Produces(MediaType.APPLICATION_JSON)
 	public Response deployTopology(@PathParam("serviceId")String serviceId, 
 			@PathParam("topologyId")String topologyId) throws SalsaEngineException{
-		// TODO: implement
-		return null;
+		String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+		try {
+			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+			ServiceTopology topo = service.getComponentTopologyById(topologyId);
+			List<ServiceUnit> units = topo.getComponentsByType(SalsaEntityType.SOFTWARE);
+			for (ServiceUnit u : units) {
+				spawnInstance(serviceId, topologyId, u.getId(), 1);
+			}			
+			return Response.status(200).entity("Deploy the whole topology").build();
+		} catch (IOException e){
+			logger.error(e.getMessage());
+			return Response.status(404).entity("Cannot read the service data file").build();
+		} catch (JAXBException e1){
+			logger.error(e1.getMessage());
+			return Response.status(500).entity("Cannot parse the service data file").build();
+		}		
 	}
 	
 	@DELETE
-    @Path("/services/{serviceId}/topologies/{topologyId}/deploy")
+    @Path("/services/{serviceId}/topologies/{topologyId}")
 	//@Produces(MediaType.APPLICATION_JSON)
 	public Response undeployTopology(@PathParam("serviceId")String serviceId, 
 			@PathParam("topologyId")String topologyId) throws SalsaEngineException{
-		return null;
+		String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+		try {
+			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+			ServiceTopology topo = service.getComponentTopologyById(topologyId);
+			List<ServiceUnit> units = topo.getComponentsByType(SalsaEntityType.OPERATING_SYSTEM);
+			for (ServiceUnit u : units) {
+				for (ServiceInstance instance : u.getInstancesList()) {
+					destroyInstance(serviceId, topologyId, u.getId(), instance.getInstanceId());
+				}				
+			}					
+			return Response.status(200).entity("Deploy the whole topology").build();
+		} catch (IOException e){
+			logger.error(e.getMessage());
+			return Response.status(404).entity("Cannot read the service data file").build();
+		} catch (JAXBException e1){
+			logger.error(e1.getMessage());
+			return Response.status(500).entity("Cannot parse the service data file").build();
+		}		
 	}
 	
 		
@@ -1079,14 +1110,14 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		
 	private void updateComponentStateBasedOnInstance(SalsaEntity nodeData){		
 		Map<SalsaEntityState, Integer> rankState = new HashMap<>();
-		rankState.put(SalsaEntityState.NOTRUN, 0);
+		rankState.put(SalsaEntityState.UNDEPLOYED, 0);
 		rankState.put(SalsaEntityState.ERROR, 1);
 		rankState.put(SalsaEntityState.ALLOCATING, 2);
 		rankState.put(SalsaEntityState.STAGING, 3);
 		rankState.put(SalsaEntityState.CONFIGURING, 4);
 		//rankState.put(SalsaEntityState.STOPPED, 5);
 		rankState.put(SalsaEntityState.RUNNING, 6);
-		rankState.put(SalsaEntityState.FINISHED, 7);
+		rankState.put(SalsaEntityState.DEPLOYED, 7);
 		
 		List<SalsaEntity> insts = new ArrayList<>();
 		if (nodeData.getClass().equals(ServiceUnit.class)){	
@@ -1110,7 +1141,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		
 		int minState=6;
 		if (insts.isEmpty()){
-			nodeData.setState(SalsaEntityState.NOTRUN);
+			nodeData.setState(SalsaEntityState.UNDEPLOYED);
 			return;
 		}
 		for (SalsaEntity inst : insts) {

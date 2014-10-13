@@ -443,7 +443,7 @@ public class SalsaToscaDeployer {
 			centerCon.addInstanceUnitMetaData(service.getId(), topologyId, nodeId, data);
 			// waiting for hostInstance become RUNNING or FINISH
 			while (!suitableHostedInstance.getState().equals(SalsaEntityState.RUNNING)
-					&& !suitableHostedInstance.getState().equals(SalsaEntityState.FINISHED)) {
+					&& !suitableHostedInstance.getState().equals(SalsaEntityState.DEPLOYED)) {
 				try {
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {
@@ -714,7 +714,7 @@ public class SalsaToscaDeployer {
 	public static CloudService buildRuntimeDataFromTosca(TDefinitions def) {
 		EngineLogger.logger.debug("Building runtime from Tosca file");
 		CloudService service = new CloudService();
-		service.setState(SalsaEntityState.NOTRUN);
+		service.setState(SalsaEntityState.UNDEPLOYED);
 		List<TServiceTemplate> serviceTemplateLst = ToscaStructureQuery.getServiceTemplateList(def);
 		for (TServiceTemplate st : serviceTemplateLst) {
 			ServiceTopology topo = new ServiceTopology();
@@ -730,7 +730,7 @@ public class SalsaToscaDeployer {
 					+ relas_hoston.size());
 			for (TNodeTemplate node : nodes) {
 				ServiceUnit nodeData = new ServiceUnit(node.getId(), node.getType().getLocalPart());				
-				nodeData.setState(SalsaEntityState.NOTRUN);
+				nodeData.setState(SalsaEntityState.UNDEPLOYED);
 				nodeData.setName(node.getName());
 				nodeData.setMin(node.getMinInstances());
 				nodeData.setReference(node.getReference());

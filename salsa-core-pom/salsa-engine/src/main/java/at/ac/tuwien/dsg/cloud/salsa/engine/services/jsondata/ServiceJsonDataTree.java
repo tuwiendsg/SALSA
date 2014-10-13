@@ -178,7 +178,7 @@ public class ServiceJsonDataTree {
 			addChild(oneChild);
 			ServiceInstance fakeInstance = new ServiceInstance();
 			fakeInstance.setId(data.getId());
-			fakeInstance.setState(SalsaEntityState.NOTRUN);
+			fakeInstance.setState(SalsaEntityState.UNDEPLOYED);
 			fakeInstance.setHostedId_Integer(0);
 			fakeInstance.setInstanceId(0);			
 			oneChild.loadDataInstance(fakeInstance, hostOnCompos, data, topo);
@@ -230,7 +230,9 @@ public class ServiceJsonDataTree {
 							
 		// recursive components which host on this node
 //		logger.debug("Will recursive by hostOnCompos.size(): " + hostOnCompos.size());
+
 		for (ServiceUnit compo : hostOnCompos) {
+			// if there are too much node, just combine to one.			
 //			logger.debug(" -- PI123 - Recursiving id: " + compo.getId());
 			ServiceJsonDataTree newNode = new ServiceJsonDataTree();
 			newNode.loadData(compo, instance.getInstanceId(), topo);
@@ -254,7 +256,7 @@ public class ServiceJsonDataTree {
 					}
 				}
 				
-				List<ServiceJsonDataTree> newChildren=new ArrayList<>();			
+				List<ServiceJsonDataTree> newChildren=new ArrayList<>();
 				
 				for (ServiceJsonDataTree child : this.getChidren()) {
 					newChildren.addAll(child.compactData());
@@ -281,7 +283,48 @@ public class ServiceJsonDataTree {
 	}
 	
 	
-	
+	public void reduceLargeNumberOfInstances(){
+		if (this.children==null){			
+			return;
+		}
+		if (this.children.size()<4){
+			for (ServiceJsonDataTree child : children) {
+				child.reduceLargeNumberOfInstances();
+			}			
+			return;
+		}		
+		
+		ServiceJsonDataTree collective = new ServiceJsonDataTree();
+		ServiceJsonDataTree firstNode = this.children.get(0);
+		children.add(collective);
+		if (firstNode.getConnectto()!=null){
+			collective.connectto = firstNode.getConnectto();
+		}
+		collective.id = "Collection_of_" + firstNode.getId();
+		collective.isAbstract=false;
+		collective.nodeType = "MANY ARTIFACTS";
+		collective.state = this.state;
+		int total = this.children.size();
+		
+		Map<SalsaEntityState, Integer> stateCal = new HashMap<SalsaEntityState, Integer>();
+		for (ServiceJsonDataTree thisnode : children) {			
+			if (stateCal.get(thisnode.state)==null){
+				stateCal.put(thisnode.state, 0);
+			} else {
+				stateCal.put(thisnode.state, stateCal.get(thisnode.state) + 1);
+			}			
+		}
+		this.children = new ArrayList<ServiceJsonDataTree>();
+		children.add(collective);
+		
+		collective.properties =  new HashMap<String, String>();
+		for (Map.Entry<SalsaEntityState, Integer> entry : stateCal.entrySet()){
+			if (entry.getValue() > 0){
+				collective.properties.put("Node[" + entry.getKey().toString() + "]", entry.getValue().toString());
+			}
+		}
+		collective.properties.put("Total number of nodes", total + "");
+	}
 	
 	
 }
