@@ -178,7 +178,7 @@ public class ServiceJsonDataTree {
 			addChild(oneChild);
 			ServiceInstance fakeInstance = new ServiceInstance();
 			fakeInstance.setId(data.getId());
-			fakeInstance.setState(SalsaEntityState.UNDEPLOYED);
+			fakeInstance.setState(SalsaEntityState.NOTRUN);
 			fakeInstance.setHostedId_Integer(0);
 			fakeInstance.setInstanceId(0);			
 			oneChild.loadDataInstance(fakeInstance, hostOnCompos, data, topo);

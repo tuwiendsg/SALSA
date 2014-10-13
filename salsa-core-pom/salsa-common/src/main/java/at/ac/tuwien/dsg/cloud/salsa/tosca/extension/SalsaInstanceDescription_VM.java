@@ -194,10 +194,11 @@ public class SalsaInstanceDescription_VM {
 				this.baseImage = map.get("baseImage");
 				this.instanceType = map.get("instanceType");
 				String packageStr = map.get("packages");
-				
-				List<String> packagelist = new ArrayList<String>(Arrays.asList(packageStr.split(",")));	
-				this.packagesDependencies = new PackagesDependencies();
-				this.packagesDependencies.setPackageDependency(packagelist);				
+				if (packageStr!=null){
+					List<String> packagelist = new ArrayList<String>(Arrays.asList(packageStr.split(",")));	
+					this.packagesDependencies = new PackagesDependencies();
+					this.packagesDependencies.setPackageDependency(packagelist);
+				}
 			}
 		}		
 	}

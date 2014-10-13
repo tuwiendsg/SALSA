@@ -8,11 +8,11 @@ import javax.xml.bind.annotation.XmlType;
  * @author hungld
  *
  */
-@XmlType(name = "SalsaEntityStateEnum")
+@XmlType(name = "SalsaInstanceStateEnum")
 @XmlEnum
 public enum SalsaInstanceState {
 	UNDEPLOYED("undeployed"),
-	DEPLOYED("deployed"),	
+	DEPLOYED("deployed"),
 	STOPPED("stopped"),
 	RUNNING("running"),
 	ERROR("error");

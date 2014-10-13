@@ -258,8 +258,7 @@ public class SalsaToscaDeployer {
 			CloudService service) throws SalsaEngineException {		
 		CloudService newservice = centerCon.getUpdateCloudServiceRuntime(serviceId);
 		ServiceUnit node = newservice.getComponentById(topologyId, nodeId);
-		EngineLogger.logger.debug("Node type: " + node.getType() + ". String: "
-				+ SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString());
+		EngineLogger.logger.debug("Node type: " + node.getType() + ". String: "	+ SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString());
 		ServiceInstance repData = new ServiceInstance(instanceId, null);
 		repData.setState(SalsaEntityState.ALLOCATING);
 		repData.setHostedId_Integer(2147483647);
@@ -291,7 +290,7 @@ public class SalsaToscaDeployer {
 					Thread.sleep(1000);
 					count++;
 					if (count > 50) {	// maximum 5 secs
-						orchestating = false;
+						releaseLock();
 					}
 				} catch (Exception e) {
 				}
@@ -688,33 +687,22 @@ public class SalsaToscaDeployer {
 			// centerCon.removeOneInstance(serviceId, topologyId, nodeId,
 			// instanceId);
 			return true;
-		} else {
-			EngineLogger.logger.debug("Removing a software node somewhere: "
-					+ nodeId + "/" + instanceId);
-			ServiceUnit hostNode = service.getComponentById(topologyId,
-					node.getHostedId());
+		} else {			
+			EngineLogger.logger.debug("Removing a software node somewhere: " + nodeId + "/" + instanceId);
+			ServiceUnit hostNode = service.getComponentById(topologyId,	node.getHostedId());
 			EngineLogger.logger.debug("hostNode id: " + hostNode.getId());
-			while (!hostNode.getType().equals(
-					SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
-				hostNode = service.getComponentById(topologyId,
-						hostNode.getId());
-				EngineLogger.logger.debug("other hostNode id: "
-						+ hostNode.getId());
+			while (!hostNode.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
+				hostNode = service.getComponentById(topologyId,	hostNode.getId());
+				EngineLogger.logger.debug("other hostNode id: "	+ hostNode.getId());
 			}
 			ServiceInstance instance = node.getInstanceById(instanceId);
-			EngineLogger.logger.debug("removeOneInstance - instanceid: "
-					+ instance.getInstanceId());
+			EngineLogger.logger.debug("removeOneInstance - instanceid: "+ instance.getInstanceId());
 			int hostInstanceId = instance.getHostedId_Integer();
-			EngineLogger.logger.debug("removeOneInstance - hostInstanceId: "
-					+ hostInstanceId);
-			ServiceInstance vm_instance = hostNode
-					.getInstanceById(hostInstanceId);
-			EngineLogger.logger.debug("removeOneInstance - vm instance: "
-					+ vm_instance.getInstanceId());
-			SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) vm_instance
-					.getProperties().getAny();
-			EngineLogger.logger.debug("removeOneInstance - vm ip: "
-					+ vm.getPrivateIp());
+			EngineLogger.logger.debug("removeOneInstance - hostInstanceId: "+ hostInstanceId);
+			ServiceInstance vm_instance = hostNode.getInstanceById(hostInstanceId);
+			EngineLogger.logger.debug("removeOneInstance - vm instance: "	+ vm_instance.getInstanceId());
+			SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) vm_instance.getProperties().getAny();
+			EngineLogger.logger.debug("removeOneInstance - vm ip: "	+ vm.getPrivateIp());
 
 			PioneerConnector pioneer = new PioneerConnector(vm.getPrivateIp());
 			pioneer.removeSoftwareNode(nodeId, instanceId);
@@ -726,7 +714,7 @@ public class SalsaToscaDeployer {
 	public static CloudService buildRuntimeDataFromTosca(TDefinitions def) {
 		EngineLogger.logger.debug("Building runtime from Tosca file");
 		CloudService service = new CloudService();
-		service.setState(SalsaEntityState.UNDEPLOYED);
+		service.setState(SalsaEntityState.NOTRUN);
 		List<TServiceTemplate> serviceTemplateLst = ToscaStructureQuery.getServiceTemplateList(def);
 		for (TServiceTemplate st : serviceTemplateLst) {
 			ServiceTopology topo = new ServiceTopology();
@@ -742,7 +730,7 @@ public class SalsaToscaDeployer {
 					+ relas_hoston.size());
 			for (TNodeTemplate node : nodes) {
 				ServiceUnit nodeData = new ServiceUnit(node.getId(), node.getType().getLocalPart());				
-				nodeData.setState(SalsaEntityState.UNDEPLOYED);
+				nodeData.setState(SalsaEntityState.NOTRUN);
 				nodeData.setName(node.getName());
 				nodeData.setMin(node.getMinInstances());
 				nodeData.setReference(node.getReference());

@@ -125,10 +125,15 @@ public class SalsaCenterConnector {
 	 * @param state
 	 *            The state
 	 */
-	public String updateNodeState(String serviceId, String topologyId, String nodeId, int instanceId,
-			SalsaEntityState state) {
+	public String updateNodeState(String serviceId, String topologyId, String nodeId, int instanceId, SalsaEntityState state) {
 		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/state/{value}
 		Response res = engineInternal.updateNodeState(serviceId, topologyId, nodeId, instanceId, state.getNodeStateString());
+		return res.getEntity().toString();
+	}
+	
+	public String updateInstanceState(String serviceId, String topologyId, String nodeId, int instanceId, SalsaEntityState state) {
+		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/state/{value}
+		Response res = engineInternal.updateInstanceState(serviceId, topologyId, nodeId, instanceId, state.getNodeStateString());
 		return res.getEntity().toString();
 	}
 

@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaInstanceState;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 
@@ -38,7 +39,7 @@ public class ServiceInstance extends SalsaEntity {
 	int hostedId=2147483647;	// by default, it is hosted on nothing
 	
 	@XmlAttribute(name = "instanceState")
-	int instanceState;
+	SalsaInstanceState instanceState = SalsaInstanceState.UNDEPLOYED;
 	
 	@XmlElement(name = "Properties")
 	protected ServiceInstance.Properties properties;	
@@ -49,11 +50,13 @@ public class ServiceInstance extends SalsaEntity {
 //	@XmlElement(name = "actionqueue")
 //	protected List<String> actionqueue = new ArrayList<>();
 	
+	@XmlElement(name = "StagingAction")
+	protected String stagingActionName;
+	
 	
 	
 //	@XmlElement(name = "Requirements")
-//	protected Capabilities requirements;
-	
+//	protected Capabilities requirements;	
 	
 	@XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
@@ -162,6 +165,9 @@ public class ServiceInstance extends SalsaEntity {
 		return uuid;
 	}
 	
+	
+	
+	
 //	public void queueAction(String action){
 //		this.actionqueue.add(action);
 //	}
@@ -173,6 +179,22 @@ public class ServiceInstance extends SalsaEntity {
 //	public List<String> getActionqueue() {
 //		return actionqueue;
 //	}
+
+	public String getStagingActionName() {
+		return stagingActionName;
+	}
+
+	public void setStagingActionName(String stagingActionName) {
+		this.stagingActionName = stagingActionName;
+	}
+
+	public SalsaInstanceState getInstanceState() {
+		return instanceState;
+	}
+
+	public void setInstanceState(SalsaInstanceState instanceState) {
+		this.instanceState = instanceState;
+	}
 
 	public String convertToXML() throws JAXBException{
 		JAXBContext jaxbContext = JAXBContext // beside data.class, addition

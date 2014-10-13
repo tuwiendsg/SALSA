@@ -261,6 +261,7 @@ public class Main {
 								pioneer.deployNode(unit.getId(), instance.getInstanceId());
 							}
 							
+							
 							// TODO: Implement the checking capability and execute
 							// check action queue of the instance							
 //							List<Action> actions = instance.getActions();

@@ -1,5 +1,6 @@
 package at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -26,6 +27,12 @@ public class InstrumentShareData {
 			String instURL = inst.serviceId+"/"+inst.topoId+"/"+inst.nodeId+"/"+inst.instanceId;
 			PioneerLogger.logger.debug("This is in the list: " + instURL);
 			if (instURL.equals(instanceURL)){
+				// try to write "return" to stdin of the process before destroying
+				try{
+					inst.p.getOutputStream().write("\n".getBytes());
+				} catch (IOException e){
+					PioneerLogger.logger.error("Error: Cannot write character to stdin of the process. " + e);
+				}
 				inst.p.destroy();
 				return true;
 			}

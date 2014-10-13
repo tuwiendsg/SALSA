@@ -3,11 +3,18 @@
 
 <script type="text/javascript">
 var listSource=salsaCenterRestEndpoint+"/viewgenerator/cloudservice/json/brief/"+getURLParameter("id");
-$.getJSON(listSource,  function(json){ 
-	$('#description').html(showServiceInfo(json)).fadeIn();
-// 	var description = document.getElementById("description");
-// 	description.innerHTML=showServiceInfo(json);
-});
+
+if (getURLParameter("id")!=''){
+	$.getJSON(listSource,  function(json){ 
+		$('#description').html(showServiceInfo(json)).fadeIn();
+//	 	var description = document.getElementById("description");
+//	 	description.innerHTML=showServiceInfo(json);
+	});	
+} else {
+	$('#description').html("<b>Incorrect service ID, please check again !</b>").fadeIn();
+}
+
+
 
 function showServiceInfo(data){
 	var str = "";
@@ -16,7 +23,7 @@ function showServiceInfo(data){
 		str += property + ': <b>' + data[property]+'</b><br/> ';
 
 	}		
-	str += '<button onclick="deregisterService(\''+getURLParameter("id")+'\')">Undeploy</button>';
+	str += '<button onclick="deregisterService(\''+getURLParameter("id")+'\'); history.go(-1)">Undeploy</button>';
  	str += '<button onclick="showServiceByGET(\''+getURLParameter("id")+'\')">Show Tosca</button>';
 	str += '<button onclick="history.go(-1)">Go back to the list</button>';
 

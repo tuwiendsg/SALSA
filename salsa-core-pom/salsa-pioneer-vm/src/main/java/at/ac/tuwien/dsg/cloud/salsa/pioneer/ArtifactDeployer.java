@@ -386,14 +386,15 @@ public class ArtifactDeployer {
 					TRequirement req = ToscaStructureQuery.getRequirementSuitsCapability(capa, def);
 					TRelationshipTemplate rela = ToscaStructureQuery.getRelationshipBetweenTwoCapaReq(capa, req, def);
 					if (rela.getType().getLocalPart().equals(SalsaRelationshipType.CONNECTTO.getRelationshipTypeString())){
-						try{
+//						try{
 							logger.debug("Sending the IP of this node to the capability of CONNECTTO");						
-							String ip = InetAddress.getLocalHost().getHostAddress();
-							SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), ip);				
-							centerCon.updateInstanceUnitCapability(serviceId, topologyId, node.getId(), 0, capaString);
-						} catch (UnknownHostException e){
-							PioneerLogger.logger.error("Cannot get the IP of the host of node: " + node.getId());
-						}
+//							String ip = InetAddress.getLocalHost().getHostAddress();
+//							SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), ip);
+							SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), "salsa:localIP");
+							centerCon.updateInstanceUnitCapability(serviceId, topologyId, node.getId(), Integer.parseInt(instanceId), capaString);
+//						} catch (UnknownHostException e){
+//							PioneerLogger.logger.error("Cannot get the IP of the host of node: " + node.getId());
+//						}
 					}
 				}
 			}
