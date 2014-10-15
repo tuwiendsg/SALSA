@@ -246,7 +246,13 @@ public class Main {
 				try {
 					service = con.getUpdateCloudServiceRuntime(serviceId);
 				} catch (SalsaEngineException e){
-					return;
+					PioneerLogger.logger.error("Could not retrieved service description");
+					try{
+						Thread.sleep(5000);
+					} catch (InterruptedException e1){
+						PioneerLogger.logger.error("Just to be interrupted");
+					}
+					continue;
 				}
 				List<ServiceUnit> units = service.getAllComponent();
 				for (ServiceUnit unit : units) {
