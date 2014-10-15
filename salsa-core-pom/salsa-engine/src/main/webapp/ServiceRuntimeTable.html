@@ -1,4 +1,3 @@
-<h3>Information</h3>
 <div id="content">Loading ...</div>
 
 <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"> -->
@@ -76,26 +75,61 @@ function ShowSalsaRuntime(data){ // data is CloudService
 	
 	var x=data.getElementsByTagName("ServiceUnit");
 	var str="";
+	str+="<h2><i>Artifacts information</i></h2>";
 	for (var i = 0; i < x.length; i++) {
-		var nodeId=x[i].getAttribute('id');
-		var inputboxQuantityId='quantity_'+nodeId;		
-		var oldRefeshValue=1;
-		if (document.getElementById(inputboxQuantityId)!=null){
-			oldRefeshValue=document.getElementById(inputboxQuantityId).value;
+		if (x[i].getAttribute('type')=="software"){
+			str+=showSingleTable(x[i],serviceId, topologyId);
 		}
-		str += '<b><big>Id: '+nodeId+'; Type:'+x[i].getAttribute('type')+'</big></b>';		
-		//str += '<form> Deploy more ";
-		str += '</br>Deploy more: ';
-		str += '<input type="text" size=3 id="'+inputboxQuantityId+'" value="'+oldRefeshValue+'" /> ';
-		str += '<input type="button" id="inputvalue" value="Edit" onClick="inputQuantity('+inputboxQuantityId+', '+inputboxQuantityId+'.value) " />';
+// 		var nodeId=x[i].getAttribute('id');
+// 		var inputboxQuantityId='quantity_'+nodeId;		
+// 		var oldRefeshValue=1;
+// 		if (document.getElementById(inputboxQuantityId)!=null){
+// 			oldRefeshValue=document.getElementById(inputboxQuantityId).value;
+// 		}
+// 		str += '<b><big>Id: '+nodeId+'; Type:'+x[i].getAttribute('type')+'</big></b>';		
+// 		//str += '<form> Deploy more ";
+// 		str += '</br>Deploy more: ';
+// 		str += '<input type="text" size=3 id="'+inputboxQuantityId+'" value="'+oldRefeshValue+'" /> ';
+// 		str += '<input type="button" id="inputvalue" value="Edit value" onClick="inputQuantity('+inputboxQuantityId+', '+inputboxQuantityId+'.value) " /> ';		
+// 		str += '<button type="button" onclick=\'deployMoreInstance("'+serviceId+'", "'+topologyId+'", "'+ x[i].getAttribute('id') +'", "'+inputboxQuantityId+'")\'>Deploy more !</button> ';
+// 		str += '<button type="button" onclick=\'undeployAllInstance("'+serviceId+'", "'+topologyId+'", "'+ x[i].getAttribute('id') + '")\'>Undeploy all !</button> ';
+// 		//str += '</form>';
 		
-		str += '<button type="button" onclick=\'deployMoreInstance("'+serviceId+'", "'+topologyId+'", "'+ x[i].getAttribute('id') +'", "'+inputboxQuantityId+'")\'>Deploy !</button> ';
-		//str += '</form>';
-		
-		str += CreateTableViewSalsaReplicaNodeTable(x[i], nodeId);
+// 		str += CreateTableViewSalsaReplicaNodeTable(x[i], nodeId);
+	}
+	str+="<h2><i>Virtual machines information</i></h2>";
+	for (var i = 0; i < x.length; i++) {
+		if (x[i].getAttribute('type')=="os"){
+			str+=showSingleTable(x[i],serviceId, topologyId);
+		}
 	}
 	return str;
 }
+
+
+function showSingleTable(nodeData, serviceId, topologyId){
+	var str="";
+	var nodeId=nodeData.getAttribute('id');
+	var inputboxQuantityId='quantity_'+nodeId;
+	var oldRefeshValue=1;
+	if (document.getElementById(inputboxQuantityId)!=null){
+		oldRefeshValue=document.getElementById(inputboxQuantityId).value;
+	}
+	str += '<b><big>Id: '+nodeId+'; Type:'+nodeData.getAttribute('type')+'</big></b>';		
+	//str += '<form> Deploy more ";
+	str += '</br>Deploy more: ';
+	str += '<input type="text" size=3 id="'+inputboxQuantityId+'" value="'+oldRefeshValue+'" /> ';
+	str += '<input type="button" id="inputvalue" value="Edit value" onClick="inputQuantity('+inputboxQuantityId+', '+inputboxQuantityId+'.value) " /> ';		
+	str += '<button type="button" onclick=\'deployMoreInstance("'+serviceId+'", "'+topologyId+'", "'+ nodeData.getAttribute('id') +'", "'+inputboxQuantityId+'")\'>Deploy more !</button> ';
+	str += '<button type="button" onclick=\'undeployAllInstance("'+serviceId+'", "'+topologyId+'", "'+ nodeData.getAttribute('id') + '")\'>Undeploy all !</button> ';
+	//str += '</form>';
+	
+	str += CreateTableViewSalsaReplicaNodeTable(nodeData, nodeId);
+	return str;
+}
+
+
+
 
 function inputQuantity(boxObj, currentvalue){
  	var newval=prompt("Please enter number of instance for ", currentvalue);
@@ -193,6 +227,25 @@ function deployMoreInstance(serviceId, topologyId, nodeId, inputboxQuantityId){
  	    },
 	    complete: function(xhr, textStatus) {
 	    	toastr.success("Deployed "+quantity+" instance(s) done ! Code: " + xhr.status,"Done");
+	    }
+	});
+	
+}
+
+function undeployAllInstance(serviceId, topologyId, nodeId){	
+	toastr.info("Requesting to undeploy all instance(s) of node "+nodeId+" !");
+	$.ajax({
+	    url: salsaCenterRestEndpoint + "/services/" + serviceId +"/topologies/"+ topologyId + "/nodes/"+ nodeId ,
+	    type: 'DELETE',
+	    async: false,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+ 	    error: function(xhr){
+ 	    	toastr.error("Unable to undeploy instances ! Code: " + xhr.status,"Error");
+ 	    },
+	    complete: function(xhr, textStatus) {
+	    	toastr.success("Undeployed all instance(s) done ! Code: " + xhr.status,"Done");
 	    }
 	});
 	
