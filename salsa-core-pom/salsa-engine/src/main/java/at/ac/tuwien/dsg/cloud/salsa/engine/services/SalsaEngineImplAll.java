@@ -374,6 +374,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			 String nodeId,
 			 int instanceId) throws SalsaEngineException{
 		int instanceIdInt = instanceId;
+		logger.debug("Removing service instance: " + serviceId +"/" + topologyId +"/" + nodeId +"/" + instanceId);
+		
 		if (deployer.removeOneInstance(serviceId, topologyId, nodeId, instanceIdInt)){			
 			// remove metadata
 			try{
@@ -427,12 +429,10 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		
 		return true;
 	}
+
 	
-	@POST
-    @Path("/services/{serviceId}/topologies/{topologyId}")
-	//@Produces(MediaType.APPLICATION_JSON)
-	public Response deployTopology(@PathParam("serviceId")String serviceId, 
-			@PathParam("topologyId")String topologyId) throws SalsaEngineException{
+
+	public Response deployTopology(String serviceId, String topologyId) throws SalsaEngineException{
 		String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
 		try {
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
@@ -450,12 +450,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			return Response.status(500).entity("Cannot parse the service data file").build();
 		}		
 	}
-	
-	@DELETE
-    @Path("/services/{serviceId}/topologies/{topologyId}")
-	//@Produces(MediaType.APPLICATION_JSON)
-	public Response undeployTopology(@PathParam("serviceId")String serviceId, 
-			@PathParam("topologyId")String topologyId) throws SalsaEngineException{
+
+	public Response undeployTopology(String serviceId, String topologyId) throws SalsaEngineException{
 		String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
 		try {
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
@@ -474,6 +470,26 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			logger.error(e1.getMessage());
 			return Response.status(500).entity("Cannot parse the service data file").build();
 		}		
+	}
+	
+	public Response destroyInstanceOfNodeType(String serviceId, String topologyId, String nodeId) throws SalsaEngineException{
+		String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+		logger.debug("Remove all instances of node: " + nodeId);
+		try {
+			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+			ServiceUnit unit = service.getComponentById(nodeId);
+			for (ServiceInstance instance : unit.getInstancesList()) {				
+				destroyInstance(serviceId, topologyId, nodeId, instance.getInstanceId());
+			}
+		} catch (IOException e){
+			logger.error(e.getMessage());
+			return Response.status(404).entity("Cannot read the service data file").build();
+		} catch (JAXBException e1){
+			logger.error(e1.getMessage());
+			return Response.status(500).entity("Cannot parse the service data file").build();
+		}	
+		
+		return Response.status(200).entity("Undeploy nodes").build();
 	}
 	
 		

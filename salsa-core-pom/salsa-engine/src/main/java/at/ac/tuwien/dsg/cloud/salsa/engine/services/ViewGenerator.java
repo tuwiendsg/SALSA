@@ -131,10 +131,7 @@ static Logger logger;
 					datatree.addChild(componode);
 					//logger.debug("add a child node: " + componode.getId());
 				}
-			}
-			
-			
-			
+			}			
 			
 			Gson json = new GsonBuilder().setPrettyPrinting().create();		
 			return json.toJson(datatree);

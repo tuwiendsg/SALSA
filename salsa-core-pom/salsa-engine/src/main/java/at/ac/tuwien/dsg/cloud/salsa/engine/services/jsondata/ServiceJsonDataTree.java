@@ -304,7 +304,7 @@ public class ServiceJsonDataTree {
 		collective.isAbstract=false;
 		collective.nodeType = "MANY ARTIFACTS";
 		collective.state = this.state;
-		int total = this.children.size();
+		int total = this.children.size()-1;
 		
 		Map<SalsaEntityState, Integer> stateCal = new HashMap<SalsaEntityState, Integer>();
 		for (ServiceJsonDataTree thisnode : children) {			

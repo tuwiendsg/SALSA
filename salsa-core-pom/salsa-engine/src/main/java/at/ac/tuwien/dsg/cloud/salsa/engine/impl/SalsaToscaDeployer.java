@@ -667,6 +667,10 @@ public class SalsaToscaDeployer {
 				.getUpdateCloudServiceRuntime(serviceId);
 		ServiceUnit node = service.getComponentById(nodeId);
 		topologyId = service.getTopologyOfNode(node.getId()).getId();
+		ServiceInstance instance = node.getInstanceById(instanceId);
+		if (instance.getState().equals(SalsaEntityState.ALLOCATING)){
+			return true;
+		}
 		// remove VM node by invoke MultiCloudConnector
 		if (node.getType().equals(
 				SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
@@ -694,8 +698,7 @@ public class SalsaToscaDeployer {
 			while (!hostNode.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
 				hostNode = service.getComponentById(topologyId,	hostNode.getId());
 				EngineLogger.logger.debug("other hostNode id: "	+ hostNode.getId());
-			}
-			ServiceInstance instance = node.getInstanceById(instanceId);
+			}			
 			EngineLogger.logger.debug("removeOneInstance - instanceid: "+ instance.getInstanceId());
 			int hostInstanceId = instance.getHostedId_Integer();
 			EngineLogger.logger.debug("removeOneInstance - hostInstanceId: "+ hostInstanceId);

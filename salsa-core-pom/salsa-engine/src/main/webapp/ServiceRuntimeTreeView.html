@@ -296,17 +296,31 @@ function update(source) {
   // how the arc show
   var pi=Math.PI;
   var arc = d3.svg.arc()
-  	.innerRadius(function(d){
-  		
-  		return (d.source.x-d.target.x)/2;
+  	.innerRadius(function(d){  		
+  		return (d.source.x-d.target.x)*0.52;
   	})
-  	.outerRadius(function(d){
-  		
-  		return (d.source.x-d.target.x)/2+1;
+  	.outerRadius(function(d){  		
+  		return (d.source.x-d.target.x)*0.52+1;
   	})
-  	.startAngle(0 * (pi/180))
-  	.endAngle(180 * (pi/180));
-  	//.attr("transform", function(d) { return "translate(" + d.source.y + "," + d.source.x + ")"; });
+//   	.startAngle(0 * (pi/180))
+//   	.endAngle(180 * (pi/180));
+  	.startAngle(function(d){
+  		if (d.source.x > d.target.x){
+  			return 0 * (pi/180);
+  		} else {
+  			return 180 * (pi/180);
+  		}
+  	})
+  	.endAngle(function(d){
+  		if (d.source.x > d.target.x){
+  			return 180 * (pi/180); 
+  		} else {
+  			return 360 * (pi/180);
+  		}
+  	});
+  
+  
+  //.attr("transform", function(d) { return "translate(" + d.source.y + "," + d.source.x + ")"; });
   	
     
   // Enter any new links at the parent's previous position.

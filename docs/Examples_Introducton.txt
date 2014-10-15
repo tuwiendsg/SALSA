@@ -1,0 +1,32 @@
+In the folder "examples" of SALSA source folder, there are a number of simple example. This document introduces and explains about those example. The examples are organized from the simple to complex ones, which can be used by modifying parameters and deployed by a SALSA service.
+
+SALSA retrieves a TOSCA file as an input, which specifies the application structure. Please refer to the ToscaSpecification document to have more details. With each example bellow, when submiting the TOSCA to SALSA, several virtual machines will be created and the application is registered and managed by SALSA.
+
+Example 1: Deploy one virtual machine (VM)
+This TOSCA contains only one Node Template with the id of SimpleOS. Inside the NodeTemplate, we describe a list of property as following:
+ - Cloud provider: The provider is devide into 2 part: site and platform. For example, dsg@openstack specify the OpenStack cloud which is hosted at site name "dsg". The configurations of the cloud providers are specify in the user's configuration file. Please refer the Techical specification document for this. 
+ - Instance type: A string to specify the instance type of the VM. The format of the string and instance name are depending on the specific cloud provider.
+ - Base image: The id of the image
+ - Packages: the default packages which will be install on top of the VM.
+ 
+Example 2: Deploy an executable program on top of VM
+This TOSCA contains 2 Node Templates: 
+ - The HelloWorld node: The first node with id of "helloWorld" is a BASH script. The location of the BASH script is defined in the ArtifactTemplate.
+ - The VM node: similar to the VM in example 1.
+ - The HOSTON relationship: There is a RelationshipTemplate with type of "HOSTON", that defined the "helloWorld" node will be run on the VM node.
+ 
+Example 3: Deploy with docker
+This example is similar to the example 2, but we add one more NodeTemplate with type "docker" in the middle of HelloWorld and SimpleOS node. We have two HOSTON relationship which say that the HelloWorld artifact is deployed on docker and the docker is deployed on the VM SimpleOS.
+
+Example 4: Deploy with Tomcat
+This TOSCA contains 3 NodeTemplates:
+ - The web application named PoliceApp. The artifact is a .war file, which is defined in the ArtifactTemplate.
+ - The Tomcat NodeTemplate with type is "tomcat". SALSA will automatically recognized and get the deployment information from its metadata to deploy Tomcat.
+ - The VM NodeTemplate is similar to previous examples.
+ 
+Example 5: Complex topology of M2MDaaS
+This TOSCA contains the description of the M2MDaaS with two topologyes, one for the DataEnd and the other for the EventProcessing.
+
+Example 6: MultiCloud configuration
+One application can be deployed across multiples cloud. In this example, we deploy a MQTT server (the ActiveMQ) on Flexiant infrastructure and a number of sensor client to push data to the MQTT on OpenStack. As SALSA already support deploying multiple cloud, users need to specify the properties for the VM of each of the components.
+

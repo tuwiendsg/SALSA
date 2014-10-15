@@ -124,7 +124,7 @@ public interface SalsaEngineServiceIntenal {
 	 * @throws SalsaEngineException
 	 */
 	@POST
-    @Path("/services/{serviceId}/topologies/{topologyId}/deploy")
+    @Path("/services/{serviceId}/topologies/{topologyId}")
 	//@Produces(MediaType.APPLICATION_JSON)
 	public Response deployTopology(@PathParam("serviceId")String serviceId, 
 			@PathParam("topologyId")String topologyId) throws SalsaEngineException;
@@ -137,11 +137,22 @@ public interface SalsaEngineServiceIntenal {
 	 * @throws SalsaEngineException
 	 */
 	@DELETE
-    @Path("/services/{serviceId}/topologies/{topologyId}/deploy")
+    @Path("/services/{serviceId}/topologies/{topologyId}")
 	//@Produces(MediaType.APPLICATION_JSON)
 	public Response undeployTopology(@PathParam("serviceId")String serviceId, 
 			@PathParam("topologyId")String topologyId) throws SalsaEngineException;
 	
+	/**
+	 * Remove all the instance of a service unit
+	 * @param serviceId
+	 * @param topologyId
+	 * @return
+	 * @throws SalsaEngineException
+	 */
+	@DELETE
+    @Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}")
+	public Response destroyInstanceOfNodeType(@PathParam("serviceId")String serviceId, 
+			@PathParam("topologyId")String topologyId, @PathParam("nodeId") String nodeId) throws SalsaEngineException;
 	
 	// INTERFACES FOR rSYBL
 	
