@@ -2,19 +2,19 @@
 <ns2:Definitions xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12" xmlns:salsa="https://github.com/tuwiendsg/SALSA" id="Sensors" name="SensorsTopology">
     <ns2:ServiceTemplate id="QueueService">
         <ns2:TopologyTemplate>
-            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="QueueUnit" type="software">
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="QueueUnit" type="salsa:software">
 							<ns2:Capabilities>
-								<ns2:Capability id="brokerIp_Capability" type="variable"/>
+								<ns2:Capability id="brokerIp_Capability" type="salsa:variable"/>
 							</ns2:Capabilities>
 							<ns2:DeploymentArtifacts>
-								<ns2:DeploymentArtifact xmlns:salsa="https://github.com/tuwiendsg/SALSA" name="deployMQTTBroker" artifactType="salsa:sh" artifactRef="deployMQTTBroker"/>
+								<ns2:DeploymentArtifact xmlns:salsa="https://github.com/tuwiendsg/SALSA" name="deployMQTTBroker" artifacttype="salsa:salsa:sh" artifactRef="deployMQTTBroker"/>
 							</ns2:DeploymentArtifacts>
 						</ns2:NodeTemplate>            
             
-            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="MqttQueueVM" type="os">
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="MqttQueueVM" type="salsa:os">
 							<ns2:Properties>
 								<MappingProperties>
-									<MappingProperty type="os">
+									<MappingProperty type="salsa:os">
 										<property name="provider">celar@flexiant</property>
 										<property name="instanceType">1/1024</property>
 										<property name="baseImage">a064bd97-c84c-38ef-aa37-c7391a8c8259</property>
@@ -24,7 +24,7 @@
 							</ns2:Properties>							
 						</ns2:NodeTemplate>
                        
-            <ns2:RelationshipTemplate id="mqttToVM" type="HOSTON">
+            <ns2:RelationshipTemplate id="mqttToVM" type="salsa:HOSTON">
                 <ns2:SourceElement ref="QueueUnit"/>
                 <ns2:TargetElement ref="MqttQueueVM"/>
             </ns2:RelationshipTemplate>
@@ -36,10 +36,10 @@
      <ns2:ServiceTemplate id="GasSensors">     
      		 <ns2:TopologyTemplate>
             <!-- First VM of gas sensor -->
-            <ns2:NodeTemplate minInstances="1" maxInstances="6" id="sensorGasVM1" type="os">
+            <ns2:NodeTemplate minInstances="1" maxInstances="6" id="sensorGasVM1" type="salsa:os">
                 <ns2:Properties>
                     <MappingProperties>
-                        <MappingProperty type="os">
+                        <MappingProperty type="salsa:os">
                             <property name="provider">dsg@openstack</property>
                             <property name="instanceType">000001920</property>
                             <property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>
@@ -50,19 +50,19 @@
             </ns2:NodeTemplate>
             
             <!-- GAS SENSOR 1 -->
-            <ns2:NodeTemplate minInstances="0" maxInstances="30" id="sensorGas13" type="software">            	
+            <ns2:NodeTemplate minInstances="0" maxInstances="30" id="sensorGas13" type="salsa:software">            	
                 <ns2:Requirements>
-                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor1" type="variable"/>
+                    <ns2:Requirement  id="brokerIp_Requirement_gas_sensor1" type="salsa:variable"/>
                 </ns2:Requirements>
                 <ns2:DeploymentArtifacts>
-                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_13" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gas_13"/>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_13" artifacttype="salsa:salsa:sh" artifactRef="deployArtifactSensor_gas_13"/>
                 </ns2:DeploymentArtifacts>
             </ns2:NodeTemplate>
-            <ns2:RelationshipTemplate id="vmHostSensor1" type="HOSTON">
+            <ns2:RelationshipTemplate id="vmHostSensor1" type="salsa:HOSTON">
                 <ns2:SourceElement ref="sensorGas13"/>
                 <ns2:TargetElement ref="sensorGasVM1"/>
             </ns2:RelationshipTemplate>
-            <ns2:RelationshipTemplate id="mqtt_broker" type="CONNECTTO">
+            <ns2:RelationshipTemplate id="mqtt_broker" type="salsa:CONNECTTO">
                 <ns2:SourceElement ref="brokerIp_Capability"/>
                 <ns2:TargetElement ref="brokerIp_Requirement_gas_sensor1"/>
             </ns2:RelationshipTemplate>
@@ -70,12 +70,12 @@
     </ns2:ServiceTemplate>
       
         
-    <ns2:ArtifactTemplate id="deployMQTTBroker" type="sh">
+    <ns2:ArtifactTemplate id="deployMQTTBroker" type="salsa:sh">
         <ns2:ArtifactReferences>
             <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/run_mqtt_broker.sh"/>
         </ns2:ArtifactReferences>
     </ns2:ArtifactTemplate>
-    <ns2:ArtifactTemplate id="deployArtifactSensor_gas_13" type="sh">
+    <ns2:ArtifactTemplate id="deployArtifactSensor_gas_13" type="salsa:sh">
         <ns2:ArtifactReferences>
             <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/IoT/specificSensors/run_sensor_gas_13.sh"/>
         </ns2:ArtifactReferences>

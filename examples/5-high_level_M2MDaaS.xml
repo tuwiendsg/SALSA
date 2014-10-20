@@ -12,44 +12,44 @@
 		<tosca:TopologyTemplate>
 		
 <!-- DESCRIPTION FOR CASSANDRA CLUSTER -->
-			<tosca:NodeTemplate id="CassandraSeed" name="Cassandra head node" type="software" minInstances="1" maxInstances="1">
+			<tosca:NodeTemplate id="CassandraSeed" name="Cassandra head node" type="salsa:software" minInstances="1" maxInstances="1">
 				<tosca:DeploymentArtifacts>
-					<tosca:DeploymentArtifact artifactType="sh" name="Deployment script" artifactRef="deployCassandraSeed"/>
+					<tosca:DeploymentArtifact artifacttype="salsa:sh" name="Deployment script" artifactRef="deployCassandraSeed"/>
 				</tosca:DeploymentArtifacts>
 			</tosca:NodeTemplate>
 			
-			<tosca:NodeTemplate id="CassandraNode" name="Cassandra data node" type="software" minInstances="1" maxInstances="10">			
+			<tosca:NodeTemplate id="CassandraNode" name="Cassandra data node" type="salsa:software" minInstances="1" maxInstances="10">			
 				<tosca:DeploymentArtifacts>
-					<tosca:DeploymentArtifact artifactType="sh" name="Deployment script" artifactRef="deployCassandraNode"/>
+					<tosca:DeploymentArtifact artifacttype="salsa:sh" name="Deployment script" artifactRef="deployCassandraNode"/>
 				</tosca:DeploymentArtifacts>
 			</tosca:NodeTemplate>
 						
-			<tosca:RelationshipTemplate name="Relation" type="CONNECTTO" id="head2datanode">
+			<tosca:RelationshipTemplate name="Relation" type="salsa:CONNECTTO" id="head2datanode">
 				<tosca:SourceElement ref="CassandraNode"/>
 				<tosca:TargetElement ref="CassandraSeed"/>
 			</tosca:RelationshipTemplate>
 
 <!-- DESCRIBE WEB SERVICE -->
-			<tosca:NodeTemplate id="LoadBalancer" type="software" name="Load Balancer">				
+			<tosca:NodeTemplate id="LoadBalancer" type="salsa:software" name="Load Balancer">				
 				<tosca:DeploymentArtifacts>				
-                    <tosca:DeploymentArtifact name="deploy" artifactType="sh" artifactRef="deployLoadBalancer"/>                
+                    <tosca:DeploymentArtifact name="deploy" artifacttype="salsa:sh" artifactRef="deployLoadBalancer"/>                
 				</tosca:DeploymentArtifacts>
 			</tosca:NodeTemplate>
 			
-			<tosca:NodeTemplate id="EventProcessing" type="software" name="Event Processing">						
+			<tosca:NodeTemplate id="EventProcessing" type="salsa:software" name="Event Processing">						
 				<tosca:DeploymentArtifacts>				
-                    <tosca:DeploymentArtifact name="deploy" artifactType="sh" artifactRef="deployEventProcessing"/>                
+                    <tosca:DeploymentArtifact name="deploy" artifacttype="salsa:sh" artifactRef="deployEventProcessing"/>                
 				</tosca:DeploymentArtifacts>
 			</tosca:NodeTemplate>
 			
-			<tosca:RelationshipTemplate name="Relation" type="CONNECTTO" id="loadbalancer2EventProcessing">
+			<tosca:RelationshipTemplate name="Relation" type="salsa:CONNECTTO" id="loadbalancer2EventProcessing">
 				<tosca:SourceElement ref="EventProcessing" />
 				<tosca:TargetElement ref="LoadBalancer" />
 			</tosca:RelationshipTemplate>
 			
 			
 <!-- RELATIONSHIP BETWEEN WEB SERVICE AND CASSANDRA-HEAD -->
-			<tosca:RelationshipTemplate name="Relation" type="CONNECTTO" id="EventProcessing2CassandraHead">
+			<tosca:RelationshipTemplate name="Relation" type="salsa:CONNECTTO" id="EventProcessing2CassandraHead">
 				<tosca:SourceElement ref="EventProcessing" />
 				<tosca:TargetElement ref="CassandraSeed" />
 			</tosca:RelationshipTemplate>
@@ -58,25 +58,25 @@
 	</tosca:ServiceTemplate>
 	
 <!-- DEPLOYMENT ARTIFACTS DESCRIPTION -->
-	<tosca:ArtifactTemplate id="deployCassandraSeed" type="sh">
+	<tosca:ArtifactTemplate id="deployCassandraSeed" type="salsa:sh">
         <tosca:ArtifactReferences>
             <tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/deployCassandraSeed.sh"/>
         </tosca:ArtifactReferences>
     </tosca:ArtifactTemplate>
     
-    <tosca:ArtifactTemplate id="deployCassandraNode" type="sh">       
+    <tosca:ArtifactTemplate id="deployCassandraNode" type="salsa:sh">       
         <tosca:ArtifactReferences>
             <tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/deployCassandraNode.sh"/>
         </tosca:ArtifactReferences>
     </tosca:ArtifactTemplate>
     
-    <tosca:ArtifactTemplate id="deployLoadBalancer" type="sh">       
+    <tosca:ArtifactTemplate id="deployLoadBalancer" type="salsa:sh">       
         <tosca:ArtifactReferences>
             <tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/deployLoadBalancer.sh"/>
         </tosca:ArtifactReferences>
     </tosca:ArtifactTemplate>
     
-    <tosca:ArtifactTemplate id="deployEventProcessing" type="sh">       
+    <tosca:ArtifactTemplate id="deployEventProcessing" type="salsa:sh">       
         <tosca:ArtifactReferences>
             <tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/deployWorkloadGenerator.sh"/>
         </tosca:ArtifactReferences>

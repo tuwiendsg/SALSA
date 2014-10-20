@@ -9,10 +9,10 @@
 	
 	<tosca:ServiceTemplate id="SampleService">
 		<tosca:TopologyTemplate>
-			<tosca:NodeTemplate type="os" id="SimpleOS" minInstances="1" maxInstances="1">
+			<tosca:NodeTemplate type="salsa:os" id="SimpleOS" minInstances="1" maxInstances="1">
 				 <tosca:Properties>
                     <MappingProperties>						
-						<MappingProperty type="os">
+						<MappingProperty type="salsa:os">
 							<property name="instanceType">000000960</property>
 							<property name="provider">dsg@openstack</property> 
 							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>

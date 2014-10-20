@@ -1,5 +1,4 @@
 1. Application description
-
 Salsa uses Tosca for describing applications. An application is called a Tosca-Definition which contains a number of Service Template. In Salsa, a Service Template can be consider as an Atomic Service, which can be deployed separatedly. At the first prototype, SALSA supports deploying 1 Service Template.
 
 A Service Template has a Topology Template which describes its abstract structure. Following the idea of Tosca, all application components are considered as Tosca-Nodes, or Node Template. Node Templates have dependencies to others, and be described via Relationship Template. 
@@ -10,28 +9,44 @@ These templates can be defined by other Tosca-Elements such as Node-Types, Relat
 
 2. Extended Tosca for Salsa
 As the property for NodeTemplate is Any, Salsa use some custom Properties for the description
-2.1. Virtual Machine Node Properties
+2.1. SALSA NoteTemplate type: In the NodeTemplate, put an attribute as type="salsa:typeName". Currently, following type can be parsed:
+ - salsa:software => for the executable and any artifacts
+ - salsa:docker		=> default docker node
+ - salsa:tomcat 	=> default tomcat node
+ - salsa:os 			=> default VM with linux
+
+2.2. SALSA Artifact node type: In the ArtifactTemplate, put an attribute as type="salsa:typeName". Currently SALSA support:
+ - salsa:sh				=> bash script, using bash to execute the deployment script
+ - salsa:war			=> war file, deploy the war file to the tomcat webapp folder
+ - salsa:chef			=> using chef to install artifacts from chef community repository
+ - salsa:chef-solo => using chef-solo to install a local cookbook
+ - salsa:apt			=> using apt-get to install a local artifact
+ 
+2.3. SALSA custom properties.
+SALSA parse custom properties which are wrapped in a MappingProperties structure. Currently, 2 type of properties can be parsed:
+ - salsa:os				=> properties to describe VM
+ - salsa:action		=> properties to define custom actions, in simple a format.
+
+2.3. Virtual Machine Node Properties
 Below is an example of the custom VM Node deployment information Properties.
+				<tosca:Properties>
+           <MappingProperties>						
+						<MappingProperty type="salsa:os">
+							<property name="instanceType">000000960</property>
+							<property name="provider">dsg@openstack</property> 
+							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>
+							<property name="packages">openjdk-7-jre</property>
+						</MappingProperty>
+					</MappingProperties>
+        </tosca:Properties>
 
-<MappingProperties>		
-	<MappingProperty type="os">
-		<property name="instanceType">m1.small</property>
-		<property name="provider">dsg@openstack</property>
-		<property name="baseImage">ami-00000163</property>
-		<property name="packages">openjdk-7-jre,expect,ntp</property>
-	</MappingProperty>
-</MappingProperties>
 
-2.2. Node Type
-Tosca allow describe custom Node Types. Salsa will support a number of Node Type, which user can specific. Node types that pre-support in Salsa are:
- - type="os" : This node type will provide an OS on an Virtual Machine. It will need a MappingProperty of type "os" which describe the resource to be deployed.
- - type="software": install a software on top of VM. The software can have different artifact types, like "sh", "chef", etc.
-
-3. Relationship types
+2.4. Relationship types
 The relationships represent the order of deployment between nodes. In a relationship, the source node will be deploy before the target node.
 There are two types of relationship between nodes.
- - HOSTON: This represents one node will be deploy on top of other node. SALSA uses this to recognize the stack of deployment. Currently, SALSA have VM stack and software stack, which show the software is deployed on top of the VM.
- - CONNECTTO: This represents the relationship between two software nodes. One node will waiting for other nodes to be deployed, then get the IP of that node. 
+ - salsa:HOSTON 		=> This represents one node will be deploy on top of other node. SALSA uses this to recognize the stack of deployment. Currently, SALSA have VM stack and software stack, which show the software is deployed on top of the VM.
+ - salsa:CONNECTTO 	=> This represents the relationship between two software nodes. One node will waiting for other nodes to be deployed, then get the IP of that node. 
+ - salsa:LOCAL			=> Two node will be deployed on the same target. E.g. two software will be hosted by single VM. This type is used only when "OS" node is not specified. This will be replaced by HOSTON relationship when SALSA processes the TOSCA.
 
 4. Deployment BASH script
 Each node will has a number of script related to deployment system actions (as described above). The deployment scripts can be written a BASH script. To solve the CONNECTTO relationship, where one node will send some values to other nodes, Salsa provide 2 command, which is available on all Salsa Vitual machine instance. This method support the components can transfer variables to others.
