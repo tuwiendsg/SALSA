@@ -12,12 +12,12 @@
 	<tosca:ServiceTemplate id="SampleService">
 		<tosca:TopologyTemplate>
 			<tosca:NodeTemplate id="policeApp"
-				name="policeApp" type="war"
+				name="policeApp" type="salsa:war"
 				minInstances="1" maxInstances="1">			
 
 				<tosca:Properties>
 					<MappingProperties>		
-						<MappingProperty type="os">
+						<MappingProperty type="salsa:os">
 							<property name="instanceType">000000960</property>
 							<property name="provider">dsg@openstack</property> 
 							<property name="baseImage">29913e4b-4a25-4545-a0af-94e661c7150c</property> 
@@ -27,7 +27,7 @@
 				</tosca:Properties>	
 							
 				<tosca:DeploymentArtifacts>
-					<tosca:DeploymentArtifact artifactType="war" name="Deployment script" artifactRef="deployWar"/>
+					<tosca:DeploymentArtifact artifacttype="salsa:war" name="Deployment script" artifactRef="deployWar"/>
 				</tosca:DeploymentArtifacts>
 			</tosca:NodeTemplate>
 
@@ -35,7 +35,7 @@
 		
 	</tosca:ServiceTemplate>
 	
-	<tosca:ArtifactTemplate id="deployWar" type="war">		
+	<tosca:ArtifactTemplate id="deployWar" type="salsa:war">		
 		<tosca:ArtifactReferences>
 			<tosca:ArtifactReference
 				reference="http://128.130.172.215/salsa/upload/files/ASE/PoliceDaaS.war" />				
