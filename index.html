@@ -12,6 +12,18 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    
+    <style>
+		p.justify{
+				text-align: justify;
+		}
+		p.margined{
+				text-align: justify;
+				margin-left: 35px;
+		}
+
+		</style>
+    
   </head>
   <body>
     <div class="wrapper">
@@ -33,18 +45,24 @@
         <h1>
 <a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>Abstract</h1>
 
-<p>Cloud computing technologies have been intensively exploited in development and management of distributed applications. Applications are constructed by different types of software, is deployed on multiple cloud providers, which have various ways to configure, and can change dynamically at runtime. Due to this complexity, we need a solution to reduce the configuration efforts by automating the complex tasks and providing fine-grained configuration features. In this paper, we introduce the concept of \textit{multi-level configuration}, a novel approach for the configuration of complex applications on multi-cloud. Our solution enables the fine-grained configuration at different abstraction levels and support the dynamic change of applications at runtime.</p>
+<p>This page provides supplementary material for the paper:</p>
+<div style="">
+<p class="margined">
+    Duc-Hung Le, Hong-Linh Truong, Georgiana Copil, Stefan Nastic, Schahram Dustdar, <strong>"SALSA: a Framework for Dynamic Configuration of Cloud Services"</strong>, (<a href="papers/SALSA_CloudCom2014.pdf">PDF</a>),  6th International Conference on Cloud Computing Technology and Science, 15-18 December 2014, Singapore. <em>Accepted</em>
+</p>
+</div>
+<p class="justify">Cloud computing technologies have been intensively exploited in development and management of distributed applications. Applications are constructed by different types of software, is deployed on multiple cloud providers, which have various ways to configure, and can change dynamically at runtime. Due to this complexity, we need a solution to reduce the configuration efforts by automating the complex tasks and providing fine-grained configuration features. In this paper, we introduce the concept of \textit{multi-level configuration}, a novel approach for the configuration of complex applications on multi-cloud. Our solution enables the fine-grained configuration at different abstraction levels and support the dynamic change of applications at runtime.</p>
 
 <h1>
 <a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h1>
 
-<p>SALSA is a framework that provides automatic features for configuring and orchestrating distributed applications on multi cloud system. SALSA can be used by application providers and application controllers to manage the application at deployment time and at runtime. The framework enables the configuration on different levels of application structure and deployment stacks, which provide fine-grained or full view about the application.</p>
+<p class="justify">SALSA is a framework that provides automatic features for configuring and orchestrating distributed applications on multi cloud system. SALSA can be used by application providers and application controllers to manage the application at deployment time and at runtime. The framework enables the configuration on different levels of application structure and deployment stacks, which provide fine-grained or full view about the application.</p>
 
 <p><img src="http://tuwiendsg.github.io/SALSA/images/informationModel.png" alt="Information model"></p>
 
-<p>On the application structure, SALSA supports the configuration of the whole application, a group of components or a single component, which are represented by the cloud service, service topology, service unit and service instance. On the deployment stacks, SALSA supports the configuration on different stacks, including the virtual machine, the application container (e.g. docker), the web container (e.g. Tomcat) and the application.</p>
+<p class="justify">On the application structure, SALSA supports the configuration of the whole application, a group of components or a single component, which are represented by the cloud service, service topology, service unit and service instance. On the deployment stacks, SALSA supports the configuration on different stacks, including the virtual machine, the application container (e.g. docker), the web container (e.g. Tomcat) and the application.</p>
 
-<p>The architecture of SALSA contain 3 main parts. The Center Configuration Service, the Local Configurator and the Information services. We developed the components for the Center Configuration Service and the Local Configurator, which support the based functionality of the framework. The Information Service is under development.</p>
+<p class="justify">The architecture of SALSA contain 3 main parts. The Center Configuration Service, the Local Configurator and the Information services. We developed the components for the Center Configuration Service and the Local Configurator, which support the based functionality of the framework. The Information Service is under development.</p>
 
 <p><img src="http://tuwiendsg.github.io/SALSA/images/Architecture.png" align="center" width="500"></p>
 
@@ -54,7 +72,7 @@
 <h2>
 <a name="application-description" class="anchor" href="#application-description"><span class="octicon octicon-link"></span></a>Application description</h2>
 
-<p>Below is an example of description of the Cassandra cluster configuration using TOSCA description. The TOSCA contains some SALSA specific definition for node type and artifact type, and the custom Properties.</p>
+<p class="justify">Below is an example of description of the Cassandra cluster configuration using TOSCA description. The TOSCA contains some SALSA specific definition for node type and artifact type, and the custom Properties.</p>
 
 <div class="highlight highlight-XML"><pre><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;tosca:Definitions</span> <span class="na">xmlns:tosca=</span><span class="s">"http://docs.oasis-open.org/tosca/ns/2011/12"</span> <span class="na">xmlns:salsa=</span><span class="s">"http://example.com"</span> <span class="na">id=</span><span class="s">"CassandraApp"</span><span class="nt">&gt;</span>
@@ -150,14 +168,14 @@
 <a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h1>
 
 <ol>
-<li><p><strong>Compile</strong> the source and check two artifact: salsa-engine.war and salsa-pioneer-vm-0.0.1-SNAPSHOT-executable.jar.</p></li>
-<li><p><strong>Deploy</strong> the .war file on a Tomcat server and copy the .jar to a public place to be able to access, e.g. on a HTTP server.</p></li>
-<li><p><strong>Configure SALSA parameter</strong>: /etc/salsa.engine.properties. An example of this configuration is on the <code>salsa-engine/src/main/resources</code> folder. Most of the parameters can be left as default, except the URL of the RESTful service and link to the salsa-pioneer artifact.</p></li>
+<li><p class="justify"><strong>Compile</strong> the source and check two artifact: salsa-engine.war and salsa-pioneer-vm-0.0.1-SNAPSHOT-executable.jar.</p></li>
+<li><p class="justify"><strong>Deploy</strong> the .war file on a Tomcat server and copy the .jar to a public place to be able to access, e.g. on a HTTP server.</p></li>
+<li><p class="justify"><strong>Configure SALSA parameter</strong>: /etc/salsa.engine.properties. An example of this configuration is on the <code>salsa-engine/src/main/resources</code> folder. Most of the parameters can be left as default, except the URL of the RESTful service and link to the salsa-pioneer artifact.</p></li>
 <li><p><strong>Configure user parameter</strong>: /etc/cloudUserParameters.ini. This file configure the parameter to access to cloud providers which users registered. At current version, SALSA supports single user, then we maintain one configuration file for the whole system. As the parameter are different between providers, please refer to the example in the <code>resources</code> folder.</p></li>
 </ol><h1>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
 
-<p><strong>Access to the web interface</strong> at the URL: <code>http://&lt;tomcatIP&gt;:8080/salsa-engine</code>. On this page, user can upload a TOSCA and executes the first deployment of the application. The web interface provides basic deploy and undeploy operations on different level of application structure.</p>
+<p class="justify"><strong>Access to the web interface</strong> at the URL: <code>http://&lt;tomcatIP&gt;:8080/salsa-engine</code>. On this page, user can upload a TOSCA and executes the first deployment of the application. The web interface provides basic deploy and undeploy operations on different level of application structure.</p>
 
 <p><strong>Access to the API</strong> at the URL <code>http://&lt;tomcatIP&gt;:8080/salsa-engine/rest</code> to have configuration features. The API can be referred on <a href="https://github.com/tuwiendsg/SALSA/tree/master/salsa-core-pom/salsa-common/src/main/java/at/ac/tuwien/dsg/cloud/salsa/common/interfaces">salsa-common/interfaces pakage</a>.</p>
 
