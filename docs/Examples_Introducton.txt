@@ -1,4 +1,4 @@
-In the folder "examples" of SALSA source folder, there are a number of simple example. This document introduces and explains about those example. The examples are organized from the simple to complex ones, which can be used by modifying parameters and deployed by a SALSA service.
+In the folder "examples" of SALSA source folder, there are a number of simple examples. This document introduces and explains about those example. The examples are organized from the simple to complex ones, which can be used by modifying parameters and deployed by a SALSA service.
 
 SALSA retrieves a TOSCA file as an input, which specifies the application structure. Please refer to the ToscaSpecification document to have more details. With each example bellow, when submiting the TOSCA to SALSA, several virtual machines will be created and the application is registered and managed by SALSA.
 
