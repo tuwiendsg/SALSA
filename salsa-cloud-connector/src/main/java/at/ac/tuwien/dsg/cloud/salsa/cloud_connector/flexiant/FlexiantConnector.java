@@ -5,7 +5,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,24 +39,27 @@ import com.extl.jade.user.UserService;
 public class FlexiantConnector implements CloudInterface{	
 	Logger logger;
 	String userEmailAddress;
-	//String apiUserName ;
 	String customerUUID ;
 	String password;
 	String endpoint;
 	String vdcUUID; 
 	String defaultProductOfferUUID;
-	String deploymentInstanceUUID;	// don't know what
+	String deploymentInstanceUUID;	
 	String clusterUUID;
 	String networkUUID;
 	String sshKey;
 	
-	final String initialUser = "ubuntu";
-	final String initialPasswd = "dsg@123";
+	static final String initialUser = "ubuntu";
+	static final String initialPasswd = "dsg@123";
 	
-	//String ENDPOINT_ADDRESS_PROPERTY ;
-	String DEFAULT_IMAGE="a064bd97-c84c-38ef-aa37-c7391a8c8259";
+	static final String DEFAULT_IMAGE="a064bd97-c84c-38ef-aa37-c7391a8c8259";
 	
 	UserService service;
+	
+	private void enableSNIExtension(){
+		// Avoid the handshare SSL error
+		System.setProperty("jsse.enableSNIExtension", "false");
+	}
 	
 	public FlexiantConnector(Logger logger, String email, String cuscomerUUID, String password, String endpoint, String vdcUUID, String defaultProductOfferUUID, String clusterUUID, String networkUUID, String sshKey){
 		this.logger = logger;
@@ -70,28 +72,20 @@ public class FlexiantConnector implements CloudInterface{
 		this.clusterUUID=clusterUUID;
 		this.networkUUID=networkUUID;
 		this.sshKey = sshKey;
+				 
+		enableSNIExtension();
 		
-		// Avoid the handshare SSL error 
-		System.setProperty("jsse.enableSNIExtension", "false");
-		
-		 //UserService service;
-		
-//				
         URL url = FlexiantConnector.class.getResource("/Flexiant/UserAPI.wsdl");
-//		try {
-//	        URL url = new URL("https://api.sd1.flexiant.net:4442/UserAPI?wsdl");	        
-	        UserAPI api = new UserAPI(url, new QName("http://extility.flexiant.net", "UserAPI"));
-	        
-	        service = api.getUserServicePort();
-	        
-	        BindingProvider portBP = (BindingProvider) service;
-	        
-	        portBP.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,  this.endpoint+"/user/");
-	        portBP.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, userEmailAddress + "/" + customerUUID);
-	        portBP.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
-//		} catch (MalformedURLException e){
-//        	e.printStackTrace();
-//        }
+        UserAPI api = new UserAPI(url, new QName("http://extility.flexiant.net", "UserAPI"));
+        
+        service = api.getUserServicePort();
+        
+        BindingProvider portBP = (BindingProvider) service;
+        
+        portBP.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,  this.endpoint+"/user/");
+        portBP.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, userEmailAddress + "/" + customerUUID);
+        portBP.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, password);
+
 	}
 		
 	/**
@@ -102,14 +96,12 @@ public class FlexiantConnector implements CloudInterface{
 			List<String> securityGroups, String sshKeyName, String userData,
 			String instType, int minInst, int maxInst)
 			throws ServiceDeployerException {
-		// Avoid the handshare SSL error 
-		System.setProperty("jsse.enableSNIExtension", "false");
+		enableSNIExtension();
 		 try {
 			 Nic networkInterface = new Nic();
 				networkInterface.setClusterUUID(this.clusterUUID);
 				networkInterface.setCustomerUUID(this.customerUUID);
 				networkInterface.setDeploymentInstanceUUID(this.deploymentInstanceUUID);
-				//networkInterface.setProductOfferUUID("");
 
 				networkInterface.setNetworkUUID(this.networkUUID);
 				networkInterface.setVdcUUID(this.vdcUUID);
@@ -144,7 +136,6 @@ public class FlexiantConnector implements CloudInterface{
 	    		try {
 	    			service.waitForJob(createServerJob.getResourceUUID(), false);
 	    		} catch (ExtilityException e) {    		
-	    			e.printStackTrace();
 	    			logger.error(e.getMessage()); return "";
 	    		}
 	    		logger.debug("Server created: " + createServerJob.getItemUUID());
@@ -155,15 +146,11 @@ public class FlexiantConnector implements CloudInterface{
 	    			startServer = service.changeServerStatus(createServerJob.getItemUUID(), ServerStatus.RUNNING, true,
 	    					server.getResourceMetadata(), null);
 	    		} catch (ExtilityException e) {
-	    			// TODO Auto-generated catch block
-	    			e.printStackTrace();
 	    			logger.error(e.getMessage()); return "";
 	    		}
 	    		try {
 	    			service.waitForJob(startServer.getResourceUUID(), false);
 	    		} catch (ExtilityException e) {
-	    			// TODO Auto-generated catch block
-	    			e.printStackTrace();
 	    			logger.error(e.getMessage()); return "";
 	    		}
 	    		
@@ -181,46 +168,25 @@ public class FlexiantConnector implements CloudInterface{
 	    		FileUtils.writeStringToFile(new File("/tmp/" + newVM_id), updateUserData);
 	    			    		
 	    		InstanceDescription inst = getInstanceDescriptionByID(createServerJob.getItemUUID());
-	    		String ipAddress=inst.getPrivateIp().toString().substring(1);	// remove the slash at the beginning of the IP
+	    		// remove the slash at the beginning of the IP
+	    		String ipAddress=inst.getPrivateIp().toString().substring(1);	
 	    		logger.debug("Waiting for the ssh server is up at IP: " + ipAddress);
 	    		pushAndExecuteBashScript(ipAddress, initialUser, initialPasswd, "/tmp/" + newVM_id);
 	    		
 	    		return createServerJob.getItemUUID();	    		    		
-	        } catch (Exception e) {                
-	                e.printStackTrace();
+	        } catch (Exception e) { 
+	        	logger.error("Flexiant connector error: " + e);
 	        }
 		
 		return null;
 	}
 	
-	
-	
-	
-	private static String ArrayToString(ByteArrayInputStream is) {
-	    int size = is.available();
-	    char[] theChars = new char[size];
-	    byte[] bytes    = new byte[size];
-
-	    is.read(bytes, 0, size);
-	    for (int i = 0; i < size;)
-	        theChars[i] = (char)(bytes[i++]&0xff);
-	    
-	    return new String(theChars);
-	      }
 
 	@Override
 	public InstanceDescription getInstanceDescriptionByID(String instanceID) {
-		// Avoid the handshare SSL error 
-		System.setProperty("jsse.enableSNIExtension", "false");
+		enableSNIExtension();
 		SearchFilter sf = new SearchFilter();
-		FilterCondition fc = new FilterCondition();		
-
-//		fc.setCondition(Condition.IS_EQUAL_TO);
-//		fc.setField("status");
-//		fc.getValue().add(ServerStatus.RUNNING.name());
-//		fc.getValue().add(ServerStatus.STARTING.name());
-//		sf.getFilterConditions().add(fc);
-
+		
 		// Set a limit to the number of results
 		QueryLimit lim = new QueryLimit();
 		lim.setMaxRecords(40);
@@ -238,13 +204,14 @@ public class FlexiantConnector implements CloudInterface{
 				if (s.getResourceUUID().equals(instanceID)){			
 					logger.debug("Instance found: " + instanceID);					
 					
-					List<Nic> nics = listAllNics();	// the Server object does not have NIC, we list all NIC and match with server UUID
+					// the Server object does not have NIC, we list all NIC and match with server UUID
+					List<Nic> nics = listAllNics();	
 					
 					for (Nic nic : nics) {
 						if (nic.getServerUUID().equals(instanceID)){
 							logger.debug("Found a NIC: " + nic.getIndex());
 							logger.debug("nic.getIpAddresses().size(): " + nic.getIpAddresses().size());
-							if (nic.getIpAddresses().size()>0){		
+							if (!nic.getIpAddresses().isEmpty()){		
 								ip = nic.getIpAddresses().get(0).getIpAddress();
 								logger.debug("IP = " + ip);
 							}
@@ -257,18 +224,16 @@ public class FlexiantConnector implements CloudInterface{
 			}
 			return null;
 		} catch (Exception e){
-			e.printStackTrace();
+			logger.error("Flexiant connector error: " + e);
 			return null;
 		}
 	}
 
-	
 
 	@Override
 	public void removeInstance(String serverUUID)
 			throws ServiceDeployerException {	
-		// Avoid the handshare SSL error 
-		System.setProperty("jsse.enableSNIExtension", "false");
+		enableSNIExtension();
 		logger.info("Removing server now: " + serverUUID);
 		Job stopServer = null;
 		try {
@@ -289,10 +254,7 @@ public class FlexiantConnector implements CloudInterface{
 
 	private List<Nic> listAllNics() {
 		List<Nic> nics = new ArrayList<Nic>();		
-
 		try {
-			SearchFilter sf = new SearchFilter();
-
 			QueryLimit lim = new QueryLimit();
 			lim.setMaxRecords(1000);
 
@@ -329,7 +291,7 @@ public class FlexiantConnector implements CloudInterface{
 	public void pushAndExecuteBashScript(String ip, String username, String password, String scriptFile){
 		File file = new File(scriptFile);
 		try {
-			System.out.println("Execute: " + "sshpass -p "+password+" scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null "+scriptFile+" "+username+"@"+ip+":/tmp/"+file.getName());
+			logger.debug("Execute: " + "sshpass -p "+password+" scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null "+scriptFile+" "+username+"@"+ip+":/tmp/"+file.getName());
 			int count=0;
 			Process p;			
 			do {				
@@ -337,38 +299,38 @@ public class FlexiantConnector implements CloudInterface{
 				try {
 					p.waitFor();
 				} catch (InterruptedException e){
-					e.printStackTrace();
+					logger.error(e.getMessage());
 				}
-				System.out.println("Exiting value 1 ("+count++ +"): " + p.exitValue());
-				try { Thread.sleep(2000); } catch (Exception e) {};
+				logger.debug("Exiting value 1 ("+count++ +"): " + p.exitValue());
+				try { Thread.sleep(2000); } catch (Exception e) {
+					logger.error("Flexiant connector thread interrupt: " + e);
+				}
 			} while (p.exitValue()!=0);			
 			
-			//System.out.println("Execute: "+"sshpass -p "+password+" ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null "+username+"@"+ip+" 'sudo nohup /bin/bash /tmp/"+file.getName() +" > /dev/null 2>&1 &'");
 			Process p1;
 			do {
 				String cmd = "/usr/bin/sshpass -p "+password+" /usr/bin/ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null "+username+"@"+ip+" /usr/bin/sudo /bin/bash /tmp/"+file.getName() +" > /dev/null 2>&1 & ";
-				//String cmd = "/usr/bin/sshpass -p "+password+" /usr/bin/ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null "+username+"@"+ip+" /bin/bash -s  < /tmp/"+file.getName();
-				System.out.println("AAA:   " + cmd);
+		
+				logger.debug("AAA:   " + cmd);
 				p1 = Runtime.getRuntime().exec(cmd);
 				
-				try { p1.waitFor(); } catch (Exception e) {}
+				try { p1.waitFor(); } catch (Exception e) {
+					logger.error("Flexiant connector thread interrupt: " + e);
+				}
 				
 				BufferedReader reader = new BufferedReader(new InputStreamReader(p1.getInputStream()));
 				String line="";
 				while ((line = reader.readLine())!= null) {
-					System.out.println(line);
+					logger.debug(line);
 				}
 				
-//				try {
-//					p1.waitFor();
-//				} catch (InterruptedException e){
-//					e.printStackTrace();
-//				}
-				System.out.println("Exiting value 2 ("+count++ +"): " + p1.exitValue());
-				try { Thread.sleep(2000); } catch (Exception e) {};
+				logger.debug("Exiting value 2 ("+count++ +"): " + p1.exitValue());
+				try { Thread.sleep(2000); } catch (Exception e) {
+					logger.error("Flexiant connector thread interrupt: " + e);
+				}
 			} while (p1.exitValue()!=0);
 		} catch (IOException e){
-			e.printStackTrace();
+			logger.debug(e.getMessage());			
 		}
 
 	}

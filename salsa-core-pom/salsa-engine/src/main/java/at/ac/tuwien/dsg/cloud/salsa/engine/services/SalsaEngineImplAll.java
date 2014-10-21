@@ -122,7 +122,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	    		File file = new File(tmpFile);
 	    		file.delete();
 	    	}catch(Exception e){
-	    		e.printStackTrace();
+	    		logger.debug(e.getMessage());
 	    	}
 			
 			// return 201: resource created
@@ -629,8 +629,10 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			logger.debug("Searching IP of instance 6. VMID=" + vm.getInstanceId());
 			return vm.getPrivateIp();
 		} catch (IOException e){
+			logger.debug(e.getMessage());
 			return "";
 		} catch (JAXBException e1){
+			logger.debug(e1.getMessage());
 			return "";
 		}		
 	}
@@ -1015,6 +1017,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 				return logAndResponse(LOGLEVEL.USER_ERROR, "Cannot find instance for " + serviceId + "/" + nodeId);
 			}		
 		} catch (Exception e) {
+			logger.debug(e.getMessage());
 			return logAndResponse(LOGLEVEL.SERVER_ERROR, "updateInstanceState - Could not read service for update node status: "	+ nodeId +"/" + instanceId);
 		} finally {
 			MutualFileAccessControl.releaseFile();

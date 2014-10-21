@@ -71,11 +71,8 @@ public class SalsaToscaDeployer {
 		}
 
 		Map<String, Integer> mapNodeAndRep = new HashMap<>();
-		// UUID deployID = UUID.randomUUID();
-		// UUID deployID = UUID.fromString(serviceName);
 		String deployID = serviceName;
-		EngineLogger.logger
-				.info("Deploying service id: " + deployID.toString());
+		EngineLogger.logger.info("Deploying service id: " + deployID.toString());
 
 		String ogininalToscaFile = SalsaConfiguration.getServiceStorageDir()
 				+ "/" + deployID.toString() + ".original";
@@ -108,12 +105,6 @@ public class SalsaToscaDeployer {
 				fullSalsaDataFile);
 
 		// deploy all VM of first Topology
-		// TODO: separate deployment Node of Topology
-		// String topoId =
-		// ToscaStructureQuery.getFirstServiceTemplate(def).getId();
-		// engine.deployConcurrentVMNodes(deployID.toString(), topoId,
-		// mapNodeAndRep, def);
-		// call to the service to deploy multiple concurent
 
 		for (Map.Entry<String, Integer> map : mapNodeAndRep.entrySet()) {
 			centerCon.updateNodeIdCounter(deployID.toString(), serviceData
@@ -136,13 +127,10 @@ public class SalsaToscaDeployer {
 			throw new SalsaEngineException("There is no SALSA configuation file specific. Please check /etc/salsa.properties.", true);
 		}
 
-		//Map<String, Integer> mapNodeAndRep = new HashMap<>();
 		String deployID = serviceName;
-		EngineLogger.logger.info("Orchestrating service id: "
-				+ deployID.toString());
+		EngineLogger.logger.info("Orchestrating service id: " + deployID.toString());
 
-		String ogininalToscaFile = SalsaConfiguration.getServiceStorageDir()
-				+ "/" + deployID.toString() + ".original";
+		String ogininalToscaFile = SalsaConfiguration.getServiceStorageDir() + "/" + deployID.toString() + ".original";
 		ToscaXmlProcess.writeToscaDefinitionToFile(def, ogininalToscaFile);
 
 		// ENRICH
@@ -157,8 +145,7 @@ public class SalsaToscaDeployer {
 		EngineLogger.logger.debug("debugggg Sep 8 - 1");
 		
 		// register service running data
-		String fullSalsaDataFile = SalsaConfiguration.getServiceStorageDir()
-				+ "/" + deployID.toString() + ".data";
+		String fullSalsaDataFile = SalsaConfiguration.getServiceStorageDir() + "/" + deployID.toString() + ".data";
 		EngineLogger.logger.debug("debugggg Sep 8 - 2");
 		CloudService serviceData = buildRuntimeDataFromTosca(def);
 		EngineLogger.logger.debug("debugggg Sep 8 - 3");
@@ -268,18 +255,10 @@ public class SalsaToscaDeployer {
 				EngineLogger.logger.error("Not enough cloud resource quota for the node: " + nodeId + ". Quit !");
 				// out of quota
 				throw new SalsaEngineException("Not enough cloud resource quota to deploy the node: " + nodeId, false);				
-//			} else {
-//				// check number of OS instance with type 
-//				Map<String, Integer> instNum = new HashMap<>();
-//				for (ServiceInstance inst : node.getInstancesList()) {
-//					SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) inst.getProperties().getAny();
-//				}
 			}			
 			else {
 				centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId, repData);
 				new Thread(new deployOneVmThread(serviceId, topologyId, nodeId,	instanceId, def)).start();
-				//DeploymentEngineNodeLevel engine = new DeploymentEngineNodeLevel(configFile);
-				//engine.deployVMNode(serviceId, topologyId, nodeId,instanceId, def);				
 				return true;
 			}
 		} else {
@@ -289,7 +268,8 @@ public class SalsaToscaDeployer {
 					EngineLogger.logger.debug("Orchestrating blocked: " + nodeId + "/" + instanceId + ". Count: " + count);
 					Thread.sleep(1000);
 					count++;
-					if (count > 50) {	// maximum 5 secs
+					// wait maximum 5 secs
+					if (count > 50) {	
 						releaseLock();
 					}
 				} catch (Exception e) {
@@ -333,21 +313,6 @@ public class SalsaToscaDeployer {
 	
 	private boolean deployOneMoreInstance_Artifact(String serviceId, String topologyId,
 			String nodeId, int instanceId, TDefinitions def) throws SalsaEngineException {
-//		int count = 0;
-//		while (orchestating) {
-//			try {
-//				EngineLogger.logger.debug("Orchestrating blocked: " + nodeId + "/" + instanceId + ". Count: " + count);
-//				Thread.sleep(1000);
-//				count++;
-//				if (count > 50) {	// maximum 5 secs
-//					orchestating = false;
-//				}
-//			} catch (Exception e) {
-//			}
-//		}
-//		setLock();
-		
-		
 		CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 		// find the hosted node of this node
 		EngineLogger.logger.debug("Start the deployment of software stacks. Node id: " + nodeId);
@@ -361,8 +326,6 @@ public class SalsaToscaDeployer {
 		ServiceInstance suitableHostedInstance = null;
 		int hostInstanceId = 0;
 		for (ServiceInstance hostedInst : hostedInstances) {
-			// List<ServiceInstance> instancesNumOnThisNode =
-			// unit.getInstanceHostOn(hostedInst.getInstanceId());			
 			EngineLogger.logger.debug("There are " + hostedInstances.size() + " instance(s) for " + hostedUnit.getId());
 			EngineLogger.logger.debug("On node: " + hostedUnit.getId() + "/"
 					+ hostedInst.getInstanceId() + " currently has "
@@ -413,11 +376,7 @@ public class SalsaToscaDeployer {
 		suitableHostedInstance = newService.getInstanceById(topologyId,
 				hostedUnit.getId(), hostInstanceId);
 
-		// deployMoreArtifactInstance(deployID, nodeId, hostNodeId,
-		// hostInstanceId, def);
 		if (suitableHostedInstance == null) {
-			// deployMoreInstance(service.getId(), topologyId,
-			// hostedUnit.getId(), 1);
 			EngineLogger.logger.debug("Hosted node is null");
 			releaseLock();
 			throw new SalsaEngineException("Couldn't find a node (null) to host node: " + nodeId, true);
@@ -428,18 +387,14 @@ public class SalsaToscaDeployer {
 				+ hostedUnit.getType());
 		releaseLock();
 
-		// if host in OS or DOCKER, set the status to STAGING. a Pioneer will
-		// take it
+		// if host in OS or DOCKER, set the status to STAGING. a Pioneer will take it
 		if (hostedUnit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())
 		 || hostedUnit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())
 		 || hostedUnit.getType().equals(SalsaEntityType.TOMCAT.getEntityTypeString()) ) {
-			newService = centerCon
-					.getUpdateCloudServiceRuntime(service.getId());
-			ServiceInstance data = newService.getInstanceById(topologyId,
-					nodeId, instanceId);
+			newService = centerCon.getUpdateCloudServiceRuntime(service.getId());
+			ServiceInstance data = newService.getInstanceById(topologyId, nodeId, instanceId);
 			data.setHostedId_Integer(hostInstanceId);
-			data.setState(SalsaEntityState.ALLOCATING); // waiting for other
-														// conditions
+			data.setState(SalsaEntityState.ALLOCATING); 
 			centerCon.addInstanceUnitMetaData(service.getId(), topologyId, nodeId, data);
 			// waiting for hostInstance become RUNNING or FINISH
 			while (!suitableHostedInstance.getState().equals(SalsaEntityState.RUNNING)
@@ -460,142 +415,13 @@ public class SalsaToscaDeployer {
 			centerCon.updateNodeState(newService.getId(), topologyId, nodeId,
 					instanceId, SalsaEntityState.STAGING);
 		}
-
-		//
-		//
-		//
-		//
-		//
-		// // if host on os
-		// if
-		// (hostedUnit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
-		// EngineLogger.logger.debug("Call the pioneer to deploy the artifact");
-		//
-		// // create instance data with allocating state (pioneer do it before)
-		// EngineLogger.logger.debug("Salsa engine add instance data");
-		// newService = centerCon.getUpdateCloudServiceRuntime(service.getId());
-		// ServiceInstance data = newService.getInstanceById(topologyId, nodeId,
-		// instanceId);
-		// data.setHostedId_Integer(hostInstanceId);
-		// data.setState(SalsaEntityState.ALLOCATING); // waiting for other
-		// conditions
-		// centerCon.addInstanceUnitMetaData(service.getId(), topologyId,
-		// nodeId, data);
-		//
-		// EngineLogger.logger.debug("Start checking Pioneer health");
-		// // wait for the VM is spawned
-		// CloudService updateService =
-		// centerCon.getUpdateCloudServiceRuntime(service.getId());
-		// suitableHostedInstance = updateService.getInstanceById(topologyId,
-		// hostedUnit.getId(), suitableHostedInstance.getInstanceId());
-		// while(!suitableHostedInstance.getState().equals(SalsaEntityState.RUNNING)){
-		// try {
-		// Thread.sleep(3000);
-		// } catch (InterruptedException e) {}
-		// updateService =
-		// centerCon.getUpdateCloudServiceRuntime(service.getId());
-		// suitableHostedInstance = updateService.getInstanceById(topologyId,
-		// hostedUnit.getId(), suitableHostedInstance.getInstanceId());
-		// }
-		//
-		// SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM)
-		// suitableHostedInstance.getProperties().getAny();
-		// PioneerConnector pioneer = new PioneerConnector(vm.getPrivateIp());
-		// // wait for the hosted instance become ready
-		// System.out.println("Pioneer health: " + pioneer.checkHealth());
-		// int count=0;
-		// while(!pioneer.checkHealth()){
-		// try {
-		// System.out.println("Pioneer is not ready for node: " + nodeId +"/" +
-		// instanceId);
-		// Thread.sleep(5000);
-		// } catch(InterruptedException e2){}
-		// count++;
-		// if (count>60){
-		// break;
-		// }
-		// }
-		//
-		// EngineLogger.logger.debug("Connect to pionner at IP: " +
-		// vm.getPrivateIp());
-		// pioneer.deploySoftwareNode(nodeId, instanceId);
-		// } else {
-		// // HostUnit here is a DOCKER, which the vmHOST is a OS node
-		// if
-		// (hostedUnit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())){
-		// EngineLogger.logger.debug("This node " + nodeId +"/" + instanceId
-		// +" is hosted on a DOCKER: " + hostedUnit.getId() +"/" +
-		// suitableHostedInstance.getInstanceId());
-		// //suitableHostedInstance
-		// newService = centerCon.getUpdateCloudServiceRuntime(service.getId());
-		// ServiceInstance data = newService.getInstanceById(topologyId, nodeId,
-		// instanceId);
-		// data.setHostedId_Integer(hostInstanceId);
-		// data.setState(SalsaEntityState.ALLOCATING); // waiting for other
-		// conditions
-		// centerCon.addInstanceUnitMetaData(service.getId(), topologyId,
-		// nodeId, data); // just update
-		// // find the VM of the hostedUnit
-		// ServiceUnit hostedNodeVM =
-		// newService.getComponentById(hostedUnit.getHostedId());
-		// ServiceInstance hostedInstanceVM =
-		// hostedNodeVM.getInstanceById(suitableHostedInstance.getHostedId_Integer());
-		// EngineLogger.logger.debug("This node " + nodeId +"/" + instanceId
-		// +" will transit through pioneer: " + hostedNodeVM.getId() +"/" +
-		// hostedInstanceVM.getInstanceId());
-		// SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM)
-		// hostedInstanceVM.getProperties().getAny();
-		// PioneerConnector pioneer = new PioneerConnector(vm.getPrivateIp());
-		// pioneer.deploySoftwareNode(nodeId, instanceId);
-		// } else {
-		// EngineLogger.logger.debug("More than 3 software stacks is not supported yet: "
-		// + hostedUnit.getType());
-		// }
-		// }
+		
 		EngineLogger.logger.debug("Deploy more instance artifact is done !");
 		return true;
-		// check if there is an exist node instance can be used for deploying
-		// the software ?
+		// check if there is an exist node instance can be used for deploying the software ?
 
-		// PioneerConnector pioneer = new PioneerConnector(ip);
 	}
 
-	/**
-	 * 
-	 * @param serviceId
-	 *            exist service Id
-	 * @param topologyId
-	 * @param nodeId
-	 * @param quantity
-	 * @param def
-	 * @param service
-	 */
-	// private boolean deployMoreInstance_VM(String topologyId, String nodeId,
-	// int quantity, TDefinitions def, CloudService service){
-	// DeploymentEngineNodeLevel engine = new
-	// DeploymentEngineNodeLevel(configFile);
-	//
-	// // TODO: implement to manage topology, current: get the first
-	// String topoId = service.getFirstTopology().getId();
-	// ServiceUnit node = service.getComponentById(topoId, nodeId);
-	//
-	// EngineLogger.logger.debug("VM node: " + node.getId() + " currently has: "
-	// + node.getInstanceNumber() + "/" + node.getMax());
-	// if (node.getInstanceNumber() + quantity > node.getMax()){
-	// EngineLogger.logger.error("Not enough cloud resource quota for this node: "
-	// +nodeId+ ". Quit !");
-	// return false;
-	// }
-	//
-	// int startingId=node.getIdCounter();
-	//
-	// engine.deployConcurentVMNodesOfOneType(service.getId(), topoId, nodeId,
-	// quantity, startingId, def);
-	// return true;
-	// // Map<String, Integer> nodeAndNumber = new HashMap<>();
-	// // engine.deployConcurrentVMNodes(service.getId(), topologyId,
-	// nodeAndNumber, def);
-	// }
 
 	private class deployOneVmThread implements Runnable {
 		TDefinitions def;
@@ -604,10 +430,8 @@ public class SalsaToscaDeployer {
 		String nodeId;
 		int instanceId;
 
-		public deployOneVmThread(String serviceId, String topologyId,
-				String nodeId, int instanceId, TDefinitions def) {
-			EngineLogger.logger.debug("Thread processind: nodeId=" + nodeId
-					+ ", instance no.=" + instanceId);
+		public deployOneVmThread(String serviceId, String topologyId, String nodeId, int instanceId, TDefinitions def) {
+			EngineLogger.logger.debug("Thread processind: nodeId=" + nodeId	+ ", instance no.=" + instanceId);
 			this.def = def;
 			this.serviceId = serviceId;
 			this.topologyId = topologyId;
@@ -616,8 +440,6 @@ public class SalsaToscaDeployer {
 		}
 
 		private synchronized ServiceInstance executeDeploymentNode() throws SalsaEngineException {
-			// centerCon.addInstanceUnit(serviceId, topologyId, nodeId,
-			// replica);
 			EngineLogger.logger.debug("Debug 4 - execute deployment node");
 			DeploymentEngineNodeLevel engine = new DeploymentEngineNodeLevel(configFile);
 			return engine.deployVMNode(serviceId, topologyId, nodeId,instanceId, def);
@@ -629,7 +451,7 @@ public class SalsaToscaDeployer {
 			try {
 				executeDeploymentNode();
 			} catch (SalsaEngineException e){
-				
+				EngineLogger.logger.error(e.getMessage());
 			}
 		}
 	}
@@ -643,8 +465,7 @@ public class SalsaToscaDeployer {
 
 		public deployOneSoftwareThread(String serviceId, String topologyId,
 				String nodeId, int instanceId, TDefinitions def) {
-			EngineLogger.logger.debug("Thread processind: nodeId=" + nodeId
-					+ ", instance no.=" + instanceId);
+			EngineLogger.logger.debug("Thread processind: nodeId=" + nodeId	+ ", instance no.=" + instanceId);
 			this.def = def;
 			this.serviceId = serviceId;
 			this.topologyId = topologyId;
@@ -663,8 +484,7 @@ public class SalsaToscaDeployer {
 
 	public boolean removeOneInstance(String serviceId, String topologyId,
 			String nodeId, int instanceId) throws SalsaEngineException {
-		CloudService service = centerCon
-				.getUpdateCloudServiceRuntime(serviceId);
+		CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 		ServiceUnit node = service.getComponentById(nodeId);
 		topologyId = service.getTopologyOfNode(node.getId()).getId();
 		ServiceInstance instance = node.getInstanceById(instanceId);
@@ -675,21 +495,14 @@ public class SalsaToscaDeployer {
 		if (node.getType().equals(
 				SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
 			ServiceInstance vm = node.getInstanceById(instanceId);
-			SalsaInstanceDescription_VM vmProps = (SalsaInstanceDescription_VM) vm
-					.getProperties().getAny();
+			SalsaInstanceDescription_VM vmProps = (SalsaInstanceDescription_VM) vm.getProperties().getAny();
 
-			MultiCloudConnector cloudCon = new MultiCloudConnector(
-					EngineLogger.logger, configFile);
+			MultiCloudConnector cloudCon = new MultiCloudConnector(EngineLogger.logger, configFile);
 			String providerName = vmProps.getProvider();
 			String cloudInstanceId = vmProps.getInstanceId();
-			EngineLogger.logger.debug("Removing virtual machine. Provider: "
-					+ providerName + "InstanceId: " + instanceId);
-			cloudCon.removeInstance(
-					SalsaCloudProviders.fromString(providerName),
-					cloudInstanceId);
+			EngineLogger.logger.debug("Removing virtual machine. Provider: " + providerName + "InstanceId: " + instanceId);
+			cloudCon.removeInstance(SalsaCloudProviders.fromString(providerName),cloudInstanceId);
 
-			// centerCon.removeOneInstance(serviceId, topologyId, nodeId,
-			// instanceId);
 			return true;
 		} else {			
 			EngineLogger.logger.debug("Removing a software node somewhere: " + nodeId + "/" + instanceId);
@@ -723,14 +536,13 @@ public class SalsaToscaDeployer {
 			ServiceTopology topo = new ServiceTopology();
 			topo.setId(st.getId());
 			topo.setName(st.getName());
-			List<TNodeTemplate> nodes = ToscaStructureQuery
-					.getNodeTemplateList(st); // all other nodes
+			// all other nodes
+			List<TNodeTemplate> nodes = ToscaStructureQuery.getNodeTemplateList(st); 
 			List<TRelationshipTemplate> relas_hoston = ToscaStructureQuery
 					.getRelationshipTemplateList(SalsaRelationshipType.HOSTON.getRelationshipTypeString(), st);
 			List<TRelationshipTemplate> relas_connectto = ToscaStructureQuery
 					.getRelationshipTemplateList(SalsaRelationshipType.CONNECTTO.getRelationshipTypeString(), st);
-			EngineLogger.logger.debug("Number of HostOn relationships: "
-					+ relas_hoston.size());
+			EngineLogger.logger.debug("Number of HostOn relationships: " + relas_hoston.size());
 			for (TNodeTemplate node : nodes) {
 				ServiceUnit nodeData = new ServiceUnit(node.getId(), node.getType().getLocalPart());				
 				nodeData.setState(SalsaEntityState.UNDEPLOYED);
@@ -756,8 +568,6 @@ public class SalsaToscaDeployer {
 					}
 				}
 				// add the artifact type for SOFTWARE NODE
-				// if
-				// (!node.getType().getLocalPart().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
 				if (node.getType().getLocalPart().equals(SalsaEntityType.SOFTWARE.getEntityTypeString())) {
 					if (node.getDeploymentArtifacts()!=null && node.getDeploymentArtifacts().getDeploymentArtifact().size()!=0){
 						nodeData.setArtifactType(node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart());
@@ -773,42 +583,28 @@ public class SalsaToscaDeployer {
 				// find what is the host of this node, add to hostId
 				for (TRelationshipTemplate rela : relas_hoston) { // search on all relationship, find the host of this "node"
 					// note that, after convert, the capa and req are reverted.
-					TEntityTemplate targetRela = (TEntityTemplate) rela
-							.getTargetElement().getRef();
-					TEntityTemplate sourceRela = (TEntityTemplate) rela
-							.getSourceElement().getRef();
+					TEntityTemplate targetRela = (TEntityTemplate) rela.getTargetElement().getRef();
+					TEntityTemplate sourceRela = (TEntityTemplate) rela.getSourceElement().getRef();
 					TNodeTemplate target;
 					TNodeTemplate source;
 					if (targetRela.getClass().equals(TRequirement.class)) {
-						target = ToscaStructureQuery
-								.getNodetemplateOfRequirementOrCapability(
-										targetRela.getId(), def);
-						source = ToscaStructureQuery
-								.getNodetemplateOfRequirementOrCapability(
-										sourceRela.getId(), def);
+						target = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(targetRela.getId(), def);
+						source = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(sourceRela.getId(), def);
 					} else {
 						target = (TNodeTemplate) sourceRela;
 						source = (TNodeTemplate) targetRela;
 					}
-					EngineLogger.logger
-							.debug("Is the source with id: " + target.getId()
-									+ " same with " + nodeData.getId());
+					EngineLogger.logger.debug("Is the source with id: " + target.getId() + " same with " + nodeData.getId());
 					if (target.getId().equals(nodeData.getId())) {
 						nodeData.setHostedId(source.getId());
-						EngineLogger.logger.debug("Found the host of node "
-								+ nodeData.getId() + " which is id = "
-								+ source.getId());
+						EngineLogger.logger.debug("Found the host of node "	+ nodeData.getId() + " which is id = "	+ source.getId());
 					}
 				}
 				EngineLogger.logger.debug("debugggg Sep 8.1 - 2");
-				// find the connect to node, add it to connecttoId
-				// this node will be the requirement, connect to capability
-				// (reverse with the Tosca)
+				// find the connect to node, add it to connecttoId, this node will be the requirement, connect to capability (reverse with the Tosca)
 
 				for (TRelationshipTemplate rela : relas_connectto) {
-					EngineLogger.logger
-							.debug("buildRuntimeDataFromTosca. Let's see relationship connectto: "
-									+ rela.getId());
+					EngineLogger.logger.debug("buildRuntimeDataFromTosca. Let's see relationship connectto: "+ rela.getId());
 
 					if (rela.getSourceElement().getRef().getClass()
 							.equals(TNodeTemplate.class)) {
@@ -827,31 +623,17 @@ public class SalsaToscaDeployer {
 										targetReq.getId(), def);
 
 						if (target.getId().equals(node.getId())) {
-							EngineLogger.logger
-									.debug("buildRuntimeDataFromTosca. Found the target id: "
-											+ target.getId());
-							TCapability sourceCapa = (TCapability) rela
-									.getSourceElement().getRef();
-							EngineLogger.logger
-									.debug("buildRuntimeDataFromTosca. Source capa: "
-											+ sourceCapa.getId());
-							TNodeTemplate source = ToscaStructureQuery
-									.getNodetemplateOfRequirementOrCapability(
-											sourceCapa.getId(), def);
-							EngineLogger.logger
-									.debug("buildRuntimeDataFromTosca. Source  "
-											+ source.getId());
+							EngineLogger.logger.debug("buildRuntimeDataFromTosca. Found the target id: " + target.getId());
+							TCapability sourceCapa = (TCapability) rela.getSourceElement().getRef();
+							EngineLogger.logger.debug("buildRuntimeDataFromTosca. Source capa: "+ sourceCapa.getId());
+							TNodeTemplate source = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(sourceCapa.getId(), def);
+							EngineLogger.logger.debug("buildRuntimeDataFromTosca. Source  "	+ source.getId());
 							nodeData.getConnecttoId().add(source.getId());
 						}
 					}
 				}
 				EngineLogger.logger.debug("debugggg Sep 8.1 - 3");
 				// manipulate properties ConfigurationCapabilities
-//				if (node.getProperties() != null && node.getProperties().getAny() != null) {					
-//					ConfigurationCapabilities capa = (ConfigurationCapabilities) node.getProperties().getAny();
-//					nodeData.setConfiguationCapapabilities(capa);				
-//				}
-				
 				topo.addComponent(nodeData);
 			}
 			EngineLogger.logger.debug("debugggg Sep 8.1 - last");

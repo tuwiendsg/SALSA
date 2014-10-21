@@ -69,7 +69,6 @@ public class SalsaCenterConnector {
 			String workingDir, Logger logger) {
 		this.centerRestfulEndpoint = centerServiceEndpoint + "/rest";
 		this.logger = logger;
-		//this.serviceId = serviceId;
 		this.workingDir = workingDir;
 		this.engineInternal = JAXRSClientFactory.create(this.centerRestfulEndpoint, SalsaEngineServiceIntenal.class);		
 	}
@@ -126,13 +125,11 @@ public class SalsaCenterConnector {
 	 *            The state
 	 */
 	public String updateNodeState(String serviceId, String topologyId, String nodeId, int instanceId, SalsaEntityState state) {
-		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/state/{value}
 		Response res = engineInternal.updateNodeState(serviceId, topologyId, nodeId, instanceId, state.getNodeStateString());
 		return res.getEntity().toString();
 	}
 	
 	public String updateInstanceState(String serviceId, String topologyId, String nodeId, int instanceId, SalsaEntityState state) {
-		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/state/{value}
 		Response res = engineInternal.updateInstanceState(serviceId, topologyId, nodeId, instanceId, state.getNodeStateString());
 		return res.getEntity().toString();
 	}
@@ -144,10 +141,10 @@ public class SalsaCenterConnector {
 	 * @param nodeId node of the capability
 	 * @param replica instanceId
 	 * @param capaId ID of capa
-	 * @return TODO: Change the replica hierarchy
+	 * @return capability value
 	 */
 	public String getCapabilityValue(String serviceId, String topoId, String nodeId, int replica,
-			String capaId) throws SalsaEngineException {
+		String capaId) throws SalsaEngineException {
 		System.out.println("Try to get capability value of capaid: " + capaId);
 		CloudService service = getUpdateCloudServiceRuntime(serviceId);
 		System.out.println("Checking topo/node/inst-id: " + topoId +"/" + nodeId +"/" + replica);
@@ -177,8 +174,7 @@ public class SalsaCenterConnector {
 	 * @return Tosca object
 	 */
 	public TDefinitions getToscaDescription(String serviceId) {
-		try {
-			// /services/tosca/{serviceId}
+		try {			
 			String url = centerRestfulEndpoint + "/services/tosca/" + serviceId;
 			String toscaFile = workingDir + "/" + serviceId;
 			FileUtils.copyURLToFile(new URL(url), new File(toscaFile));
@@ -195,7 +191,6 @@ public class SalsaCenterConnector {
 
 	public void addInstanceUnitMetaData(String serviceId, String topologyId,
 			String nodeId, ServiceInstance data) {
-		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/metadata
 		engineInternal.addInstanceUnitMetaData(data, serviceId, topologyId, nodeId);
 	}
 	
@@ -203,8 +198,7 @@ public class SalsaCenterConnector {
 		engineInternal.unqueueAction(serviceID, topologyId, nodeId, instnanceId, actionName);
 	}
 
-	public void addRelationship(String serviceId, String topologyId, ServiceUnitRelationship rela) {
-		// /services/{serviceId}/topologies/{topologyId}/relationship		
+	public void addRelationship(String serviceId, String topologyId, ServiceUnitRelationship rela) {		
 		engineInternal.addRelationship(rela, serviceId, topologyId);		
 	}
 
@@ -217,18 +211,15 @@ public class SalsaCenterConnector {
 	public CloudService getUpdateCloudServiceRuntime(String serviceId) throws SalsaEngineException{
 		// some time it's false to get the Cloud Service because of error, retry 10 time:
 		for (int i=0; i<10; i++){
-			try {
-				//System.out.println("getUpdateCloudServiceRuntime. Service id: " + serviceId);
+			try {	
 				String xml = getUpdateCloudServiceRuntimeXML(serviceId);
-				//logger.debug("IN getUpdateCloudServiceRuntime. XML: " + xml);
 				if (xml != null) {
 					return SalsaXmlDataProcess.readSalsaServiceXml(xml);
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage());
 			} catch (JAXBException e1) {
-				logger.error("Error to parse ServiceRuntime file. Error: " + e1);
-				e1.printStackTrace();				
+				logger.error("Error to parse ServiceRuntime file. Error: " + e1);								
 			}
 			sleep(1000);
 		}
@@ -256,22 +247,10 @@ public class SalsaCenterConnector {
 	 * @return XML String of the object.
 	 */
 	public String getUpdateCloudServiceRuntimeXML(String serviceId) throws SalsaEngineException {
-		// /services/{serviceId}
-		String url = centerRestfulEndpoint + "/services/" + serviceId;
 		Response res = engineInternal.getService(serviceId);		
 		return inputStreamToString((InputStream)res.getEntity());		
-		//return queryDataToCenter1(url, HttpVerb.GET, "","", MediaType.TEXT_XML);
 	}
 	
-//	public String getUpdateCloudServiceRuntimeXMLAndLock(String serviceId){
-//		Response res = engine.getServiceAndLock(serviceId);		
-//		return inputStreamToString((InputStream)res.getEntity());
-//	}
-//	
-//	public void releaseGetCloudServiceLock(String serviceId){
-//		engine.getServiceToUnLock(serviceId);
-//	}
-
 	/*
 	 * Get the json contain a list of deployed service Id
 	 */
@@ -284,8 +263,7 @@ public class SalsaCenterConnector {
 	 * Get the json of running service to generate the tree
 	 */
 	public String getserviceruntimejsontree(String serviceId) {
-		String url = centerRestfulEndpoint + "/viewgenerator/cloudservice/json/compact/"
-				+ serviceId;
+		String url = centerRestfulEndpoint + "/viewgenerator/cloudservice/json/compact/" + serviceId;
 		return queryDataToCenter1(url, HttpVerb.GET, "", "", MediaType.TEXT_PLAIN);
 	}
 	
@@ -300,15 +278,12 @@ public class SalsaCenterConnector {
 
 	public String getRequirementValue(String serviceId, String topologyId,
 			String nodeId, int instanceId, String reqId) {
-		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/requirement/{reqId}
 		String url = centerRestfulEndpoint 
 				+ "/services/" + serviceId 
 				+ "/topologies/" + topologyId 
 				+ "/nodes/" + nodeId 
 				+ "/instances" + instanceId 
-				+ "/requirement/" + reqId;
-		Response res = engineInternal.getRequirementValue(serviceId, topologyId, nodeId, instanceId, reqId);
-		//return res.getEntity().toString();
+				+ "/requirement/" + reqId;		
 		return queryDataToCenter1(url, HttpVerb.GET, "", "", MediaType.TEXT_PLAIN);
 	}
 
@@ -323,20 +298,12 @@ public class SalsaCenterConnector {
 	 */
 	public void updateInstanceUnitProperty(String serviceId, String topologyId, String nodeId,
 			int instanceId, Object property) {
-		// /services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/properties
-		String url = centerRestfulEndpoint 
-				+ "/services/" + serviceId 
-				+ "/topologies/" + topologyId 
-				+ "/nodes/" + nodeId 
-				+ "/instances/" + instanceId + "/properties";
 		try{
 			String data = convertToXML(property);
 			engineInternal.updateInstanceUnitProperties(data, serviceId, topologyId, nodeId, instanceId);
-			//queryDataToCenter1(url, HttpVerb.POST, data, MediaType.APPLICATION_XML, "");
 		} catch (JAXBException e){
 			logger.debug(e.toString());
 		}
-		//postDataToSalsaCenter(url, property);
 	}
 
 	/**
@@ -349,19 +316,7 @@ public class SalsaCenterConnector {
 	 */
 	public void updateInstanceUnitCapability(String serviceId, String topologyId, String nodeId,
 			int instanceId, SalsaCapaReqString capa) {
-		// /services/{serviceId}/topologies{topologyId}/nodes/{nodeId}/instances/{instanceId}/capability
-		String url = centerRestfulEndpoint 
-				+ "/services/" + serviceId 
-				+ "/topologies/" + topologyId 
-				+ "/nodes/" + nodeId 
-				+ "/instances/" + instanceId + "/capability";
-		try{
-			String data = convertToXML(capa);
-			Response res = engineInternal.updateInstanceUnitCapability(capa, serviceId, topologyId, nodeId, instanceId);			
-			//queryDataToCenter1(url, HttpVerb.POST, data, MediaType.APPLICATION_XML, "");
-		} catch (JAXBException e){
-			logger.debug(e.toString());
-		}		
+		engineInternal.updateInstanceUnitCapability(capa, serviceId, topologyId, nodeId, instanceId);			
 	}
 
 	/**
@@ -381,52 +336,9 @@ public class SalsaCenterConnector {
 				+ "/nodes/" + nodeId 
 				+ "/instance-counter/" + value;
 		System.out.println(url);
-		//Response res = engine.updateNodeIdCounter(serviceId, topologyId, nodeId, value);
 		queryDataToCenter1(url, HttpVerb.POST, value.toString(), "", "");
 	}
 
-	/*
-	 * Post a XML object to URL. Support POST method to Control Service
-	 */
-//	private void postDataToSalsaCenter(String url, Object data) {
-//		logger.debug("POST data. URL: " + url);
-//		try {			
-//			HttpClient client = new DefaultHttpClient();
-//			HttpPost post = new HttpPost(url);
-//
-//			JAXBContext jaxbContext = JAXBContext // beside data.class, addition classes for contents
-//					.newInstance(
-//							data.getClass(), // e.g. when update Replica, need
-//												// its capability and
-//												// InstanceDes.
-//							SalsaInstanceDescription_VM.class,
-//							SalsaCapaReqString.class);
-//			Marshaller msl = jaxbContext.createMarshaller();
-//			msl.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//			StringWriter result = new StringWriter();
-//			msl.marshal(data, result);
-//
-//			StringEntity input = new StringEntity(result.toString());
-//			input.setContentType("application/xml");
-//			post.setEntity(input);
-//
-//			HttpResponse response = client.execute(post);
-//			if (response.getStatusLine().getStatusCode() >= 400) {
-//				logger.error("Failed : HTTP error code : "
-//						+ response.getStatusLine().getStatusCode());
-//			} else {
-//				logger.debug("Post data successful: " + url);
-//			}
-//		} catch (JAXBException e) {
-//			logger.error("Error when marshalling data from class: "
-//					+ data.getClass());
-//			logger.error(e.toString());
-//		} catch (Exception e) {
-//			logger.error("Some error when posting data to: " + url);
-//		}
-//	}
-
-	
 	private String queryDataToCenter1(String input_url, HttpVerb method, String data, String type, String accept) {
 		try {
 			URL url = new URL(input_url);
@@ -502,7 +414,7 @@ public class SalsaCenterConnector {
 	
 	public String logMessage(String data){
 		logger.debug("Sending log message to salsa-engine: " + data);
-		Response res =  engineInternal.logMessage(data);		
+		engineInternal.logMessage(data);		
 		return "Logged";		
 	}
 	
@@ -520,21 +432,15 @@ public class SalsaCenterConnector {
 	    }
 	 
 	 private String convertToXML(Object data) throws JAXBException{
-		 JAXBContext jaxbContext = JAXBContext // beside data.class, addition classes for contents
-					.newInstance(
-							data.getClass(), // e.g. when update Replica, need
-												// its capability and
-												// InstanceDes.
-							SalsaInstanceDescription_VM.class,
-							SalsaCapaReqString.class);
-			Marshaller msl = jaxbContext.createMarshaller();
-			msl.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			StringWriter result = new StringWriter();
-			msl.marshal(data, result);
-			return result.toString();
-//			StringEntity input = new StringEntity(result.toString());
-//			input.setContentType("application/xml");
-//			post.setEntity(input);
+		 JAXBContext jaxbContext = JAXBContext
+					.newInstance(data.getClass(),												
+								 SalsaInstanceDescription_VM.class,
+								 SalsaCapaReqString.class);
+		Marshaller msl = jaxbContext.createMarshaller();
+		msl.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		StringWriter result = new StringWriter();
+		msl.marshal(data, result);
+		return result.toString();
 	 }
 	
 
