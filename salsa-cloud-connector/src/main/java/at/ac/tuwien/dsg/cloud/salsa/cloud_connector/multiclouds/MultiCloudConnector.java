@@ -79,16 +79,16 @@ public class MultiCloudConnector {
 			case CELAR_FLEXIANT:
 			{
 				CloudParameter param = paramUser.getParameter("celar", "flexiant");
-				String email = param.getParameter(FlexiantParameterStrings.email);				
-				String customerUUID = param.getParameter(FlexiantParameterStrings.customerUUID);
-				String password = param.getParameter(FlexiantParameterStrings.password);
-				String endpoint = param.getParameter(FlexiantParameterStrings.endpoint);
-				String vdcUUID = param.getParameter(FlexiantParameterStrings.vdcUUID);
+				String email = param.getParameter(FlexiantParameterStrings.EMAIL);				
+				String customerUUID = param.getParameter(FlexiantParameterStrings.CUSTOMER_UUID);
+				String password = param.getParameter(FlexiantParameterStrings.PASSWORD);
+				String endpoint = param.getParameter(FlexiantParameterStrings.ENDPOINT);
+				String vdcUUID = param.getParameter(FlexiantParameterStrings.VDC_UUID);
 				
-				String defaultProductOfferUUID = param.getParameter(FlexiantParameterStrings.defaultProductOfferUUID);
-				String clusterUUID = param.getParameter(FlexiantParameterStrings.clusterUUID);
-				String networkUUID = param.getParameter(FlexiantParameterStrings.networkUUID);
-				String sshKey = param.getParameter(FlexiantParameterStrings.sshkey);
+				String defaultProductOfferUUID = param.getParameter(FlexiantParameterStrings.DEFAULT_PRODUCT_OFFER_UUID);
+				String clusterUUID = param.getParameter(FlexiantParameterStrings.CLUSTER_UUID);
+				String networkUUID = param.getParameter(FlexiantParameterStrings.NETWORK_UUID);
+				String sshKey = param.getParameter(FlexiantParameterStrings.SSH_KEY);
 				logger.info("Connection to Flexiant. Endpoint: " + endpoint +", uuid: " + customerUUID);
 				
 				cloud = new FlexiantConnector(logger, email, customerUUID, password, endpoint, vdcUUID, defaultProductOfferUUID, clusterUUID, networkUUID, sshKey);

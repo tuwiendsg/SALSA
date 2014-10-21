@@ -247,7 +247,7 @@ public class ArtifactDeployer {
 		
 		// waiting for capabilities and fulfill requirements
 		private void waitingForCapabilities(TNodeTemplate node, TDefinitions def) throws SalsaEngineException {
-			if (node.getRequirements()==null){
+			if (node.getRequirements().equals(null)){
 				return;	// node have no requirement
 			}
 			List<TRequirement> reqs = node.getRequirements().getRequirement();
