@@ -7,7 +7,7 @@
             <Reference>tomcat7</Reference>
         </Mirror>
         <Operation>
-        	<Operation name="deploy" command="apt-get -y install tomcat7"/>
+        	<Operation name="deploy" command="apt-get -y install tomcat7; service tomcat7 start"/>
         	<Operation name="undeploy" command="apt-get remove tomcat7"/>
             <Operation name="start" command="service tomcat7 start"/>
             <Operation name="stop" command="service tomcat7 start"/>

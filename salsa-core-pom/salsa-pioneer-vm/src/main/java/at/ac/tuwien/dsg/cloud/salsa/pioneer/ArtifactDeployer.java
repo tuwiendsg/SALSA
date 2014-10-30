@@ -247,15 +247,16 @@ public class ArtifactDeployer {
 		
 		// waiting for capabilities and fulfill requirements
 		private void waitingForCapabilities(TNodeTemplate node, TDefinitions def) throws SalsaEngineException {
-			if (node.getRequirements().equals(null)){
-				return;	// node have no requirement
-			}
-			List<TRequirement> reqs = node.getRequirements().getRequirement();
-			for (TRequirement req : reqs) {
-				logger.debug("Checking requirement "+req.getId());
-				TCapability cap=ToscaStructureQuery.getCapabilitySuitsRequirement(req, def);
-				logger.debug("Waiting for capability: "+cap.getId());
-				String value = waitRelationshipReady(topologyId, hostedVmInstanceId, cap, req);
+			logger.debug("WaitingForCapabilities: " + node.getId());
+			if (node.getRequirements() != null){
+				PioneerLogger.logger.debug("There are some explicit requirement, wait for them.");
+				List<TRequirement> reqs = node.getRequirements().getRequirement();
+				for (TRequirement req : reqs) {
+					logger.debug("Checking requirement "+req.getId());
+					TCapability cap=ToscaStructureQuery.getCapabilitySuitsRequirement(req, def);
+					logger.debug("Waiting for capability: "+cap.getId());
+					String value = waitRelationshipReady(topologyId, hostedVmInstanceId, cap, req);
+				}
 			}
 			logger.debug("Trying to get relationship host on");
 			List<TRelationshipTemplate> relas = ToscaStructureQuery.getRelationshipTemplateList(SalsaRelationshipType.HOSTON.getRelationshipTypeString(), def);
@@ -280,24 +281,29 @@ public class ArtifactDeployer {
 
 		// Download node artifact
 		private void downloadNodeArtifacts(TNodeTemplate node, TDefinitions def) {
+			PioneerLogger.logger.debug("Preparing artifact for node: " + node.getId());
 			if (node.getDeploymentArtifacts()==null){
+				PioneerLogger.logger.debug("There is no node artifact to download");
 				return;
 			}
+			PioneerLogger.logger.debug("Number of artifact: " + node.getDeploymentArtifacts().getDeploymentArtifact().size());
+			PioneerLogger.logger.debug("Debug: " + node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getName());
+			PioneerLogger.logger.debug("Debug: " + node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType());
+			PioneerLogger.logger.debug("Debug: " + node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart());
+			
 			if (node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart().equals(SalsaArtifactType.chef.getString())){
+				PioneerLogger.logger.debug("Chef artifact");
 				return;
 			}
 			// get Artifact list
-			List<String> arts = ToscaStructureQuery
-					.getDeployArtifactTemplateReferenceList(node, def);	
+			List<String> arts = ToscaStructureQuery.getDeployArtifactTemplateReferenceList(node, def);	
 			for (String art : arts) {
 				try {
-					PioneerLogger.logger.debug("Downloading artifact for: "
-							+ node.getId() + ". URL:" + art);
+					PioneerLogger.logger.debug("Downloading artifact for: "	+ node.getId() + ". URL:" + art);
 					URL url = new URL(art);
 					String filePath = SalsaPioneerConfiguration.getWorkingDir()
 							+ File.separator + node.getId()
-							+ File.separator
-							+ FilenameUtils.getName(url.getFile());
+							+ File.separator + FilenameUtils.getName(url.getFile());
 					// get the last file in the list
 					// TODO: there could be multi mirror of an artifact, check !
 					//runArt = FilenameUtils.getName(url.getFile()); 
@@ -305,9 +311,7 @@ public class ArtifactDeployer {
 					PioneerLogger.logger.debug("Download file from:"+url.toString()+"\nSave to file:" + filePath);
 					FileUtils.copyURLToFile(url,new File(filePath));
 				} catch (IOException e) {
-					PioneerLogger.logger
-							.error("Error while downloading artifact for: "
-									+ node.getId() + ". URL:" + art);
+					PioneerLogger.logger.error("Error while downloading artifact for: "	+ node.getId() + ". URL:" + art);
 					PioneerLogger.logger.error(e.toString());
 				}
 			}
@@ -464,7 +468,8 @@ public class ArtifactDeployer {
 			logger.debug("WaitRelationshipReady Mar4 - capa: " + capa.getId());
 			TNodeTemplate nodeOfCapa = ToscaStructureQuery.getNodetemplateOfRequirementOrCapability(capa, def);
 			
-			String value=centerCon.getCapabilityValue(serviceId, topoId, nodeOfCapa.getId(), 0, capa.getId());	// note: 0 is the ID of the first node, which provide the capability
+			// note: 0 is the ID of the first node, which provide the capability - NOTE: this id is depricate. See salsa service
+			String value=centerCon.getCapabilityValue(serviceId, topoId, nodeOfCapa.getId(), 0, capa.getId());	
 			logger.debug("waitRelationshipReady - Get the value is: " + value);
 			while (value==null){
 				try{

@@ -3,6 +3,7 @@ package at.ac.tuwien.dsg.cloud.salsa;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineServiceIntenal;
@@ -18,7 +19,12 @@ public class TestServiceConnector {
 		
 		SalsaCenterConnector cenCon = new SalsaCenterConnector("http://128.130.172.215:8080/salsa-engine", "/tmp", EngineLogger.logger);
 		//cenCon.updateNodeIdCounter("test", "DataMarketAgence", "agence", 5);
-		cenCon.deregisterService("test");
+		CloudService service = cenCon.getUpdateCloudServiceRuntime("testTomcat");
+		ServiceUnit su = service.getComponentById("policeApp");
+		for (ServiceInstance in : su.getInstancesList()) {
+			System.out.println("aaaaaaaaaa");
+			System.out.println(in.getInstanceId());
+		}
 		
 	}
 
