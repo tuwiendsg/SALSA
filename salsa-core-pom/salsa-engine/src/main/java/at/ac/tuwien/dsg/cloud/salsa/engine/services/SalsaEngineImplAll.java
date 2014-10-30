@@ -386,6 +386,9 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 				ServiceUnit nodeData = service.getComponentById(nodeId);			
 				ServiceInstance instanceData = nodeData.getInstanceById(instanceIdInt);
 				
+				if (nodeData.getReference() !=null){
+					return Response.status(404).entity("Cannot remove instance because it is a reference: " + instanceId +", on node: " + nodeId + ", on service " + serviceId).build();
+				}
 				// remove hosted on node
 				for (ServiceUnit unit : service.getAllComponent()) {
 					if (unit.getHostedId().equals(nodeData.getId())){

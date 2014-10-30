@@ -281,10 +281,21 @@ public class Main {
 					}
 					// check 2 levels up, e.g pioneer is at VM/docker, them tomcat, node is a war
 					if (unit.getType().equals(SalsaEntityType.WAR.getEntityTypeString())){
+						// the unit now is the one with WAR type service unit example.war
 						ServiceUnit hostedUnit = service.getComponentById(unit.getHostedId());
+						// host unit would be tomcat service unit
+						PioneerLogger.logger.debug("checking hostUnit:" + hostedUnit.getId());
 						if (hostedUnit.getHostedId().equals(nodeId)){
+							// hostUnit.gethostedID is the ID of os_OF_tomcat service unit
+							PioneerLogger.logger.debug("hostedUnit.getHostId: "+hostedUnit.getHostedId());
 							for (ServiceInstance instance : unit.getInstancesList()) {
-								ServiceInstance hostedInst = hostedUnit.getInstanceById(instance.getHostedId_Integer());
+								// we have a list of instance of the war file. surely that have only one instance at Allocating. Instance is at allocating so have no hostedId_Integer
+								PioneerLogger.logger.debug("Checking instance: " + unit.getId() +"/" + instance.getInstanceId() + ". getHostedId_Integer: " + instance.getHostedId_Integer() +". instance state: " + instance.getInstanceState());
+								// now we must get a instance of the hosted unit.
+								// TODO: Just get the first instance, should be fix.
+								ServiceInstance hostedInst = hostedUnit.getInstanceHostOn(replica).get(0);
+								PioneerLogger.logger.debug("instance: " + unit.getId() +"/" + instance.getInstanceId() + ". getHostedId_Integer: " + instance.getHostedId_Integer());
+								PioneerLogger.logger.debug("hostedInst: " + hostedInst.getId());
 								if (hostedInst.getHostedId_Integer()==replica && instance.getState().equals(SalsaEntityState.STAGING)){
 									PioneerLogger.logger.debug("RETRIEVE A STAGING NODE: " + unit.getId() + "/" + instance.getInstanceId());								
 									PioneerServiceImplementation pioneer = new PioneerServiceImplementation();

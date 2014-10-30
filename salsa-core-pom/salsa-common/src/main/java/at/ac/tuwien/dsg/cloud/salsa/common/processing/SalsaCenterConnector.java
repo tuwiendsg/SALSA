@@ -147,8 +147,10 @@ public class SalsaCenterConnector {
 		String capaId) throws SalsaEngineException {
 		System.out.println("Try to get capability value of capaid: " + capaId);
 		CloudService service = getUpdateCloudServiceRuntime(serviceId);
-		System.out.println("Checking topo/node/inst-id: " + topoId +"/" + nodeId +"/" + replica);
-		ServiceInstance rep = service.getInstanceById(nodeId, replica);
+		System.out.println("Checking topo/node/inst-id: " + topoId +"/" + nodeId +"/" + replica);		
+		ServiceUnit unit = service.getComponentById(nodeId);
+		// assume that the instance is up.
+		ServiceInstance rep = unit.getInstancesList().get(0);		
 		System.out.println("Get this instance: " + rep.getInstanceId());
 		Capabilities capas = rep.getCapabilities();
 		
@@ -220,6 +222,8 @@ public class SalsaCenterConnector {
 				logger.error(e.getMessage());
 			} catch (JAXBException e1) {
 				logger.error("Error to parse ServiceRuntime file. Error: " + e1);								
+			} catch (Exception genericE){
+				logger.error(genericE.getMessage());
 			}
 			sleep(1000);
 		}
