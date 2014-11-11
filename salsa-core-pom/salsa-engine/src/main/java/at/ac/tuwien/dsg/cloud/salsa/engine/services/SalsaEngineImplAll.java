@@ -27,15 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -44,7 +37,6 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.springframework.stereotype.Service;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
@@ -68,7 +60,6 @@ import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.SalsaToscaDeployer;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList;
-import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.MutualFileAccessControl;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
@@ -179,7 +170,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		if (deployer.cleanAllService(serviceId)) {
 			// deregister service here
 			
-			String fileName = CenterConfiguration.getServiceStoragePath() + "/"	+ serviceId;
+			String fileName = SalsaConfiguration.getServiceStorageDir() + "/"	+ serviceId;			
 			File file = new File(fileName);
 			File datafile = new File(fileName.concat(".data"));
 			File originalFile = new File(fileName.concat(".original"));
@@ -380,7 +371,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			// remove metadata
 			try{
 				MutualFileAccessControl.lockFile();
-				String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+				String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
 				CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 				//ServiceTopology topo = service.getComponentTopologyById(topologyId);
 				ServiceUnit nodeData = service.getComponentById(nodeId);			
@@ -421,7 +412,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		if (serviceName.equals("")){
 			return false;
 		}
-		String pathName = CenterConfiguration.getServiceStoragePath();
+		String pathName = SalsaConfiguration.getServiceStorageDir();
 		
 		ServiceJsonList serviceList = new ServiceJsonList(pathName);
 		for (ServiceJsonList.ServiceInfo serv : serviceList.getServicesList()) {
@@ -436,7 +427,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	
 
 	public Response deployTopology(String serviceId, String topologyId) throws SalsaEngineException{
-		String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+		String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
 		try {
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 			ServiceTopology topo = service.getComponentTopologyById(topologyId);
@@ -455,7 +446,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	}
 
 	public Response undeployTopology(String serviceId, String topologyId) throws SalsaEngineException{
-		String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+		String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
 		try {
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 			ServiceTopology topo = service.getComponentTopologyById(topologyId);
@@ -476,7 +467,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	}
 	
 	public Response destroyInstanceOfNodeType(String serviceId, String topologyId, String nodeId) throws SalsaEngineException{
-		String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+		String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
 		logger.debug("Remove all instances of node: " + nodeId);
 		try {
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
@@ -506,7 +497,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		if (serviceDeployId.equals("")){		
 			return Response.status(400).entity("").build();
 		}
-		String fileName = CenterConfiguration.getServiceStoragePath() + "/" + serviceDeployId+".data";
+		String fileName = SalsaConfiguration.getServiceStorageDir() + "/" + serviceDeployId+".data";
 		// wait for unlock !
 //		int count=0;
 //		while (!getServiceLocked && count < 50){ // wait for maximum 5 sec and release the lock 			
@@ -545,7 +536,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		if (serviceDeployId.equals("")){
 			return Response.status(400).entity("").build();
 		}
-		String fileName = CenterConfiguration.getServiceStoragePath() + "/"	+ serviceDeployId;
+		String fileName = SalsaConfiguration.getServiceStorageDir() + "/"	+ serviceDeployId;
 		try {
 			String xml = FileUtils.readFileToString(new File(fileName));
 			return Response.status(200).entity(xml).build();
@@ -558,7 +549,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	
 	@Override
 	public Response getServiceSYBL_DEP_DESP(String serviceId){
-		String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+		String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
 		logger.debug("Generating deployment desp for SYBL");
 		try {
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
@@ -611,7 +602,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	}
 	
 	private String getIpOfServiceInstance(String serviceId, String nodeId, int instanceId){
-		String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+		String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
 		try {
 			logger.debug("Searching IP of instance");
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
@@ -654,7 +645,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			ServiceUnitRelationship data,
 			 String serviceId,
 			 String topologyId) {
-		String salsaFile = CenterConfiguration.getServiceStoragePath()
+		String salsaFile = SalsaConfiguration.getServiceStorageDir()
 				+ File.separator + serviceId + ".data";
 		try {
 			MutualFileAccessControl.lockFile();
@@ -691,7 +682,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			 int value){
 		try{
 			MutualFileAccessControl.lockFile();
-			String salsaFile = CenterConfiguration.getServiceStoragePath()
+			String salsaFile = SalsaConfiguration.getServiceStorageDir()
 					+ File.separator + serviceId + ".data";
 			CloudService service = SalsaXmlDataProcess
 					.readSalsaServiceFile(salsaFile);
@@ -722,7 +713,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			String topologyId,
 			String nodeId){
 		EngineLogger.logger.debug("addInstanceUnitMetaData. STARTING: " + serviceId +"/"+topologyId +"/"+nodeId+"/"+data.getInstanceId());
-		String fileName = CenterConfiguration.getServiceStoragePath()+ File.separator + serviceId + ".data";
+		String fileName = SalsaConfiguration.getServiceStorageDir()+ File.separator + serviceId + ".data";
 		try {
 			MutualFileAccessControl.lockFile();
 			EngineLogger.logger.debug("addInstanceUnitMetaData. STARTING TO TRY BLOCK");
@@ -762,8 +753,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	@Override
 	public Response addServiceUnitMetaData(ServiceUnit data,
 			String serviceId, String topologyId){
-		String fileName = CenterConfiguration.getServiceStoragePath()+ File.separator + serviceId + ".data";
-		String toscaFileName = CenterConfiguration.getServiceStoragePath()+ File.separator + serviceId;
+		String fileName = SalsaConfiguration.getServiceStorageDir()+ File.separator + serviceId + ".data";
+		String toscaFileName = SalsaConfiguration.getServiceStorageDir()+ File.separator + serviceId;
 		try {
 			MutualFileAccessControl.lockFile();
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(fileName);
@@ -830,7 +821,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	@Override
 	public Response addServiceUnitMetaData(String toscaXML,
 			String serviceId, String topologyId){
-		String fileName = CenterConfiguration.getServiceStoragePath()+ File.separator + serviceId + ".data";
+		String fileName = SalsaConfiguration.getServiceStorageDir()+ File.separator + serviceId + ".data";
 		try {
 			MutualFileAccessControl.lockFile();
 			TNodeTemplate toscaNode = ToscaXmlProcess.readToscaNodeTemplateFromString(toscaXML);
@@ -866,7 +857,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			 int instanceId) {
 		MutualFileAccessControl.lockFile();
 		try {
-			String serviceFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+			String serviceFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(serviceFile);	
 			ServiceInstance rep = service.getInstanceById(nodeId, instanceId);
 			Capabilities capas = rep.getCapabilities();
@@ -908,7 +899,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			 int instanceId) {		
 		MutualFileAccessControl.lockFile();
 		try {
-			String serviceFile = CenterConfiguration.getServiceStoragePath()
+			String serviceFile = SalsaConfiguration.getServiceStorageDir()
 					+ File.separator + serviceId + ".data";
 			CloudService service = SalsaXmlDataProcess
 					.readSalsaServiceFile(serviceFile);
@@ -955,7 +946,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			logger.debug("TIMESTAMP - Node: " + nodeId + "/" + instanceId + ", state: " + value + ", Time: " + date.getTime());
 			logger.debug("UPDATE NODE STATE: " + nodeId + ", instance: " + instanceId + ", state: " + value);			
 			MutualFileAccessControl.lockFile();
-			String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+			String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 			ServiceTopology topo = service.getComponentTopologyById(topologyId);
 			ServiceUnit nodeData = topo.getComponentById(nodeId);
@@ -1004,7 +995,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			@PathParam("value") String value){
 		try {
 			MutualFileAccessControl.lockFile();
-			String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+			String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);		
 			ServiceUnit nodeData = service.getComponentById(nodeId);
 			ServiceInstance instanceData = nodeData.getInstanceById(instanceId);
@@ -1038,13 +1029,13 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			 String reqId){
 		try {
 		// read current TOSCA and SalsaCloudService
-			String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+			String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 			ServiceTopology topo = service.getComponentTopologyById(topologyId);
 //			SalsaComponentData nodeData = topo.getComponentById(nodeId);
 //			SalsaComponentInstanceData instanceData = nodeData.getInstanceById(instanceId);		
 			
-			String toscaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId;
+			String toscaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId;
 			TDefinitions def = ToscaXmlProcess.readToscaFile(toscaFile);
 			TRequirement req = (TRequirement)ToscaStructureQuery.getRequirementOrCapabilityById(reqId, def);
 			TCapability capa = ToscaStructureQuery.getCapabilitySuitsRequirement(req, def);
@@ -1077,7 +1068,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			String actionName){
 		try{
 			MutualFileAccessControl.lockFile();
-			String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+			String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 			ServiceTopology topo = service.getComponentTopologyById(topologyId);
 			ServiceUnit nodeData = topo.getComponentById(nodeId);	
@@ -1108,7 +1099,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			String actionName){
 		try{
 			MutualFileAccessControl.lockFile();
-			String salsaFile = CenterConfiguration.getServiceStoragePath() + File.separator + serviceId + ".data";
+			String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 			ServiceTopology topo = service.getComponentTopologyById(topologyId);
 			ServiceUnit nodeData = topo.getComponentById(nodeId);			

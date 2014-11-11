@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tosca:Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:elasticity="http://www.example.org/NewXMLSchema" 
+	xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12"
+	xmlns:salsa="http://example.com"
+	xsi:schemaLocation="http://docs.oasis-open.org/tosca/ns/2011/12 TOSCA-v1.0.xsd"
+	targetNamespace="http://tempuri.org"
+	id="LoadBalancerAndWebserviceApplication">
+	
+	<tosca:ServiceTemplate id="LoadBalancerAndWebservice">
+		<tosca:TopologyTemplate>
+			<!-- LOAD BALANCER -->
+			<tosca:NodeTemplate id="LoadBalancer"	name="Load Balancer" type="software">
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="salsa:sh" name="Deployment script" artifactRef="deployLoadBalancer"/>
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate type="salsa:os" id="LoadBalancerVM" minInstances="1" maxInstances="1">
+				 <tosca:Properties>
+           <MappingProperties>						
+						<MappingProperty type="salsa:os">
+							<property name="instanceType">000000960</property>
+							<property name="provider">dsg@openstack</property> 
+							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>
+							<property name="packages"></property>
+						</MappingProperty>
+					</MappingProperties>
+                </tosca:Properties>
+			</tosca:NodeTemplate> 
+			<tosca:RelationshipTemplate type="salsa:HOSTON" id="LB_on_os">
+				<tosca:SourceElement ref="LoadBalancer"/>
+				<tosca:TargetElement ref="LoadBalancerVM"/>
+			</tosca:RelationshipTemplate>
+	
+		<!-- WEB SERVICE -->
+		<tosca:NodeTemplate id="WebService"	name="Web Service" type="software">
+				<tosca:DeploymentArtifacts>
+					<tosca:DeploymentArtifact artifactType="salsa:sh" name="Deployment script" artifactRef="deployWebService"/>
+				</tosca:DeploymentArtifacts>
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate type="salsa:os" id="WebServiceVM" minInstances="1" maxInstances="1">
+				 <tosca:Properties>
+           <MappingProperties>						
+						<MappingProperty type="salsa:os">
+							<property name="instanceType">000000960</property>
+							<property name="provider">dsg@openstack</property> 
+							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>
+							<property name="packages"></property>
+						</MappingProperty>
+					</MappingProperties>
+         </tosca:Properties>
+			</tosca:NodeTemplate> 
+			<tosca:RelationshipTemplate type="salsa:HOSTON" id="WS_on_os">
+				<tosca:SourceElement ref="WebService"/>
+				<tosca:TargetElement ref="WebServiceVM"/>
+			</tosca:RelationshipTemplate>
+			
+			<!-- CONNECT LB AND WS -->
+			<tosca:RelationshipTemplate type="salsa:CONNECTO" id="WS_to_LB">
+				<tosca:SourceElement ref="WebService"/>
+				<tosca:TargetElement ref="LoadBalancer"/>
+			</tosca:RelationshipTemplate>
+			
+		</tosca:TopologyTemplate>			
+	</tosca:ServiceTemplate>
+
+	<tosca:ArtifactTemplate id="deployLoadBalancer" type="salsa:sh">		
+		<tosca:ArtifactReferences>
+			<tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/daas/fakescripts/donothing.sh" />				
+		</tosca:ArtifactReferences>
+	</tosca:ArtifactTemplate>
+	
+	<tosca:ArtifactTemplate id="deployWebService" type="salsa:sh">		
+		<tosca:ArtifactReferences>
+			<tosca:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/daas/fakescripts/donothing.sh" />				
+		</tosca:ArtifactReferences>
+	</tosca:ArtifactTemplate>
+	
+	
+</tosca:Definitions>
