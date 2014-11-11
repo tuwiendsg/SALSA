@@ -27,7 +27,8 @@ public class SalsaConfiguration {
 			}			
 			logger = Logger.getLogger("deploymentLogger");
 			
-			//(new File(getWorkingDir())).mkdirs();
+			(new File(getWorkingDir())).mkdirs();
+			(new File(getServiceStorageDir())).mkdirs();
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();

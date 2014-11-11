@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -36,9 +35,8 @@ import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataTree;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataTreeSimple;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList;
-import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 
 import com.google.gson.Gson;
@@ -61,7 +59,7 @@ static Logger logger;
 			return "";
 		}
 		try {
-			String salsaFile = CenterConfiguration.getServiceStoragePath() + "/"	+ serviceDeployId + ".data";
+			String salsaFile = SalsaConfiguration.getServiceStorageDir() + "/"	+ serviceDeployId + ".data";
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 			
 			ServiceJsonDataTree datatree = new ServiceJsonDataTree();
@@ -111,7 +109,7 @@ static Logger logger;
 			return "";
 		}
 		try {
-			String salsaFile = CenterConfiguration.getServiceStoragePath() + "/"	+ serviceDeployId + ".data";			
+			String salsaFile = SalsaConfiguration.getServiceStorageDir() + "/"	+ serviceDeployId + ".data";			
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 			if (health==1){
 				enrichWithGangliaInfo(service);
@@ -154,7 +152,7 @@ static Logger logger;
 		if (serviceDeployId.equals("") || serviceDeployId.equals("null")){
 			return "";
 		}
-		String fileName = CenterConfiguration.getServiceStoragePath() + "/"
+		String fileName = SalsaConfiguration.getServiceStorageDir() + "/"
 				+ serviceDeployId + ".data";
 		try {
 			String xml = FileUtils.readFileToString(new File(fileName));
@@ -170,7 +168,7 @@ static Logger logger;
 	@Path("/cloudservice/json/list")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getServiceJsonList() {
-		String pathName = CenterConfiguration.getServiceStoragePath();
+		String pathName = SalsaConfiguration.getServiceStorageDir();
 		try {
 			ServiceJsonList serviceList = new ServiceJsonList(pathName);
 			Gson json = new GsonBuilder().setPrettyPrinting().create();
@@ -194,7 +192,7 @@ static Logger logger;
 			return "";
 		}
 		try {
-			String salsaFile = CenterConfiguration.getServiceStoragePath() + "/"	+ serviceDeployId + ".data";			
+			String salsaFile = SalsaConfiguration.getServiceStorageDir() + "/"	+ serviceDeployId + ".data";			
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 			List<SalsaEntity> processing = new ArrayList<SalsaEntity>();
 			processing.add(service);
@@ -246,7 +244,7 @@ static Logger logger;
 	@Path("/cloudservice/json/brief/{serviceId}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getServiceBriefInfo(@PathParam("serviceId") String serviceDeployId) {
-		String salsaFile = CenterConfiguration.getServiceStoragePath() + "/"	+ serviceDeployId + ".data";
+		String salsaFile = SalsaConfiguration.getServiceStorageDir() + "/"	+ serviceDeployId + ".data";
 		try {
 			//logger.debug("Generating brief info for service");
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);

@@ -29,8 +29,8 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.FolderJsonList;
-import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterLogger;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -66,8 +66,8 @@ public class AppRepository {
 	@Path("/getservicetemplatejsonlist")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getservicetemplatejsonlist() {
-		logger.debug("Get service template list at: " + CenterConfiguration.getToscaTemplatePath());
-		return listFolderToJson(CenterConfiguration.getToscaTemplatePath());
+		logger.debug("Get service template list at: " + SalsaConfiguration.getToscaTemplateStorage());
+		return listFolderToJson(SalsaConfiguration.getToscaTemplateStorage());
 	}
 	
 	@GET
@@ -75,7 +75,7 @@ public class AppRepository {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getartifactjsonlist() {
 		
-		return listFolderToJson(CenterConfiguration.getArtifactStoragePath());		
+		return listFolderToJson(SalsaConfiguration.getArtifactStorage());		
 	}
 	
 	
