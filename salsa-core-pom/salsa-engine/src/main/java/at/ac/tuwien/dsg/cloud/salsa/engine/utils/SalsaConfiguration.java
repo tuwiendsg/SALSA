@@ -16,8 +16,7 @@ public class SalsaConfiguration {
 	
 	static {
 		configuration = new Properties();
-		try {
-			
+		try {			
 			File f = new File(CONFIG_FILE);
 			if (f.exists()) {
 				configuration.load(new FileReader(f));

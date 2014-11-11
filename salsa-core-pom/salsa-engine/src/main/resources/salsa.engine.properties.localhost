@@ -7,14 +7,14 @@
 
 # endpoint of the service
 
-SALSA_CENTER_ENDPOINT_LOCAL=http://10.99.0.75:8080/salsa-engine
-SALSA_CENTER_ENDPOINT=http://128.130.172.215:8080/salsa-engine
+SALSA_CENTER_ENDPOINT_LOCAL=http://localhost:8080/salsa-engine
+SALSA_CENTER_ENDPOINT=http://localhost:8080/salsa-engine
 
 # It is need if artifact is put in a repository. We don't need it if user provide direct links to the artifacts.
-SALSA_REPO=http://128.130.172.215:8080/salsa/upload/files
+SALSA_REPO=http://localhost:8080/salsa/upload/files
 
 # Will use by Salsa Pioneer
-PIONEER_WEB=http://128.130.172.215/salsa/upload/files/pioneer
+PIONEER_WEB=http://localhost/salsa/upload/files/pioneer
 PIONEER_FILES=salsa-pioneer.jar,salsa-requirement-get,salsa-capability-set
 PIONEER_RUN=salsa-pioneer.jar
 
