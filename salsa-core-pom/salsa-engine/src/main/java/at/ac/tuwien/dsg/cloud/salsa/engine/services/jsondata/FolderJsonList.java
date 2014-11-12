@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterLogger;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 
 
 /**
@@ -39,13 +39,13 @@ public class FolderJsonList {
 		try {
 		for (File file : fl) {			
 			Date modifiedTime = new Date(file.lastModified());
-			CenterLogger.logger.debug("File modified time: "+file.lastModified());	
+			EngineLogger.logger.debug("File modified time: "+file.lastModified());	
 			SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd yyyy 'at' HH:mm");
 			FileInfo info = new FileInfo(file.getName(), sdf.format(modifiedTime));
 			services.add(info);
 		}
 		} catch (Exception e) {
-			CenterLogger.logger.error(e.toString());
+			EngineLogger.logger.error(e.toString());
 		}
 		
 	}

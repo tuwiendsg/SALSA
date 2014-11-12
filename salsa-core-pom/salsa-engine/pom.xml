@@ -4,7 +4,7 @@
 
 	<groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
 	<artifactId>salsa-engine</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<packaging>war</packaging>
 
 	<name>salsa-engine</name>
@@ -118,6 +118,7 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 				</configuration>
+				<version>3.2</version>
 			</plugin>
 
 			<plugin>
@@ -128,7 +129,26 @@
 					<server>TomcatServerDSG</server>
 					<path>/salsa-engine</path>
 				</configuration>
+				<version>1.1</version>
 			</plugin>
+			            
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <id>tomcat-create-exec-war</id>
+                        <goals>
+                            <goal>exec-war</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <path>/${project.build.finalName}</path>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
 		</plugins>
 	</build>

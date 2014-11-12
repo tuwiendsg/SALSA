@@ -3,7 +3,7 @@
 DOCKER_NODE_ID=$1
 DOCKER_INSTANCE_ID=$2
 
-DOCKER_PIONEER_WEB=http://128.130.172.215/salsa/upload/files/pioneer/salsa-pioneer-vm-0.0.1-SNAPSHOT-executable.jar
+DOCKER_PIONEER_WEB=http://128.130.172.215/salsa/upload/files/pioneer/salsa-pioneer.jar
 
 . /etc/salsa.variables
 

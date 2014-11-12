@@ -29,7 +29,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.FolderJsonList;
-import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterLogger;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 
 import com.google.gson.Gson;
@@ -106,9 +106,9 @@ public class AppRepository {
 				out.flush();
 				out.close();
 			} catch (IOException e) {			
-				CenterLogger.logger.error("Error writing to file: "
+				EngineLogger.logger.error("Error writing to file: "
 						+ uploadedFileLocation);
-				CenterLogger.logger.error(e.toString());
+				EngineLogger.logger.error(e.toString());
 			}		
 		}
 		
