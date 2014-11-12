@@ -30,13 +30,8 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
 		
 		PioneerLogger.logger.debug("Recieve command to deploy node: " + nodeID);
 		
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileInputStream(SalsaPioneerConfiguration.getSalsaVariableFile()));
-		} catch (IOException e1){
-			PioneerLogger.logger.error("Error when loading configuration file: " + e1);
-			return "fail";
-		}
+		Properties prop = SalsaPioneerConfiguration.getPioneerProperties();
+		
 		String serviceId = prop.getProperty("SALSA_SERVICE_ID");
 		String topologyId = prop.getProperty("SALSA_TOPOLOGY_ID");
 		String vm_nodeId = prop.getProperty("SALSA_NODE_ID"); // this node
@@ -101,13 +96,8 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
 	public String removeNodeInstance(String nodeID, int instanceId) {
 		PioneerLogger.logger.debug("Recieve command to remove node: " + nodeID + "/" + instanceId);
 		
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileInputStream(SalsaPioneerConfiguration.getSalsaVariableFile()));
-		} catch (IOException e1){
-			PioneerLogger.logger.error("Error when loading configuration file: " + e1);
-			return "fail";
-		}
+		Properties prop = SalsaPioneerConfiguration.getPioneerProperties();
+		
 		String serviceId = prop.getProperty("SALSA_SERVICE_ID");
 		String topologyId = prop.getProperty("SALSA_TOPOLOGY_ID");
 		int thisInstanceId = Integer.parseInt(prop.getProperty("SALSA_REPLICA"));

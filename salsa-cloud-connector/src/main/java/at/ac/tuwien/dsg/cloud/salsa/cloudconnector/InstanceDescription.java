@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.cloud_connector;
+package at.ac.tuwien.dsg.cloud.salsa.cloudconnector;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

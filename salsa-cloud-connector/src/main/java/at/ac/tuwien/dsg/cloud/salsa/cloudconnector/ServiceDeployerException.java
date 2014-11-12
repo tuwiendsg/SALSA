@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.cloud_connector;
+package at.ac.tuwien.dsg.cloud.salsa.cloudconnector;
 
 public class ServiceDeployerException extends Exception {
 	private static final long serialVersionUID = 5244389801522133902L;

@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.flexiant;
+package at.ac.tuwien.dsg.cloud.salsa.cloudconnector.flexiant;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -15,10 +15,10 @@ import javax.xml.ws.BindingProvider;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ServiceDeployerException;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.VMStates;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.CloudInterface;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.InstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.ServiceDeployerException;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.VMStates;
 
 import com.extl.jade.user.ExtilityException;
 import com.extl.jade.user.FilterCondition;

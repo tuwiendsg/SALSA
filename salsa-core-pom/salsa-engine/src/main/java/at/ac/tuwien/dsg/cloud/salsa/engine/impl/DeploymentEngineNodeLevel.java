@@ -7,10 +7,10 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.CloudInterface;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.InstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.MultiCloudConnector;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
@@ -79,8 +79,7 @@ public class DeploymentEngineNodeLevel {
 		EngineLogger.logger.debug("CLOUD PROVIDER = " + instanceDesc.getProvider() +"//" + SalsaCloudProviders.fromString(instanceDesc.getProvider()));
 		
 		// start the VM
-		InstanceDescription indes = mcc.launchInstance(
-				nodeId +"_"+instanceId,
+		InstanceDescription indes = mcc.launchInstance(nodeId +"_"+instanceId,
 				SalsaCloudProviders.fromString(instanceDesc.getProvider()),
 				instanceDesc.getBaseImage(),
 				"",	// this is the sshKeyGen, but not need anymore. When create mcc, we pass the configFile
@@ -147,7 +146,7 @@ public class DeploymentEngineNodeLevel {
 		userDataBuffer.append("apt-get -q update \n");
 		userDataBuffer.append("apt-get -q -y install openjdk-7-jre-headless \n");
 
-		// working dir should be specific for nodes
+		// working dir should be specific for nodes. 		
 		String specificWorkingDir = SalsaConfiguration.getWorkingDir()+"/" + serviceId +"." + nodeId + "." + replica;
 		String specificVariableFile = specificWorkingDir + "/" + SalsaConfiguration.getSalsaVariableFile();
 		userDataBuffer.append("mkdir -p " + specificWorkingDir	+ " \n");
@@ -159,7 +158,7 @@ public class DeploymentEngineNodeLevel {
 		userDataBuffer.append("echo 'SALSA_TOPOLOGY_ID=" + topologyId + "' >> "	+ specificVariableFile + " \n");
 		userDataBuffer.append("echo 'SALSA_REPLICA=" + replica + "' >> " + specificVariableFile + " \n");
 		userDataBuffer.append("echo 'SALSA_NODE_ID=" + nodeId + "' >> "	+ specificVariableFile + " \n");
-		userDataBuffer.append("echo 'SALSA_TOSCA_FILE=" + specificWorkingDir + "/" + serviceId + "' >> " + specificVariableFile + " \n");
+		userDataBuffer.append("echo 'SALSA_TOSCA_FILE=" + specificWorkingDir + "/" + serviceId + "' >> " + specificVariableFile + " \n");		
 		userDataBuffer.append("echo 'SALSA_WORKING_DIR=" + specificWorkingDir + "' >> "	+ specificVariableFile + " \n");
 		userDataBuffer.append("echo 'SALSA_PIONEER_RUN=" + SalsaConfiguration.getPioneerRun() + "' >> "	+ specificVariableFile + " \n");
 		
@@ -170,7 +169,7 @@ public class DeploymentEngineNodeLevel {
 		// download pioneer
 		List<String> fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		for (String file : fileLst) {
-			userDataBuffer.append("wget -q " + SalsaConfiguration.getPioneerWeb() + "/" + file + " \n");
+			userDataBuffer.append("wget -q --content-disposition " + SalsaConfiguration.getPioneerWeb() + "/" + file + " \n");
 //			userDataBuffer.append("chmod +x "+file +" \n");
 //			userDataBuffer.append("cp " + file + " /usr/local/bin \n");
 		}
@@ -202,8 +201,9 @@ public class DeploymentEngineNodeLevel {
 		fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		userDataBuffer.append("echo Current dir `pwd` \n");
 		userDataBuffer.append("java -jar " + fileLst.get(0) + " setnodestate "+node.getId()+" ready \n");
+		userDataBuffer.append("java -jar " + fileLst.get(0) + " startserver \n");
 //		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " deploy \n");	// execute deploy script
-		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " startserver \n");	
+//		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " startserver \n");	
 
 		return userDataBuffer.toString();
 	}

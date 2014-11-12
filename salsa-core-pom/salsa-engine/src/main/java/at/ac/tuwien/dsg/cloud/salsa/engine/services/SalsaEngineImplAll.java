@@ -725,7 +725,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			ServiceUnit compo = topo.getComponentById(nodeId);
 			EngineLogger.logger.debug("addInstanceUnitMetaData. Compo.id" + compo.getId());
 			ServiceInstance replicaData = data;//.getValue();
-			EngineLogger.logger.debug("addInstanceUnitMetaData. Instance id: " + replicaData.getId());
+			EngineLogger.logger.debug("addInstanceUnitMetaData. Instance id: " + replicaData.getInstanceId());
 			int id = replicaData.getInstanceId();
 			ServiceInstance existedInstance = compo.getInstanceById(id);
 			if (existedInstance==null){
@@ -1120,12 +1120,15 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	}
 	
 	@Override
-	public Response getPioneerArtifact(){
+	public Response getPioneerArtifact(String fileName){
 		logger.debug("Getting pioneer artifact and return: " + SalsaConfiguration.getPioneerLocalFile());
 		File file = new File(SalsaConfiguration.getPioneerLocalFile());
+		if (fileName==null || fileName.equals("")){
+			fileName=file.getName();
+		}
 		if (file.exists()){
 		return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
-				      .header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"" )
+				      .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"" )
 				      .build();
 		}
 		logger.debug("Not found the pioneer artifact !");

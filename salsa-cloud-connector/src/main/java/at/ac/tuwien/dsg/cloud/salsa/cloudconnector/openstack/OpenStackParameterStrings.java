@@ -1,6 +1,6 @@
-package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud;
+package at.ac.tuwien.dsg.cloud.salsa.cloudconnector.openstack;
 
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ParameterStringsEnumInterface;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.ParameterStringsEnumInterface;
 
 
 public enum OpenStackParameterStrings implements ParameterStringsEnumInterface {

@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.stratuslab;
+package at.ac.tuwien.dsg.cloud.salsa.cloudconnector.stratuslab;
 
 import java.io.BufferedReader;
 import java.io.IOException;

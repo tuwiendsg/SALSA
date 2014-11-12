@@ -12,14 +12,14 @@ import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceType;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.VMStates;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.flexiant.FlexiantConnector;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud.OpenStackJcloud;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.stratuslab.StratusLabConnector;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.InstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.InstanceType;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.VMStates;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.flexiant.FlexiantConnector;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.MultiCloudConnector;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.SalsaCloudProviders;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.openstack.OpenStackJcloud;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.stratuslab.StratusLabConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
