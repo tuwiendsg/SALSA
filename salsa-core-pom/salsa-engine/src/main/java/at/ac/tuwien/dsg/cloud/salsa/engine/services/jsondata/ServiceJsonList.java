@@ -28,7 +28,7 @@ import javax.xml.bind.JAXBException;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
-import at.ac.tuwien.dsg.cloud.salsa.engine.utils.CenterLogger;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 
 public class ServiceJsonList {
@@ -64,8 +64,7 @@ public class ServiceJsonList {
 					serviceName = service.getName();
 				}
 			} catch (IOException e) {
-				CenterLogger.logger.error("Could not load service data: "
-						+ fileName);
+				EngineLogger.logger.error("Could not load service data: " + fileName);
 			} catch (JAXBException e1) {
 				e1.printStackTrace();
 			}
@@ -74,7 +73,7 @@ public class ServiceJsonList {
 			services.add(info);
 		}
 		} catch (Exception e) {
-			CenterLogger.logger.error(e.toString());
+			EngineLogger.logger.error(e.toString());
 		}
 		
 	}

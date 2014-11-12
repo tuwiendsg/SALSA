@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -1118,10 +1119,20 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		return Response.status(201).entity("ok").build();
 	}
 	
-	
-	
+	@Override
+	public Response getPioneerArtifact(){
+		logger.debug("Getting pioneer artifact and return: " + SalsaConfiguration.getPioneerLocalFile());
+		File file = new File(SalsaConfiguration.getPioneerLocalFile());
+		if (file.exists()){
+		return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
+				      .header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"" )
+				      .build();
+		}
+		logger.debug("Not found the pioneer artifact !");
+		return Response.status(404).entity("Do not found pioneer artifact: " + file.getAbsolutePath()).build();
+	}
 		
-	private void updateComponentStateBasedOnInstance(SalsaEntity nodeData){		
+	private void updateComponentStateBasedOnInstance(SalsaEntity nodeData){
 		Map<SalsaEntityState, Integer> rankState = new HashMap<>();
 		rankState.put(SalsaEntityState.UNDEPLOYED, 0);
 		rankState.put(SalsaEntityState.ERROR, 1);

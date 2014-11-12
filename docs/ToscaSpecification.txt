@@ -11,9 +11,11 @@ These templates can be defined by other Tosca-Elements such as Node-Types, Relat
 As the property for NodeTemplate is Any, Salsa use some custom Properties for the description
 2.1. SALSA NoteTemplate type: In the NodeTemplate, put an attribute as type="salsa:typeName". Currently, following type can be parsed:
  - salsa:software => for the executable and any artifacts
+ - salsa:war			=> describe a web application
  - salsa:docker		=> default docker node
  - salsa:tomcat 	=> default tomcat node
- - salsa:os 			=> default VM with linux
+ - salsa:os 			=> default VM with Ubuntu
+ - salsa:
 
 2.2. SALSA Artifact node type: In the ArtifactTemplate, put an attribute as type="salsa:typeName". Currently SALSA support:
  - salsa:sh				=> bash script, using bash to execute the deployment script

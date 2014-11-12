@@ -39,9 +39,8 @@ public class MutualFileAccessControl {
 			out.flush();
 			out.close();
 		} catch (IOException e) {			
-			CenterLogger.logger.error("Error writing to file: "
-					+ uploadedFileLocation);
-			CenterLogger.logger.error(e.toString());
+			EngineLogger.logger.error("Error writing to file: "	+ uploadedFileLocation);
+			EngineLogger.logger.error(e.toString());
 		}		
 	}
 }

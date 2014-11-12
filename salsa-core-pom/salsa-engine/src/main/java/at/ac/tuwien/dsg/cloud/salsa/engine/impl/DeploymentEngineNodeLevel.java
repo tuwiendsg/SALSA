@@ -147,46 +147,36 @@ public class DeploymentEngineNodeLevel {
 		userDataBuffer.append("apt-get -q update \n");
 		userDataBuffer.append("apt-get -q -y install openjdk-7-jre-headless \n");
 
-		// download full Tosca file
-		userDataBuffer.append("mkdir " + SalsaConfiguration.getWorkingDir()	+ " \n");
-		userDataBuffer.append("cd " + SalsaConfiguration.getWorkingDir() + " \n");
+		// working dir should be specific for nodes
+		String specificWorkingDir = SalsaConfiguration.getWorkingDir()+"/" + serviceId +"." + nodeId + "." + replica;
+		String specificVariableFile = specificWorkingDir + "/" + SalsaConfiguration.getSalsaVariableFile();
+		userDataBuffer.append("mkdir -p " + specificWorkingDir	+ " \n");
+		userDataBuffer.append("cd " + specificWorkingDir + " \n");
 
 		// set some variable put in variable.properties
-		userDataBuffer
-				.append("echo '# Salsa properties file. Generated at deployment time.' > "
-						+ SalsaConfiguration.getSalsaVariableFile() + " \n");
-		userDataBuffer.append("echo 'SALSA_SERVICE_ID=" + serviceId + "' >> "
-				+ SalsaConfiguration.getSalsaVariableFile() + " \n");
-		userDataBuffer.append("echo 'SALSA_TOPOLOGY_ID=" + topologyId + "' >> "
-				+ SalsaConfiguration.getSalsaVariableFile() + " \n");
-		userDataBuffer.append("echo 'SALSA_REPLICA=" + replica + "' >> "
-				+ SalsaConfiguration.getSalsaVariableFile() + " \n");
-		userDataBuffer.append("echo 'SALSA_NODE_ID=" + nodeId + "' >> "
-				+ SalsaConfiguration.getSalsaVariableFile() + " \n");
-		userDataBuffer.append("echo 'SALSA_TOSCA_FILE="
-				+ SalsaConfiguration.getWorkingDir() + "/" + serviceId + "' >> "
-				+ SalsaConfiguration.getSalsaVariableFile() + " \n");
-		userDataBuffer.append("echo 'SALSA_WORKING_DIR=" + SalsaConfiguration.getWorkingDir() + "' >> "
-				+ SalsaConfiguration.getSalsaVariableFile() + " \n");
-		userDataBuffer.append("echo 'SALSA_PIONEER_RUN=" + SalsaConfiguration.getPioneerRun() + "' >> "
-				+ SalsaConfiguration.getSalsaVariableFile() + " \n");
+		userDataBuffer.append("echo '# Salsa properties file. Generated at deployment time.' > " + specificVariableFile + " \n");
+		userDataBuffer.append("echo 'SALSA_SERVICE_ID=" + serviceId + "' >> " + specificVariableFile + " \n");
+		userDataBuffer.append("echo 'SALSA_TOPOLOGY_ID=" + topologyId + "' >> "	+ specificVariableFile + " \n");
+		userDataBuffer.append("echo 'SALSA_REPLICA=" + replica + "' >> " + specificVariableFile + " \n");
+		userDataBuffer.append("echo 'SALSA_NODE_ID=" + nodeId + "' >> "	+ specificVariableFile + " \n");
+		userDataBuffer.append("echo 'SALSA_TOSCA_FILE=" + specificWorkingDir + "/" + serviceId + "' >> " + specificVariableFile + " \n");
+		userDataBuffer.append("echo 'SALSA_WORKING_DIR=" + specificWorkingDir + "' >> "	+ specificVariableFile + " \n");
+		userDataBuffer.append("echo 'SALSA_PIONEER_RUN=" + SalsaConfiguration.getPioneerRun() + "' >> "	+ specificVariableFile + " \n");
 		
 		SalsaCloudProviders provider = SalsaCloudProviders.fromString(instanceDesc.getProvider());
 		
-		userDataBuffer.append("echo 'SALSA_CENTER_ENDPOINT=" + SalsaConfiguration.getSalsaCenterEndpointForCloudProvider(provider) + "' >> "
-				+ SalsaConfiguration.getSalsaVariableFile() + " \n");
+		userDataBuffer.append("echo 'SALSA_CENTER_ENDPOINT=" + SalsaConfiguration.getSalsaCenterEndpointForCloudProvider(provider) + "' >> " + specificVariableFile + " \n");
 
 		// download pioneer
 		List<String> fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		for (String file : fileLst) {
-			userDataBuffer.append("wget -q "			
-					+ SalsaConfiguration.getPioneerWeb() + "/" + file + " \n");
-			userDataBuffer.append("chmod +x "+file +" \n");
-			userDataBuffer.append("cp " + file + " /usr/local/bin \n");
+			userDataBuffer.append("wget -q " + SalsaConfiguration.getPioneerWeb() + "/" + file + " \n");
+//			userDataBuffer.append("chmod +x "+file +" \n");
+//			userDataBuffer.append("cp " + file + " /usr/local/bin \n");
 		}
 		
-		userDataBuffer.append("export PATH=$PATH:"+SalsaConfiguration.getWorkingDir() +" \n");
-		userDataBuffer.append("echo 'export PATH=$PATH:"+SalsaConfiguration.getWorkingDir() +"' >> /etc/profile \n");
+//		userDataBuffer.append("export PATH=$PATH:"+specificWorkingDir +" \n");
+//		userDataBuffer.append("echo 'export PATH=$PATH:"+specificWorkingDir +"' >> /etc/profile \n");
 		
 		// install all package dependencies and ganglia
 		TNodeTemplate node = ToscaStructureQuery.getNodetemplateById(nodeId, def);
@@ -206,14 +196,14 @@ public class DeploymentEngineNodeLevel {
 			}
 		}
 		// install ganglia client for monitoring this VM
-		userDataBuffer.append("apt-get -y install ganglia-monitor gmetad \n");
+		// userDataBuffer.append("apt-get -y install ganglia-monitor gmetad \n");
+		
 		// execute Pioneer
 		fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		userDataBuffer.append("echo Current dir `pwd` \n");
 		userDataBuffer.append("java -jar " + fileLst.get(0) + " setnodestate "+node.getId()+" ready \n");
 //		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " deploy \n");	// execute deploy script
 		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " startserver \n");	
-
 
 		return userDataBuffer.toString();
 	}

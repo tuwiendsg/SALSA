@@ -12,23 +12,34 @@ import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProvid
 public class SalsaConfiguration {
 	private static Properties configuration;
 	static Logger logger;
-	static String CONFIG_FILE="/etc/salsa.engine.properties";
+	static String CONFIG_FILE_2="/etc/salsa.engine.properties";
+	static String CURRENT_DIR;
+	static String CONFIG_FILE_1="unknown";
 	
 	static {
+		logger = Logger.getLogger("deploymentLogger");
 		configuration = new Properties();
-		try {			
-			File f = new File(CONFIG_FILE);
-			if (f.exists()) {
-				configuration.load(new FileReader(f));
+		if (ClassLoader.getSystemClassLoader().getResource(".") != null){
+			CURRENT_DIR = ClassLoader.getSystemClassLoader().getResource(".").getPath();
+			CONFIG_FILE_1= CURRENT_DIR + "/salsa.engine.properties";
+		}
+		
+		try {
+			File f1 = new File(CONFIG_FILE_1);	
+			File f2 = new File(CONFIG_FILE_2);
+			if (f1.exists()) {
+				logger.info("Load configuration file: " + CONFIG_FILE_1);
+				configuration.load(new FileReader(f1));
+			} else if (f2.exists()) {
+				logger.info("Load configuration file: " + CONFIG_FILE_2);
+				configuration.load(new FileReader(f2));
 			} else {
+				logger.info("Load default configuration file");
 				InputStream is = SalsaConfiguration.class.getClassLoader().getResourceAsStream("salsa.engine.properties");
 				configuration.load(is);
-			}			
-			logger = Logger.getLogger("deploymentLogger");
-			
+			}
 			(new File(getWorkingDir())).mkdirs();
-			(new File(getServiceStorageDir())).mkdirs();
-			
+			(new File(getServiceStorageDir())).mkdirs();			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -54,11 +65,16 @@ public class SalsaConfiguration {
 		return configuration.getProperty("PIONEER_WEB");
 	}
 	
+	public static String getPioneerLocalFile(){
+		return CURRENT_DIR + "/" + getPioneerRun();
+	}	
 	
+	// working dir of the pioneer
 	public static String getWorkingDir(){
 		return configuration.getProperty("WORKING_DIR");
 	}
 	
+	// variable file should sit beside the pioneer artifact
 	public static String getSalsaVariableFile(){
 		return configuration.getProperty("VARIABLE_FILE");
 	}
@@ -73,9 +89,6 @@ public class SalsaConfiguration {
 		} else {
 			return configuration.getProperty("SALSA_CENTER_ENDPOINT");
 		}
-//		String configKey = "SALSA_CENTER_ENDPOINT_@_"+provider.getCloudProviderString();
-//		System.out.println(configKey);
-//		return configuration.getProperty(configKey);
 	}
 	
 	public static String getServiceStorageDir(){
@@ -89,5 +102,7 @@ public class SalsaConfiguration {
 	public static String getToscaTemplateStorage(){
 		return configuration.getProperty("TOSCA_TEMPLATE_STORAGE");
 	}
+	
+	
 
 }

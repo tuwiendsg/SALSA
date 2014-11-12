@@ -373,5 +373,10 @@ public interface SalsaEngineServiceIntenal {
 	@POST
 	@Path("/log")
 	public Response logMessage(String data);
+	
+	@GET
+	@Path("/salsa-engine/pioneer/artifact")
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	public Response getPioneerArtifact();
 
 }

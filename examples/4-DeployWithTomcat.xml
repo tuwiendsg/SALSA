@@ -27,7 +27,7 @@
 				</tosca:Properties>	
 							
 				<tosca:DeploymentArtifacts>
-					<tosca:DeploymentArtifact artifacttype="salsa:war" name="Deployment script" artifactRef="deployWar"/>
+					<tosca:DeploymentArtifact artifactType="salsa:war" name="Deployment script" artifactRef="deployWar"/>
 				</tosca:DeploymentArtifacts>
 			</tosca:NodeTemplate>
 
