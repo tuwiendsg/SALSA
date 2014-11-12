@@ -1,20 +1,21 @@
-package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds;
+package at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds;
 
 import java.io.File;
 import java.util.Arrays;
 
 import org.slf4j.Logger;
 
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudParameter;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudParametersUser;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.flexiant.FlexiantConnector;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.flexiant.FlexiantParameterStrings;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud.OpenStackJcloud;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud.OpenStackParameterStrings;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.stratuslab.StratusLabConnector;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.stratuslab.StratuslabParameterStrings;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.CloudInterface;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.CloudParameter;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.CloudParametersUser;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.InstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.flexiant.FlexiantConnector;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.flexiant.FlexiantParameterStrings;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.localhost.LocalhostConnector;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.openstack.OpenStackJcloud;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.openstack.OpenStackParameterStrings;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.stratuslab.StratusLabConnector;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.stratuslab.StratuslabParameterStrings;
 
 // support 
 //@Component
@@ -92,6 +93,11 @@ public class MultiCloudConnector {
 				logger.info("Connection to Flexiant. Endpoint: " + endpoint +", uuid: " + customerUUID);
 				
 				cloud = new FlexiantConnector(logger, email, customerUUID, password, endpoint, vdcUUID, defaultProductOfferUUID, clusterUUID, networkUUID, sshKey);
+				break;
+			}
+			case LOCALHOST:
+			{
+				cloud = new LocalhostConnector(logger);
 				break;
 			}
 			default:

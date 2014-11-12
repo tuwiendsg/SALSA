@@ -1,6 +1,6 @@
-package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.stratuslab;
+package at.ac.tuwien.dsg.cloud.salsa.cloudconnector.stratuslab;
 
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ParameterStringsEnumInterface;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.ParameterStringsEnumInterface;
 
 
 public enum StratuslabParameterStrings implements ParameterStringsEnumInterface {

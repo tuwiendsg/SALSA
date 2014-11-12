@@ -199,8 +199,8 @@ public class SalsaInstanceDescription_VM {
 					this.packagesDependencies = new PackagesDependencies();
 					this.packagesDependencies.setPackageDependency(packagelist);
 				}
-			}
-		}		
+			}			
+		}
 	}
 	
 	public Map<String,String> exportToMap(){

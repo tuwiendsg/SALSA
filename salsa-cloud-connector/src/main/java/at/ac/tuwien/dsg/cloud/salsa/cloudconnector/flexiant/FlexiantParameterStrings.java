@@ -1,6 +1,6 @@
-package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.flexiant;
+package at.ac.tuwien.dsg.cloud.salsa.cloudconnector.flexiant;
 
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ParameterStringsEnumInterface;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.ParameterStringsEnumInterface;
 
 
 public enum FlexiantParameterStrings implements ParameterStringsEnumInterface {

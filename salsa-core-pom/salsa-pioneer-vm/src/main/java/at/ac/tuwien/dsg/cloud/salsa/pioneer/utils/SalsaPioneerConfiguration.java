@@ -9,16 +9,18 @@ import org.apache.log4j.Logger;
 public class SalsaPioneerConfiguration {
 	private static Properties configuration;
 	static Logger logger;	
-	private static final String CONFIG_FILE = ClassLoader.getSystemClassLoader().getResource(".").getPath()+"/salsa.variables";	
+	private static final String CURRENT_DIR = System.getProperty("user.dir");
+	private static final String CONFIG_FILE = CURRENT_DIR+"/salsa.variables";	
 	
 	private static String salsaCenterEndpoint;
 
 	static {
 		configuration = new Properties();
 		logger = Logger.getLogger("PioneerLogger");
+		logger.debug("Trying to load the configuration:" + CONFIG_FILE);
 		try {			
 			File f = new File(CONFIG_FILE);
-			if (f.exists()){
+			if (!f.exists()){
 				logger.error("Configuration file not found: " + CONFIG_FILE);				
 			} else {
 				configuration.load(new FileReader(f));
@@ -28,19 +30,17 @@ public class SalsaPioneerConfiguration {
 			ex.printStackTrace();
 		}
 	}
-
-
-	public static String getSSHKeyForCenter() {
-		return SalsaPioneerConfiguration.class.getResource(
-				configuration.getProperty("SALSA_PRIVATE_KEY")).getFile();
+	
+	public static Properties getPioneerProperties(){
+		return configuration;
 	}
 
 	public static String getWorkingDir() {
-		return configuration.getProperty("WORKING_DIR");
+		return configuration.getProperty("SALSA_WORKING_DIR");
 	}
 
 	public static String getSalsaVariableFile() {		
-		return configuration.getProperty("VARIABLE_FILE");
+		return CONFIG_FILE;
 	}
 
 	public static String getSalsaCenterEndpoint() {

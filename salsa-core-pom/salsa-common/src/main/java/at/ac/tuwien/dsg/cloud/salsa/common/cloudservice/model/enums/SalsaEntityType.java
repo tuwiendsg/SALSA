@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "SalsaEntityTypeEnum")
 @XmlEnum
 public enum SalsaEntityType {
-	OPERATING_SYSTEM("os"),
+	OPERATING_SYSTEM("os"),	
 	DOCKER("docker"),
 	SOFTWARE("software"),
 	SERVICE("service"),

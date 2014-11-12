@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.stratuslab;
+package at.ac.tuwien.dsg.cloud.salsa.cloudconnector.stratuslab;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,10 +14,10 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ServiceDeployerException;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.VMStates;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.CloudInterface;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.InstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.ServiceDeployerException;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.VMStates;
 
 public class StratusLabConnector implements CloudInterface{
 	

@@ -3,11 +3,12 @@ package at.ac.tuwien.dsg.cloud.salsa.engine.utils;
 import java.io.File;
 import java.io.FileReader;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.SalsaCloudProviders;
 
 public class SalsaConfiguration {
 	private static Properties configuration;
@@ -18,15 +19,20 @@ public class SalsaConfiguration {
 	
 	static {
 		logger = Logger.getLogger("deploymentLogger");
+		
 		configuration = new Properties();
 		if (ClassLoader.getSystemClassLoader().getResource(".") != null){
-			CURRENT_DIR = ClassLoader.getSystemClassLoader().getResource(".").getPath();
+			//CURRENT_DIR = ClassLoader.getSystemClassLoader().getResource(".").getPath();
+			CURRENT_DIR = System.getProperty("user.dir");
 			CONFIG_FILE_1= CURRENT_DIR + "/salsa.engine.properties";
 		}
+		CURRENT_DIR = System.getProperty("user.dir");
+		CONFIG_FILE_1= CURRENT_DIR + "/salsa.engine.properties";
 		
 		try {
-			File f1 = new File(CONFIG_FILE_1);	
+			File f1 = new File(CONFIG_FILE_1);
 			File f2 = new File(CONFIG_FILE_2);
+			logger.info("Trying to load configuration from: " + CONFIG_FILE_1 +" and " + CONFIG_FILE_2);
 			if (f1.exists()) {
 				logger.info("Load configuration file: " + CONFIG_FILE_1);
 				configuration.load(new FileReader(f1));
@@ -39,8 +45,9 @@ public class SalsaConfiguration {
 				configuration.load(is);
 			}
 			(new File(getWorkingDir())).mkdirs();
-			(new File(getServiceStorageDir())).mkdirs();			
+			(new File(getServiceStorageDir())).mkdirs();
 		} catch (Exception ex) {
+			logger.error("Error occured when configuring salsa engine: " + ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
@@ -67,7 +74,7 @@ public class SalsaConfiguration {
 	
 	public static String getPioneerLocalFile(){
 		return CURRENT_DIR + "/" + getPioneerRun();
-	}	
+	}
 	
 	// working dir of the pioneer
 	public static String getWorkingDir(){

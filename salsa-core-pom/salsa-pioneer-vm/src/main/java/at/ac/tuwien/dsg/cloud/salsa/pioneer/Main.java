@@ -73,8 +73,8 @@ public class Main {
 		System.out.println("Starting pioneer ...");
 		PioneerLogger.logger.info("Starting pioneer");
 		
-		Properties prop = new Properties();
-		prop.load(new FileInputStream(SalsaPioneerConfiguration.getSalsaVariableFile()));		
+		Properties prop = SalsaPioneerConfiguration.getPioneerProperties();
+		
 		serviceId = prop.getProperty("SALSA_SERVICE_ID");
 		topologyId = prop.getProperty("SALSA_TOPOLOGY_ID");
 		nodeId = prop.getProperty("SALSA_NODE_ID"); // this node

@@ -16,8 +16,8 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.MultiCloudConnector;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.multiclouds.SalsaCloudProviders;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.MultiCloudConnector;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.PrimitiveOperation;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;

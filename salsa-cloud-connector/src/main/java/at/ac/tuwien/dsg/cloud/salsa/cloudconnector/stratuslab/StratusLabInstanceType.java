@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.stratuslab;
+package at.ac.tuwien.dsg.cloud.salsa.cloudconnector.stratuslab;
 
 public enum StratusLabInstanceType {
         DEFAULT ("m1.small"),

@@ -1,4 +1,4 @@
-package at.ac.tuwien.dsg.cloud.salsa.cloud_connector.openstack.jcloud;
+package at.ac.tuwien.dsg.cloud.salsa.cloudconnector.openstack;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,10 +23,10 @@ import org.jclouds.openstack.nova.v2_0.options.CreateServerOptions;
 import org.jclouds.openstack.v2_0.domain.Resource;
 import org.slf4j.Logger;
 
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.CloudInterface;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.ServiceDeployerException;
-import at.ac.tuwien.dsg.cloud.salsa.cloud_connector.VMStates;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.CloudInterface;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.InstanceDescription;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.ServiceDeployerException;
+import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.VMStates;
 
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Multimap;

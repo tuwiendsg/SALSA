@@ -109,8 +109,7 @@ public class ChefInstrument implements InstrumentInterface {
 			sb.append("chef_server_url  \"https://api.opscode.com/organizations/tuwien\" \n");
 			sb.append("validation_client_name \"tuwien-validator\" \n");
 			
-			Properties prop = new Properties();
-			prop.load(new FileInputStream(SalsaPioneerConfiguration.getSalsaVariableFile()));		
+			Properties prop = SalsaPioneerConfiguration.getPioneerProperties();
 			String VMID = prop.getProperty("SALSA_REPLICA");	// get the VM ID
 			
 			//FIXME: If we run multiple instances this will cause error.
