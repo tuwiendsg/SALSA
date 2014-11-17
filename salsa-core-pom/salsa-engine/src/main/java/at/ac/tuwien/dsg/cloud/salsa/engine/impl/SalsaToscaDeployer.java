@@ -187,7 +187,15 @@ public class SalsaToscaDeployer {
 			ServiceUnit refUnit = getReferenceServiceUnit(unit);
 			if (refUnit == null && unit.getMin()>0){		// not a reference and min > 0
 				EngineLogger.logger.debug("Orchestating: Creating top node: " + unit.getId());
-				serviceInternal.spawnInstance(serviceData.getId(), serviceData.getTopologyOfNode(unit.getId()).getId(), unit.getId(), 1);
+				// try to create minimum instance of software
+				for (int i=1; i<= unit.getMin(); i++){
+					serviceInternal.spawnInstance(serviceData.getId(), serviceData.getTopologyOfNode(unit.getId()).getId(), unit.getId(), 1);
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e){
+						EngineLogger.logger.error("Thread interrupted !");
+					}
+				}
 			} 
 		}
 		return serviceData;
@@ -403,10 +411,8 @@ public class SalsaToscaDeployer {
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {
 				}
-				CloudService updateService = centerCon
-						.getUpdateCloudServiceRuntime(service.getId());
-				suitableHostedInstance = updateService.getInstanceById(
-						topologyId, hostedUnit.getId(),
+				CloudService updateService = centerCon.getUpdateCloudServiceRuntime(service.getId());
+				suitableHostedInstance = updateService.getInstanceById(topologyId, hostedUnit.getId(),
 						suitableHostedInstance.getInstanceId());
 			}
 			EngineLogger.logger.debug("Set state to STAGING for node: "
@@ -550,7 +556,7 @@ public class SalsaToscaDeployer {
 				nodeData.setMin(node.getMinInstances());
 				nodeData.setReference(node.getReference());
 				if (node.getMaxInstances().equals("unbounded")) {
-					nodeData.setMax(10); // max for experiments
+					nodeData.setMax(100); // max for experiments
 				} else {
 					nodeData.setMax(Integer.parseInt(node.getMaxInstances()));
 				}

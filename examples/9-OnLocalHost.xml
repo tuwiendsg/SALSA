@@ -22,6 +22,9 @@
            <MappingProperties>
 						<MappingProperty type="os">
 							<property name="provider">localhost</property> 
+							<property name="instanceType">none</property>
+							<property name="baseImage">none</property>
+							<property name="packages">none</property>
 						</MappingProperty>
 					</MappingProperties>
                 </tosca:Properties>

@@ -36,6 +36,7 @@ public class LocalhostConnector implements CloudInterface {
 		String ip = "127.0.0.1";
 		InstanceDescription inst = new InstanceDescription(hostName,ip,ip);
 		inst.setState(VMStates.Running);
+		
 		logger.debug("Get information for localhost: DONE");
 		return inst;
 	}
@@ -53,7 +54,7 @@ public class LocalhostConnector implements CloudInterface {
 			out.flush();
 			out.close();
 			
-			runLocalhostCommand("/bin/bash " + tmp_file);			
+			runLocalhostCommandNoWaitingFor("/bin/bash " + tmp_file);
 			
 			//f.delete();
 		} catch (FileNotFoundException e) {
@@ -88,6 +89,21 @@ public class LocalhostConnector implements CloudInterface {
 			logger.error(e.toString());			
 		}
 		return re;
+	}
+	
+	private void runLocalhostCommandNoWaitingFor(String command){
+		try {			
+			logger.debug("Executing command on localhost without wating !");
+			Runtime.getRuntime().exec(command);
+			try{
+				Thread.sleep(2);
+			} catch (InterruptedException e){
+				logger.error(e.getMessage());
+			}
+		} catch (Exception e) {
+			logger.error(e.toString());			
+		}
+
 	}
 
 }

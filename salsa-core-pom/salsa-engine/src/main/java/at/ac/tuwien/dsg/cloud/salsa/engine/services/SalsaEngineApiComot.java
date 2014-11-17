@@ -26,18 +26,6 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 @Path("/comot")
 public class SalsaEngineApiComot implements SalsaEngineApiInterface {
 	static Logger logger;
-	static File configFile;
-
-	static {
-		File tmpFile=new File("/etc/cloudUserParameters.ini");
-		if (tmpFile.exists()) {
-			configFile = tmpFile;
-		} else {
-			configFile = new File(SalsaEngineApiComot.class.getResource("/cloudUserParameters.ini").getFile());
-		}
-		logger = Logger.getLogger("EngineLogger");
-	}
-	
 	SalsaEngineServiceIntenal engine = new SalsaEngineImplAll();
 	
 	@Override

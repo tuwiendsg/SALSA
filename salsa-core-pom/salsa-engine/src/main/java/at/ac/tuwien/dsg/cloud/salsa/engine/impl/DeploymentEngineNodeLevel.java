@@ -7,6 +7,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.crypto.dsig.keyinfo.PGPData;
+
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.InstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.MultiCloudConnector;
@@ -148,7 +150,9 @@ public class DeploymentEngineNodeLevel {
 
 		// working dir should be specific for nodes. 		
 		String specificWorkingDir = SalsaConfiguration.getWorkingDir()+"/" + serviceId +"." + nodeId + "." + replica;
+		EngineLogger.logger.debug("Preparing user data. Working dir for pioneer for: " + serviceId + "/" + nodeId +"/" + replica +": " + specificWorkingDir);		
 		String specificVariableFile = specificWorkingDir + "/" + SalsaConfiguration.getSalsaVariableFile();
+		EngineLogger.logger.debug("Preparing user data. Variable file for pioneer for: " + serviceId + "/" + nodeId +"/" + replica +": " + specificVariableFile);
 		userDataBuffer.append("mkdir -p " + specificWorkingDir	+ " \n");
 		userDataBuffer.append("cd " + specificWorkingDir + " \n");
 
