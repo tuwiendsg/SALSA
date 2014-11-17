@@ -615,13 +615,14 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			ServiceInstance hostedInstance = hostedUnit.getInstanceById(instance.getHostedId_Integer());
 			logger.debug("Searching IP of instance 3");
 			while (!hostedUnit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
-				logger.debug("Searching IP of instance 4");
+				logger.debug("Searching IP of instance 4");								
 				hostedUnit = service.getComponentById(hostedUnit.getHostedId());
-				hostedInstance = hostedUnit.getInstanceById(hostedInstance.getHostedId_Integer());
+				hostedInstance = hostedUnit.getInstanceById(hostedInstance.getHostedId_Integer());				
 			}
 			logger.debug("Searching IP of instance 5");
 			SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) hostedInstance.getProperties().getAny();
 			logger.debug("Searching IP of instance 6. VMID=" + vm.getInstanceId());
+			logger.debug("Searching IP of instance 6. IP=" + vm.getPrivateIp());
 			return vm.getPrivateIp();
 		} catch (IOException e){
 			logger.debug(e.getMessage());

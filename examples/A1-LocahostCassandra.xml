@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:Definitions id="newApp" xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12">
+        
+    <ns2:ServiceTemplate id="DataEndTopology">
+        <ns2:BoundaryDefinitions/>
+        <ns2:TopologyTemplate>
+            <ns2:RelationshipTemplate id="dataControllerToDocker" type="HOSTON">
+                <ns2:SourceElement ref="DataControllerUnit"/>
+                <ns2:TargetElement ref="ControllerDocker"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="ControllerDockerToVM" type="HOSTON">
+                <ns2:SourceElement ref="ControllerDocker"/>
+                <ns2:TargetElement ref="LocalHostMachine"/>
+            </ns2:RelationshipTemplate>
+            
+            <ns2:RelationshipTemplate id="dataNodeToDocker" type="HOSTON">
+                <ns2:SourceElement ref="DataNodeUnit"/>
+                <ns2:TargetElement ref="DatanodeDocker"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="dataNodeDockerToVM" type="HOSTON">
+                <ns2:SourceElement ref="DatanodeDocker"/>
+                <ns2:TargetElement ref="LocalHostMachine"/>
+            </ns2:RelationshipTemplate>
+            
+            
+            <ns2:RelationshipTemplate id="dataNodeToDataController" type="CONNECTTO">
+                <ns2:SourceElement ref="DataNodeUnit"/>
+            		<ns2:TargetElement ref="DataControllerUnit"/>
+             </ns2:RelationshipTemplate>
+            
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="DataControllerUnit" type="software">
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="sh" artifactRef="deployDataControllerArtifact" />
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            
+            <ns2:NodeTemplate id="ControllerDocker"	name="ControllerDocker" type="docker" minInstances="1" maxInstances="1" />
+            
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="DataNodeUnit" type="software">
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact artifactType="sh" artifactRef="deployDataNodeArtifact" />
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            
+            <ns2:NodeTemplate id="DatanodeDocker"	name="DatanodeDocker" type="docker" minInstances="1" maxInstances="5" />
+
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="LocalHostMachine" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                          	<property name="provider">localhost</property> 
+														<property name="instanceType">none</property>
+														<property name="baseImage">none</property>
+														<property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>                
+            </ns2:NodeTemplate>
+            
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    
+    <ns2:ArtifactTemplate id="deployDataControllerArtifact" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/deployCassandraSeed.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="deployDataNodeArtifact" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/DaasService/deployCassandraNode.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+</ns2:Definitions>

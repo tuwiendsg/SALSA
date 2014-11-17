@@ -4,22 +4,19 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Properties;
+import java.util.UUID;
 
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 
 public class DockerConfigurator {	
-	//static int dockerCounter = 0;
-	static String portPrefix = "498";
-	static String tagPrefix="dockernode/";
-	static String SALSA_DOCKER_IMAGE="salsa";
+	static String portPrefix = "498";	
+	static String SALSA_DOCKER_IMAGE_NAME="leduchung/salsa";
+	static String SALSA_DOCKER_PULL="leduchung/salsa:latest";
 	static boolean inited=false;
 	
-	String dockerNodeId="default";
+	String dockerNodeId="default";	
 	
 	public void initDocker(){
 		if (inited) {
@@ -28,23 +25,22 @@ public class DockerConfigurator {
 		}
 		executeCommand("wget -q -N http://128.130.172.215/salsa/upload/files/pioneer/docker_install.sh");
 		executeCommand("/bin/bash docker_install.sh");
-		
-		// create new docker container
-		executeCommand("wget -q -N http://128.130.172.215/salsa/upload/files/pioneer/pioneer_install.sh");
-		// don't know why the ADD command of docker doesn't copy file in /etc, just at current folder, so copy it to
-		executeCommand("cp /etc/salsa.variables ./");
-		
+		executeCommand("sudo docker pull "+ SALSA_DOCKER_IMAGE_NAME);
+		inited=true;
+	}	
+	
+	public DockerConfigurator(String dockerNodeId){
+		this.dockerNodeId = dockerNodeId;
+	}
+	
+	public void installDockerNode(String nodeId, int instanceId){
+		// build new image with correct salsa.variable file
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("FROM ubuntu \n");
-		sb.append("ADD ./pioneer_install.sh ./pioneer_install.sh \n");
-		sb.append("ADD ./salsa.variables /etc/salsa.variables \n");
-		sb.append("RUN apt-get -q update \n");
-		sb.append("RUN apt-get -q -y install openjdk-7-jre wget  \n");
-		//sb.append("CMD /bin/bash pioneer_install.sh " + nodeId +" " + instanceId + " \n");		
-		//sb.append("CMD java -jar salsa-pioneer-vm-0.0.1-SNAPSHOT-executable.jar startserver \n");
+		sb.append("FROM "+ SALSA_DOCKER_PULL +" \n");
+		sb.append("COPY ./salsa.variables /etc/salsa.variables \n");
+		sb.append("RUN wget -q -N http://128.130.172.215/salsa/upload/files/pioneer/pioneer_install.sh \n");
 		sb.append("EXPOSE 9000 \n");
-		
 		String pFilename = "./Dockerfile";
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter(pFilename));		
@@ -54,29 +50,16 @@ public class DockerConfigurator {
 		} catch (IOException e){
 			PioneerLogger.logger.error("Could not create docker file ! Error: " + e);
 			return;
-		} 
-
-		PioneerLogger.logger.debug("Prepare DOCKER image !");
-        //String dockerInstanceId = String.format("%02d", instanceId);
-        // build docker image
-        executeCommand("sudo docker build -t "+ SALSA_DOCKER_IMAGE +" . ");
-		
-		inited=true;
-	}
-	
-	
-	public DockerConfigurator(String dockerNodeId){
-		this.dockerNodeId = dockerNodeId;
-	}
-	
-	public void installDockerNode(String nodeId, int instanceId){		
-		
+		}		
 		String dockerInstanceId = String.format("%02d", instanceId);
-        // install pioneer on docker and send request     
+		String newDockerImage=UUID.randomUUID().toString().substring(0, 5);		
+		executeCommand("sudo docker build -t "+ newDockerImage +" . ");
+		
+        // install pioneer on docker and send request
         String portMap=portPrefix+ dockerInstanceId;
         String cmd = "/bin/bash pioneer_install.sh " + nodeId +" " + instanceId;
-        executeCommand("sudo docker run -p " + portMap + ":9000 " + "-d -t " + SALSA_DOCKER_IMAGE +" " + cmd +" ");
-
+        //executeCommand("sudo docker run -p " + portMap + ":9000 " + "-d -t " + newDockerImage +" " + cmd +" ");
+        executeCommand("sudo docker run -d -t " + newDockerImage +" " + cmd +" ");
 	}
 	
 	
@@ -114,6 +97,80 @@ public class DockerConfigurator {
 			PioneerLogger.logger.error("Error when execute command. Error: " + e2);
 		}
 		return null;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public void initDocker_Depricate(){
+		if (inited) {
+			PioneerLogger.logger.debug("Docker is installed, not do it again !");
+			return;
+		}
+		executeCommand("wget -q -N http://128.130.172.215/salsa/upload/files/pioneer/docker_install.sh");
+		executeCommand("/bin/bash docker_install.sh");
+		
+		// create new docker container
+		executeCommand("wget -q -N http://128.130.172.215/salsa/upload/files/pioneer/pioneer_install.sh");
+		// don't know why the ADD command of docker doesn't copy file in /etc, just at current folder, so copy it to
+		executeCommand("cp "+SalsaPioneerConfiguration.getSalsaVariableFile()+" ./");
+		
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("FROM "+ SALSA_DOCKER_PULL +" \n");
+		sb.append("ADD ./pioneer_install.sh ./pioneer_install.sh \n");
+		sb.append("ADD ./salsa.variables /etc/salsa.variables \n");
+		sb.append("RUN apt-get -q update \n");
+		sb.append("RUN apt-get -q -y install openjdk-7-jre wget  \n");
+		sb.append("EXPOSE 9000 \n");
+		
+		String pFilename = "./Dockerfile";
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter(pFilename));		
+	        out.write(sb.toString());  
+	        out.flush();
+	        out.close();	        
+		} catch (IOException e){
+			PioneerLogger.logger.error("Could not create docker file ! Error: " + e);
+			return;
+		} 
+
+		PioneerLogger.logger.debug("Prepare DOCKER image !");
+        //String dockerInstanceId = String.format("%02d", instanceId);
+        // build docker image
+		// list docker image:
+		String dockerImages = executeCommand("sudo docker images");
+		boolean existing = false;
+		for(String line : dockerImages.split(System.getProperty("line.separator"))){
+			if (line.contains(SALSA_DOCKER_IMAGE_NAME)){
+				PioneerLogger.logger.debug("There is a SALSA docker image on this host, we process faster !");
+				existing = true;
+				break;
+			}
+		}
+		if (!existing) {
+			PioneerLogger.logger.debug("There is no docker image on this host, create a new one !");
+			executeCommand("sudo docker build -t "+ SALSA_DOCKER_IMAGE_NAME +" . ");
+		}
+		
+		inited=true;
 	}
 	
 }
