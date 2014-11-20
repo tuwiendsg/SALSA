@@ -23,10 +23,11 @@ function showServiceInfo(data){
 		str += property + ': <b>' + data[property]+'</b><br/> ';
 
 	}		
-	str += '<button onclick="deregisterService(\''+getURLParameter("id")+'\'); history.go(-1)">Undeploy</button>';
- 	str += '<button onclick="showServiceByGET(\''+getURLParameter("id")+'\')">Show Tosca</button>';
-	str += '<button onclick="history.go(-1)">Go back to the list</button>';
-
+	var currentURL= [location.protocol, '//', location.host, location.pathname].join('');
+	str += '<button onclick="deregisterService(\''+getURLParameter("id")+'\'); history.go(-1)">Undeploy</button> ';
+	str += '<button onclick="redeployService(\''+getURLParameter("id")+'\');">Redeploy</button> ';
+ 	str += '<button onclick="showServiceByGET(\''+getURLParameter("id")+'\')">Show Tosca</button> ';
+	str += '<button onclick="window.location.href=\''+currentURL+'\'">Go back to the list</button> ';	
 	return str;
 }
 
@@ -79,6 +80,27 @@ function deregisterService(serviceId){
 		  	});
 	       toastr.info("Removed service "+ serviceId +" !");
 	    }
+	});
+}
+
+function redeployService(serviceId){
+	$.ajax({
+	    url: 'rest/services/' + serviceId + '/redeploy',
+	    type: 'POST',
+	    async: false,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    
+	    complete: function(result) {
+	       toastr.info("Redeploying service "+ serviceId +" ! ");
+	    },
+	    error: function(xhr, textStatus, errorThrown) {
+	    	toastr.error("Error thrown: " + errorThrown, "Unable to redeploy instance ! Code: " + xhr.status);
+	    }
+	    
+	    
+	    
 	});
 }
 

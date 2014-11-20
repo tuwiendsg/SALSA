@@ -171,20 +171,7 @@ function update(source) {
 	    		}
 	        });
 		
- 		// The tooltips
-		$('svg rect').tipsy({ 
-	        gravity: 'nw', 
-	        html: true, 
-	        title: function() {
-	          var d = this.__data__;
-	          var str = "id : <b>" + d.id + "</b>";
-	          str += "<br/>state : <b>" + d.state +"</b>"; 
-	          for (var prop in d.properties) {
-	             str += "<br/>"+prop + " : <b>" + d.properties[prop] + "</b>";
-	          }	          
-	          return str; 
-	        }
-	      });
+ 		
  		
 //  		// the context menu
 //  		$('svg rect').contextmenu({
@@ -260,6 +247,34 @@ function update(source) {
     		.text(function(d) { 
   	  	 	  	return "state: " + d.state; 
 			});
+		
+		// The tooltips
+		$('svg text').tipsy({ 
+	        gravity: 'nw', 
+	        html: true, 
+	        title: function() {
+	          var d = this.__data__;
+	          var str = "id : <b>" + d.id + "</b>";
+	          str += "<br/>state : <b>" + d.state +"</b>"; 
+	          for (var prop in d.properties) {
+	             str += "<br/>"+prop + " : <b>" + d.properties[prop] + "</b>";
+	          }	          
+	          return str; 
+	        }
+	      });
+		$('svg rect').tipsy({ 
+	        gravity: 'nw', 
+	        html: true, 
+	        title: function() {
+	          var d = this.__data__;
+	          var str = "id : <b>" + d.id + "</b>";
+	          str += "<br/>state : <b>" + d.state +"</b>"; 
+	          for (var prop in d.properties) {
+	             str += "<br/>"+prop + " : <b>" + d.properties[prop] + "</b>";
+	          }	          
+	          return str; 
+	        }
+	      });
 
   // Transition nodes to their new position.
   var nodeUpdate = node.transition()

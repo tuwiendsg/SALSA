@@ -137,10 +137,13 @@ public class ArtifactDeployer {
 				DockerConfigurator docker = new DockerConfigurator(node.getId());
 				centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.CONFIGURING);
 				docker.initDocker();
-				docker.installDockerNode(node.getId(), instanceId);
+				String containerID = docker.installDockerNode(node.getId(), instanceId);
+				SalsaInstanceDescription_VM dockerVM = docker.getDockerInfo(containerID);				
 				centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.RUNNING);
+				logger.debug("Updating docker info. ID = "+dockerVM.getInstanceId()+", IP = " + dockerVM.getInstanceId());
+				centerCon.updateInstanceUnitProperty(serviceId, topologyId, nodeId, instanceId, dockerVM);
 				return Integer.toString(instanceId);
-			}			
+			}
 						
 			// check if it is hosted by a docker, forward the request to that docker
 			logger.debug("[123456] 1 Starting deploy node: "+node.getId() + "/" + instanceId);
