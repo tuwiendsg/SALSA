@@ -51,6 +51,10 @@ public interface SalsaEngineServiceIntenal {
 	@Consumes(MediaType.APPLICATION_XML)	
 	public Response deployServiceFromXML(String uploadedInputStream) throws SalsaEngineException;
 	
+	@POST
+	@Path("/services/{serviceId}/redeploy")
+	public Response redeployService(@PathParam("serviceId") String serviceId) throws SalsaEngineException;
+	
 	/**
 	 * Remove the whole cloud service 
 	 * @param serviceId
@@ -153,6 +157,9 @@ public interface SalsaEngineServiceIntenal {
     @Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}")
 	public Response destroyInstanceOfNodeType(@PathParam("serviceId")String serviceId, 
 			@PathParam("topologyId")String topologyId, @PathParam("nodeId") String nodeId) throws SalsaEngineException;
+	
+	
+	
 	
 	// INTERFACES FOR rSYBL
 	

@@ -36,14 +36,14 @@
             
             <ns2:NodeTemplate id="ControllerDocker"	name="ControllerDocker" type="docker" minInstances="1" maxInstances="1" />
             
-            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="DataNodeUnit" type="software">
+            <ns2:NodeTemplate minInstances="2" maxInstances="1" id="DataNodeUnit" type="software">
                 <ns2:DeploymentArtifacts>
                     <ns2:DeploymentArtifact artifactType="sh" artifactRef="deployDataNodeArtifact" />
                 </ns2:DeploymentArtifacts>
             </ns2:NodeTemplate>
             
             <ns2:NodeTemplate id="DatanodeDocker"	name="DatanodeDocker" type="docker" minInstances="1" maxInstances="5" />
-
+            
             <ns2:NodeTemplate minInstances="1" maxInstances="1" id="LocalHostMachine" type="os">
                 <ns2:Properties>
                     <MappingProperties>

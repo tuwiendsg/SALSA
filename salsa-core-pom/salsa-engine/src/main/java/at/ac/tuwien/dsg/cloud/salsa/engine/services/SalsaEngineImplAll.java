@@ -14,6 +14,7 @@ import generated.oasis.tosca.TRelationshipTemplate.TargetElement;
 import generated.oasis.tosca.TRequirement;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -66,6 +67,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.MutualFileAccessControl;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
@@ -160,6 +162,23 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			logger.error("Error reading file: " + tmpFile + ". Error: " +e);
 			return Response.status(500).entity("Error when process Tosca file. Error: " +e).build();
 		}
+	}
+	
+	public Response redeployService(String serviceId) throws SalsaEngineException{
+		String ogininalToscaFile = SalsaConfiguration.getServiceStorageDir() + "/" + serviceId + ".original";
+		try{
+			String originalTosca = FileUtils.readFileToString(new File(ogininalToscaFile));
+			undeployService(serviceId);
+			Thread.sleep(3000); // sleep 3 secs
+			deployService(serviceId, new ByteArrayInputStream(originalTosca.getBytes("UTF-8")));
+		} catch (IOException e){
+			logger.error("Error when reading data file! Error: " + e);
+			return Response.status(500).entity("Error when reading orgininal tosca file for service: "+serviceId+". Error: " +e).build();
+		} catch (InterruptedException ie){
+			logger.error("Interrup error");
+			return Response.status(500).entity("Error when reading orgininal tosca file for service: "+serviceId+". Error: " +ie).build();
+		}
+		return Response.status(201).entity(serviceId).build();
 	}
 		
 	/* (non-Javadoc)
@@ -487,6 +506,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		return Response.status(200).entity("Undeploy nodes").build();
 	}
 	
+	
+	
 		
 	/*
 	 * INTERNAL SERVICES FOR CLOUD SERVICES
@@ -560,7 +581,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			for (ServiceTopology topo : service.getComponentTopologyList()) {
 				logger.debug("Topo ID: " + topo.getId());
 				List<ServiceUnit> units = topo.getComponentsByType(SalsaEntityType.SOFTWARE);
-				
+				units.addAll(topo.getComponentsByType(SalsaEntityType.WAR));				
 				sybl.setCloudServiceID(serviceId);
 				for (ServiceUnit unit : units) {
 					logger.debug("NodeID: " + unit.getId());
@@ -614,15 +635,19 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			logger.debug("Searching IP of instance 2");
 			ServiceInstance hostedInstance = hostedUnit.getInstanceById(instance.getHostedId_Integer());
 			logger.debug("Searching IP of instance 3");
-			while (!hostedUnit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
-				logger.debug("Searching IP of instance 4");								
+			while (!hostedUnit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString()) && 
+				   !hostedUnit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())){
+				logger.debug("Searching IP of instance 4");					
 				hostedUnit = service.getComponentById(hostedUnit.getHostedId());
 				hostedInstance = hostedUnit.getInstanceById(hostedInstance.getHostedId_Integer());				
 			}
 			logger.debug("Searching IP of instance 5");
+			if (hostedInstance.getProperties()==null){
+				return "";
+			}
 			SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) hostedInstance.getProperties().getAny();
 			logger.debug("Searching IP of instance 6. VMID=" + vm.getInstanceId());
-			logger.debug("Searching IP of instance 6. IP=" + vm.getPrivateIp());
+			logger.debug("Searching IP of instance 6. IP=" + vm.getPrivateIp());	
 			return vm.getPrivateIp();
 		} catch (IOException e){
 			logger.debug(e.getMessage());
@@ -901,10 +926,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			 int instanceId) {		
 		MutualFileAccessControl.lockFile();
 		try {
-			String serviceFile = SalsaConfiguration.getServiceStorageDir()
-					+ File.separator + serviceId + ".data";
-			CloudService service = SalsaXmlDataProcess
-					.readSalsaServiceFile(serviceFile);
+			String serviceFile = SalsaConfiguration.getServiceStorageDir()+ File.separator + serviceId + ".data";
+			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(serviceFile);
 			logger.debug("Setting property. Read service file: " + serviceFile);
 			ServiceInstance rep = service.getInstanceById(nodeId, instanceId);
 						

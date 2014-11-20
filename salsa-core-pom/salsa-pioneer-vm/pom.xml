@@ -80,6 +80,8 @@
 <!-- 			<artifactId>cxf-rt-transports-http-hc</artifactId> -->
 <!-- 			<version>${cxf.version}</version> -->
 <!-- 		</dependency> -->
+
+	
 		
 	</dependencies>
 

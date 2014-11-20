@@ -279,7 +279,7 @@ public class Main {
 //							}
 						}
 					}
-					// check 2 levels up, e.g pioneer is at VM/docker, them tomcat, node is a war
+					// check 2 levels up for war artifact, e.g pioneer is at VM/docker host tomcat, node is a war
 					if (unit.getType().equals(SalsaEntityType.WAR.getEntityTypeString())){
 						// the unit now is the one with WAR type service unit example.war
 						ServiceUnit hostedUnit = service.getComponentById(unit.getHostedId());

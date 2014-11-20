@@ -4,8 +4,9 @@ public enum SalsaCloudProviders {
 
 	DSG_OPENSTACK("dsg@openstack"),	
 	LAL_STRATUSLAB("lal@stratuslab"),
-	CELAR_FLEXIANT("celar@flexiant"),
-	LOCALHOST("localhost");
+	CELAR_FLEXIANT("celar@flexiant"),	
+	LOCALHOST("localhost"),
+	LOCAL_DOCKERHOST("local@dockerhost");
 
 	private String providerId;
 

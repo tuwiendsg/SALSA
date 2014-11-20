@@ -17,6 +17,13 @@ import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.InstanceDescription;
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.ServiceDeployerException;
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.VMStates;
 
+/**
+ * This connector enable deployment on localhost machine
+ * In the future should be extended to further mechanism
+ * 
+ * @author hungld
+ *
+ */
 public class LocalhostConnector implements CloudInterface {
 	Logger logger;
 	
@@ -65,7 +72,8 @@ public class LocalhostConnector implements CloudInterface {
 
 	@Override
 	public void removeInstance(String instanceToTerminateID) throws ServiceDeployerException {
-		// we do not remove the localhost		
+		// we do not remove the localhost but clean all pioneer on it
+		runLocalhostCommandNoWaitingFor("pkill -f salsa-pioneer");
 	}
 	
 	

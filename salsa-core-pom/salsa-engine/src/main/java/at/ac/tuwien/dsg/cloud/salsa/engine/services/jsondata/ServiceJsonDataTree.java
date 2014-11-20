@@ -27,6 +27,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 
 
@@ -141,7 +142,7 @@ public class ServiceJsonDataTree {
 		this.properties.put(key, value);
 	}
 	
-	// convert component and all it stack
+	// convert ServiceUnit and all it stack
 	public void loadData(ServiceUnit data, int hostOnId, ServiceTopology topo){
 		//logger.debug("Starting loading abstract node: " + data.getId());
 		this.id = data.getId();
@@ -190,10 +191,13 @@ public class ServiceJsonDataTree {
 		//logger.debug("Adding instance node id: " + instance.getInstanceId());
 		this.id = abstractNode.getId()+"_"+Integer.toString(instance.getInstanceId());		
 		this.setState(instance.getState());		
-		this.isAbstract = false;
-		this.setState(instance.getState());
+		this.isAbstract = false;		
 		this.setMonitoring(instance.getMonitoring());
-		
+		if(instance.getCapabilities()!=null){
+			for (SalsaCapaReqString capaStr : instance.getCapabilities().getCapability()) {
+					this.addProperty("Capability[" + capaStr.getId() + "]", capaStr.getValue());
+			}
+		}
 		
 		this.setNodeType(abstractNode.getType());
 		//logger.debug("Let check connectto ID ");
@@ -221,7 +225,7 @@ public class ServiceJsonDataTree {
 		SalsaEntityType type = SalsaEntityType.fromString(abstractNode.getType());
 		//logger.debug("The instance node know it parent type is: " + type);
 		// put properties
-		if (type.equals(SalsaEntityType.OPERATING_SYSTEM) && instance.getProperties()!=null){
+		if ((type.equals(SalsaEntityType.OPERATING_SYSTEM) || type.equals(SalsaEntityType.DOCKER)) && instance.getProperties()!=null){
 //			logger.debug("Putting property of OS type");			
 			SalsaInstanceDescription_VM props = (SalsaInstanceDescription_VM)instance.getProperties().getAny();
 			this.setProperties(props.exportToMap());

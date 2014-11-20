@@ -48,8 +48,11 @@
                 	$.getJSON(listSource,  function(json){ 
             	  		$('#list').html(createListTable(json.services)).fadeIn();
             	  	});
+                	//var forwardTo= [location.protocol, '//', location.host, location.pathname,'?id=',serviceName].join('');
+                	//window.location.href=forwardTo;
+                	location.reload();
             		toastr.info("Deployed new service !");
-            		clearTimeout(timeout);
+            		//clearTimeout(timeout);
                 },
       		 	error: function (data) {			     
 		            alert("Error in sending deployment request: " + JSON.stringify(data.msg));			            

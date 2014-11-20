@@ -265,17 +265,12 @@ public class SalsaToscaDeployer {
 				throw new SalsaEngineException("Not enough cloud resource quota to deploy the node: " + nodeId, false);				
 			}			
 			else {
-				//setLock(nodeId + "/" + instanceId);
 				centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId, repData);
-				//releaseLock();
-				
 				new Thread(new deployOneVmThread(serviceId, topologyId, nodeId,	instanceId, def)).start();
 				return true;
 			}
 		} else {			
-			//setLock(nodeId + "/" + instanceId);
 			centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId, repData);
-			//releaseLock();
 			new Thread(new deployOneSoftwareThread(serviceId, topologyId, nodeId, instanceId, def)).start();
 			
 			return true;

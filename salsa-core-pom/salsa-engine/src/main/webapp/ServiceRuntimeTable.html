@@ -77,7 +77,7 @@ function ShowSalsaRuntime(data){ // data is CloudService
 	var str="";
 	str+="<h2><i>Artifacts information</i></h2>";
 	for (var i = 0; i < x.length; i++) {
-		if (x[i].getAttribute('type')=="software"){
+		if (x[i].getAttribute('type')=="software" || x[i].getAttribute('type')=="war"){
 			str+=showSingleTable(x[i],serviceId, topologyId);
 		}
 // 		var nodeId=x[i].getAttribute('id');
@@ -97,6 +97,14 @@ function ShowSalsaRuntime(data){ // data is CloudService
 		
 // 		str += CreateTableViewSalsaReplicaNodeTable(x[i], nodeId);
 	}
+
+	str+="<h2><i>Middleware information</i></h2>";
+	for (var i = 0; i < x.length; i++) {		
+		if (x[i].getAttribute('type')=="tomcat" || x[i].getAttribute('type')=="docker"){
+			str+=showSingleTable(x[i],serviceId, topologyId);
+		}
+	}
+	
 	str+="<h2><i>Virtual machines information</i></h2>";
 	for (var i = 0; i < x.length; i++) {
 		if (x[i].getAttribute('type')=="os"){
