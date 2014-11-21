@@ -197,7 +197,7 @@ public class ArtifactDeployer {
 			return Integer.toString(instanceId);
 		}
 		
-		public void removeSingleNodeInstance(TNodeTemplate node, String instanceId){
+		public void removeSingleNodeInstance(TNodeTemplate node, String instanceId){			
 			InstrumentShareData.killProcessInstance(serviceId, topologyId, nodeId, instanceId);
 			//centerCon.removeOneInstance(serviceId, topologyId, node.getId(), Integer.parseInt(instanceId));
 		}

@@ -127,11 +127,27 @@ public class SalsaCenterConnector {
 	public String updateNodeState(String serviceId, String topologyId, String nodeId, int instanceId, SalsaEntityState state) {
 		Response res = engineInternal.updateNodeState(serviceId, topologyId, nodeId, instanceId, state.getNodeStateString());
 		return res.getEntity().toString();
+	}	
+	
+	public String removeInstanceMetadata(String serviceId, String nodeId, int instanceId) throws SalsaEngineException{
+		Response res = engineInternal.removeInstanceMetadata(serviceId, nodeId, instanceId);
+		return res.getEntity().toString();
 	}
 	
-	public String updateInstanceState(String serviceId, String topologyId, String nodeId, int instanceId, SalsaEntityState state) {
-		Response res = engineInternal.updateInstanceState(serviceId, topologyId, nodeId, instanceId, state.getNodeStateString());
-		return res.getEntity().toString();
+//	public String updateInstanceState(String serviceId, String topologyId, String nodeId, int instanceId, SalsaEntityState state) {
+//		System.out.println("SalsaConnector: Updating instance state: " + serviceId +"/" + topologyId + "/" + nodeId +"/"+instanceId+"/"+ state.getNodeStateString());
+//		Response res = engineInternal.updateInstanceState(serviceId, topologyId, nodeId, instanceId, state.getNodeStateString());
+//		return inputStreamToString((InputStream)res.getEntity());
+//	}
+	
+	public String getInstanceState(String serviceId, String nodeId, int instanceId) throws SalsaEngineException {
+		System.out.println("getInstanceState: " + serviceId + "/" + nodeId + "/" + instanceId);
+		CloudService service = getUpdateCloudServiceRuntime(serviceId);
+		ServiceInstance instance = service.getInstanceById(nodeId, instanceId);
+		if (instance==null){
+			return null;
+		}
+		return instance.getState().getNodeStateString();
 	}
 
 	/**
@@ -196,8 +212,12 @@ public class SalsaCenterConnector {
 		engineInternal.addInstanceUnitMetaData(data, serviceId, topologyId, nodeId);
 	}
 	
-	public void unqueueActions(String serviceID, String topologyId, String nodeId, int instnanceId, String actionName){
-		engineInternal.unqueueAction(serviceID, topologyId, nodeId, instnanceId, actionName);
+	public void unqueueActions(String serviceID, String nodeId, int instnanceId){
+		engineInternal.unqueueAction(serviceID, nodeId, instnanceId);
+	}
+	
+	public void queueActions(String serviceID, String nodeId, int instnanceId, String actionName){
+		engineInternal.queueAction(serviceID, nodeId, instnanceId, actionName);
 	}
 
 	public void addRelationship(String serviceId, String topologyId, ServiceUnitRelationship rela) {		

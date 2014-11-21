@@ -82,8 +82,8 @@ public class DockerConfigurator{
         return dockerMachine;
 	}
 	
-	public String updateDockerNode(String serviceId, String nodeId, String instanceId, String VM){
-		return "";
+	public String removeDockerContainer(String containerID){
+		 return executeCommand("sudo docker kill " + containerID);
 	}
 	
 	

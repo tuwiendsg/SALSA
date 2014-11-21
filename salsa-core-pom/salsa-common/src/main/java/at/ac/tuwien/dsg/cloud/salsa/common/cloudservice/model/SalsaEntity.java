@@ -39,9 +39,11 @@ public class SalsaEntity {
 	@XmlElement(name = "monitoring")
 	SalsaEntity.Monitoring monitoring;
 	
-	@XmlElement(name = "ConfigurationCapabilitiesQueue")
-	List<String> capaQueue = new ArrayList<>();
+	// Queue of Actions is used for deployment process
+	@XmlElement(name = "ActionsQueue")
+	List<String> actionQueue = new ArrayList<>();
 	
+	// List of Primitives is used for description of actions
 	@XmlElementWrapper(name="Primitives")
 	@XmlElement(name = "Primitive")
 	List<PrimitiveOperation> primitive;
@@ -121,11 +123,20 @@ public class SalsaEntity {
 	}
 	
 	public void queueAction(String capaName){
-		capaQueue.add(capaName);
+		actionQueue.add(capaName);
 	}
 	
 	public void unqueueAction(){
-		capaQueue.remove(0);
+		if (!actionQueue.isEmpty()){
+			actionQueue.remove(0);
+		}
+	}
+	
+	public String pollAction(){
+		if (actionQueue!=null && actionQueue.size()>0){
+			return actionQueue.get(0);
+		}
+		return null;
 	}
 	
 	public void addPrimitiveOperation(PrimitiveOperation opp){

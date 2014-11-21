@@ -96,6 +96,14 @@ public interface SalsaEngineServiceIntenal {
 			@PathParam("nodeId") String nodeId, 
 			@PathParam("instanceId")int instanceId) throws SalsaEngineException;
 	
+	@DELETE
+	@Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/metadata")
+	public Response removeInstanceMetadata(
+			@PathParam("serviceId")String serviceId,
+			@PathParam("nodeId")String nodeId,
+			@PathParam("instanceId")int instanceId) throws SalsaEngineException;
+	
+	
 	/**
 	 * Get service description in SALSA XML format
 	 * 
@@ -340,15 +348,7 @@ public interface SalsaEngineServiceIntenal {
 			@PathParam("instanceId")int instanceId,
 			@PathParam("value") String value);
 	
-	@POST
-	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/instancestate/{value}")
-	public Response updateInstanceState(
-			@PathParam("serviceId")String serviceId,
-			@PathParam("topologyId") String topologyId,
-			@PathParam("nodeId")String nodeId,
-			@PathParam("instanceId")int instanceId,
-			@PathParam("value") String value);
-
+	
 	@GET
 	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/requirement/{reqId}")
 	public Response getRequirementValue(
@@ -359,22 +359,19 @@ public interface SalsaEngineServiceIntenal {
 			@PathParam("reqId") String reqId);
 
 	@POST
-	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/action_queue/{actionName}")
+	@Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/action_queue/{actionName}")
 	public Response queueAction(			
 			@PathParam("serviceId") String serviceId,
-			@PathParam("topologyId") String topologyId,
 			@PathParam("nodeId") String nodeId,
 			@PathParam("instanceId") int instanceId,
 			@PathParam("actionName") String actionName);
 	
 	@POST
-	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/action_unqueue/{actionName}")
+	@Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/action_unqueue")
 	public Response unqueueAction(
 			@PathParam("serviceId") String serviceId,
-			@PathParam("topologyId") String topologyId,
 			@PathParam("nodeId") String nodeId,
-			@PathParam("instanceId") int instanceId,
-			@PathParam("actionName") String actionName);
+			@PathParam("instanceId") int instanceId);
 	
 	
 	@POST
