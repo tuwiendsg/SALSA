@@ -2,7 +2,9 @@ package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
@@ -48,10 +50,10 @@ public class ServiceInstance extends SalsaEntity {
 	protected Capabilities capabilities;
 	
 //	@XmlElement(name = "actionqueue")
-//	protected List<String> actionqueue = new ArrayList<>();
+//	protected Queue<String> actionqueue = new LinkedList();
 	
-	@XmlElement(name = "StagingAction")
-	protected String stagingActionName;
+//	@XmlElement(name = "StagingAction")
+//	protected String stagingActionName;
 	
 	
 	
@@ -165,28 +167,21 @@ public class ServiceInstance extends SalsaEntity {
 		return uuid;
 	}
 	
-	
-	
-	
-//	public void queueAction(String action){
-//		this.actionqueue.add(action);
+//	public void addQueueAction(String action){
+//		this.actionqueue.add(action);		
 //	}
 //	
-//	public void unqueueAction(String action){
-//		this.actionqueue.remove(action);
+//	public String popQueueAction(){
+//		return actionqueue.poll();
 //	}
-//	
-//	public List<String> getActionqueue() {
-//		return actionqueue;
+	
+//	public String getStagingActionName() {
+//		return stagingActionName;
 //	}
-
-	public String getStagingActionName() {
-		return stagingActionName;
-	}
-
-	public void setStagingActionName(String stagingActionName) {
-		this.stagingActionName = stagingActionName;
-	}
+//
+//	public void setStagingActionName(String stagingActionName) {
+//		this.stagingActionName = stagingActionName;
+//	}
 
 	public SalsaInstanceState getInstanceState() {
 		return instanceState;

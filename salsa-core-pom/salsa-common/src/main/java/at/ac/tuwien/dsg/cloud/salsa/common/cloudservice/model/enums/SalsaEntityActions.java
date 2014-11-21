@@ -24,14 +24,14 @@ public enum SalsaEntityActions {
 		this.nodeState = nodeState;
 	}
 
-	public String getNodeStateString() {
+	public String getActionString() {
 		return nodeState;
 	}
 	
 	public static SalsaEntityActions fromString(String text) {
 	    if (text != null) {
 	      for (SalsaEntityActions b : SalsaEntityActions.values()) {
-	        if (text.equalsIgnoreCase(b.getNodeStateString())) {
+	        if (text.equalsIgnoreCase(b.getActionString())) {
 	          return b;
 	        }
 	      }

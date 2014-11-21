@@ -23,6 +23,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.PrimitiveOperation
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityActions;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaRelationshipType;
@@ -426,7 +427,7 @@ public class SalsaToscaDeployer {
 				suitableHostedInstance = updateService.getInstanceById(topologyId, hostedUnit.getId(),
 						suitableHostedInstance.getInstanceId());
 			}
-			EngineLogger.logger.debug("Set state to STAGING for node: "	+ nodeId + "/" + instanceId + " which will be hosted on " + hostedUnit.getId() + "/" + hostInstanceId);
+			EngineLogger.logger.debug("Set state to STAGING for node: "	+ nodeId + "/" + instanceId + " which will be hosted on " + hostedUnit.getId() + "/" + hostInstanceId);			
 			centerCon.updateNodeState(newService.getId(), topologyId, nodeId, instanceId, SalsaEntityState.STAGING);
 		}
 		
@@ -495,6 +496,48 @@ public class SalsaToscaDeployer {
 			}
 		}
 	}
+	
+	private class removeOneSoftwareThread implements Runnable {
+		String serviceId;
+		String topologyId;
+		String nodeId;
+		int instanceId;
+
+		public removeOneSoftwareThread(String serviceId, String topologyId, String nodeId, int instanceId) {
+			EngineLogger.logger.debug("Thread processind: nodeId=" + nodeId	+ ", instance no.=" + instanceId);
+			this.serviceId = serviceId;
+			this.topologyId = topologyId;
+			this.nodeId = nodeId;
+			this.instanceId = instanceId;
+		}
+		@Override
+		public void run() {			
+			EngineLogger.logger.debug("Removing a software node somewhere: " + nodeId + "/" + instanceId);
+			//set the state=STAGING and stagingAction=undeploy, the pioneer handle the rest			
+			centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.STAGING_ACTION);
+			centerCon.queueActions(serviceId, nodeId, instanceId, SalsaEntityActions.UNDEPLOY.getActionString());
+			SalsaEntityState state = SalsaEntityState.STAGING_ACTION;
+			while (state!=SalsaEntityState.UNDEPLOYED){	// wait until pioneer finish its job and inform undeployed
+				try {
+					state = SalsaEntityState.fromString(centerCon.getInstanceState(serviceId, nodeId, instanceId));
+				} catch (SalsaEngineException e1) {
+					e1.printStackTrace();
+				}
+				try {
+					EngineLogger.logger.debug("Wating for pioneer to undeploy node: " + serviceId + "/" + nodeId + "/" + instanceId);
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}				
+			}
+			// remove complete, delete metadata
+			try {
+				centerCon.removeInstanceMetadata(serviceId, nodeId, instanceId);
+			} catch (SalsaEngineException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	public boolean removeOneInstance(String serviceId, String topologyId,
 			String nodeId, int instanceId) throws SalsaEngineException {
@@ -515,27 +558,38 @@ public class SalsaToscaDeployer {
 			String providerName = vmProps.getProvider();
 			String cloudInstanceId = vmProps.getInstanceId();
 			EngineLogger.logger.debug("Removing virtual machine. Provider: " + providerName + "InstanceId: " + instanceId);
-			cloudCon.removeInstance(SalsaCloudProviders.fromString(providerName),cloudInstanceId);
+			cloudCon.removeInstance(SalsaCloudProviders.fromString(providerName),cloudInstanceId);			
+			centerCon.removeInstanceMetadata(serviceId, nodeId, instanceId);
 
 			return true;
-		} else {			
-			EngineLogger.logger.debug("Removing a software node somewhere: " + nodeId + "/" + instanceId);
-			ServiceUnit hostNode = service.getComponentById(topologyId,	node.getHostedId());
-			EngineLogger.logger.debug("hostNode id: " + hostNode.getId());
-			while (!hostNode.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
-				hostNode = service.getComponentById(topologyId,	hostNode.getId());
-				EngineLogger.logger.debug("other hostNode id: "	+ hostNode.getId());
-			}			
-			EngineLogger.logger.debug("removeOneInstance - instanceid: "+ instance.getInstanceId());
-			int hostInstanceId = instance.getHostedId_Integer();
-			EngineLogger.logger.debug("removeOneInstance - hostInstanceId: "+ hostInstanceId);
-			ServiceInstance vm_instance = hostNode.getInstanceById(hostInstanceId);
-			EngineLogger.logger.debug("removeOneInstance - vm instance: "	+ vm_instance.getInstanceId());
-			SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) vm_instance.getProperties().getAny();
-			EngineLogger.logger.debug("removeOneInstance - vm ip: "	+ vm.getPrivateIp());
-
-			PioneerConnector pioneer = new PioneerConnector(vm.getPrivateIp());
-			pioneer.removeSoftwareNode(nodeId, instanceId);
+		} else {
+			new Thread(new removeOneSoftwareThread(serviceId, topologyId, nodeId, instanceId)).start();	
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			// will not use pioneer connector as port forwarding issue
+//			ServiceUnit hostNode = service.getComponentById(topologyId,	node.getHostedId());
+//			EngineLogger.logger.debug("hostNode id: " + hostNode.getId());
+//			while (!hostNode.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
+//				hostNode = service.getComponentById(topologyId,	hostNode.getId());
+//				EngineLogger.logger.debug("other hostNode id: "	+ hostNode.getId());
+//			}			
+//			EngineLogger.logger.debug("removeOneInstance - instanceid: "+ instance.getInstanceId());
+//			int hostInstanceId = instance.getHostedId_Integer();
+//			EngineLogger.logger.debug("removeOneInstance - hostInstanceId: "+ hostInstanceId);
+//			ServiceInstance vm_instance = hostNode.getInstanceById(hostInstanceId);
+//			EngineLogger.logger.debug("removeOneInstance - vm instance: "	+ vm_instance.getInstanceId());
+//			SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) vm_instance.getProperties().getAny();
+//			EngineLogger.logger.debug("removeOneInstance - vm ip: "	+ vm.getPrivateIp());
+//
+//			PioneerConnector pioneer = new PioneerConnector(vm.getPrivateIp());
+//			pioneer.removeSoftwareNode(nodeId, instanceId);
 
 			return true;
 		}

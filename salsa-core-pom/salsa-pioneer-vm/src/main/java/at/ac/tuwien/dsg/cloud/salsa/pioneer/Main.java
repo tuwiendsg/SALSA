@@ -259,14 +259,24 @@ public class Main {
 					// case that node is hosted directly on pioneer node
 					if (unit.getHostedId().equals(nodeId)){
 						List<ServiceInstance> instances = unit.getInstanceHostOn(replica);						
-						for (ServiceInstance instance : instances) {
-							if (instance.getState().equals(SalsaEntityState.STAGING)){
+						for (ServiceInstance instance : instances) {							
+							if (instance.getState().equals(SalsaEntityState.STAGING)){																
 								PioneerLogger.logger.debug("RETRIEVE A STAGING NODE: " + unit.getId() + "/" + instance.getInstanceId());								
 								PioneerServiceImplementation pioneer = new PioneerServiceImplementation();
 								con.logMessage("Pioneer on node: " + nodeId + "/" + replica +" will deploy node: " + unit.getId() +"/"+ instance.getInstanceId());
 								pioneer.deployNode(unit.getId(), instance.getInstanceId());
 							}
 							
+							if (instance.getState().equals(SalsaEntityState.STAGING_ACTION)){								
+								String actionName = instance.pollAction();
+								if (actionName!=null){	// action==null maybe it is in process
+									PioneerLogger.logger.debug("Main: Getting stating_action with queue action is: " + actionName);
+									PioneerServiceImplementation pioneer = new PioneerServiceImplementation();
+									// unqueue action before execute it
+									con.unqueueActions(service.getId(), unit.getId(), instance.getInstanceId());
+									pioneer.executeAction(unit.getId(), instance.getInstanceId(), actionName);
+								}
+							}
 							
 							// TODO: Implement the checking capability and execute
 							// check action queue of the instance							
