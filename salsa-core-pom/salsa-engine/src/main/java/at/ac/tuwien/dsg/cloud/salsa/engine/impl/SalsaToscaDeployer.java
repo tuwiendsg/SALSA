@@ -523,13 +523,14 @@ public class SalsaToscaDeployer {
 				} catch (SalsaEngineException e1) {
 					e1.printStackTrace();
 				}
-				try {
-					EngineLogger.logger.debug("Wating for pioneer to undeploy node: " + serviceId + "/" + nodeId + "/" + instanceId);
+				EngineLogger.logger.debug("Wating for pioneer to undeploy node: " + serviceId + "/" + nodeId + "/" + instanceId);
+				try {					
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}				
 			}
+			EngineLogger.logger.debug("Pioneer seems to response that undeploying node done: " + serviceId + "/" + nodeId + "/" + instanceId);
 			// remove complete, delete metadata
 			try {
 				centerCon.removeInstanceMetadata(serviceId, nodeId, instanceId);

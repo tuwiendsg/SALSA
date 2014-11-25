@@ -122,3 +122,19 @@ html, body {
 	background-color: #996666;
 }
 
+label.radio_label{
+    display: inline-block;
+    width: 150px;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+}
+span.radio_option {
+    display: block;
+    border: 1px solid #000000;
+    width: 175px;
+    height: 30px;
+}
+span.radio_option:hover {
+    background: #E0E0E0;
+}
