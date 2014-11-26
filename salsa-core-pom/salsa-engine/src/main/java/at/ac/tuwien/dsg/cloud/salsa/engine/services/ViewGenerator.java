@@ -30,8 +30,10 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnitRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataForceDirect;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataTree;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataTreeSimple;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList;
@@ -266,6 +268,55 @@ public class ViewGenerator {
 			logger.error("JAXBException: ");
 			return "Intenal error when reading service data!";
 		}
+	}
+	
+	@GET
+	@Path("/cloudservice/json/forcedirect/{serviceId}")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getServiceRuntimeForceDirect(@PathParam("serviceId") String serviceDeployId) {
+		if (serviceDeployId.equals("") || serviceDeployId.equals("null")) {
+			return "";
+		}
+
+		ServiceJsonDataForceDirect jsonObject = new ServiceJsonDataForceDirect();
+		try {
+			String salsaFile = SalsaConfiguration.getServiceStorageDir() + "/" + serviceDeployId + ".data";
+			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+			// add root node
+			jsonObject.addNode(service.getId(), service.getId());
+			for (ServiceTopology topo : service.getComponentTopologyList()) {
+				logger.debug("getServiceRuntimeForceDirect - Checking topo size: " + service.getComponentTopologyList().size());
+				logger.debug("getServiceRuntimeForceDirect - Checking topo ID  : " + topo.getId());
+				// add topo node				
+				jsonObject.addNode(topo.getId(), service.getId());
+				jsonObject.addLink(service.getId(), topo.getId(), "abstract");
+				for (ServiceUnit unit : topo.getComponents()) {		
+					logger.debug("getServiceRuntimeForceDirect - Checking unit ID  : " + unit.getId());
+					for (ServiceInstance instance : unit.getInstancesList()) {
+						logger.debug("getServiceRuntimeForceDirect - Checking instance ID  : " + instance.getInstanceId());
+						String fullInstanceId = unit.getId()+"_"+instance.getInstanceId();
+						jsonObject.addNode(fullInstanceId, topo.getId());	// group is topology id
+						jsonObject.addLink(topo.getId(), fullInstanceId, "abstract");
+						if (topo.getComponentById(unit.getHostedId()) != null){
+							if (!topo.getComponentById(unit.getHostedId()).getInstancesList().isEmpty()){
+								jsonObject.addLink(unit.getHostedId()+"_"+topo.getComponentById(unit.getHostedId()).getInstancesList().get(0).getInstanceId(), fullInstanceId, "HOSTON");
+							}
+						}
+						for (String connectUnit : unit.getConnecttoId()) {
+							if (topo.getComponentById(connectUnit)!=null){
+								if (!topo.getComponentById(connectUnit).getInstancesList().isEmpty()){
+									jsonObject.addLink(fullInstanceId, connectUnit +"_"+ topo.getComponentById(connectUnit).getInstancesList().get(0).getInstanceId(), "CONNECTTO");
+								}
+							}
+						}
+					}					
+				}				
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		return gson.toJson(jsonObject);
 	}
 
 	private ServiceJsonDataTreeSimple createServiceJsonNode(String name, String type) {

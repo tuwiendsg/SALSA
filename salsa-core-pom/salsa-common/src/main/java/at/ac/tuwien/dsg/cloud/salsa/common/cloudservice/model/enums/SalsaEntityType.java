@@ -12,6 +12,7 @@ public enum SalsaEntityType {
 	SERVICE("service"),
 	PROGRAM("program"),
 	ARTIFACT("artifact"),
+	EXECUTABLE("executable"),
 	WAR("war"),
 	TOMCAT("tomcat");
 	
