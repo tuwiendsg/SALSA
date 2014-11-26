@@ -189,7 +189,16 @@ public class ArtifactDeployer {
 			downloadNodeArtifacts(node, def);
 			// deploy the artifact
 			logger.debug("Executing the deployment for node: " + node.getId() +", instance: " + instanceId);
-			centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.RUNNING);
+			centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.INSTALLING);
+			if (node.getDeploymentArtifacts()!=null){
+				if (node.getDeploymentArtifacts().getDeploymentArtifact().isEmpty())
+					{
+						SalsaEntityType type = SalsaEntityType.fromString(node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart());
+						if (type.equals(SalsaEntityType.EXECUTABLE)){
+							centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.RUNNING);
+						}
+					}
+			}			
 
 			//centerCon.updateInstanceUnitCapability(serviceId, topologyId, nodeId, instanceId, capa);
 			runNodeArtifacts(node, Integer.toString(instanceId), def);
@@ -270,7 +279,7 @@ public class ArtifactDeployer {
 					hostNode.getId();
 					CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 					SalsaEntityState state = SalsaEntityState.CONFIGURING;
-					while (state!=SalsaEntityState.RUNNING && state!=SalsaEntityState.DEPLOYED){
+					while (state!=SalsaEntityState.DEPLOYED){
 						state = service.getComponentById(hostNode.getId()).getState();
 						try{
 							Thread.sleep(3000);							

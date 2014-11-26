@@ -323,6 +323,13 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		return Response.status(404).entity("Not found a VM nodes of IP: " + vmIp).build();
 	}
 	
+	public Response scaleOutVM(String serviceId, String vmIp) throws SalsaEngineException{
+		SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
+		CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
+		
+		return null;
+	}
+	
 	/**
 	 * This function add new ServiceUnit to the existing application structure, also deploy minimum instances of the node
 	 * @return The list of the instance IDs
@@ -608,16 +615,17 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 						ServiceUnit hostedUnit = topo.getComponentById(unit.getHostedId());
 						ServiceInstance hostedInstance = hostedUnit.getInstanceById(instance.getHostedId_Integer());
 						// in the case we have more than one software stack
-						while (!hostedUnit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
+						while (!hostedUnit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())
+								&& !hostedUnit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())){
 							hostedUnit = topo.getComponentById(hostedUnit.getHostedId());
 							hostedInstance = hostedUnit.getInstanceById(hostedInstance.getHostedId_Integer());
 						}
 						logger.debug("Host instance: " + hostedUnit.getId() +"/" + hostedInstance.getInstanceId());
 						SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) hostedInstance.getProperties().getAny();
 						AssociatedVM assVM = new AssociatedVM();
-						assVM.setIp(vm.getPrivateIp());
+						assVM.setIp(vm.getPrivateIp().trim());
 						assVM.setUuid(vm.getInstanceId());
-						syblDepUnit.addAssociatedVM(assVM);						
+						syblDepUnit.addAssociatedVM(assVM);			
 					}
 					sybl.getDeployments().add(syblDepUnit);
 				}
@@ -664,7 +672,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) hostedInstance.getProperties().getAny();
 			logger.debug("Searching IP of instance 6. VMID=" + vm.getInstanceId());
 			logger.debug("Searching IP of instance 6. IP=" + vm.getPrivateIp());	
-			return vm.getPrivateIp();
+			return vm.getPrivateIp().trim();
 		} catch (IOException e){
 			logger.debug(e.getMessage());
 			return "";
@@ -1151,9 +1159,10 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		rankState.put(SalsaEntityState.ALLOCATING, 2);
 		rankState.put(SalsaEntityState.STAGING, 3);
 		rankState.put(SalsaEntityState.STAGING_ACTION, 4);
-		rankState.put(SalsaEntityState.CONFIGURING, 5);				
-		rankState.put(SalsaEntityState.RUNNING, 6);
+		rankState.put(SalsaEntityState.CONFIGURING, 5);
+		rankState.put(SalsaEntityState.INSTALLING, 6);
 		rankState.put(SalsaEntityState.DEPLOYED, 7);
+		rankState.put(SalsaEntityState.RUNNING, 8);
 		
 		List<SalsaEntity> insts = new ArrayList<>();
 		if (nodeData.getClass().equals(ServiceUnit.class)){	

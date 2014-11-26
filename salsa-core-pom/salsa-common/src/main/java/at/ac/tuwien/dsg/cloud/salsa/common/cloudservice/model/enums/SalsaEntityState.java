@@ -17,6 +17,7 @@ public enum SalsaEntityState { //	UNDEPLOYED("undeployed"),
 	STAGING_ACTION("staging_action"),
 	CONFIGURING("configuring"),
 //	STOPPED("stopped"),	
+	INSTALLING("installing"), 
 	RUNNING("running"),	// the deployment action is executed
 	DEPLOYED("deployed"), // deployed
 	ERROR("error");

@@ -205,6 +205,11 @@ public interface SalsaEngineServiceIntenal {
 	public Response scaleInVM(@PathParam("serviceId")String serviceId, 
 								 @PathParam("ip") String vmIp) throws SalsaEngineException;
 	
+	@POST
+	@Path("/services/{serviceId}/vmnodes/{ip}/scaleout")
+	public Response scaleOutVM(@PathParam("serviceId")String serviceId, 
+								 @PathParam("ip") String vmIp) throws SalsaEngineException;
+	
 	
 	@GET
 	@Path("/services/tosca/{serviceId}/sybl")

@@ -90,6 +90,13 @@ public class ServiceTopology extends SalsaEntity {
 	public SalsaReplicaRelationships getRelationships() {
 		return relationships;
 	}
+	
+	public List<ServiceUnitRelationship> getRelationshipsList() {
+		if (this.relationships != null){		
+			return relationships.relList;
+		}
+		return null;
+	}
 
 	public void setRelationships(SalsaReplicaRelationships relationships) {
 		this.relationships = relationships;

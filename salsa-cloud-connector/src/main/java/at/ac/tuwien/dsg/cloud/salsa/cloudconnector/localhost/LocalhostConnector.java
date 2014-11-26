@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Scanner;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -72,8 +73,16 @@ public class LocalhostConnector implements CloudInterface {
 
 	@Override
 	public void removeInstance(String instanceToTerminateID) throws ServiceDeployerException {
-		// we do not remove the localhost but clean all pioneer on it
+		// we do not remove the localhost but clean all pioneer on it, also remove all the docker
 		runLocalhostCommandNoWaitingFor("pkill -f salsa-pioneer");
+		
+		String listOfContainer = runLocalhostCommand("sudo docker ps -a -q");
+		Scanner scanner = new Scanner(listOfContainer);
+		while (scanner.hasNextLine()) {
+		  String line = scanner.nextLine();
+		  runLocalhostCommandNoWaitingFor("sudo docker rm " + line);
+		}
+		scanner.close();				
 	}
 	
 	
