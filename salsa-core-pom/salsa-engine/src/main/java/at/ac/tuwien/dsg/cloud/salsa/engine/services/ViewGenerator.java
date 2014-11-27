@@ -200,12 +200,12 @@ public class ViewGenerator {
 			jsonObject.setType("SERVICE"); // cloud service
 			for (ServiceTopology topo : service.getComponentTopologyList()) {
 				ServiceJsonDataTreeSimple newTopo = createServiceJsonNode(topo.getId(), "SERVICE_TOPOLOGY"); // service topology
-				newTopo.getChildren().add(createServiceJsonNode("State[" + topo.getState() + "]", "metric"));
+				//newTopo.getChildren().add(createServiceJsonNode("State[" + topo.getState() + "]", "metric"));
 				jsonObject.getChildren().add(newTopo);
 				for (ServiceUnit unit : topo.getComponentsByType(SalsaEntityType.SOFTWARE)) {
 					for (ServiceInstance instance : unit.getInstancesList()) {
 						ServiceJsonDataTreeSimple newInstance = createServiceJsonNode(unit.getId() + "-" + instance.getInstanceId(), "SERVICE_INSTANCE");
-						newInstance.getChildren().add(createServiceJsonNode("State[" + instance.getState() + "]", "metric"));
+						//newInstance.getChildren().add(createServiceJsonNode("State[" + instance.getState() + "]", "metric"));
 						// get VM host the components
 						ServiceUnit hostedUnit = topo.getComponentById(unit.getHostedId());
 						ServiceInstance hostedInstance = hostedUnit.getInstanceById(instance.getHostedId_Integer());
@@ -220,7 +220,7 @@ public class ViewGenerator {
 									hostedInstanceJson.setName("HostedByVM[" + vm.getPrivateIp() + "]");
 								}
 							}
-							newInstance.getChildren().add(hostedInstanceJson);
+							//newInstance.getChildren().add(hostedInstanceJson);
 						}
 						newTopo.getChildren().add(newInstance);
 					}
