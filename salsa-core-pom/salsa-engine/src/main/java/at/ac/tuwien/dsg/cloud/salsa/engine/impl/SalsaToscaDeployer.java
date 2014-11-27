@@ -122,16 +122,16 @@ public class SalsaToscaDeployer {
 		return serviceData;
 	}
 
-	public CloudService orchestrateNewService(TDefinitions def,	String serviceName) throws SalsaEngineException {
+	public CloudService orchestrateNewService(TDefinitions def, String serviceName) throws SalsaEngineException {
 		if (configFile == null) {
 			EngineLogger.logger.error("No config file specified");
 			throw new SalsaEngineException("There is no SALSA configuation file specific. Please check /etc/salsa.properties.", true);
 		}
 
 		String deployID = serviceName;
-		EngineLogger.logger.info("Orchestrating service id: " + deployID.toString());
+		EngineLogger.logger.info("Orchestrating service id: " + deployID);
 
-		String ogininalToscaFile = SalsaConfiguration.getServiceStorageDir() + "/" + deployID.toString() + ".original";
+		String ogininalToscaFile = SalsaConfiguration.getServiceStorageDir() + "/" + deployID + ".original";
 		ToscaXmlProcess.writeToscaDefinitionToFile(def, ogininalToscaFile);
 
 		// ENRICH
@@ -139,18 +139,18 @@ public class SalsaToscaDeployer {
 		enricher.enrichHighLevelTosca();
 
 		// register service, all state is INITIAL
-		String fullToscaFile = SalsaConfiguration.getServiceStorageDir() + "/" 	+ deployID.toString();
+		String fullToscaFile = SalsaConfiguration.getServiceStorageDir() + "/" 	+ deployID;
 
 		ToscaXmlProcess.writeToscaDefinitionToFile(def, fullToscaFile);
 
 		EngineLogger.logger.debug("debugggg Sep 8 - 1");
 		
 		// register service running data
-		String fullSalsaDataFile = SalsaConfiguration.getServiceStorageDir() + "/" + deployID.toString() + ".data";
+		String fullSalsaDataFile = SalsaConfiguration.getServiceStorageDir() + "/" + deployID + ".data";
 		EngineLogger.logger.debug("debugggg Sep 8 - 2");
 		CloudService serviceData = buildRuntimeDataFromTosca(def);
 		EngineLogger.logger.debug("debugggg Sep 8 - 3");
-		serviceData.setId(deployID.toString());
+		serviceData.setId(deployID);
 		serviceData.setName(def.getId());
 		SalsaXmlDataProcess.writeCloudServiceToFile(serviceData, fullSalsaDataFile);
 		EngineLogger.logger.debug("debugggg Sep 8 - 4");

@@ -105,7 +105,7 @@ public class Main {
 		case "startserver":
 		{
 			PioneerLogger.logger.debug("Start server !");			
-			centerCon.updateNodeState(serviceId, topologyId, nodeId, replica, SalsaEntityState.RUNNING);
+			centerCon.updateNodeState(serviceId, topologyId, nodeId, replica, SalsaEntityState.DEPLOYED);
 			centerCon.logMessage("Start pioneer: " + nodeId + "/" + replica);
 			InstrumentShareData.startProcessMonitor();
 			startPullingThread();
@@ -113,7 +113,7 @@ public class Main {
 			break;
 		}
 		case "deploy":
-			centerCon.updateNodeState(serviceId, topologyId, nodeId, replica, SalsaEntityState.RUNNING);
+			centerCon.updateNodeState(serviceId, topologyId, nodeId, replica, SalsaEntityState.DEPLOYED);
 			centerCon.logMessage("Start pioneer: " + nodeId + "/" + replica);
 			//deployer.deployNodeChain(thisNode);			
 			InstrumentShareData.startProcessMonitor();

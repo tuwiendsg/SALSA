@@ -74,13 +74,17 @@ public class LocalhostConnector implements CloudInterface {
 	@Override
 	public void removeInstance(String instanceToTerminateID) throws ServiceDeployerException {
 		// we do not remove the localhost but clean all pioneer on it, also remove all the docker
+		logger.debug("Killing all salsa-pioneer instances !");
 		runLocalhostCommandNoWaitingFor("pkill -f salsa-pioneer");
 		
 		String listOfContainer = runLocalhostCommand("sudo docker ps -a -q");
+		logger.debug("List of docker container: \n" + listOfContainer);
+		
 		Scanner scanner = new Scanner(listOfContainer);
 		while (scanner.hasNextLine()) {
 		  String line = scanner.nextLine();
-		  runLocalhostCommandNoWaitingFor("sudo docker rm -f" + line);
+		  logger.debug("Removing docker container: " + line);
+		  runLocalhostCommandNoWaitingFor("sudo docker rm -f " + line);
 		}
 		scanner.close();				
 	}
@@ -90,11 +94,11 @@ public class LocalhostConnector implements CloudInterface {
 		Process p;
 		String re = "";
 		try {			
-			logger.debug("Executing command on localhost !");
+			logger.debug("Executing command on localhost: " + command);
 			p = Runtime.getRuntime().exec(command);
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line = reader.readLine();
+			String line = "";
 			while (line != null) {
 				line = reader.readLine();	
 				re += line + "\n";
@@ -110,7 +114,7 @@ public class LocalhostConnector implements CloudInterface {
 	
 	private void runLocalhostCommandNoWaitingFor(String command){
 		try {			
-			logger.debug("Executing command on localhost without wating !");
+			logger.debug("Executing command on localhost without wating: " + command);
 			Runtime.getRuntime().exec(command);
 			try{
 				Thread.sleep(2);

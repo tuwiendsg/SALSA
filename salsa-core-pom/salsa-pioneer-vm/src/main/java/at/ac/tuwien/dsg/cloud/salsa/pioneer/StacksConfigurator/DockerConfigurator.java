@@ -73,7 +73,7 @@ public class DockerConfigurator{
         if (isRunning.equals("true")){
         	dockerMachine.setState("RUNNING");
         } else {
-        	dockerMachine.setState("NOT RUNNING");
+        	dockerMachine.setState("STOPPED");
         }
         // get IP
         String ip = executeCommand("docker inspect --format='{{.NetworkSettings.IPAddress}}' " + containerID);

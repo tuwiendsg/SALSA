@@ -10,6 +10,16 @@
 	<tosca:ServiceTemplate id="SampleService">
 		<tosca:TopologyTemplate>
 			<tosca:NodeTemplate id="helloWorld"	name="Hello World" type="software">
+				 <tosca:Properties>
+           <MappingProperties>
+						<MappingProperty type="action">
+							<property name="undeploy">echo "Undeploy at `date`" >> /opt/action</property> 
+							<property name="newaction">echo "NewAction at `date`" >> /opt/action</property>
+							<property name="newaction">echo "NewAction at `date`" >> /opt/action</property>
+							<property name="packages">none</property>
+						</MappingProperty>
+					</MappingProperties>
+         </tosca:Properties>
 				<tosca:DeploymentArtifacts>
 					<tosca:DeploymentArtifact artifactType="salsa:sh" name="Deployment script" artifactRef="deployScript"/>
 				</tosca:DeploymentArtifacts>
@@ -27,7 +37,7 @@
 							<property name="packages">none</property>
 						</MappingProperty>
 					</MappingProperties>
-                </tosca:Properties>
+         </tosca:Properties>
 			</tosca:NodeTemplate> 
 			
 			<tosca:RelationshipTemplate type="salsa:HOSTON" id="app_on_docker">

@@ -280,16 +280,14 @@ public class ArtifactDeployer {
 					logger.debug("Found target equal to current node : " + node.getId());
 					TNodeTemplate hostNode = (TNodeTemplate) rela.getTargetElement().getRef();
 					hostNode.getId();
-					logger.debug("Checking state of host node:: " + hostNode.getId());
+					logger.debug("Checking state of host node: " + hostNode.getId());
 					CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 					SalsaEntityState state = SalsaEntityState.CONFIGURING;
-					while (state!=SalsaEntityState.RUNNING && state!=SalsaEntityState.DEPLOYED){
-						logger.debug("Loop to see ! ");
+					//while (state!=SalsaEntityState.RUNNING && state!=SalsaEntityState.DEPLOYED){
+                                        while (state!=SalsaEntityState.DEPLOYED){
 						state = service.getComponentById(hostNode.getId()).getState();
-						logger.debug("Loop to see: " + state);
 						service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 						try{
-							logger.debug("sleeping");
 							Thread.sleep(3000);							
 						} catch (InterruptedException e) {}
 					}
@@ -403,7 +401,21 @@ public class ArtifactDeployer {
 			}		
 			
 			
-			// if this node is part of CONNECTTO, send the IP before running artifact
+			
+			
+			PioneerLogger.logger.debug("ArtifactDeploy prepare to initiate node.");
+			instrument.initiate(node);
+			Object monitorObj = instrument.deployArtifact(runArt, instanceId);
+			if (monitorObj==null){
+				return;
+			}
+			PioneerLogger.logger.debug("The artifact class is: " + monitorObj.getClass().toString());
+			if (artType.equals(SalsaArtifactType.sh.getString())){
+				PioneerLogger.logger.debug("Ok, we can add this to the process list for monitoring");				
+				InstrumentShareData.addInstanceProcess(serviceId, topologyId, node.getId(), instanceId, (Process)monitorObj); 
+			}
+                        
+                        // if this node is part of CONNECTTO, send the IP after running artifact
 			if (node.getCapabilities()!=null){
 				logger.debug("This node has ConnectTo capability, set it !");
 				for (TCapability capa : node.getCapabilities().getCapability()){
@@ -421,18 +433,6 @@ public class ArtifactDeployer {
 //						}
 					}
 				}
-			}
-			
-			PioneerLogger.logger.debug("ArtifactDeploy prepare to initiate node.");
-			instrument.initiate(node);
-			Object monitorObj = instrument.deployArtifact(runArt, instanceId);
-			if (monitorObj==null){
-				return;
-			}
-			PioneerLogger.logger.debug("The artifact class is: " + monitorObj.getClass().toString());
-			if (artType.equals(SalsaArtifactType.sh.getString())){
-				PioneerLogger.logger.debug("Ok, we can add this to the process list for monitoring");				
-				InstrumentShareData.addInstanceProcess(serviceId, topologyId, node.getId(), instanceId, (Process)monitorObj); 
 			}
 			
 			
