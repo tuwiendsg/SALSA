@@ -1161,8 +1161,9 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		rankState.put(SalsaEntityState.STAGING_ACTION, 4);
 		rankState.put(SalsaEntityState.CONFIGURING, 5);
 		rankState.put(SalsaEntityState.INSTALLING, 6);
-		rankState.put(SalsaEntityState.DEPLOYED, 7);
-		rankState.put(SalsaEntityState.RUNNING, 8);
+		rankState.put(SalsaEntityState.RUNNING, 7);
+		rankState.put(SalsaEntityState.DEPLOYED, 8);
+		
 		
 		List<SalsaEntity> insts = new ArrayList<>();
 		if (nodeData.getClass().equals(ServiceUnit.class)){	
@@ -1184,7 +1185,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			}
 		}
 		
-		int minState=6;
+		int minState=8;
 		if (insts.isEmpty()){
 			nodeData.setState(SalsaEntityState.UNDEPLOYED);
 			return;
@@ -1193,6 +1194,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			if (minState >= rankState.get(inst.getState())){
 				//EngineLogger.logger.debug("Aggregrating state for node: " + nodeData.getId() + ", to: " + inst.getState());				
 				nodeData.setState(inst.getState());
+				minState = rankState.get(inst.getState());
 			}			
 		}
 	}

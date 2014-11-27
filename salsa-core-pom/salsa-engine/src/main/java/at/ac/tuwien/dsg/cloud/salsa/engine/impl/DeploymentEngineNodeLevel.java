@@ -164,6 +164,7 @@ public class DeploymentEngineNodeLevel {
 		userDataBuffer.append("echo 'SALSA_NODE_ID=" + nodeId + "' >> "	+ specificVariableFile + " \n");
 		userDataBuffer.append("echo 'SALSA_TOSCA_FILE=" + specificWorkingDir + "/" + serviceId + "' >> " + specificVariableFile + " \n");		
 		userDataBuffer.append("echo 'SALSA_WORKING_DIR=" + specificWorkingDir + "' >> "	+ specificVariableFile + " \n");
+		userDataBuffer.append("echo 'SALSA_PIONEER_WEB=" + SalsaConfiguration.getPioneerWeb() + "' >> "	+ specificVariableFile + " \n");
 		userDataBuffer.append("echo 'SALSA_PIONEER_RUN=" + SalsaConfiguration.getPioneerRun() + "' >> "	+ specificVariableFile + " \n");
 		
 		SalsaCloudProviders provider = SalsaCloudProviders.fromString(instanceDesc.getProvider());

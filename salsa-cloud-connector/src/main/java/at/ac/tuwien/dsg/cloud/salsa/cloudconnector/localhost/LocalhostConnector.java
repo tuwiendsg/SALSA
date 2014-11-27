@@ -80,7 +80,7 @@ public class LocalhostConnector implements CloudInterface {
 		Scanner scanner = new Scanner(listOfContainer);
 		while (scanner.hasNextLine()) {
 		  String line = scanner.nextLine();
-		  runLocalhostCommandNoWaitingFor("sudo docker rm " + line);
+		  runLocalhostCommandNoWaitingFor("sudo docker rm -f" + line);
 		}
 		scanner.close();				
 	}
