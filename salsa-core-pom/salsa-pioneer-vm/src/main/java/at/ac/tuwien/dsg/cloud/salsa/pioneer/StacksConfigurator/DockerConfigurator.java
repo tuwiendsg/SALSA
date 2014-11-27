@@ -84,7 +84,7 @@ public class DockerConfigurator{
 	
 	public String removeDockerContainer(String containerID){
 		 executeCommand("sudo docker kill " + containerID);
-		 executeCommand("sudo docker rm " + containerID);
+		 executeCommand("sudo docker rm -f " + containerID);
 		 return containerID;
 	}
 	

@@ -109,7 +109,7 @@ public class Main {
 			centerCon.logMessage("Start pioneer: " + nodeId + "/" + replica);
 			InstrumentShareData.startProcessMonitor();
 			startPullingThread();
-			startRESTService();
+			//startRESTService();
 			break;
 		}
 		case "deploy":
@@ -118,7 +118,7 @@ public class Main {
 			//deployer.deployNodeChain(thisNode);			
 			InstrumentShareData.startProcessMonitor();
 			startPullingThread();
-			startRESTService();
+			//startRESTService();
 			break;
 		case "checkcapa":	// remote			
 			if (deployer.checkCapabilityReady(args[1])) {
@@ -233,7 +233,7 @@ public class Main {
 		return false;
 	}
 	
-	private static class pullingTaskThread implements Runnable {		
+private static class pullingTaskThread implements Runnable {		
 		
 		@Override
 		public void run()  {
@@ -323,7 +323,6 @@ public class Main {
 		}
 
 	}
-	
 	
 		
 }

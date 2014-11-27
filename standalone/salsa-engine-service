@@ -10,13 +10,13 @@
 
 RUN_MODE="daemons"
 
-JAVA=$(which java)
+JAVA=/opt/jre1.7.0/bin/java
 NAME=salsa-engine-service
 DAEMONDIR=./
 DAEMON=salsa-engine.jar
 PIDDIR=/tmp/
 PIDFILE=$PIDDIR/salsa-engine-service.pid
-SALSA_HTTP_PORT=8080
+SALSA_HTTP_PORT=8380
 LOG_DIR=/tmp/salsa-engine/
 
 test -x $JAVA -a -f $DAEMONDIR/$DAEMON || echo "test -x $JAVA -a -f $DAEMONDIR/$DAEMON failed"  

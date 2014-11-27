@@ -189,16 +189,17 @@ public class ArtifactDeployer {
 			downloadNodeArtifacts(node, def);
 			// deploy the artifact
 			logger.debug("Executing the deployment for node: " + node.getId() +", instance: " + instanceId);
-			centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.INSTALLING);
-			if (node.getDeploymentArtifacts()!=null){
-				if (node.getDeploymentArtifacts().getDeploymentArtifact().isEmpty())
-					{
-						SalsaEntityType type = SalsaEntityType.fromString(node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart());
-						if (type.equals(SalsaEntityType.EXECUTABLE)){
-							centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.RUNNING);
-						}
-					}
-			}			
+			//centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.INSTALLING);
+//			if (node.getDeploymentArtifacts()!=null){
+//				if (node.getDeploymentArtifacts().getDeploymentArtifact().isEmpty())
+//					{
+//						SalsaEntityType type = SalsaEntityType.fromString(node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart());
+//						if (type.equals(SalsaEntityType.EXECUTABLE)){							
+//							centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.RUNNING);
+//						}
+//					}
+//			}
+			centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.RUNNING);
 
 			//centerCon.updateInstanceUnitCapability(serviceId, topologyId, nodeId, instanceId, capa);
 			runNodeArtifacts(node, Integer.toString(instanceId), def);
@@ -272,16 +273,23 @@ public class ArtifactDeployer {
 			}
 			logger.debug("Trying to get relationship host on");
 			List<TRelationshipTemplate> relas = ToscaStructureQuery.getRelationshipTemplateList(SalsaRelationshipType.HOSTON.getRelationshipTypeString(), def);
-			logger.debug("relas.size: " + relas.size());
+			logger.debug("number of relationship to check: " + relas.size());
 			for (TRelationshipTemplate rela : relas) {
+				logger.debug("Check rela: " + rela.getId());
 				if (rela.getSourceElement().getRef().equals(node)){
+					logger.debug("Found target equal to current node : " + node.getId());
 					TNodeTemplate hostNode = (TNodeTemplate) rela.getTargetElement().getRef();
 					hostNode.getId();
+					logger.debug("Checking state of host node:: " + hostNode.getId());
 					CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 					SalsaEntityState state = SalsaEntityState.CONFIGURING;
-					while (state!=SalsaEntityState.DEPLOYED){
+					while (state!=SalsaEntityState.RUNNING && state!=SalsaEntityState.DEPLOYED){
+						logger.debug("Loop to see ! ");
 						state = service.getComponentById(hostNode.getId()).getState();
+						logger.debug("Loop to see: " + state);
+						service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 						try{
+							logger.debug("sleeping");
 							Thread.sleep(3000);							
 						} catch (InterruptedException e) {}
 					}
