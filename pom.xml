@@ -17,6 +17,7 @@
 	<modules>
 		<module>salsa-cloud-connector</module>
 		<module>salsa-core-pom</module>
+<module>standalone</module>
   </modules>
 
 </project>
