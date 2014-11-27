@@ -170,7 +170,11 @@ function update(source) {
 	        		return "SALSA SERVER";
 	        	}
 	        	if (d.nodeType=="os"){
+                            if (d.properties.provider=="localhost"){
+                                return "PC";
+                            } else {
 	        		return "VIRTUAL MACHINE";
+                            }
 	        	}	        	
 	        	if (d.nodeType=="chef" && d.isAbstract==false){
 	        		return "CHEF CLIENT";
