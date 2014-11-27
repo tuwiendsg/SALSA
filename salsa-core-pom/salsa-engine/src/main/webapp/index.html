@@ -78,12 +78,14 @@ function loadPart(){
 
 function showButtons(){
 	var text = 	'<h3 style="margin-left:5px;">Switch between views</h3> <div style="white-space:nowrap;margin-left:45px;">';
-		text += '		<input type="radio" id="one" name="click_item" value="1" onclick="showDeploymentInfo();" />	';
-		text += '		<label for="one">Deployment states</label>	';
-		text += '		<input type="radio" id="two" name="click_item" value="2" onclick="showAppStructure();"/>	';
-		text += '		<label for="two">App. structure</label>	';
+		text += '	<input type="radio" id="one" name="click_item" value="1" onclick="showDeploymentInfo();" />	';
+		text += '	<label for="one">Deployment states</label>	';
+		text += '	<input type="radio" id="two" name="click_item" value="2" onclick="showAppStructure();"/>	';
+		text += '	<label for="two">App. structure</label>	';
 		text += '   	<input type="radio" id="three" name="click_item" value="3" onclick="showRuntimeTable();"/>	';
 		text += '    	<label for="three">Detail tables</label>	';
+                text += '   	<input type="radio" id="three" name="click_item" value="4" onclick="showHighLevel();"/>	';
+		text += '    	<label for="three">Remove Connect To Links</label>	';
 		text += '</div>	<br />';
 
 		$('#selectionButton').html(text).fadeIn();
@@ -109,6 +111,19 @@ function showAppStructure(){
 	
 	var iframe = document.createElement('iframe');
     iframe.setAttribute('src', "/salsa-engine/ServiceRuntimeTreeView_Simple.html?id=" + getURLParameter("id"));
+    iframe.setAttribute('style', 'width:100%; height:100%; overflow:hidden; box-shadow: 0px 0px 4px 4px #ffffff;');
+    iframe.setAttribute('frameborder', '0');
+    
+    treeDiv.appendChild(iframe);
+}
+
+function showHighLevel(){
+	//$("#treeView").load("ServiceRuntimeTreeView.html");
+	var treeDiv = document.getElementById("treeView");
+	treeDiv.innerHTML = "";
+
+	var iframe = document.createElement('iframe');	
+    iframe.setAttribute('src', "/salsa-engine/ServiceRuntimeTreeView_NoConnecTo.html?id=" + getURLParameter("id"));
     iframe.setAttribute('style', 'width:100%; height:100%; overflow:hidden; box-shadow: 0px 0px 4px 4px #ffffff;');
     iframe.setAttribute('frameborder', '0');
     

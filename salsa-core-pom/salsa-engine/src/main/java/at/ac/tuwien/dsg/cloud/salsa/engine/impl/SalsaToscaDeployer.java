@@ -549,6 +549,8 @@ public class SalsaToscaDeployer {
 		if (instance.getState().equals(SalsaEntityState.ALLOCATING)){
 			return true;
 		}
+                //TODO: undeploy dependency chain first.
+                
 		// remove VM node by invoke MultiCloudConnector
 		if (node.getType().equals(
 				SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {

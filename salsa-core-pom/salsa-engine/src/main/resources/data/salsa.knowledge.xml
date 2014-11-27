@@ -7,8 +7,17 @@
             </ns2:NodeTemplate>
             <ns2:NodeTemplate id="bin"/>
             <ns2:NodeTemplate id="sh"/>
-            <ns2:NodeTemplate id="jre"/>
-            <ns2:NodeTemplate id="tomcat" minInstances="1" maxInstances="1">
+            <ns2:NodeTemplate id="openjdk-7-jre">
+            	<ns2:Properties>
+            		<MappingProperties>
+            			<MappingProperty type="action">
+            				<property name="deploy"><![CDATA[apt-get -y install openjdk-7-jre-headless]]></property>
+            				<property name="undeploy"><![CDATA[apt-get -y erase openjdk-7-jre-headless]]></property>
+            			</MappingProperty>
+            		</MappingProperties>
+            	</ns2:Properties>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate id="tomcat7" minInstances="1" maxInstances="1">
             	<ns2:Properties>
             		<MappingProperties>
             			<MappingProperty type="action">
@@ -43,27 +52,27 @@
                 <ns2:TargetElement ref="os"/>
             </ns2:RelationshipTemplate>
             <ns2:RelationshipTemplate type="HOSTON">
-                <ns2:SourceElement ref="jre"/>
+                <ns2:SourceElement ref="openjdk-7-jre"/>
                 <ns2:TargetElement ref="os"/>
             </ns2:RelationshipTemplate>
             <ns2:RelationshipTemplate type="HOSTON">
-                <ns2:SourceElement ref="tomcat"/>
+                <ns2:SourceElement ref="tomcat7"/>
                 <ns2:TargetElement ref="os"/>
+            </ns2:RelationshipTemplate>
+             <ns2:RelationshipTemplate type="LOCAL">
+                <ns2:SourceElement ref="openjdk-7-jre"/>
+                <ns2:TargetElement ref="tomcat7"/>
             </ns2:RelationshipTemplate>
             <ns2:RelationshipTemplate type="HOSTON">
                 <ns2:SourceElement ref="war"/>
-                <ns2:TargetElement ref="tomcat"/>
+                <ns2:TargetElement ref="tomcat7"/>
             </ns2:RelationshipTemplate>
             <ns2:RelationshipTemplate type="HOSTON">
                 <ns2:SourceElement ref="image"/>
                 <ns2:TargetElement ref="os"/>
-            </ns2:RelationshipTemplate>
-            <ns2:RelationshipTemplate type="LOCAL">
-                <ns2:SourceElement ref="tomcat"/>
-                <ns2:TargetElement ref="jre"/>
-            </ns2:RelationshipTemplate>
+            </ns2:RelationshipTemplate>            
             <ns2:RelationshipTemplate type="HOSTON">
-                <ns2:SourceElement ref="tomcat"/>
+                <ns2:SourceElement ref="tomcat7"/>
                 <ns2:TargetElement ref="os"/>
             </ns2:RelationshipTemplate>
         </ns2:TopologyTemplate>
