@@ -98,6 +98,8 @@ public class ToscaEnricher {
 						addHostonNodeForOneNodeTemplate((TNodeTemplate) node, topo);
 					}
 				}
+				
+				
 
 				//cleanEmptyProperties(nodeLst);
 				cleanLOCALRelationship(topo);
@@ -231,7 +233,58 @@ public class ToscaEnricher {
 		
 		counter++;
 		return nextNode;
-	} // end method
+	} // end method host on adding
+	
+	
+	public void addLocalDependencyNodeForOneNodeTemplate(TNodeTemplate node, TTopologyTemplate topo){
+		EngineLogger.logger.debug("Enriching node: " + node.getId());
+		List<TNodeTemplate> lst = getLocalNode(node, topo);
+		for (TNodeTemplate nextNode : lst) {			
+			EngineLogger.logger.debug("Generated a local node of type: " + nextNode.getId());
+			topo.getNodeTemplateOrRelationshipTemplate().add(nextNode);
+			
+			Artifact art = this.artifactList.searchArtifact(nextNode.getId());
+			// refine some fields
+			nextNode.setType(new QName(nextNode.getId()));
+			nextNode.setId(nextNode.getId() + "_OF_" + node.getId());
+			if (node.getReference()!=null){
+				String[] ref = node.getReference().split("/");				
+				nextNode.setReference(ref[0] + "/" + nextNode.getId());		
+			}
+			
+			if (art != null){	// some node have artifact. some node like os doesn't
+				String artId = "Artifact_" + nextNode.getId();
+				
+				// build the deployment artifact and attach to the new node
+				TDeploymentArtifact dArt = new TDeploymentArtifact();
+				dArt.setArtifactRef(new QName(artId));
+				dArt.setArtifactType(new QName(art.getFirstMirror().getArtifactFormat().toString()));		
+				dArt.setName("Artifact for " + nextNode.getId());
+				TDeploymentArtifacts dArts = new TDeploymentArtifacts();
+				dArts.getDeploymentArtifact().add(dArt);
+				nextNode.setDeploymentArtifacts(dArts);
+				
+				// merge the repository info with above artifact to have full direct URL
+				String repoEndpoint = repoList.getRepoEndpoint(art.getFirstMirror().getRepository());		
+				TArtifactTemplate artTemp = new TArtifactTemplate();
+				artTemp.setId(repoEndpoint+art.getFirstMirror().getReference());
+						
+				TDeploymentArtifact da = new TDeploymentArtifact();
+				da.setArtifactType(new QName(art.getFirstMirror().getArtifactFormat().toString()));		
+				da.setArtifactRef(new QName("Artifact_OF_" + nextNode.getId()));
+				nextNode.getDeploymentArtifacts().getDeploymentArtifact().add(da);
+				
+				toscaDef.getServiceTemplateOrNodeTypeOrNodeTypeImplementation().add(artTemp);
+			}
+		
+			// relationship between node and newNode
+			TRelationshipTemplate rela = createNewRela(node, nextNode);
+			topo.getNodeTemplateOrRelationshipTemplate().add(rela);
+			
+		}
+		
+	}
+	
 	
 	private TRelationshipTemplate createNewRela(TNodeTemplate node, TNodeTemplate nextNode){
 		System.out.println("Create new Relationship between: " + node.getId() + " and " + nextNode.getId());
@@ -298,8 +351,7 @@ public class ToscaEnricher {
 
 	private TNodeTemplate nextNewNode(TNodeTemplate node) {
 		// search on the knowledge the relationship which node is the source
-		List<TRelationshipTemplate> relaList = ToscaStructureQuery
-				.getRelationshipTemplateList(knowledgeTopo);
+		List<TRelationshipTemplate> relaList = ToscaStructureQuery.getRelationshipTemplateList(knowledgeTopo);
 		for (TRelationshipTemplate rela : relaList) {
 			TNodeTemplate source = (TNodeTemplate) rela.getSourceElement().getRef();
 			if (source.getId().equals(node.getType().getLocalPart())) {
@@ -316,6 +368,30 @@ public class ToscaEnricher {
 			}
 		}
 		return null;
+	}
+	
+	private List<TNodeTemplate> nextNewNodeLOCAL(TNodeTemplate node) {
+		// search on the knowledge the relationship which node is the source
+		List<TRelationshipTemplate> relaList = ToscaStructureQuery.getRelationshipTemplateList(knowledgeTopo);
+		List<TNodeTemplate> localDependency = new ArrayList<TNodeTemplate>();
+		for (TRelationshipTemplate rela : relaList) {
+			if (rela.getType().getLocalPart().equals(SalsaRelationshipType.LOCAL.getRelationshipTypeString())){
+				TNodeTemplate source = (TNodeTemplate) rela.getSourceElement().getRef();
+				if (source.getId().equals(node.getType().getLocalPart())) {
+					TNodeTemplate newNode = new TNodeTemplate();
+					TNodeTemplate refNode = (TNodeTemplate) rela.getTargetElement().getRef();
+					newNode.setId(refNode.getId());
+					if (refNode.getProperties()!=null && refNode.getProperties().getAny()!=null){
+						newNode.setProperties(new Properties());
+						newNode.getProperties().setAny((refNode.getProperties().getAny()));
+						newNode.setMinInstances(refNode.getMinInstances());
+						newNode.setMaxInstances(refNode.getMaxInstances());
+					}						
+					localDependency.add(newNode);
+				}
+			}
+		}
+		return localDependency;
 	}
 
 	/*
