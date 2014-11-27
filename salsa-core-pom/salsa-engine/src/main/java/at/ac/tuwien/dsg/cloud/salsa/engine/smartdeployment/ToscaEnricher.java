@@ -591,11 +591,13 @@ public class ToscaEnricher {
 	private void enrichArtifactRepo(String prefixRepo){
 		for (TExtensibleElements ee : toscaDef.getServiceTemplateOrNodeTypeOrNodeTypeImplementation()) {
 			if (ee.getClass().equals(TArtifactTemplate.class)){
-				for (TArtifactReference ref : ((TArtifactTemplate) ee).getArtifactReferences().getArtifactReference()) {
-					String refstr = ref.getReference();
-					if (!refstr.startsWith("http://") && !refstr.startsWith("file://")){						
-						refstr = refstr.startsWith("/") ? refstr.substring(1) : refstr;
-						ref.setReference(prefixRepo + "/" + refstr);
+				if (((TArtifactTemplate) ee).getArtifactReferences() != null){
+					for (TArtifactReference ref : ((TArtifactTemplate) ee).getArtifactReferences().getArtifactReference()) {
+						String refstr = ref.getReference();
+						if (!refstr.startsWith("http://") && !refstr.startsWith("file://")){						
+							refstr = refstr.startsWith("/") ? refstr.substring(1) : refstr;
+							ref.setReference(prefixRepo + "/" + refstr);
+						}
 					}
 				}
 			}
