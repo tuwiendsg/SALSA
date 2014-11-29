@@ -251,7 +251,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		ServiceInstance instance = unit.getInstanceById(Integer.parseInt(instanceId));
 		
 		int counter = 0;
-		while (instance==null || !(instance.getState().equals(SalsaEntityState.RUNNING) || instance.getState().equals(SalsaEntityState.DEPLOYED))){
+		while (instance==null || !instance.getState().equals(SalsaEntityState.DEPLOYED)){
 			try {
 				if (counter>300){
 					break;
@@ -1090,6 +1090,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			//ConfigurationCapability confCapa = nodeData.getCapabilityByName(actionName);
 			ServiceInstance instance = nodeData.getInstanceById(instanceId);
 			instance.queueAction(actionName);
+                        instance.setState(SalsaEntityState.STAGING_ACTION);
 						
 			SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);			
 		} catch (Exception e){
