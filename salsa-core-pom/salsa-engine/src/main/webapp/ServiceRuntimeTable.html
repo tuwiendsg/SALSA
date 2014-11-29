@@ -230,7 +230,9 @@ function CreateTableViewSalsaReplicaNodeTable(data, nodeId) {   // data is Compo
 function getElementByTagNameToString(tagName, parentElement){
 	elements = parentElement.getElementsByTagName(tagName);
 	if (elements.length>0){
-		return elements[0].nodeName + " = " + elements[0].childNodes[0].nodeValue +'<br/>';
+                if (!elements[0].nodeName && !elements[0].childNodes[0] && !elements[0].childNodes[0].nodeValue){
+                    return elements[0].nodeName + " = " + elements[0].childNodes[0].nodeValue +'<br/>';
+                }
 	}
 	return "";
 }

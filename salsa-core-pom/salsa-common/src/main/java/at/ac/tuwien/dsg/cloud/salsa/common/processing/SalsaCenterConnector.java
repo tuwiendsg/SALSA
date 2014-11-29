@@ -431,9 +431,9 @@ public class SalsaCenterConnector {
 
 	public String removeOneInstance(String serviceId, String topologyId,
 			String nodeId, int instanceId) {
-		String url = centerRestfulEndpoint + "/instanceunits/" + serviceId
-				+ "/" + topologyId + "/" + nodeId + "/" + instanceId;
-		return queryDataToCenter1(url, HttpVerb.DELETE, "", "", "");		
+            String url = centerRestfulEndpoint + "/services/" + serviceId
+				+"/topologies/" + topologyId + "/nodes/" + nodeId + "/instances/" + instanceId;
+            return queryDataToCenter1(url, HttpVerb.DELETE, "", "", "");		
 	}
 	
 	public String logMessage(String data){

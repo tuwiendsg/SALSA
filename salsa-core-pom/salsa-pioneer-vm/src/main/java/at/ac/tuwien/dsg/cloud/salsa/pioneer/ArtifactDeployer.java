@@ -26,6 +26,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.PrimitiveOperation;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityActions;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaRelationshipType;
@@ -45,7 +46,9 @@ import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
+import java.util.Map;
 
 public class ArtifactDeployer {
 	private String serviceId;
@@ -207,7 +210,7 @@ public class ArtifactDeployer {
 			return Integer.toString(instanceId);
 		}
 		
-		public void removeSingleNodeInstance(TNodeTemplate node, String instanceId){			
+		public void removeSingleNodeInstance(TNodeTemplate node, String instanceId){                    
 			InstrumentShareData.killProcessInstance(serviceId, topologyId, nodeId, instanceId);
 			//centerCon.removeOneInstance(serviceId, topologyId, node.getId(), Integer.parseInt(instanceId));
 		}
@@ -538,8 +541,9 @@ public class ArtifactDeployer {
 		
 		
 		
-		public static String executeCommand(String cmd){
+		public String executeCommand(String cmd){
 			PioneerLogger.logger.debug("Execute command: " + cmd);
+                        this.centerCon.logMessage("Execute command from pioneer: " + this.nodeId +"/" + this.hostedVmInstanceId +". Cmd: " + cmd);
 			try {
 				Process p = Runtime.getRuntime().exec(cmd);
 			    

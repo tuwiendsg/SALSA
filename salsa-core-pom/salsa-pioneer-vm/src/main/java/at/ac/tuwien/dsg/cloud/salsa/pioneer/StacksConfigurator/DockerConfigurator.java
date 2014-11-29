@@ -11,6 +11,14 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityS
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.io.IOUtils;
 
 public class DockerConfigurator{	
 	static String portPrefix = "498";	
@@ -25,8 +33,21 @@ public class DockerConfigurator{
 			PioneerLogger.logger.debug("Docker is installed, not do it again !");
 			return;
 		}
-		executeCommand("wget -q -N http://128.130.172.215/salsa/upload/files/pioneer/docker_install.sh");
-		executeCommand("/bin/bash docker_install.sh");
+		//executeCommand("wget -q -N http://128.130.172.215/salsa/upload/files/pioneer/docker_install.sh");
+                PioneerLogger.logger.debug("Getting docker installtion script !");                                
+                try{
+                    InputStream is = DockerConfigurator.class.getResourceAsStream("/pioneer-scripts/docker_install.sh");
+                    //EngineLogger.class.getResourceAsStream("/log4j.properties")
+                    OutputStream os = new FileOutputStream(new File("/tmp/docker_install.sh"));
+                    IOUtils.copy(is, os);
+                    PioneerLogger.logger.debug("Getting docker installtion script done !");                
+                } catch (FileNotFoundException e){
+                    PioneerLogger.logger.error("Cannot write docker installation script out");
+                    e.printStackTrace();
+                } catch (IOException ex) {
+                    Logger.getLogger(DockerConfigurator.class.getName()).log(Level.SEVERE, null, ex);
+                }
+		executeCommand("/bin/bash /tmp/docker_install.sh");
 		executeCommand("sudo docker pull "+ SALSA_DOCKER_IMAGE_NAME);
 		inited=true;
 	}	
@@ -37,11 +58,21 @@ public class DockerConfigurator{
 	
 	public String installDockerNode(String nodeId, int instanceId){
 		// build new image with correct salsa.variable file
-		StringBuffer sb = new StringBuffer();
-		
+		StringBuffer sb = new StringBuffer();		
 		sb.append("FROM "+ SALSA_DOCKER_PULL +" \n");
-		sb.append("COPY ./salsa.variables /etc/salsa.variables \n");
-		sb.append("RUN wget -q -N http://128.130.172.215/salsa/upload/files/pioneer/pioneer_install.sh \n");
+		sb.append("COPY ./salsa.variables /etc/salsa.variables \n");                
+                try{
+                    InputStream is = DockerConfigurator.class.getResourceAsStream("/pioneer-scripts/pioneer_install.sh");
+                    OutputStream os = new FileOutputStream(new File("./pioneer_install.sh"));
+                    IOUtils.copy(is, os);
+                    PioneerLogger.logger.debug("Getting pioneer installtion script done !");                
+                } catch (FileNotFoundException e){
+                    PioneerLogger.logger.error("Cannot write pioneer installation script out in /tmp");
+                    e.printStackTrace();
+                } catch (IOException ex) {
+                    Logger.getLogger(DockerConfigurator.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                sb.append("COPY ./pioneer_install.sh ./pioneer_install.sh \n");
 		sb.append("EXPOSE 9000 \n");
 		String pFilename = "./Dockerfile";
 		try {

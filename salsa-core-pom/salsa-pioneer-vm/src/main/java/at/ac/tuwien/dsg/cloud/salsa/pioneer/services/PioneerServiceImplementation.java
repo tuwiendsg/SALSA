@@ -27,7 +27,9 @@ import at.ac.tuwien.dsg.cloud.salsa.pioneer.StacksConfigurator.DockerConfigurato
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
+import java.util.Map;
 
 @Service
 //@WebService(endpointInterface = "at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaPioneerInterface")
@@ -84,7 +86,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
 		
 		if (actionName.equals(SalsaEntityActions.UNDEPLOY.getActionString())){
 			PioneerLogger.logger.debug("Found the default action: " + actionName);
-			this.removeNodeInstance(nodeId, instanceId);			
+			this.removeNodeInstance(nodeId, instanceId);	
 		} else {
 			// TODO: implement to execute other action types
 			PrimitiveOperation p = unit.getPrimitiveByName(actionName);
@@ -141,7 +143,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
 
 	@Override
 	public String removeNodeInstance(String nodeID, int instanceId) {
-		PioneerLogger.logger.debug("Recieve command to remove node: " + nodeID + "/" + instanceId);
+		PioneerLogger.logger.debug("Recieve command to remove node: " + nodeID + "/" + instanceId);                
 		
 		Properties prop = SalsaPioneerConfiguration.getPioneerProperties();
 		
@@ -163,6 +165,28 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
 		TNodeTemplate nodeForRemove = ToscaStructureQuery.getNodetemplateById(nodeID, def);
 		ServiceUnit unit = serviceRuntimeInfo.getComponentById(nodeID);
 		ServiceInstance instance = unit.getInstanceById(instanceId);
+                
+                
+                 // check if there are an action name  stop and undeployed and execute them first (what ever node types is)
+                PioneerLogger.logger.debug("Checking the property of the node to search actions: " + nodeForRemove.getId() +"/" + instanceId);                
+                if (nodeForRemove.getProperties()!=null){
+                    centerCon.logMessage("Pioneer is removing node: " + nodeForRemove.getId() + "/" + instanceId);
+                    PioneerLogger.logger.debug("Removing single node instance: " + nodeForRemove.getId() +"/" + instanceId);
+                    SalsaMappingProperties allProp = (SalsaMappingProperties)nodeForRemove.getProperties().getAny();
+                    SalsaMappingProperties.SalsaMappingProperty actionProp = allProp.getByType("action");
+                    if (actionProp!=null){
+                        Map<String, String> map = actionProp.getMapData();
+                        if (map.get(SalsaEntityActions.STOP.getActionString())!=null){
+                            PioneerLogger.logger.debug("Execute Stopping action for: " + nodeForRemove.getId() +"/" + instanceId);
+                            executeCommand(map.get(SalsaEntityActions.STOP.getActionString()));
+                        }
+                        if (map.get(SalsaEntityActions.UNDEPLOY.getActionString())!=null){
+                            PioneerLogger.logger.debug("Execute Undeploying action for: " + nodeForRemove.getId() +"/" + instanceId);
+                            executeCommand(map.get(SalsaEntityActions.UNDEPLOY.getActionString()));
+                        }
+                    }                    
+                }
+                                
 		
 		if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())){
 			SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM)instance.getProperties().getAny();
@@ -181,7 +205,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
 	}
 	
 	
-	public static String executeCommand(String cmd){
+	public String executeCommand(String cmd){
 		PioneerLogger.logger.debug("Execute command: " + cmd);
 		try {
 			Process p = Runtime.getRuntime().exec(cmd);

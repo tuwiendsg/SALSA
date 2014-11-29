@@ -42,6 +42,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.Salsa
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
+
 public class SalsaToscaDeployer {
 
 	// some hard-code variables
@@ -427,6 +428,33 @@ public class SalsaToscaDeployer {
 				suitableHostedInstance = updateService.getInstanceById(topologyId, hostedUnit.getId(),
 						suitableHostedInstance.getInstanceId());
 			}
+                        
+                        // wait for CONNECTTO relationship
+                        boolean fullfilled;
+                        do {
+                            fullfilled = true;
+                            CloudService updateService = centerCon.getUpdateCloudServiceRuntime(service.getId());
+                            for (String connectNode : unit.getConnecttoId()){                                
+                                ServiceUnit u = updateService.getComponentById(connectNode);
+                                EngineLogger.logger.debug("Node: " + unit.getId() +"/" + instanceId +" is waiting for connectto node: " + u.getId());
+                                if (u.getInstancesList()==null || u.getInstancesList().isEmpty()){                                    
+                                    fullfilled = false;
+                                    break;
+                                }
+                                if (!u.getInstancesList().get(0).getState().equals(SalsaEntityState.DEPLOYED)){
+                                    EngineLogger.logger.debug("Node: " + unit.getId() +"/" + instanceId +" is waiting for connectto node: " + u.getId() + " but the state is not DEPLOYED, it is: " + u.getInstancesList().get(0).getState());
+                                    fullfilled = false;                                            
+                                    break;
+                                }
+                            }
+                            try {
+                                      Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                            }      
+                        } while (fullfilled == false);
+                        
+                        
+                        
 			EngineLogger.logger.debug("Set state to STAGING for node: "	+ nodeId + "/" + instanceId + " which will be hosted on " + hostedUnit.getId() + "/" + hostInstanceId);			
 			centerCon.updateNodeState(newService.getId(), topologyId, nodeId, instanceId, SalsaEntityState.STAGING);
 		}
@@ -547,9 +575,71 @@ public class SalsaToscaDeployer {
 		topologyId = service.getTopologyOfNode(node.getId()).getId();
 		ServiceInstance instance = node.getInstanceById(instanceId);
 		if (instance.getState().equals(SalsaEntityState.ALLOCATING)){
-			return true;
+                    EngineLogger.logger.debug("Just remove metadata");
+                    //TODO: REMOVE METADATA HERE !
+                    return true;
 		}
-                //TODO: undeploy dependency chain first.
+                List<ServiceUnit> listUnit = service.getAllComponent();
+                
+                // undeploy dependency chain first. It is recursive.
+                for(ServiceUnit u : listUnit){  // all the unit of the service
+                    EngineLogger.logger.debug("Checking if this unit: " + u.getId() + " is HOSTED ON current removing node: " + nodeId);
+                    if (u.getHostedId().equals(nodeId)){    // this is hosted on the node we want to remove. remove it first                        
+                        EngineLogger.logger.debug("YES! Now check instance of node: " + u.getId() + " is HOSTED ON current removing node: " + nodeId);
+                        for(ServiceInstance i : u.getInstanceHostOn(instanceId)) {   // the instance of above unit and hosted on current instance
+                            EngineLogger.logger.debug("Found instance need to be remove first: " + u.getId() + "/" + i.getInstanceId());
+                            centerCon.removeOneInstance(serviceId, topologyId, u.getId(), i.getInstanceId());
+                        }
+                    }
+                    for(String connectoId : u.getConnecttoId()){    // the unit u can connect to something
+                        EngineLogger.logger.debug("Checking if this unit: " + u.getId() + " is CONNECT TO current removing node: " + nodeId);
+                        if (connectoId.equals(nodeId)){             // which can be this node
+                            EngineLogger.logger.debug("YES! Now checking instance of node: " + u.getId() + " is CONNECT TO current removing node: " + nodeId);
+                            for(ServiceInstance i : u.getInstancesList()) {   // remove all its instance
+                                EngineLogger.logger.debug("Found instance need to be remove first: " + u.getId() + "/" + i.getInstanceId());
+                                centerCon.removeOneInstance(serviceId, topologyId, u.getId(), i.getInstanceId());                                
+                            }
+                        }
+                    }
+                }
+                EngineLogger.logger.debug("The dependency should be cleaned for the node: " + nodeId +"/"+instanceId);
+                
+                // check all instance of hoston and connect to are undeployed
+                // do similar things and check if all the list are empty
+                boolean cleaned;
+                do{
+                    service = centerCon.getUpdateCloudServiceRuntime(serviceId);
+                    node = service.getComponentById(nodeId);
+                    topologyId = service.getTopologyOfNode(node.getId()).getId();
+                    listUnit = service.getAllComponent();
+                    cleaned=true;
+                    EngineLogger.logger.debug("Checking if dependency is really clean for node: " + nodeId +"/"+instanceId);
+                    for(ServiceUnit u : listUnit){  
+                        if (u.getHostedId().equals(nodeId)){   
+                            EngineLogger.logger.debug("Checking if dependency is really clean for node: " + nodeId +"/"+instanceId+". Checking unit: " + u.getId() +" which number of hosted on inst: " + u.getInstanceHostOn(instanceId).size());
+                            if (!u.getInstanceHostOn(instanceId).isEmpty()){                                
+                                EngineLogger.logger.debug("Waiting for cleaning HOST ON nodes of: " + nodeId + "/" + instanceId + ". Nodes left: " + u.getInstanceHostOn(instanceId).size());
+                                for(ServiceInstance debugI : u.getInstanceHostOn(instanceId)){
+                                    EngineLogger.logger.debug("They are: " + u.getId() +"/" + debugI.getInstanceId());                                    
+                                }
+                                cleaned=false;
+                            }
+                        }                        
+                        for(String connectoId : u.getConnecttoId()){    
+                            if (connectoId.equals(nodeId)){
+                                if (!u.getInstancesList().isEmpty()){                                    
+                                    EngineLogger.logger.debug("Waiting for cleaning CONNECT TO nodes of: " + nodeId + "/" + instanceId + ". Nodes left: " + u.getInstancesList().size());
+                                    cleaned = false;
+                                }
+                            }
+                        }
+                    }
+                    try{                        
+                        Thread.sleep(3000);
+                    } catch(InterruptedException e){}
+                } while (cleaned == false);
+                
+                EngineLogger.logger.debug("It is TRUE, the dependency is now cleaned for the node: " + nodeId +"/"+instanceId);                
                 
 		// remove VM node by invoke MultiCloudConnector
 		if (node.getType().equals(
@@ -567,33 +657,6 @@ public class SalsaToscaDeployer {
 			return true;
 		} else {
 			new Thread(new removeOneSoftwareThread(serviceId, topologyId, nodeId, instanceId)).start();	
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			// will not use pioneer connector as port forwarding issue
-//			ServiceUnit hostNode = service.getComponentById(topologyId,	node.getHostedId());
-//			EngineLogger.logger.debug("hostNode id: " + hostNode.getId());
-//			while (!hostNode.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
-//				hostNode = service.getComponentById(topologyId,	hostNode.getId());
-//				EngineLogger.logger.debug("other hostNode id: "	+ hostNode.getId());
-//			}			
-//			EngineLogger.logger.debug("removeOneInstance - instanceid: "+ instance.getInstanceId());
-//			int hostInstanceId = instance.getHostedId_Integer();
-//			EngineLogger.logger.debug("removeOneInstance - hostInstanceId: "+ hostInstanceId);
-//			ServiceInstance vm_instance = hostNode.getInstanceById(hostInstanceId);
-//			EngineLogger.logger.debug("removeOneInstance - vm instance: "	+ vm_instance.getInstanceId());
-//			SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) vm_instance.getProperties().getAny();
-//			EngineLogger.logger.debug("removeOneInstance - vm ip: "	+ vm.getPrivateIp());
-//
-//			PioneerConnector pioneer = new PioneerConnector(vm.getPrivateIp());
-//			pioneer.removeSoftwareNode(nodeId, instanceId);
-
 			return true;
 		}
 	}

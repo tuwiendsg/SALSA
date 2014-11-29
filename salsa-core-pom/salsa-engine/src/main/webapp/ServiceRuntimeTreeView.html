@@ -203,6 +203,8 @@ function update(source) {
     		.attr("fill", function(d){
   			switch (d.state){
 	  			case 'RUNNING':
+                                        return "orange";
+                                        break;
 	  			case 'DEPLOYED':
 		  			return "green";
 		  			break;
