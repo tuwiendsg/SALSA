@@ -1161,9 +1161,9 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		rankState.put(SalsaEntityState.STAGING, 3);
 		rankState.put(SalsaEntityState.STAGING_ACTION, 4);
 		rankState.put(SalsaEntityState.CONFIGURING, 5);
-		rankState.put(SalsaEntityState.INSTALLING, 6);
-                rankState.put(SalsaEntityState.DEPLOYED, 7);
-		rankState.put(SalsaEntityState.RUNNING, 8);		
+		//rankState.put(SalsaEntityState.INSTALLING, 6);
+        rankState.put(SalsaEntityState.DEPLOYED, 7);
+		rankState.put(SalsaEntityState.INSTALLING, 8);		
 		
 		
 		List<SalsaEntity> insts = new ArrayList<>();

@@ -142,7 +142,7 @@ public class ArtifactDeployer {
 				docker.initDocker();
 				String containerID = docker.installDockerNode(node.getId(), instanceId);
 				SalsaInstanceDescription_VM dockerVM = docker.getDockerInfo(containerID);				
-				centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.RUNNING);
+				centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.INSTALLING);
 				logger.debug("Updating docker info. ID = "+dockerVM.getInstanceId()+", IP = " + dockerVM.getInstanceId());
 				centerCon.updateInstanceUnitProperty(serviceId, topologyId, nodeId, instanceId, dockerVM);
 				return Integer.toString(instanceId);
@@ -161,30 +161,14 @@ public class ArtifactDeployer {
 			ServiceInstance hostInstance = serviceRuntimeInfo.getInstanceById(unit.getHostedId(), instance.getHostedId_Integer());
 			logger.debug("[123456] 5 Starting deploy node: "+node.getId() + "/" + instanceId);
 			
-//			PioneerLogger.logger.debug("Checking node: " + unit.getId() +"/" + instance.getInstanceId() +", hosted on: " + hostNode.getId() +"/" + hostInstance.getInstanceId() +"/type: " + hostNode.getType() +" equal? " + SalsaEntityType.DOCKER.getEntityTypeString());
-//			if (hostNode.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())){
-//				PioneerLogger.logger.debug("DOCKER INSTALLION DETECTED !");
-//				PioneerLogger.logger.debug("The node " + unit.getId() +"/" + instance.getInstanceId() + " is hosted on node " + hostNode.getId() + "/" + hostInstance.getInstanceId());
-//				DockerConfigurator docker = new DockerConfigurator(hostNode.getId());
-//				String url = docker.getEndpoint(hostInstance.getInstanceId());
-//				docker.initDocker();
-//				docker.installDockerNode(nodeId, instanceId);
-//				//logger.debug("Endpoint of the DOCKER Pioneer: " + url);
-//				//SalsaPioneerInterface pioneer = JAXRSClientFactory.create(url, SalsaPioneerInterface.class);
-//				return Integer.toString(instanceId);			
-//			}
-
 			// Get the number of node to be deploy
 			int quantity = 1;
 			logger.debug("Number of instance to deploy: " + quantity);
 			serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime(serviceId);
-			//int startId=serviceRuntimeInfo.getComponentById(topologyId, node.getId()).getIdCounter();
 			logger.debug("Instance ID: " + instanceId);
-			//centerCon.updateNodeIdCounter(topologyId, node.getId(), startId+quantity);
 			
 			waitingForCapabilities(node, def);
 			// wait for downloading and configuring artifact itself
-			
 			
 			logger.debug("Set status for instance " + instanceId + " to CONFIGURING !");
 			centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.CONFIGURING);
@@ -192,21 +176,11 @@ public class ArtifactDeployer {
 			downloadNodeArtifacts(node, def);
 			// deploy the artifact
 			logger.debug("Executing the deployment for node: " + node.getId() +", instance: " + instanceId);
-			//centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.INSTALLING);
-//			if (node.getDeploymentArtifacts()!=null){
-//				if (node.getDeploymentArtifacts().getDeploymentArtifact().isEmpty())
-//					{
-//						SalsaEntityType type = SalsaEntityType.fromString(node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart());
-//						if (type.equals(SalsaEntityType.EXECUTABLE)){							
-//							centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.RUNNING);
-//						}
-//					}
-//			}
-			centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.RUNNING);
-
-			//centerCon.updateInstanceUnitCapability(serviceId, topologyId, nodeId, instanceId, capa);
+			
+			centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.INSTALLING);
+			
 			runNodeArtifacts(node, Integer.toString(instanceId), def);
-			//centerCon.updateNodeState(topologyId, node.getId(), startId, SalsaEntityState.FINISHED);			
+		
 			return Integer.toString(instanceId);
 		}
 		
@@ -352,8 +326,8 @@ public class ArtifactDeployer {
 					PrimitiveOperation po = unit.getPrimitiveByName("deploy");										
 					if (!po.equals(null)){
 						if (po.getExecutionType().equals(PrimitiveOperation.ExecutionType.SCRIPT)){
-							PioneerLogger.logger.debug("Deploying component by command: " + po.getExecutionREF());
-							executeCommand(po.getExecutionREF());
+							PioneerLogger.logger.debug("Component will be deployed by command: " + po.getExecutionREF());
+							//executeCommand(po.getExecutionREF());	// not running here, just return. 
 						}						
 					}
 					return;
@@ -461,7 +435,7 @@ public class ArtifactDeployer {
 			logger.debug("checkCapabilityReady - service: " + service.getId());
 			ServiceUnit component = service.getComponentById(node.getId());	// no topology as parameter, so we can check crossing to other topology			
 			logger.debug("checkCapabilityReady - service unit: " + component.getId());
-			int number=component.getInstanceNumberByState(SalsaEntityState.RUNNING)+component.getInstanceNumberByState(SalsaEntityState.DEPLOYED);
+			int number=component.getInstanceNumberByState(SalsaEntityState.INSTALLING)+component.getInstanceNumberByState(SalsaEntityState.DEPLOYED);
 			logger.debug("Check capability. Checking component id " + component.getId() + "  -- " + number +" number of running or finished instances.");			
 			if (number == 0){
 				logger.debug("CHECK CAPABILITY FALSE. " + number);				

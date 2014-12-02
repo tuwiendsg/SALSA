@@ -418,7 +418,7 @@ public class SalsaToscaDeployer {
 			EngineLogger.logger.debug("Lock should be released here. Current Lock: " + currentLock + ". Node:" + nodeId +"/"+ data.getInstanceId());
 			releaseLock();
 			// waiting for hostInstance become RUNNING or FINISH
-			while (!suitableHostedInstance.getState().equals(SalsaEntityState.RUNNING)
+			while (!suitableHostedInstance.getState().equals(SalsaEntityState.INSTALLING)
 					&& !suitableHostedInstance.getState().equals(SalsaEntityState.DEPLOYED)) {
 				try {
 					Thread.sleep(3000);
