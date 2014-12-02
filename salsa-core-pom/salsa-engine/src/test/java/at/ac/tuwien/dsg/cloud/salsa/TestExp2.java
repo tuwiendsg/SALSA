@@ -183,7 +183,7 @@ public class TestExp2 {
 
 					ServiceUnit unit = service.getComponentById(TOPO_ID, INST_ID_dsg);
 
-					int iRun = unit.getInstanceByState(SalsaEntityState.RUNNING).size() + unit.getInstanceByState(SalsaEntityState.DEPLOYED).size();
+					int iRun = unit.getInstanceByState(SalsaEntityState.INSTALLING).size() + unit.getInstanceByState(SalsaEntityState.DEPLOYED).size();
 					int iLst = unit.getInstancesList().size();
 					String data = iRun+", " + iLst + ", " + date.getTime() + "\n";
 					//System.out.println("Thread is writing: " + data);

@@ -99,13 +99,13 @@ public class ToscaEnricher {
 					}
 				}
 				
-				nodeLst = ToscaStructureQuery.getNodeTemplateList((TServiceTemplate) ee);
-				for (TEntityTemplate node : nodeLst) {
-					System.out.println("NODE: " + node.getId());
-					if (node.getClass().equals(TNodeTemplate.class)){
-						addLocalDependencyNodeForOneNodeTemplate((TNodeTemplate) node, topo);
-					}
-				}
+//				nodeLst = ToscaStructureQuery.getNodeTemplateList((TServiceTemplate) ee);
+//				for (TEntityTemplate node : nodeLst) {
+//					System.out.println("NODE: " + node.getId());
+//					if (node.getClass().equals(TNodeTemplate.class)){
+//						addLocalDependencyNodeForOneNodeTemplate((TNodeTemplate) node, topo);
+//					}
+//				}
 				
 
 				//cleanEmptyProperties(nodeLst);

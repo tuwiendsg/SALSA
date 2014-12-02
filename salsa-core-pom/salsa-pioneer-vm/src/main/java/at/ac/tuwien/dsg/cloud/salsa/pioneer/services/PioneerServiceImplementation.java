@@ -91,6 +91,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
                     }
                 }
             }
+            centerCon.updateNodeState(serviceId, topologyId, nodeID, instanceId, SalsaEntityState.DEPLOYED);
         } catch (Exception e) {
             PioneerLogger.logger.error(e.getMessage(), e);
         }
