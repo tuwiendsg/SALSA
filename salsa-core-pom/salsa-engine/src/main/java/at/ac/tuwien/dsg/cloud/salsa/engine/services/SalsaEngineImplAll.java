@@ -440,13 +440,15 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 					}
 				}			
 				nodeData.getInstancesList().remove(instanceData);				
-				SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
+                                updateComponentStateBasedOnInstance(service);
+                                SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);				
+                                
 			} catch (Exception e){
 				logger.error(e.getMessage());
 				return Response.status(404).entity("Cannot remove instance: " + instanceId +", on node: " + nodeId + ", on service " + serviceId).build();
 			} finally {
 				MutualFileAccessControl.releaseFile();
-			}
+			}                        
 			return Response.status(200).entity("Undeployed instance: " + serviceId+"/"+nodeId+"/"+instanceId).build();
 	}
 	
@@ -992,7 +994,6 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			 String value) {		
 		try {
 			java.util.Date date= new java.util.Date();			 
-			logger.debug("TIMESTAMP - Node: " + nodeId + "/" + instanceId + ", state: " + value + ", Time: " + date.getTime());
 			logger.debug("UPDATE NODE STATE: " + nodeId + ", instance: " + instanceId + ", state: " + value);			
 			MutualFileAccessControl.lockFile();
 			String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
@@ -1000,9 +1001,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			ServiceUnit nodeData = service.getComponentById(nodeId);
 			
 			if (instanceId==-1){	// update for node data
-				logger.debug("updateNodeState: UPDATE NODE DATA STATE 1");
 				nodeData.setState(SalsaEntityState.fromString(value));
-				logger.debug("updateNodeState: UPDATE NODE DATA STATE 2");
 				updateComponentStateBasedOnInstance(service);
 				SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
 			} else { // update for instance
@@ -1028,10 +1027,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		} finally {
 			MutualFileAccessControl.releaseFile();
 		}
-
-		return Response.status(200)
-				.entity("Updated node " + nodeId + " on service " + serviceId
-						+ " deployed status: " + value).build();
+                logger.debug("UPDATE NODE STATE: " + nodeId + ", instance: " + instanceId + ", state: " + value + " - DONE !");
+		return Response.status(200).entity("Updated node " + nodeId + " on service " + serviceId + " deployed status: " + value).build();
 	}
 	
 	
@@ -1153,7 +1150,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		return Response.status(404).entity("Do not found pioneer artifact: " + file.getAbsolutePath()).build();
 	}
 		
-	private void updateComponentStateBasedOnInstance(SalsaEntity nodeData){
+	protected void updateComponentStateBasedOnInstance(SalsaEntity nodeData){
 		Map<SalsaEntityState, Integer> rankState = new HashMap<>();
 		rankState.put(SalsaEntityState.UNDEPLOYED, 0);
 		rankState.put(SalsaEntityState.ERROR, 1);
@@ -1164,7 +1161,9 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 		//rankState.put(SalsaEntityState.INSTALLING, 6);
         rankState.put(SalsaEntityState.DEPLOYED, 7);
 		rankState.put(SalsaEntityState.INSTALLING, 8);		
-		
+		if (nodeData.getClass().equals(CloudService.class)){
+                    logger.debug("Updating the state of the whole service !");
+                }
 		
 		List<SalsaEntity> insts = new ArrayList<>();
 		if (nodeData.getClass().equals(ServiceUnit.class)){	

@@ -642,8 +642,7 @@ public class SalsaToscaDeployer {
                 EngineLogger.logger.debug("It is TRUE, the dependency is now cleaned for the node: " + nodeId +"/"+instanceId);                
                 
 		// remove VM node by invoke MultiCloudConnector
-		if (node.getType().equals(
-				SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
+		if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
 			ServiceInstance vm = node.getInstanceById(instanceId);
 			SalsaInstanceDescription_VM vmProps = (SalsaInstanceDescription_VM) vm.getProperties().getAny();
 
