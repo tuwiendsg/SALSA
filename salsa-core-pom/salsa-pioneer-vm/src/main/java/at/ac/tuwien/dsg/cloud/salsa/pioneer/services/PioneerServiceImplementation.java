@@ -77,9 +77,9 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
                     SalsaMappingProperties.SalsaMappingProperty actionProp = allProp.getByType("action");
                     PioneerLogger.logger.debug("" + actionProp);
                     if (actionProp != null && actionProp.getMapData() != null) {
-                        PioneerLogger.logger.debug("We have actions");
+                        PioneerLogger.logger.debug("We have actions !");
                         Map<String, String> map = actionProp.getMapData();
-                        PioneerLogger.logger.debug("Actions MAP" + map);
+                        PioneerLogger.logger.debug("Actions MAP : " + map);
                         if (map.get(SalsaEntityActions.DEPLOY.getActionString()) != null && !map.get(SalsaEntityActions.DEPLOY.getActionString()).isEmpty()) {
                             PioneerLogger.logger.debug("Execute DEPLOY action for: " + thisNode.getId() + "/" + instanceId);
                             executeCommand(map.get(SalsaEntityActions.DEPLOY.getActionString()));

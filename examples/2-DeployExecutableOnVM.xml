@@ -9,9 +9,9 @@
 	
 	<tosca:ServiceTemplate id="SampleService">
 		<tosca:TopologyTemplate>
-			<tosca:NodeTemplate id="helloWorld"	name="Hello World" type="software">
+			<tosca:NodeTemplate id="helloWorld"	name="Hello World" type="software" minInstances="1" maxInstances="50">
 				<tosca:DeploymentArtifacts>
-					<tosca:DeploymentArtifact artifactType="salsa:sh" name="Deployment script" artifactRef="deployScript"/>
+					<tosca:DeploymentArtifact artifactType="salsa:shcont" name="Deployment script" artifactRef="deployScript"/>
 				</tosca:DeploymentArtifacts>
 			</tosca:NodeTemplate>
 			
@@ -38,7 +38,7 @@
 	<tosca:ArtifactTemplate id="deployScript" type="salsa:sh">		
 		<tosca:ArtifactReferences>
 			<tosca:ArtifactReference
-				reference="http://128.130.172.215/salsa/upload/files/daas/fakescripts/donothing.sh" />				
+				reference="http://128.130.172.215/salsa/upload/files/pioneer/test/bashloop.sh" />				
 		</tosca:ArtifactReferences>
 	</tosca:ArtifactTemplate>
 </tosca:Definitions>
