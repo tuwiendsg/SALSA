@@ -2,27 +2,29 @@ package at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments;
 
 import generated.oasis.tosca.TNodeTemplate;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Map;
 
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 
-public class BashInstrument extends InstrumentShareData implements InstrumentInterface  {
+/**
+ * This is the same with BASH instrument, but for running the process which does not exit
+ * @author hungld
+ */
+public class BashContinuousInstrument extends InstrumentShareData implements InstrumentInterface  {
 	TNodeTemplate node;
 
 	@Override
 	public void initiate(TNodeTemplate node) {
-		PioneerLogger.logger.debug("INSTRUMENT INITIATE: BASH");
+		PioneerLogger.logger.debug("INSTRUMENT INITIATE: BASH CONTINUOUS");
 		this.node = node;
 	}
         
         /**
          * This match with the "sh" artifact type, which will exit after deployment
-         * So, SALSA will WAIT until the process finishes
+         * So, SALSA will NOT WAIT for the process finishes
          */
 	@Override
 	public Object deployArtifact(String uri, String instanceId) {
@@ -39,14 +41,10 @@ public class BashInstrument extends InstrumentShareData implements InstrumentInt
 		pb.directory(new File(SalsaPioneerConfiguration.getWorkingDir()+File.separator+node.getId()));
 		try {
 			p = pb.start();
-                        p.waitFor();
 			return p;
 		} catch (IOException e) {
 			PioneerLogger.logger.debug(e.toString());	
-		} catch (InterruptedException e1){
-                	PioneerLogger.logger.debug(e1.toString());	
-                }
-		
+		}		
 		return null;
 	}
 	

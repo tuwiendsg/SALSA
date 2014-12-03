@@ -34,6 +34,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.StacksConfigurator.DockerConfigurator;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.AptGetInstrument;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.BashContinuousInstrument;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.BashInstrument;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.ChefInstrument;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.ChefSoloInstrument;
@@ -317,7 +318,7 @@ public class ArtifactDeployer {
 			PioneerLogger.logger.debug("==> Run artifact for node: " + node.getId());
 			// get Artifact list
 			String runArt="";
-			String artType="";
+			String artType="";  // currently being get from Deployment Artifact
 			try {
 				if (node.getDeploymentArtifacts() == null){
 					PioneerLogger.logger.debug("node " + node.getId()+" have null artifact");
@@ -336,8 +337,7 @@ public class ArtifactDeployer {
 				artType = firstArt.getArtifactType().getLocalPart();
 				PioneerLogger.logger.debug("Artifact type:" + artType);
 				
-				List<String> arts = ToscaStructureQuery
-						.getDeployArtifactTemplateReferenceList(node, def);
+				List<String> arts = ToscaStructureQuery.getDeployArtifactTemplateReferenceList(node, def);
 				URL url = new URL(arts.get(0));	// run the first artifact
 				
 				runArt = FilenameUtils.getName(url.getFile());
@@ -360,6 +360,9 @@ public class ArtifactDeployer {
 			case sh:
 				instrument = new BashInstrument();
 				break;
+                        case shcont:
+                                instrument = new BashContinuousInstrument();
+                                break;
 			case war:
 				instrument = new WarInstrument();
 				break;
