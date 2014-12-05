@@ -37,6 +37,7 @@ public class InstrumentShareData {
 				} catch (IOException e){
 					PioneerLogger.logger.error("Error: Cannot write character to stdin of the process. " + e);
 				}
+                                
 				inst.p.destroy();
 				return true;
 			}
