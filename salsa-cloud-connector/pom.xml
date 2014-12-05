@@ -109,22 +109,10 @@
 		    <id>my</id>
 		    <url>file://${project.basedir}/lib</url>
 		</repository>-->
-                
-	</repositories>
-	<distributionManagement>
-            <repository>
-                <id>gemini</id>
-                <name>gemini-releases</name>
-                <url>http://gemini.infosys.tuwien.ac.at:8081/artifactory/ext</url>
-            </repository>
-            <snapshotRepository>
-                <id>gemini</id>
-                <name>gemini-snapshots</name>
-                <url>http://gemini.infosys.tuwien.ac.at:8081/artifactory/ext</url>
-            </snapshotRepository>
-        </distributionManagement>
-
-	
-	
-
+                <repository>
+                    <id>gemini</id>
+                    <name>gemini-releases</name>
+                    <url>http://gemini.infosys.tuwien.ac.at:8081/artifactory/ext</url>
+                </repository>            
+	</repositories>	
 </project>
