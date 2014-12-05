@@ -7,7 +7,7 @@
   <version>1.0</version>
   <packaging>pom</packaging>
 
-  <name>SALSA</name>
+  <name>SALSA-Standalone</name>
   <url>http://maven.apache.org</url>
 
   <properties>
