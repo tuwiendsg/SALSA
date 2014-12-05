@@ -105,19 +105,26 @@
 			<id>infosys-repo</id>
 			<url>http://www.infosys.tuwien.ac.at/mvn</url>
 		</repository>
-		<repository>
+<!--		<repository>
 		    <id>my</id>
 		    <url>file://${project.basedir}/lib</url>
-		</repository>
+		</repository>-->
+                
 	</repositories>
-	
 	<distributionManagement>
-	    <snapshotRepository>
-	        <id>gemini</id>
-	        <name>gemini-snapshots</name>
-	        <url>http://gemini.infosys.tuwien.ac.at:8081/artifactory/ext-snapshot-local</url>
-	    </snapshotRepository>
-	</distributionManagement>
+            <repository>
+                <id>gemini</id>
+                <name>gemini-releases</name>
+                <url>http://gemini.infosys.tuwien.ac.at:8081/artifactory/ext</url>
+            </repository>
+            <snapshotRepository>
+                <id>gemini</id>
+                <name>gemini-snapshots</name>
+                <url>http://gemini.infosys.tuwien.ac.at:8081/artifactory/ext</url>
+            </snapshotRepository>
+        </distributionManagement>
+
+	
 	
 
 </project>
