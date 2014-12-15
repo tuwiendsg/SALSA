@@ -79,13 +79,27 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 	SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
 
 	static {
+            logger = Logger.getLogger("EngineLogger");
+            String userFile = SalsaConfiguration.getCloudUserParameters();            
+            if (userFile!=null && !userFile.equals("")){
+                logger.debug("Found the user file in the main engine configuration. Load cloud configuration at: " + userFile);
+                configFile = new File(userFile);
+            } else {
+		String CURRENT_DIR = System.getProperty("user.dir");
+		File file1 = new File(CURRENT_DIR+"/cloudUserParameters.ini");		
 		File tmpFile=new File("/etc/cloudUserParameters.ini");
-		if (tmpFile.exists()) {
+		if (file1.exists()){
+			logger.debug("Load cloud configuration at: " + file1.getAbsolutePath());
+			configFile = file1;
+		} else 	if (tmpFile.exists()) {
+			logger.debug("Load cloud configuration at: " + tmpFile.getAbsolutePath());
 			configFile = tmpFile;
 		} else {
+			logger.debug("Load cloud configuration at: default resource folder");
 			configFile = new File(SalsaEngineImplAll.class.getResource("/cloudUserParameters.ini").getFile());
 		}
-		logger = Logger.getLogger("EngineLogger");
+		
+            }
 	}
 	
 	/*

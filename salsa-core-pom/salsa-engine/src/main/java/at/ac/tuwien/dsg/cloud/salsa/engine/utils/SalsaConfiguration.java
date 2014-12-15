@@ -109,6 +109,10 @@ public class SalsaConfiguration {
 	public static String getToscaTemplateStorage(){
 		return configuration.getProperty("TOSCA_TEMPLATE_STORAGE");
 	}
+        
+        public static String getCloudUserParameters(){
+		return configuration.getProperty("CLOUD_USER_PARAMETERS");
+	}
 	
 	
 
