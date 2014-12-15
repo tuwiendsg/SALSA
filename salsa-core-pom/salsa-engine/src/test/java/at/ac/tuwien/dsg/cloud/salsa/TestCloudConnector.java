@@ -30,9 +30,9 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 public class TestCloudConnector {
 	public static void main(String[] args) throws Exception {
 		
-		//testOpenstackJcloud();
+		testOpenstackJcloud();
 		
-		testFlexiant();
+		//testFlexiant();
 		//teststratus();
 	}
 	
@@ -50,9 +50,11 @@ public class TestCloudConnector {
 		
 		OpenStackJcloud con = new OpenStackJcloud(EngineLogger.logger, "http://openstack.infosys.tuwien.ac.at/identity/v2.0/", "CELAR", "hung", "Coowcyurp8", "Hungld");		
 		//con.launchInstance("hungTestVM", "1a7a06ef-6ad8-4894-bd80-825476d13843", Arrays.asList("default"), "Hungld", "", InstanceType.DEFAULT, 1, 1);
-		//con.listImages();
-		//con.listServers();
 		con.listImages();
+		con.listServers();
+		ArrayList<String> groups = new ArrayList<String>();
+		groups.add("default");
+		con.launchInstance("comot_platform", "5499730e-2fd9-4dd2-93be-94e1b18d523b", groups, "Hungld", "", "000003750", 1, 1);
 		//con.printServerInfo("faf683d1-f9a8-45c8-8a3a-848b9c2f0044");
 		//InstanceDescription des = con.getInstanceDescriptionByID("faf683d1-f9a8-45c8-8a3a-848b9c2f0044");
 		//System.out.println(des.getPrivateIp());
