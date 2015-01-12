@@ -287,7 +287,7 @@ public class SalsaToscaDeployer {
 		while (orchestating){
 			try{
 				EngineLogger.logger.debug("The node:"+ log + " is waiting for lock: "+currentLock+". Count: " + count);				
-				Thread.sleep(1000);
+				Thread.sleep(100);
 				count++;
 				if (count > 50) {
 					releaseLock();

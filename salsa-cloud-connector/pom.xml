@@ -112,7 +112,7 @@
                 <repository>
                     <id>gemini</id>
                     <name>gemini-releases</name>
-                    <url>http://gemini.infosys.tuwien.ac.at:8081/artifactory/ext</url>
+                    <url>http://repo.infosys.tuwien.ac.at/artifactory/ext</url>
                 </repository>            
 	</repositories>	
 </project>
