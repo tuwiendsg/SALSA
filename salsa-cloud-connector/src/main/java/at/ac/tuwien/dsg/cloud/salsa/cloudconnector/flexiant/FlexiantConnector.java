@@ -34,6 +34,11 @@ import com.extl.jade.user.Server;
 import com.extl.jade.user.ServerStatus;
 import com.extl.jade.user.UserAPI;
 import com.extl.jade.user.UserService;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 
 public class FlexiantConnector implements CloudInterface{	
@@ -119,16 +124,21 @@ public class FlexiantConnector implements CloudInterface{
 	    		server.setCpu(Integer.parseInt(cpuAndRam[0]));	// default
 	    		server.setRam(Integer.parseInt(cpuAndRam[1]));
 	    		
+                        
+                        // push pioneer by ssh. add a disable IPv^ for apt-get problem
+	    		String updateUserData = "echo 'net.ipv6.conf.all.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
+	    		updateUserData += "echo 'net.ipv6.conf.default.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
+	    		updateUserData += "echo 'net.ipv6.conf.lo.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
+	    		updateUserData += "sysctl -p \n ";
+	    		updateUserData += userData;
+                        ResourceMetadata meta = new ResourceMetadata();
+                        meta.setPublicMetadata(updateUserData);
+                        server.setResourceMetadata(meta);
+                        
+                        
 	    		logger.debug("The instance type have CPU: " + server.getCpu() + " and RAM: " + server.getRam());
 	    		server.getNics().add(networkInterface);
 	    		
-	    		
-	    		ResourceMetadata meta = new ResourceMetadata();
-	    		meta.setPrivateMetadata(userData);
-	    		meta.setPublicMetadata(userData);
-	    		meta.setRestrictedMetadata(userData);
-	    		
-	    		server.setResourceMetadata(meta);
 	    		
 	    		List<String> sshKeys = new ArrayList<>();
 	    		Job createServerJob = service.createServer(server, sshKeys, null);	    		
@@ -159,19 +169,16 @@ public class FlexiantConnector implements CloudInterface{
 	    		String newVM_id = createServerJob.getItemUUID();
 	    		logger.info("~~~~~~~~~~~~~~Created server with uuid "+newVM_id);
 	    		
-	    		// push pioneer by ssh. add a disable IPv^ for apt-get problem
-	    		String updateUserData = "echo 'net.ipv6.conf.all.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
-	    		updateUserData += "echo 'net.ipv6.conf.default.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
-	    		updateUserData += "echo 'net.ipv6.conf.lo.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
-	    		updateUserData += "sysctl -p \n ";
-	    		updateUserData += userData;
-	    		FileUtils.writeStringToFile(new File("/tmp/" + newVM_id), updateUserData);
+	    		
+	    		//FileUtils.writeStringToFile(new File("/tmp/" + newVM_id), updateUserData);
 	    			    		
 	    		InstanceDescription inst = getInstanceDescriptionByID(createServerJob.getItemUUID());
 	    		// remove the slash at the beginning of the IP
 	    		String ipAddress=inst.getPrivateIp().toString().substring(1);	
 	    		logger.debug("Waiting for the ssh server is up at IP: " + ipAddress);
-	    		pushAndExecuteBashScript(ipAddress, initialUser, initialPasswd, "/tmp/" + newVM_id);
+                        
+                        
+	    		//pushAndExecuteBashScript(ipAddress, initialUser, initialPasswd, "/tmp/" + newVM_id);
 	    		
 	    		return createServerJob.getItemUUID();	    		    		
 	        } catch (Exception e) { 
@@ -290,6 +297,18 @@ public class FlexiantConnector implements CloudInterface{
 	
 	public void pushAndExecuteBashScript(String ip, String username, String password, String scriptFile){
 		File file = new File(scriptFile);
+                
+                // check port
+                int check=0;
+                while (!isPortOpened(ip, 22, 60) && check <50){
+                    try { 
+                        check +=1;
+                        Thread.sleep(5); 
+                    } catch (InterruptedException e) {};
+                }
+                
+                // try to ssh and push
+                
 		try {
 			logger.debug("Execute: " + "sshpass -p "+password+" scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null "+scriptFile+" "+username+"@"+ip+":/tmp/"+file.getName());
 			int count=0;
@@ -301,11 +320,12 @@ public class FlexiantConnector implements CloudInterface{
 				} catch (InterruptedException e){
 					logger.error(e.getMessage());
 				}
-				logger.debug("Exiting value 1 ("+count++ +"): " + p.exitValue());
+                                count +=1;
+				logger.debug("Exiting value ("+ count +" times): " + p.exitValue());
 				try { Thread.sleep(2000); } catch (Exception e) {
 					logger.error("Flexiant connector thread interrupt: " + e);
 				}
-			} while (p.exitValue()!=0);			
+			} while (p.exitValue()!=0 && count <10);			
 			
 			Process p1;
 			do {
@@ -334,6 +354,45 @@ public class FlexiantConnector implements CloudInterface{
 		}
 
 	}
+        
+        
+        
+        private boolean isPortOpened(String node, int port, int timeout){
+            Socket s = null;
+            String reason = null ;
+            boolean exitStatus = false;
+            try {
+                s = new Socket();
+                s.setReuseAddress(true);
+                SocketAddress sa = new InetSocketAddress(node, port);
+                s.connect(sa, timeout * 1000);
+            } catch (IOException e) {
+                if ( e.getMessage().equals("Connection refused")) {
+                    reason = "port " + port + " on " + node + " is closed.";
+                }
+                if ( e instanceof UnknownHostException ) {
+                    reason = "node " + node + " is unresolved.";
+                }
+                if ( e instanceof SocketTimeoutException ) {
+                    reason = "timeout while attempting to reach node " + node + " on port " + port;
+                }
+            } finally {
+                if (s != null) {
+                    if ( s.isConnected()) {
+                        logger.debug("Port " + port + " on " + node + " is reachable!");
+                        exitStatus = true;
+                    } else {
+                        logger.debug("Port " + port + " on " + node + " is not reachable; reason: " + reason );
+                    }                    
+                    try {
+                        s.close();
+                    } catch (IOException e) {
+                    }
+                }
+            }
+        
+        return exitStatus;
+    }
 	
 	
 }
