@@ -10,15 +10,16 @@ These templates can be defined by other Tosca-Elements such as Node-Types, Relat
 2. Extended Tosca for Salsa
 As the property for NodeTemplate is Any, Salsa use some custom Properties for the description
 2.1. SALSA NoteTemplate type: In the NodeTemplate, put an attribute as type="salsa:typeName". Currently, following type can be parsed:
- - salsa:software => for the executable and any artifacts
+ - salsa:software => for the script-based artifacts
  - salsa:war			=> describe a web application
  - salsa:docker		=> default docker node
  - salsa:tomcat 	=> default tomcat node
  - salsa:os 			=> default VM with Ubuntu
- - salsa:
+
 
 2.2. SALSA Artifact node type: In the ArtifactTemplate, put an attribute as type="salsa:typeName". Currently SALSA support:
- - salsa:sh				=> bash script, using bash to execute the deployment script
+ - salsa:sh				=> bash script, using bash to execute the deployment script. The deployment script must be finished.
+ - salsa:contsh		=> bash script which is called and run continuously. The running system process will be managed by SALSA in order to stop latter.
  - salsa:war			=> war file, deploy the war file to the tomcat webapp folder
  - salsa:chef			=> using chef to install artifacts from chef community repository
  - salsa:chef-solo => using chef-solo to install a local cookbook
@@ -27,10 +28,10 @@ As the property for NodeTemplate is Any, Salsa use some custom Properties for th
 2.3. SALSA custom properties.
 SALSA parse custom properties which are wrapped in a MappingProperties structure. Currently, 2 type of properties can be parsed:
  - salsa:os				=> properties to describe VM
- - salsa:action		=> properties to define custom actions, in simple a format.
+ - salsa:action		=> properties to define custom actions for application lifecycle management.
 
 2.3. Virtual Machine Node Properties
-Below is an example of the custom VM Node deployment information Properties.
+Below is an example of the custom VM Node deployment information stated in <tosca:Properties>.
 				<tosca:Properties>
            <MappingProperties>						
 						<MappingProperty type="salsa:os">
@@ -42,6 +43,19 @@ Below is an example of the custom VM Node deployment information Properties.
 					</MappingProperties>
         </tosca:Properties>
 
+2.4. Custom actions properties
+A NodeTemplate can have action property which map from a name with a system command. 
+		<tosca:Properties>
+			<MappingProperties>
+    			<MappingProperty type="action">
+    				<property name="start">sudo service myService start</property>
+    				<property name="stop">sudo service myService stop</property>            				
+    				<property name="restart">sudo service myService restart</property>
+    				<property name="undeploy">./uninstall.sh</property>
+    			</MappingProperty>
+    		</MappingProperties>
+		</tosca:Properties>
+By default in SALSA, the "undeploy" action will firstly look for the "stop" action if available to execute to ensure the semantic of the application. If there is no "undeploy" script, SALSA will try to detect the artifact type and clean up the service by default.
 
 2.4. Relationship types
 The relationships represent the order of deployment between nodes. In a relationship, the source node will be deploy before the target node.
