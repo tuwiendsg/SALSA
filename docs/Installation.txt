@@ -8,5 +8,5 @@ The steps to setup SALSA are:
    $ java -jar --httpPort <portNumber> salsa-engine.jar
 We also provide a service pattern to run the salsa-engine. Copy the salsa-engine-service script to /etc/init.d and run by:
    $ sudo service salsa-engine-service start/stop/restart/status
-6. Access to the salsa-engine application to get the UI at: http://<IP of the machine>:<port>/salsa-engine
-7. Using RESTful API at http://<IP of the machine>:<port>/salsa-engine/rest
+5. Access to the salsa-engine application to get the UI at: http://<IP of the machine>:<port>/salsa-engine
+   Using RESTful API at http://<IP of the machine>:<port>/salsa-engine/rest
