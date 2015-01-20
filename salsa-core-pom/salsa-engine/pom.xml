@@ -58,6 +58,25 @@
 <!-- 			<artifactId>cxf-rt-transports-http-hc</artifactId> -->
 <!-- 			<version>${cxf.version}</version> -->
 <!-- 		</dependency> -->
+
+
+ <!--Spring Framework dependencies--> 
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
 		
         <!-- Swagger API documentation -->
 <!--         <dependency> -->
