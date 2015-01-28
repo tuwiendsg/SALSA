@@ -33,11 +33,9 @@ public class DockerConfigurator{
 			PioneerLogger.logger.debug("Docker is installed, not do it again !");
 			return;
 		}
-		//executeCommand("wget -q -N http://128.130.172.215/salsa/upload/files/pioneer/docker_install.sh");
                 PioneerLogger.logger.debug("Getting docker installtion script !");                                
                 try{
                     InputStream is = DockerConfigurator.class.getResourceAsStream("/pioneer-scripts/docker_install.sh");
-                    //EngineLogger.class.getResourceAsStream("/log4j.properties")
                     OutputStream os = new FileOutputStream(new File("/tmp/docker_install.sh"));
                     IOUtils.copy(is, os);
                     PioneerLogger.logger.debug("Getting docker installtion script done !");                
@@ -58,7 +56,7 @@ public class DockerConfigurator{
 	
 	public String installDockerNode(String nodeId, int instanceId){
 		// build new image with correct salsa.variable file
-		StringBuffer sb = new StringBuffer();		
+		StringBuilder sb = new StringBuilder();		
 		sb.append("FROM "+ SALSA_DOCKER_PULL +" \n");
 		sb.append("COPY ./salsa.variables /etc/salsa.variables \n");                
                 try{

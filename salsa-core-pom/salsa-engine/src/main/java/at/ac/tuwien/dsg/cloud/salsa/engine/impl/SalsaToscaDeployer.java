@@ -74,10 +74,10 @@ public class SalsaToscaDeployer {
 
 		Map<String, Integer> mapNodeAndRep = new HashMap<>();
 		String deployID = serviceName;
-		EngineLogger.logger.info("Deploying service id: " + deployID.toString());
+		EngineLogger.logger.info("Deploying service id: " + deployID);
 
 		String ogininalToscaFile = SalsaConfiguration.getServiceStorageDir()
-				+ "/" + deployID.toString() + ".original";
+				+ "/" + deployID + ".original";
 		ToscaXmlProcess.writeToscaDefinitionToFile(def, ogininalToscaFile);
 
 		// ENRICH

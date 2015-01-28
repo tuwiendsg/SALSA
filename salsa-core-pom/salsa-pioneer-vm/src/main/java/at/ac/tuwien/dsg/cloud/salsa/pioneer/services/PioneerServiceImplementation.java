@@ -242,17 +242,15 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
             Process p = Runtime.getRuntime().exec(cmd);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line = "";
-            StringBuffer output = new StringBuffer();
+            String line;
+            StringBuilder output = new StringBuilder();
             while ((line = reader.readLine()) != null) {
                 PioneerLogger.logger.debug(line);
             }
             p.waitFor();
             return output.toString();
-        } catch (InterruptedException e1) {
+        } catch (InterruptedException | IOException e1) {
             PioneerLogger.logger.error("Error when execute command. Error: " + e1);
-        } catch (IOException e2) {
-            PioneerLogger.logger.error("Error when execute command. Error: " + e2);
         }
         return null;
     }

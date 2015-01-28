@@ -7,7 +7,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.crypto.dsig.keyinfo.PGPData;
 
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.InstanceDescription;
@@ -113,7 +112,7 @@ public class DeploymentEngineNodeLevel {
 	
 	// TODO: Implement - Not completed yet
 	public static String prepareUserDataChef(String serviceId, String topologyId, String nodeId, int replica, TDefinitions def) {		
-		StringBuffer userDataBuffer = new StringBuffer();
+		StringBuilder userDataBuffer = new StringBuilder();
 		userDataBuffer.append("#!/bin/bash \n");
 		
 		// setup chef solo
@@ -140,7 +139,7 @@ public class DeploymentEngineNodeLevel {
 	
 	// Will be depricated because using Chef later
 	public static String prepareUserData(String serviceId, String topologyId, String nodeId, int replica, SalsaInstanceDescription_VM instanceDesc, TDefinitions def) {
-		StringBuffer userDataBuffer = new StringBuffer();
+		StringBuilder userDataBuffer = new StringBuilder();
 		userDataBuffer.append("#!/bin/bash \n");
 		userDataBuffer.append("echo \"Running the customization scripts\" \n");
 
@@ -153,28 +152,28 @@ public class DeploymentEngineNodeLevel {
 		EngineLogger.logger.debug("Preparing user data. Working dir for pioneer for: " + serviceId + "/" + nodeId +"/" + replica +": " + specificWorkingDir);		
 		String specificVariableFile = specificWorkingDir + "/" + SalsaConfiguration.getSalsaVariableFile();
 		EngineLogger.logger.debug("Preparing user data. Variable file for pioneer for: " + serviceId + "/" + nodeId +"/" + replica +": " + specificVariableFile);
-		userDataBuffer.append("mkdir -p " + specificWorkingDir	+ " \n");
-		userDataBuffer.append("cd " + specificWorkingDir + " \n");
+		userDataBuffer.append("mkdir -p ").append(specificWorkingDir).append(" \n");
+		userDataBuffer.append("cd ").append(specificWorkingDir).append(" \n");
 
 		// set some variable put in variable.properties
-		userDataBuffer.append("echo '# Salsa properties file. Generated at deployment time.' > " + specificVariableFile + " \n");
-		userDataBuffer.append("echo 'SALSA_SERVICE_ID=" + serviceId + "' >> " + specificVariableFile + " \n");
-		userDataBuffer.append("echo 'SALSA_TOPOLOGY_ID=" + topologyId + "' >> "	+ specificVariableFile + " \n");
-		userDataBuffer.append("echo 'SALSA_REPLICA=" + replica + "' >> " + specificVariableFile + " \n");
-		userDataBuffer.append("echo 'SALSA_NODE_ID=" + nodeId + "' >> "	+ specificVariableFile + " \n");
-		userDataBuffer.append("echo 'SALSA_TOSCA_FILE=" + specificWorkingDir + "/" + serviceId + "' >> " + specificVariableFile + " \n");		
-		userDataBuffer.append("echo 'SALSA_WORKING_DIR=" + specificWorkingDir + "' >> "	+ specificVariableFile + " \n");
-		userDataBuffer.append("echo 'SALSA_PIONEER_WEB=" + SalsaConfiguration.getPioneerWeb() + "' >> "	+ specificVariableFile + " \n");
-		userDataBuffer.append("echo 'SALSA_PIONEER_RUN=" + SalsaConfiguration.getPioneerRun() + "' >> "	+ specificVariableFile + " \n");
+		userDataBuffer.append("echo '# Salsa properties file. Generated at deployment time.' > ").append(specificVariableFile).append(" \n");
+		userDataBuffer.append("echo 'SALSA_SERVICE_ID=").append(serviceId).append("' >> ").append(specificVariableFile).append(" \n");
+		userDataBuffer.append("echo 'SALSA_TOPOLOGY_ID=").append(topologyId).append("' >> ").append(specificVariableFile).append(" \n");
+		userDataBuffer.append("echo 'SALSA_REPLICA=").append(replica).append("' >> ").append(specificVariableFile).append(" \n");
+		userDataBuffer.append("echo 'SALSA_NODE_ID=").append(nodeId).append("' >> ").append(specificVariableFile).append(" \n");
+		userDataBuffer.append("echo 'SALSA_TOSCA_FILE=").append(specificWorkingDir).append("/").append(serviceId).append("' >> ").append(specificVariableFile).append(" \n");		
+		userDataBuffer.append("echo 'SALSA_WORKING_DIR=").append(specificWorkingDir).append("' >> ").append(specificVariableFile).append(" \n");
+		userDataBuffer.append("echo 'SALSA_PIONEER_WEB=").append(SalsaConfiguration.getPioneerWeb()).append("' >> ").append(specificVariableFile).append(" \n");
+		userDataBuffer.append("echo 'SALSA_PIONEER_RUN=").append(SalsaConfiguration.getPioneerRun()).append("' >> ").append(specificVariableFile).append(" \n");
 		
 		SalsaCloudProviders provider = SalsaCloudProviders.fromString(instanceDesc.getProvider());
 		
-		userDataBuffer.append("echo 'SALSA_CENTER_ENDPOINT=" + SalsaConfiguration.getSalsaCenterEndpointForCloudProvider(provider) + "' >> " + specificVariableFile + " \n");
+		userDataBuffer.append("echo 'SALSA_CENTER_ENDPOINT=").append(SalsaConfiguration.getSalsaCenterEndpointForCloudProvider(provider)).append("' >> ").append(specificVariableFile).append(" \n");
 
 		// download pioneer
 		List<String> fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		for (String file : fileLst) {
-			userDataBuffer.append("wget -q --content-disposition " + SalsaConfiguration.getPioneerWeb() + "/" + file + " \n");
+			userDataBuffer.append("wget -q --content-disposition ").append(SalsaConfiguration.getPioneerWeb()).append("/").append(file).append(" \n");
 //			userDataBuffer.append("chmod +x "+file +" \n");
 //			userDataBuffer.append("cp " + file + " /usr/local/bin \n");
 		}
@@ -195,7 +194,7 @@ public class DeploymentEngineNodeLevel {
 				for (String pkg : lstPkgs) {
 					EngineLogger.logger.info("Installing package: " + pkg);
 					// TODO: should change, now just support Ubuntu image				
-					userDataBuffer.append("apt-get -q -y install " + pkg + " \n"); 
+					userDataBuffer.append("apt-get -q -y install ").append(pkg).append(" \n"); 
 				}
 			}
 		}
@@ -205,8 +204,8 @@ public class DeploymentEngineNodeLevel {
 		// execute Pioneer
 		fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
 		userDataBuffer.append("echo Current dir `pwd` \n");
-		userDataBuffer.append("java -jar " + fileLst.get(0) + " setnodestate "+node.getId()+" ready \n");
-		userDataBuffer.append("java -jar " + fileLst.get(0) + " startserver \n");
+		userDataBuffer.append("java -jar ").append(fileLst.get(0)).append(" setnodestate ").append(node.getId()).append(" ready \n");
+		userDataBuffer.append("java -jar ").append(fileLst.get(0)).append(" startserver \n");
 //		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " deploy \n");	// execute deploy script
 //		userDataBuffer.append("screen -dmS pion java -jar " + fileLst.get(0) + " startserver \n");	
 
