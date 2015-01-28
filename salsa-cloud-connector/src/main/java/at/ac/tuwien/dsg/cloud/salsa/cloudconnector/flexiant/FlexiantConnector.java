@@ -100,99 +100,100 @@ public class FlexiantConnector implements CloudInterface {
             String instType, int minInst, int maxInst)
             throws ServiceDeployerException {
         enableSNIExtension();
-//        try {
-        Nic networkInterface = new Nic();
-        networkInterface.setClusterUUID(this.clusterUUID);
-        networkInterface.setCustomerUUID(this.customerUUID);
-        networkInterface.setDeploymentInstanceUUID(this.deploymentInstanceUUID);
-
-        networkInterface.setNetworkUUID(this.networkUUID);
-        networkInterface.setVdcUUID(this.vdcUUID);
-        networkInterface.setNetworkType(NetworkType.IP);
-
-        Server server = new Server();
-        server.setResourceName(instanceName);
-        server.setCustomerUUID(this.customerUUID);
-        server.setProductOfferUUID(this.defaultProductOfferUUID);
-        server.setVdcUUID(this.vdcUUID);
-        server.setImageUUID(imageId);
-        server.setInitialPassword(initialPasswd);
-        server.setInitialUser(initialUser);
-        String[] cpuAndRam = instType.split("/");
-        server.setCpu(Integer.parseInt(cpuAndRam[0]));	// default
-        server.setRam(Integer.parseInt(cpuAndRam[1]));
-
-        // push pioneer by ssh. add a disable IPv^ for apt-get problem
-        String updateUserData = "echo 'net.ipv6.conf.all.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
-        updateUserData += "echo 'net.ipv6.conf.default.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
-        updateUserData += "echo 'net.ipv6.conf.lo.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
-        updateUserData += "sysctl -p \n ";
-        updateUserData += userData;
-        ResourceMetadata meta = new ResourceMetadata();
-        meta.setPublicMetadata(updateUserData);
-        server.setResourceMetadata(meta);
-
-        logger.debug("The instance type have CPU: " + server.getCpu() + " and RAM: " + server.getRam());
-        server.getNics().add(networkInterface);
-
-        List<String> sshKeys = new ArrayList<>();
-        Job createServerJob = null;
         try {
-            createServerJob = service.createServer(server, sshKeys, null);
-        } catch (ExtilityException e) {
-            logger.error(e.getMessage());
-            return "";
+            Nic networkInterface = new Nic();
+            networkInterface.setClusterUUID(this.clusterUUID);
+            networkInterface.setCustomerUUID(this.customerUUID);
+            networkInterface.setDeploymentInstanceUUID(this.deploymentInstanceUUID);
+
+            networkInterface.setNetworkUUID(this.networkUUID);
+            networkInterface.setVdcUUID(this.vdcUUID);
+            networkInterface.setNetworkType(NetworkType.IP);
+
+            Server server = new Server();
+            server.setResourceName(instanceName);
+            server.setCustomerUUID(this.customerUUID);
+            server.setProductOfferUUID(this.defaultProductOfferUUID);
+            server.setVdcUUID(this.vdcUUID);
+            server.setImageUUID(imageId);
+            server.setInitialPassword(initialPasswd);
+            server.setInitialUser(initialUser);
+            String[] cpuAndRam = instType.split("/");
+            server.setCpu(Integer.parseInt(cpuAndRam[0]));	// default
+            server.setRam(Integer.parseInt(cpuAndRam[1]));
+
+            // push pioneer by ssh. add a disable IPv^ for apt-get problem
+            String updateUserData = "echo 'net.ipv6.conf.all.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
+            updateUserData += "echo 'net.ipv6.conf.default.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
+            updateUserData += "echo 'net.ipv6.conf.lo.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
+            updateUserData += "sysctl -p \n ";
+            updateUserData += userData;
+            ResourceMetadata meta = new ResourceMetadata();
+            meta.setPublicMetadata(updateUserData);
+            server.setResourceMetadata(meta);
+
+            logger.debug("The instance type have CPU: " + server.getCpu() + " and RAM: " + server.getRam());
+            server.getNics().add(networkInterface);
+
+            List<String> sshKeys = new ArrayList<>();
+            Job createServerJob = null;
+            try {
+                createServerJob = service.createServer(server, sshKeys, null);
+            } catch (ExtilityException e) {
+                logger.error(e.getMessage());
+                return "";
+            }
+
+            try {
+                service.waitForJob(createServerJob.getResourceUUID(), false);
+            } catch (ExtilityException e) {
+                logger.error(e.getMessage());
+                return "";
+            }
+            logger.debug("Server created: " + createServerJob.getItemUUID());
+
+            // wait for host is up
+            Job startServer;
+            try {
+                startServer = service.changeServerStatus(createServerJob.getItemUUID(), ServerStatus.RUNNING, true,
+                        server.getResourceMetadata(), null);
+            } catch (ExtilityException e) {
+                logger.error(e.getMessage());
+                return "";
+            }
+            try {
+                service.waitForJob(startServer.getResourceUUID(), false);
+            } catch (ExtilityException e) {
+                logger.error(e.getMessage());
+                return "";
+            }
+
+            logger.debug("Server is up: " + createServerJob.getItemUUID() + ". IP: ");
+            logger.debug(createServerJob.getItemDescription());
+            String newVM_id = createServerJob.getItemUUID();
+            logger.info("~~~~~~~~~~~~~~Created server with uuid " + newVM_id);
+
+            //FileUtils.writeStringToFile(new File("/tmp/" + newVM_id), updateUserData);
+            InstanceDescription inst = getInstanceDescriptionByID(createServerJob.getItemUUID());
+
+            logger.debug("createServerJob.: " + createServerJob.getItemUUID());
+            logger.debug("Instance: " + inst);
+            logger.debug("Private IP:" + inst.getPrivateIp());
+            logger.debug("Public IP:" + inst.getPublicIp());
+
+            // remove the slash at the beginning of the IP
+            String ipAddress = inst.getPrivateIp().toString().substring(1);
+
+            logger.debug("Waiting for the ssh server is up at IP: " + ipAddress);
+
+            //pushAndExecuteBashScript(ipAddress, initialUser, initialPasswd, "/tmp/" + newVM_id);
+            return createServerJob.getItemUUID();
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Flexiant connector error: " + e.getMessage(), e);
         }
 
-        try {
-            service.waitForJob(createServerJob.getResourceUUID(), false);
-        } catch (ExtilityException e) {
-            logger.error(e.getMessage());
-            return "";
-        }
-        logger.debug("Server created: " + createServerJob.getItemUUID());
-
-        // wait for host is up
-        Job startServer;
-        try {
-            startServer = service.changeServerStatus(createServerJob.getItemUUID(), ServerStatus.RUNNING, true,
-                    server.getResourceMetadata(), null);
-        } catch (ExtilityException e) {
-            logger.error(e.getMessage());
-            return "";
-        }
-        try {
-            service.waitForJob(startServer.getResourceUUID(), false);
-        } catch (ExtilityException e) {
-            logger.error(e.getMessage());
-            return "";
-        }
-
-        logger.debug("Server is up: " + createServerJob.getItemUUID() + ". IP: ");
-        logger.debug(createServerJob.getItemDescription());
-        String newVM_id = createServerJob.getItemUUID();
-        logger.info("~~~~~~~~~~~~~~Created server with uuid " + newVM_id);
-
-        //FileUtils.writeStringToFile(new File("/tmp/" + newVM_id), updateUserData);
-        InstanceDescription inst = getInstanceDescriptionByID(createServerJob.getItemUUID());
-
-        logger.debug("createServerJob.: " + createServerJob.getItemUUID());
-        logger.debug("Instance: " + inst);
-        logger.debug("Private IP:" + inst.getPrivateIp());
-        logger.debug("Public IP:" + inst.getPublicIp());
-
-        // remove the slash at the beginning of the IP
-        String ipAddress = inst.getPrivateIp().toString().substring(1);
-
-        logger.debug("Waiting for the ssh server is up at IP: " + ipAddress);
-
-        //pushAndExecuteBashScript(ipAddress, initialUser, initialPasswd, "/tmp/" + newVM_id);
-        return createServerJob.getItemUUID();
-//        } catch (Exception e) {
-//            logger.error("Flexiant connector error: " + e);
-//        }
-
-//        return null;
+        return null;
     }
 
     @Override
@@ -204,51 +205,52 @@ public class FlexiantConnector implements CloudInterface {
         QueryLimit lim = new QueryLimit();
         lim.setMaxRecords(Integer.MAX_VALUE);
 
-//        try {
-        // Call the service to execute the query
-        ListResult result = null;
         try {
-            result = service.listResources(sf, lim, ResourceType.SERVER);
-        } catch (ExtilityException ex) {
-            logger.error("Flexiant connector error: " + ex);
-            ex.printStackTrace();
-        }
+            // Call the service to execute the query
+            ListResult result = null;
+            try {
+                result = service.listResources(sf, lim, ResourceType.SERVER);
+            } catch (ExtilityException ex) {
+                logger.error("Flexiant connector error: " + ex);
+                ex.printStackTrace();
+            }
 
-        String ip = "";
+            String ip = "";
 
-        // Iterate through the results
-        for (Object o : result.getList()) {
-            Server s = ((Server) o);
-            logger.info("List server " + s.getResourceUUID());
-            if (s.getResourceUUID().equals(instanceID)) {
-                logger.debug("Instance found: " + instanceID);
+            // Iterate through the results
+            for (Object o : result.getList()) {
+                Server s = ((Server) o);
+                logger.info("List server " + s.getResourceUUID());
+                if (s.getResourceUUID().equals(instanceID)) {
+                    logger.debug("Instance found: " + instanceID);
 
-                // the Server object does not have NIC, we list all NIC and match with server UUID
-                List<Nic> nics = listAllNics();
+                    // the Server object does not have NIC, we list all NIC and match with server UUID
+                    List<Nic> nics = listAllNics();
 
-                for (Nic nic : nics) {
-                    logger.debug("NIC uuid: " + nic.getNetworkUUID());
-                    logger.debug("NIC servername: " + nic.getServerName());
-                    logger.debug("NIC serveuuid: " + nic.getServerUUID());
-                    if (nic.getServerUUID() != null && nic.getServerUUID().equals(instanceID)) {
-                        logger.debug("Found a NIC: " + nic.getIndex());
-                        logger.debug("nic.getIpAddresses().size(): " + nic.getIpAddresses().size());
-                        if (!nic.getIpAddresses().isEmpty()) {
-                            ip = nic.getIpAddresses().get(0).getIpAddress();
-                            logger.debug("IP = " + ip);
+                    for (Nic nic : nics) {
+                        logger.debug("NIC uuid: " + nic.getNetworkUUID());
+                        logger.debug("NIC servername: " + nic.getServerName());
+                        logger.debug("NIC serveuuid: " + nic.getServerUUID());
+                        if (nic.getServerUUID() != null && nic.getServerUUID().equals(instanceID)) {
+                            logger.debug("Found a NIC: " + nic.getIndex());
+                            logger.debug("nic.getIpAddresses().size(): " + nic.getIpAddresses().size());
+                            if (!nic.getIpAddresses().isEmpty()) {
+                                ip = nic.getIpAddresses().get(0).getIpAddress();
+                                logger.debug("IP = " + ip);
+                            }
                         }
                     }
+                    InstanceDescription inst = new InstanceDescription(instanceID, ip, ip);
+                    inst.setState(mapStatus(s.getStatus()));
+                    return inst;
                 }
-                InstanceDescription inst = new InstanceDescription(instanceID, ip, ip);
-                inst.setState(mapStatus(s.getStatus()));
-                return inst;
             }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Flexiant connector error: " + e.getMessage(), e);
+            return null;
         }
-        return null;
-//        } catch (Exception e) {
-//            logger.error("Flexiant connector error: " + e);
-//            return null;
-//        }
     }
 
     @Override
