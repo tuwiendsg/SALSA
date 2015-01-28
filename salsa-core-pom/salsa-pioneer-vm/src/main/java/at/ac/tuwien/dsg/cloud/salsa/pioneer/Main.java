@@ -3,7 +3,6 @@ package at.ac.tuwien.dsg.cloud.salsa.pioneer;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TNodeTemplate;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -50,8 +49,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
  *         - setcapa {id} {value}: set the capability String of <id> <br>
  *         - waitreq {reqId}: block and wait until the node requirement is ready, return the value of requirement if having
  *         - setnodestate {id> {value} : set node state<br>
- * TODO: Replica is not dedicated for upper nodes. Upper nodes get lower node replica
- */
+  */
 public class Main {
 	private static String serviceId;
 	private static String topologyId;
@@ -70,8 +68,7 @@ public class Main {
 			return;
 		}
 		
-		System.out.println("Starting pioneer ...");
-		PioneerLogger.logger.info("Starting pioneer");
+		PioneerLogger.logger.info("Starting pioneer...");
 		
 		Properties prop = SalsaPioneerConfiguration.getPioneerProperties();
 		
