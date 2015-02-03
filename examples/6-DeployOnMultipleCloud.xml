@@ -7,7 +7,7 @@
 								<ns2:Capability id="brokerIp_Capability" type="salsa:variable"/>
 							</ns2:Capabilities>
 							<ns2:DeploymentArtifacts>
-								<ns2:DeploymentArtifact xmlns:salsa="https://github.com/tuwiendsg/SALSA" name="deployMQTTBroker" artifacttype="salsa:salsa:sh" artifactRef="deployMQTTBroker"/>
+								<ns2:DeploymentArtifact xmlns:salsa="https://github.com/tuwiendsg/SALSA" name="deployMQTTBroker" artifactType="salsa:sh" artifactRef="deployMQTTBroker"/>
 							</ns2:DeploymentArtifacts>
 						</ns2:NodeTemplate>            
             
@@ -55,7 +55,7 @@
                     <ns2:Requirement  id="brokerIp_Requirement_gas_sensor1" type="salsa:variable"/>
                 </ns2:Requirements>
                 <ns2:DeploymentArtifacts>
-                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_13" artifacttype="salsa:salsa:sh" artifactRef="deployArtifactSensor_gas_13"/>
+                    <ns2:DeploymentArtifact name="deployArtifactSensor_gas_13" artifactType="salsa:sh" artifactRef="deployArtifactSensor_gas_13"/>
                 </ns2:DeploymentArtifacts>
             </ns2:NodeTemplate>
             <ns2:RelationshipTemplate id="vmHostSensor1" type="salsa:HOSTON">
