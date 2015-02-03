@@ -572,7 +572,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			return Response.status(200).entity(xml).build();
 		} catch (Exception e) {
 			logger.error("Could not find service: " + serviceDeployId + ". Data did not be sent. Error: " + e.toString());
-			logger.debug("THROWING AN EXCEPTION OF FALUT TO GET SERVICE !");
+			logger.debug("THROWING AN EXCEPTION OF FAILURE TO GET SERVICE !");
 			throw new SalsaEngineException("Could not find service: " + serviceDeployId , false);			
 		}
 	}
@@ -963,14 +963,17 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			 String serviceId,
 			 String topologyId,
 			 String nodeId,
-			 int instanceId) {		
+			 int instanceId) {	
+                logger.debug("update instance unit prop 1");
 		MutualFileAccessControl.lockFile();
 		try {
-			String serviceFile = SalsaConfiguration.getServiceStorageDir()+ File.separator + serviceId + ".data";
+                    logger.debug("update instance unit prop 2");
+			String serviceFile = SalsaConfiguration.getServiceStorageDir()+ File.separator + serviceId + ".data";                        
+                        logger.debug("Setting property. Read service file: " + serviceFile);
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(serviceFile);
-			logger.debug("Setting property. Read service file: " + serviceFile);
+                        logger.debug("update instance unit prop 3: " + service.getId());			
 			ServiceInstance rep = service.getInstanceById(nodeId, instanceId);
-						
+
 			Properties props = rep.getProperties();
 			if (props == null){
 				props = new Properties();
@@ -982,6 +985,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 			props.setAny(propData);
 			rep.setProperties(props);
 			SalsaXmlDataProcess.writeCloudServiceToFile(service, serviceFile);
+                        logger.debug("update instance unit prop END: " + service.getId());	
 			
 		} catch (JAXBException e) {
 			logger.error("updateInstanceUnitProperties - Cannot parse the service file: " + serviceId);

@@ -325,7 +325,7 @@ public interface SalsaEngineServiceIntenal {
 
 	@POST
 	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/properties")
-	//@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.TEXT_PLAIN)
 	public Response updateInstanceUnitProperties(
 			//JAXBElement<Object> data,
 			String data,
