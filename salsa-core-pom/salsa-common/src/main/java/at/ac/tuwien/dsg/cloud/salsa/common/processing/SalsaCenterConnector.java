@@ -315,16 +315,23 @@ public class SalsaCenterConnector {
 	 * Update the topology for a replica. As the property is AnyType, the
 	 * property can be any Jaxb object
 	 * 
+         * @param serviceId
 	 * @param topologyId
 	 * @param nodeId
-	 * @param replica
+         * @param instanceId
 	 * @param property
 	 */
 	public void updateInstanceUnitProperty(String serviceId, String topologyId, String nodeId,
 			int instanceId, Object property) {
 		try{
+                    logger.debug("Endpoint is: " + centerRestfulEndpoint);  
+                        logger.debug("Start to convert property data for node: " + nodeId);                        
 			String data = convertToXML(property);
-			engineInternal.updateInstanceUnitProperties(data, serviceId, topologyId, nodeId, instanceId);
+                        logger.debug("Updating for node: " + nodeId + ", with data:"+ data); 
+                        logger.debug("engine health: " + engineInternal.health());
+			Response res = engineInternal.updateInstanceUnitProperties(data, serviceId, topologyId, nodeId, instanceId);
+                        logger.debug(res.readEntity(String.class));
+                        logger.debug("Update done !");
 		} catch (JAXBException e){
 			logger.debug(e.toString());
 		}

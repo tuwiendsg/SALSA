@@ -49,7 +49,8 @@ public class SalsaToscaDeployer {
 	static final String CLOUD_NODE_NAME = SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString();
 	File configFile;
 	static SalsaCenterConnector centerCon = new SalsaCenterConnector(
-			SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
+                SalsaConfiguration.getSalsaCenterEndpoint().replaceAll("http://.*?:", "http://localhost:"), "/tmp", EngineLogger.logger);
+			//SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
 
 	public SalsaToscaDeployer(File config) {
 		configFile = config;
@@ -287,9 +288,9 @@ public class SalsaToscaDeployer {
 		while (orchestating){
 			try{
 				EngineLogger.logger.debug("The node:"+ log + " is waiting for lock: "+currentLock+". Count: " + count);				
-				Thread.sleep(100);
+				Thread.sleep(500);
 				count++;
-				if (count > 50) {
+				if (count > 100) {
 					releaseLock();
 				}
 			} catch (Exception e) {

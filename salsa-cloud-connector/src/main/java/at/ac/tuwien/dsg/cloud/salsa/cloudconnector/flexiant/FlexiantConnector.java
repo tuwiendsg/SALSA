@@ -122,7 +122,7 @@ public class FlexiantConnector implements CloudInterface {
             server.setCpu(Integer.parseInt(cpuAndRam[0]));	// default
             server.setRam(Integer.parseInt(cpuAndRam[1]));
 
-            // push pioneer by ssh. add a disable IPv^ for apt-get problem
+            // send user data via public ResourceMetadata
             String updateUserData = "echo 'net.ipv6.conf.all.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
             updateUserData += "echo 'net.ipv6.conf.default.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
             updateUserData += "echo 'net.ipv6.conf.lo.disable_ipv6 = 1'>>/etc/sysctl.conf \n";
@@ -184,7 +184,7 @@ public class FlexiantConnector implements CloudInterface {
             // remove the slash at the beginning of the IP
             String ipAddress = inst.getPrivateIp().toString().substring(1);
 
-            logger.debug("Waiting for the ssh server is up at IP: " + ipAddress);
+            //logger.debug("Waiting for the ssh server is up at IP: " + ipAddress);
 
             //pushAndExecuteBashScript(ipAddress, initialUser, initialPasswd, "/tmp/" + newVM_id);
             return createServerJob.getItemUUID();
@@ -220,7 +220,7 @@ public class FlexiantConnector implements CloudInterface {
             // Iterate through the results
             for (Object o : result.getList()) {
                 Server s = ((Server) o);
-                logger.info("List server " + s.getResourceUUID());
+                //logger.info("List server " + s.getResourceUUID());
                 if (s.getResourceUUID().equals(instanceID)) {
                     logger.debug("Instance found: " + instanceID);
 
@@ -228,9 +228,9 @@ public class FlexiantConnector implements CloudInterface {
                     List<Nic> nics = listAllNics();
 
                     for (Nic nic : nics) {
-                        logger.debug("NIC uuid: " + nic.getNetworkUUID());
-                        logger.debug("NIC servername: " + nic.getServerName());
-                        logger.debug("NIC serveuuid: " + nic.getServerUUID());
+                        //logger.debug("NIC uuid: " + nic.getNetworkUUID());
+                        //logger.debug("NIC servername: " + nic.getServerName());
+                        //logger.debug("NIC serveuuid: " + nic.getServerUUID());
                         if (nic.getServerUUID() != null && nic.getServerUUID().equals(instanceID)) {
                             logger.debug("Found a NIC: " + nic.getIndex());
                             logger.debug("nic.getIpAddresses().size(): " + nic.getIpAddresses().size());
@@ -242,6 +242,7 @@ public class FlexiantConnector implements CloudInterface {
                     }
                     InstanceDescription inst = new InstanceDescription(instanceID, ip, ip);
                     inst.setState(mapStatus(s.getStatus()));
+                    logger.debug("Get Flexiant server info: " + inst);
                     return inst;
                 }
             }

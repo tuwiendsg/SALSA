@@ -95,7 +95,9 @@ public class DeploymentEngineNodeLevel {
 		EngineLogger.logger.debug("A VM for " + nodeId + " has been created.");
 		
 		centerCon.updateInstanceUnitProperty(serviceId, topologyId, nodeId, instanceId, instanceDesc);				
+                EngineLogger.logger.debug("Updated VM info for node: " + nodeId);
 		centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.CONFIGURING);
+                EngineLogger.logger.debug("Updated VM state for node: " + nodeId + " to CONFIGURING !");
 		return repData;
 	}
 

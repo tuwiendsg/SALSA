@@ -5,15 +5,22 @@ import generated.oasis.tosca.TDefinitions;
 import java.io.File;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineServiceIntenal;
+import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.SalsaToscaDeployer;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineImplAll;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
+import org.slf4j.Logger;
+
 
 public class TestOtherFunctions {
 
 	public static void main(String[] args) throws Exception{
-		testConvertFromTosca();
+		
+             
 	}
 	
 	public static void testBuildDataFromTosca() throws Exception{
