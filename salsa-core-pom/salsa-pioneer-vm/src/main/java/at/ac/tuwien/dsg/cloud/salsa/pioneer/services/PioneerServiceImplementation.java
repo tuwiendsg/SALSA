@@ -28,6 +28,7 @@ import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
+import java.io.File;
 import java.util.Map;
 
 //@Service
@@ -81,11 +82,11 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
                         PioneerLogger.logger.debug("Actions MAP : " + map);
                         if (map.get(SalsaEntityActions.DEPLOY.getActionString()) != null && !map.get(SalsaEntityActions.DEPLOY.getActionString()).isEmpty()) {
                             PioneerLogger.logger.debug("Execute DEPLOY action for: " + thisNode.getId() + "/" + instanceId);
-                            executeCommand(map.get(SalsaEntityActions.DEPLOY.getActionString()));
+                            executeCommand(map.get(SalsaEntityActions.DEPLOY.getActionString()), SalsaPioneerConfiguration.getWorkingDir()+"/"+nodeID);
                         }
                         if (map.get(SalsaEntityActions.START.getActionString()) != null && !map.get(SalsaEntityActions.START.getActionString()).isEmpty()) {
                             PioneerLogger.logger.debug("Execute START action for: " + thisNode.getId() + "/" + instanceId);
-                            executeCommand(map.get(SalsaEntityActions.START.getActionString()));
+                            executeCommand(map.get(SalsaEntityActions.START.getActionString()), SalsaPioneerConfiguration.getWorkingDir()+"/"+nodeID);
                         }
                     }
                 }
@@ -98,7 +99,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
         return newId;
     }
 
-    public void executeAction(String nodeId, int instanceId, String actionName) {
+    public String executeAction(String nodeId, int instanceId, String actionName) {
         PioneerLogger.logger.debug("Recieve command to executing action: " + nodeId + "/" + instanceId + "/" + actionName);
         Properties prop = SalsaPioneerConfiguration.getPioneerProperties();
 
@@ -110,7 +111,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
         try {
             service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         } catch (SalsaEngineException e) {
-            return;
+            return "-1";
         }
         ServiceUnit unit = service.getComponentById(nodeId);
 
@@ -124,8 +125,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
                 PioneerLogger.logger.debug("Found a custom action: " + actionName);
                 switch (p.getExecutionType()) {
                     case SCRIPT: {
-                        executeCommand(p.getExecutionREF());
-                        break;
+                        return executeCommand(p.getExecutionREF(), SalsaPioneerConfiguration.getWorkingDir()+"/"+nodeId);                        
                     }
                     default: {
                         PioneerLogger.logger.debug("Action type is not support: " + p.getExecutionType());
@@ -135,7 +135,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
                 PioneerLogger.logger.debug("Action name not found: " + actionName);
             }
         }
-        return;
+        return "0";
     }
 
     @Override
@@ -206,11 +206,11 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
                         Map<String, String> map = actionProp.getMapData();
                         if (map.get(SalsaEntityActions.STOP.getActionString()) != null && !map.get(SalsaEntityActions.STOP.getActionString()).isEmpty()) {
                             PioneerLogger.logger.debug("Execute Stopping action for: " + nodeForRemove.getId() + "/" + instanceId);
-                            executeCommand(map.get(SalsaEntityActions.STOP.getActionString()));
+                            executeCommand(map.get(SalsaEntityActions.STOP.getActionString()), SalsaPioneerConfiguration.getWorkingDir()+"/"+nodeID);
                         }
                         if (map.get(SalsaEntityActions.UNDEPLOY.getActionString()) != null && !map.get(SalsaEntityActions.UNDEPLOY.getActionString()).isEmpty()) {
                             PioneerLogger.logger.debug("Execute Undeploying action for: " + nodeForRemove.getId() + "/" + instanceId);
-                            executeCommand(map.get(SalsaEntityActions.UNDEPLOY.getActionString()));
+                            executeCommand(map.get(SalsaEntityActions.UNDEPLOY.getActionString()), SalsaPioneerConfiguration.getWorkingDir()+"/"+nodeID);
                         }
                     }
                 }
@@ -236,23 +236,22 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
         return null;
     }
 
-    public String executeCommand(String cmd) {
+    public String executeCommand(String cmd, String workingDir) {
         PioneerLogger.logger.debug("Execute command: " + cmd);
         try {
-            Process p = Runtime.getRuntime().exec(cmd);
+            Process p = Runtime.getRuntime().exec(cmd,null,new File(workingDir));
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;
-            StringBuilder output = new StringBuilder();
             while ((line = reader.readLine()) != null) {
                 PioneerLogger.logger.debug(line);
             }
             p.waitFor();
-            return output.toString();
+            return p.exitValue()+"";
         } catch (InterruptedException | IOException e1) {
             PioneerLogger.logger.error("Error when execute command. Error: " + e1);
         }
-        return null;
+        return "-1";
     }
 
 }
