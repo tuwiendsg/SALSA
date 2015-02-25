@@ -155,6 +155,7 @@ function CreateTableViewSalsaReplicaNodeTable(data, nodeId) {   // data is Compo
      str += '<th scope="col"> Properties </th>';
      str += '<th scope="col"> Capabilities </th>';
      str += '<th scope="col"> Actions </th>';
+     str += '<th scope="col"> Custom actions </th>';
      
      str += '</tr></thead>';
     
@@ -199,6 +200,18 @@ function CreateTableViewSalsaReplicaNodeTable(data, nodeId) {   // data is Compo
         str+='<td><button type="button" onclick="undeployInstance(\''+serviceId_general+ '\', \''+ topologyId_general +'\', \''+ nodeId +'\',\''+ x[i].getAttribute('replica') + '\')">Undeploy</button>';
         str+='</td>';
         
+        var primities=data.getElementsByTagName("Primitive");
+
+        str+='<td>';
+         for (var k = 0; k < primities.length; k++) {
+             console.log("primities["+k+"]: " + primities[k]);
+             console.log("List one action: " + primities[k].getAttribute('name'));
+             var pname = primities[k].getAttribute('name');
+             str+='<button type="button" onclick="customAction(\''+serviceId_general+ '\' , \''+ nodeId +'\',\''+ x[i].getAttribute('replica') +'\',\''+ pname + '\')">'+pname+'</button>';             
+         }
+         str+='</td>';
+        
+        
         
         
         str += '</tr>';        
@@ -207,6 +220,24 @@ function CreateTableViewSalsaReplicaNodeTable(data, nodeId) {   // data is Compo
     str += '</tbody>';
     str += '</table><br/>';
     return str;
+}
+
+function customAction(serviceID, nodeID, instanceID, actionName){
+	toastr.info("Requesting to execute action "+actionName+" on "+serviceID+"/"+nodeID+"/"+instanceID+" !");
+	$.ajax({
+	    url: salsaCenterRestEndpoint + "/services/" + serviceID + "/nodes/"+ nodeID +"/instances/" + instanceID+ "/action_queue/" + actionName,
+	    type: 'POST',
+	    async: false,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+ 	    error: function(xhr){
+ 	    	toastr.error("Unable to execute the action '" +actionName+"' ! Code: " + xhr.status,"Error");
+ 	    },
+	    complete: function(xhr, textStatus) {
+	    	toastr.success("Action queued: "+actionName+" ! Code: " + xhr.status);
+	    }
+	});
 }
 
 function getElementByTagNameToString(tagName, parentElement){ 
