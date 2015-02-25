@@ -40,7 +40,7 @@ public class BashInstrument extends InstrumentShareData implements InstrumentInt
 		try {
 			p = pb.start();
                         p.waitFor();
-			return p;
+			return p;                        
 		} catch (IOException e) {
 			PioneerLogger.logger.debug(e.toString());	
 		} catch (InterruptedException e1){

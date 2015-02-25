@@ -271,7 +271,14 @@ private static class pullingTaskThread implements Runnable {
 									PioneerServiceImplementation pioneer = new PioneerServiceImplementation();
 									// unqueue action before execute it
 									con.unqueueActions(service.getId(), unit.getId(), instance.getInstanceId());
-									pioneer.executeAction(unit.getId(), instance.getInstanceId(), actionName);
+									String returnValue=pioneer.executeAction(unit.getId(), instance.getInstanceId(), actionName);
+                                                                        if (!returnValue.equals("0")){
+                                                                            con.updateNodeState(service.getId(), topologyId, unit.getId(), instance.getInstanceId(), SalsaEntityState.ERROR);
+                                                                        } else {
+                                                                                    if (!actionName.equals("undeploy")){
+                                                                                        con.updateNodeState(service.getId(), topologyId, unit.getId(), instance.getInstanceId(), SalsaEntityState.DEPLOYED);
+                                                                                    }
+                                                                                }
 								}
 							}
 							
@@ -291,23 +298,43 @@ private static class pullingTaskThread implements Runnable {
 						// the unit now is the one with WAR type service unit example.war
 						ServiceUnit hostedUnit = service.getComponentById(unit.getHostedId());
 						// host unit would be tomcat service unit
-						PioneerLogger.logger.debug("checking hostUnit:" + hostedUnit.getId());
+//						PioneerLogger.logger.debug("checking hostUnit:" + hostedUnit.getId());
 						if (hostedUnit.getHostedId().equals(nodeId)){
 							// hostUnit.gethostedID is the ID of os_OF_tomcat service unit
-							PioneerLogger.logger.debug("hostedUnit.getHostId: "+hostedUnit.getHostedId());
+//							PioneerLogger.logger.debug("hostedUnit.getHostId: "+hostedUnit.getHostedId());
 							for (ServiceInstance instance : unit.getInstancesList()) {
 								// we have a list of instance of the war file. surely that have only one instance at Allocating. Instance is at allocating so have no hostedId_Integer
 								PioneerLogger.logger.debug("Checking instance: " + unit.getId() +"/" + instance.getInstanceId() + ". getHostedId_Integer: " + instance.getHostedId_Integer() +". instance state: " + instance.getInstanceState());
 								// now we must get a instance of the hosted unit.
 								// TODO: Just get the first instance, should be fix.
 								ServiceInstance hostedInst = hostedUnit.getInstanceHostOn(replica).get(0);
-								PioneerLogger.logger.debug("instance: " + unit.getId() +"/" + instance.getInstanceId() + ". getHostedId_Integer: " + instance.getHostedId_Integer());
-								PioneerLogger.logger.debug("hostedInst: " + hostedInst.getId());
+//								PioneerLogger.logger.debug("instance: " + unit.getId() +"/" + instance.getInstanceId() + ". getHostedId_Integer: " + instance.getHostedId_Integer());
+//								PioneerLogger.logger.debug("hostedInst: " + hostedInst.getId());
 								if (hostedInst.getHostedId_Integer()==replica && instance.getState().equals(SalsaEntityState.STAGING)){
 									PioneerLogger.logger.debug("RETRIEVE A STAGING NODE: " + unit.getId() + "/" + instance.getInstanceId());								
 									PioneerServiceImplementation pioneer = new PioneerServiceImplementation();
 									pioneer.deployNode(unit.getId(), instance.getInstanceId());
 								}
+                                                                
+                                                                
+                                                                if (hostedInst.getHostedId_Integer()==replica && instance.getState().equals(SalsaEntityState.STAGING_ACTION)){								
+                                                                        String actionName = instance.pollAction();
+                                                                        if (actionName!=null){	// action==null maybe it is in process
+                                                                                PioneerLogger.logger.debug("Main: Getting stating_action with queue action is: " + actionName);
+                                                                                PioneerServiceImplementation pioneer = new PioneerServiceImplementation();
+                                                                                // unqueue action before execute it
+                                                                                con.unqueueActions(service.getId(), unit.getId(), instance.getInstanceId());
+                                                                                String returnValue = pioneer.executeAction(unit.getId(), instance.getInstanceId(), actionName);
+                                                                                if (!returnValue.equals("0")){
+                                                                                    con.updateNodeState(service.getId(), topologyId, unit.getId(), instance.getInstanceId(), SalsaEntityState.ERROR);
+                                                                                } else {
+                                                                                    if (!actionName.equals("undeploy")){
+                                                                                        con.updateNodeState(service.getId(), topologyId, unit.getId(), instance.getInstanceId(), SalsaEntityState.DEPLOYED);
+                                                                                    }
+                                                                                }
+                                                                        }
+                                                                }
+                                                                
 							}
 						}
 					}

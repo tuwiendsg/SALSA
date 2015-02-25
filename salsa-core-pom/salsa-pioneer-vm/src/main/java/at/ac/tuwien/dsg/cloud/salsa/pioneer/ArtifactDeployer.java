@@ -301,6 +301,7 @@ public class ArtifactDeployer {
 					// download file to dir: nodeId/fileName
 					PioneerLogger.logger.debug("Download file from:"+url.toString()+"\nSave to file:" + filePath);
 					FileUtils.copyURLToFile(url,new File(filePath));
+                                        (new File(filePath)).setExecutable(true);
 				} catch (IOException e) {
 					PioneerLogger.logger.error("Error while downloading artifact for: "	+ node.getId() + ". URL:" + art);
 					PioneerLogger.logger.error(e.toString());
@@ -383,7 +384,7 @@ public class ArtifactDeployer {
 			Object monitorObj = instrument.deployArtifact(runArt, instanceId);
 			if (monitorObj==null){
 				return;
-			}
+			} 
 			PioneerLogger.logger.debug("The artifact class is: " + monitorObj.getClass().toString());
 			if (artType.equals(SalsaArtifactType.sh.getString())){
 				PioneerLogger.logger.debug("Ok, we can add this to the process list for monitoring");				
