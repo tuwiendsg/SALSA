@@ -242,8 +242,8 @@ private static class pullingTaskThread implements Runnable {
 				CloudService service;
 				try {
 					service = con.getUpdateCloudServiceRuntime(serviceId);
-				} catch (SalsaEngineException e){
-					PioneerLogger.logger.error("Could not retrieved service description");
+				} catch (Exception anyException){
+					PioneerLogger.logger.error("Error: " + anyException.getMessage());
 					try{
 						Thread.sleep(5000);
 					} catch (InterruptedException e1){

@@ -22,14 +22,14 @@ public class WarInstrument implements InstrumentInterface {
 	}
 
 	@Override
-	public Object deployArtifact(String uri, String id) {
+	public Object deployArtifact(String uri, String instanceId) {
 		String webContainerDir = "/var/lib/tomcat7/webapps/";
 		PioneerLogger.logger.debug("Copying war file to the target. File: " + uri);
 		try {
 			InputStream input = null;
 			OutputStream output = null;
 			try {
-				input = new FileInputStream(SalsaPioneerConfiguration.getWorkingDir() +"/"+nodeId+"/"+uri);
+				input = new FileInputStream(SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, Integer.parseInt(instanceId))+"/"+uri);
 				output = new FileOutputStream(webContainerDir + uri);
 				byte[] buf = new byte[1024];
 				int bytesRead;

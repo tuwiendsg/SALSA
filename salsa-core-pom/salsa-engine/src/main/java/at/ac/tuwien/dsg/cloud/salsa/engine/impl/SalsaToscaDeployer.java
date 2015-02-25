@@ -546,7 +546,8 @@ public class SalsaToscaDeployer {
 			centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.STAGING_ACTION);
 			centerCon.queueActions(serviceId, nodeId, instanceId, SalsaEntityActions.UNDEPLOY.getActionString());
 			SalsaEntityState state = SalsaEntityState.STAGING_ACTION;
-			while (state!=SalsaEntityState.UNDEPLOYED){	// wait until pioneer finish its job and inform undeployed
+                        int count=0;
+			while (state!=SalsaEntityState.UNDEPLOYED && count <100){	// wait until pioneer finish its job and inform undeployed or just wait 5 mins
 				try {
 					state = SalsaEntityState.fromString(centerCon.getInstanceState(serviceId, nodeId, instanceId));
 				} catch (SalsaEngineException e1) {
@@ -558,6 +559,7 @@ public class SalsaToscaDeployer {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}				
+                                count+=1;
 			}
 			EngineLogger.logger.debug("Pioneer seems to response that undeploying node done: " + serviceId + "/" + nodeId + "/" + instanceId);
 			// remove complete, delete metadata
