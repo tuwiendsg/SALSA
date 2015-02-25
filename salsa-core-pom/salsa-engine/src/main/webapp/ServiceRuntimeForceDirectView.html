@@ -1,177 +1,409 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Salsa Deployment Graph</title>
+    <head>
+        <meta charset="UTF-8">
+        <title>Salsa Deployment Graph</title>
 
-<!--  ref: http://www.voyce.com/index.php/2013/06/23/dynamic-d3-with-knockout-js/ -->
-<!-- As this file will be loaded in an iframe, we need to include everything again -->
+        <!--  ref: http://www.voyce.com/index.php/2013/06/23/dynamic-d3-with-knockout-js/ -->
+        <!-- As this file will be loaded in an iframe, we need to include everything again -->
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="scripts/jquery-1.3.2.debug.js" type="text/javascript"></script>
-<script src="scripts/json.debug.js" type="text/javascript"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="http://d3js.org/d3.v3.js"></script>
-<script src="scripts/toastr.js"></script> <!-- Notification -->
-<script src="scripts/jquery.tipsy.js"></script> <!-- Tooltips -->
-<script src="scripts/jquery-ui-1.10.4.custom.min.js"></script> <!-- jquery.ui for box -->
-<script src="scripts/jquery.ui-contextmenu.js"></script>
-<script src="scripts/spin.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="scripts/jquery-1.3.2.debug.js" type="text/javascript"></script>
+        <script src="scripts/json.debug.js" type="text/javascript"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <!--        <script src="http://d3js.org/d3.v3.js"></script>-->
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <script src="scripts/toastr.js"></script> <!-- Notification -->
+        <script src="scripts/jquery.tipsy.js"></script> <!-- Tooltips -->
+        <script src="scripts/jquery-ui-1.10.4.custom.min.js"></script> <!-- jquery.ui for box -->
+        <script src="scripts/jquery.ui-contextmenu.js"></script>
+        <script src="scripts/spin.js"></script>
 
 
-<link href="css/toastr.css" rel="stylesheet"/>
-<link href="css/default.css" rel="stylesheet" type="text/css" />
-<link href="css/runtimeTree.css" rel="stylesheet" type="text/css" />
-<link href="css/jquery.tipsy.css" rel="stylesheet" type="text/css" />
-<link href="css/ui-lightness/jquery-ui-1.10.4.custom.min.css" rel="stylesheet" type="text/css" />
-<link href="css/ui-lightness/jquery-ui-1.10.4.custom.css" rel="stylesheet" type="text/css" />
+        <link href="css/toastr.css" rel="stylesheet"/>
+        <link href="css/default.css" rel="stylesheet" type="text/css" />
+        <link href="css/runtimeTree.css" rel="stylesheet" type="text/css" />
+        <link href="css/jquery.tipsy.css" rel="stylesheet" type="text/css" />
+        <link href="css/ui-lightness/jquery-ui-1.10.4.custom.min.css" rel="stylesheet" type="text/css" />
+        <link href="css/ui-lightness/jquery-ui-1.10.4.custom.css" rel="stylesheet" type="text/css" />
 
-</head>
-<body>
-<div id="treeViewDiv" style="overflow:auto; width: 100%; height: 100%"></div>
 
-<script type="text/javascript">
-	$.ajaxSetup({
-	    cache: false
-	});
-	
-	window.onerror=function(msg, url, linenumber){
-	 alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber)
-	 return true
-	}
+        <style>
 
-	function getURLParameter(name) {
-		return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
-	}
+            .link {
+                fill: none;                
+                stroke: none;
+                stroke-width: 0px;
+            }
 
-	var salsaCenterRestEndpoint="/salsa-engine/rest";
-	var treeDataSource=salsaCenterRestEndpoint + "/viewgenerator/cloudservice/json/forcedirect/" + getURLParameter("id");
+            #HOSTON {
+                fill: green;
+            }
 
-	
-    var margin = {top: 10, right: 120, bottom: 20, left: 140},
-	    width = 800,  
-	    height = 600,
-        i = 0,
-        duration = 0,
-        depth = width / 3.5,
-        metrics,
-        root;
+            .link.HOSTON {
+                fill: green;  
+                stroke: green;
+            }
 
-    var opts = {
-        lines: 20, // The number of lines to draw
-        length: 7, // The length of each line
-        width: 10, // The line thickness
-        radius: 100, // The radius of the inner circle
-        corners: 1, // Corner roundness (0..1)
-        rotate: 0, // The rotation offset
-        color: '#000', // #rgb or #rrggbb
-        speed: 1, // Rounds per second
-        trail: 60, // Afterglow percentage
-        shadow: false, // Whether to render a shadow
-        hwaccel: false, // Whether to use hardware acceleration
-        className: 'spinner', // The CSS class to assign to the spinner
-        zIndex: 2e9, // The z-index (defaults to 2000000000)
-        top: 'auto', // Top position relative to parent in px
-        left: 'auto', // Left position relative to parent in px
-        visibility: true,
-        maxLabelLength: 20
-    };     
+            .link.CONNECTTO {
+                fill: blue;  
+                stroke: blue;
+                stroke-dasharray: 0,2 1;
+            }
+            
+            .link.TOPO_TOPO {                
+                stroke: none;
+            }
+            
+            
+            
+            circle {
+                fill: #ccc;
+                stroke: #333;
+                stroke-width: 1.5px;
+            }
 
-    var tree = d3.layout.tree()
-            .size([height, width]);
+            text {
+                font: 10px sans-serif;
+                pointer-events: none;
+                text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+            }
 
-    var diagonal = d3.svg.diagonal()
-            .projection(function(d) {
-                return [d.y, d.x];
+        </style>
+
+    </head>
+    <body>
+        <div id="treeViewDiv" style="overflow:auto; width: 100%; height: 100%"></div>
+
+        <script type="text/javascript">
+            $.ajaxSetup({
+                cache: false
             });
 
-    var vis = d3.select("#treeViewDiv").append("svg")
-            .attr("width", width + margin.right + margin.left)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            window.onerror = function (msg, url, linenumber) {
+                alert('Error message: ' + msg + '\nURL: ' + url + '\nLine Number: ' + linenumber)
+                return true
+            }
 
-	
+            function getURLParameter(name) {
+                return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null
+            }
 
-    function update(source) {
-    	var width = 960,
-        height = 500;
-
-	    var color = d3.scale.category20();
-	
-	    var force = d3.layout.force()
-	        .charge(-120)
-	        .linkDistance(30)
-	        .size([width, height]);
-	
-	    var svg = d3.select("body").append("svg")
-	        .attr("width", width)
-	        .attr("height", height);
-	
-	    d3.json("miserables.json", function(error, graph) {
-	      force
-	          .nodes(graph.nodes)
-	          .links(graph.links)
-	          .start();
-	
-	      var link = svg.selectAll(".link")
-	          .data(graph.links)
-	        .enter().append("line")
-	          .attr("class", "link")
-	          .style("stroke-width", function(d) { return Math.sqrt(d.value); });
-	
-	      var node = svg.selectAll(".node")
-	          .data(graph.nodes)
-	        .enter().append("circle")
-	          .attr("class", "node")
-	          .attr("r", 5)
-	          .style("fill", function(d) { return color(d.group); })
-	          .call(force.drag);
-	
-	      node.append("title")
-	          .text(function(d) { return d.name; });
-	
-	      force.on("tick", function() {
-	        link.attr("x1", function(d) { return d.source.x; })
-	            .attr("y1", function(d) { return d.source.y; })
-	            .attr("x2", function(d) { return d.target.x; })
-	            .attr("y2", function(d) { return d.target.y; });
-	
-	        node.attr("cx", function(d) { return d.x; })
-	            .attr("cy", function(d) { return d.y; });
-	      });
-	    });
-       
-    }
-
-    var isUpdateTree=false;
-    
-    function showTheTree(){
-    	d3.json(treeDataSource, function(error, flare) {
-    		if (error) return "error";
-    	  root = flare;
-    	  root.x0 = height / 2;
-    	  root.y0 = width / 2;	
-    	  
-    	  update(root);  
-    	  
-//     	  setTimeout(function(){
-//     		  isUpdateTree=true;
-//     		  showTheTree();
-//     	  }, 3000);
-    	});
-    }
-    
-    d3.select(self.frameElement).style("height", "800px");
-
-    showTheTree();
-	
-</script>
+            var salsaCenterRestEndpoint = "/salsa-engine/rest";
+            var treeDataSource = salsaCenterRestEndpoint + "/viewgenerator/cloudservice/json/forcedirect/" + getURLParameter("id");
 
 
+            var margin = {top: 10, right: 120, bottom: 20, left: 140},
+            width = 1200,
+                    height = 1000,
+                    duration = 0,
+                    metrics,
+                    root;
+
+            var tree = d3.layout.tree()
+                    .size([height, width]);
+
+            var diagonal = d3.svg.diagonal()
+                    .projection(function (d) {
+                        return [d.y, d.x];
+                    });
+
+            var vis = d3.select("#treeViewDiv").append("svg")
+                    .attr("width", width + margin.right + margin.left)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            update2();
+
+            function update2() {
 
 
-</body>
+                d3.json(treeDataSource, function (error, graph) {
+                    var force = d3.layout.force()
+                            .nodes(graph.nodes)
+                            .links(graph.links)
+                            .size([width, height])
+                            .linkDistance(function(d){
+                                if (d.type==="TOPO_TOPO"){
+                                    return 600; // distances between topologies are far
+                                }
+                                if (d.type==="CONNECTTO"){
+                                    return 400; 
+                                }
+                                if (d.type==="HOSTON"){
+                                    return 100; 
+                                }
+                                return 100;
+                            })
+                            .charge(function(d){
+                                if (d.type == "CONNECTTO") {
+                                    return 0;
+                                }
+                                if (d.type == "HOSTON") {
+                                    return 0;
+                                }
+                                if (d.type == "TOPO_TOPO") {
+                                    return 0;
+                                }
+                                if (d.type == "TOPOLOGY_INSTANCE") {
+                                    return -30;
+                                }
+                            })
+                            .on("tick", tick)
+                            .start();
+
+                    var svg = d3.select("body").append("svg")
+                            .attr("width", width)
+                            .attr("height", height);
+
+                    // Per-type markers, as they don't inherit styles.
+                    svg.append("defs").selectAll("marker")
+                            .data(["HOSTON", "CONNECTTO"])
+                            .enter().append("marker")
+                            .attr("id", function (d) {
+                                return d;
+                            })
+                            .attr("viewBox", "0 -5 10 10")
+                            .attr("refX", 15)
+                            .attr("refY", -1.5)
+                            .attr("markerWidth", 6)
+                            .attr("markerHeight", 6)
+                            .attr("orient", "auto")
+                            .append("path")
+                            .attr("d", "M0,-5L10,0L0,5");
+
+                    var path = svg.append("g").selectAll("path")
+                            .data(force.links())
+                            .enter().append("path")
+                            .attr("class", function (d) {
+                                return "link " + d.type;
+                            })
+                            .attr("marker-end", function (d) {
+                                if (d.type==="HOSTON" || d.type==="CONNECTTO"){
+                                    return "url(#" + d.type + ")";
+                                }
+                            });
+
+                    var drag = force.drag()
+                        .on("dragstart", dragstart);
+                
+                    var circle = svg.append("g").selectAll("circle")
+                            .data(force.nodes())
+                            .enter().append("circle")
+                            .attr("r", 6)
+                            .style("fill", function(d) { 
+                                if (d.type==="TOPOLOGY"){
+                                    return "blue";
+                                }
+                                if (d.type==="INSTANCE"){
+                                    return "white";
+                                }
+                                return d.color; })
+                            .call(force.drag);                                        
+
+                    var text = svg.append("g").selectAll("text")
+                            .data(force.nodes())
+                            .enter().append("text")
+                            .attr("x", 8)
+                            .attr("y", ".31em")
+                            .text(function (d) {
+                                return d.name;
+                            });
+                    function tick() {
+                        path.attr("d", linkArc);
+                        circle.attr("transform", transform);
+                        text.attr("transform", transform);
+                    }
+
+                    function linkArc(d) {
+                        var dx = d.target.x - d.source.x,
+                                dy = d.target.y - d.source.y,
+                                dr = Math.sqrt(dx * dx + dy * dy);
+                        return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+                    }
+
+                    function transform(d) {
+                        return "translate(" + d.x + "," + d.y + ")";
+                    }
+                    
+                    function dragstart(d) {
+                        d3.select(this).classed("fixed", d.fixed = true);
+                      }
+
+                }); // end d3.json
+
+
+
+
+
+
+            }
+
+
+
+// FROM HERE ON IS DREPLICATED
+
+            function update() {
+                var color = d3.scale.category20();
+
+                var force = d3.layout.force()
+                        .charge(function(d){
+                            if (d.type == "CONNECTTO") {
+                                return 0;
+                            }
+                            if (d.type == "HOSTON") {
+                                return -30;
+                            }
+                            if (d.type == "TOPO_TOPO") {
+                                return -10;
+                            }
+                            if (d.type == "TOPOLOGY_INSTANCE") {
+                                return -30;
+                            }
+                        })
+                        .linkDistance(function (d) {
+                            if (d.type == "SERVICE_TOPO") {
+                                return 200;
+                            }
+                            if (d.type == "TOPOLOGY_INSTANCE") {
+                                return 300;
+                            }
+                            if (d.type == "HOSTON") {
+                                return 100;
+                            }
+                            if (d.type == "CONNECTTO") {
+                                return null;
+                            }
+                            return null;
+                        })
+                        .size([width, height]);
+
+
+                var svg = d3.select("body").append("svg")
+                        .attr("width", width)
+                        .attr("height", height);
+                console.log(" start to draw force graph ");
+
+                d3.json(treeDataSource, function (error, graph) {
+
+                    force.nodes(graph.nodes)
+                            .links(graph.links)
+                            .start();
+
+                    var link = svg.selectAll(".link")
+                            .data(graph.links)
+                            .enter().append("line")
+                            .attr("class", "link")
+                            .style("stroke-width", function (d) {
+                                return 1;
+                            });
+
+
+
+                    var node = svg.selectAll(".node")
+                            .data(graph.nodes)
+                            .enter().append("g")
+                            .attr("class", "node");
+
+                    node.append("rect")
+                            .attr("width", function (d) {
+                                return d.name.length * 5 + 10;
+                            })
+                            .attr("height", 15)
+                            .attr("rx", 5)
+                            .attr("class", "node")
+                            .attr("stroke", "black")
+                            .attr("stroke-width", "1")
+                            .style("fill", function (d) {
+                                return color(d.group);
+                            })
+                            .call(force.drag);
+
+
+
+
+
+                    console.log("add text");
+//                    node.append("title")
+//                            .text(function (d) {
+//                                return d.name;
+//                            });
+
+                    node.append("text")
+                            .attr("dx", 7)
+                            .attr("dy", 10)
+                            .attr("text-anchor", "left")
+                            .style("font-weight", "bold")
+                            .style("font-size", "10px")
+                            .attr("fill", "black")
+                            .text(function (d) {
+                                return d.name;
+                            });
+
+
+                    console.log("node append done");
+                    
+                    force.on("tick", function () {
+                        node.attr("transform", function (d) {
+                            var newdx = d.x - (d.name.length * 5) / 2;
+                            return "translate(" + newdx + "," + d.y + ")";
+                        });
+                        link.attr("x1", function (d) {
+                            return d.source.x;
+                        })
+                                .attr("y1", function (d) {
+                                    return d.source.y;
+                                })
+                                .attr("x2", function (d) {
+                                    return d.target.x;
+                                })
+                                .attr("y2", function (d) {
+                                    return d.target.y;
+                                });
+
+//                        node.attr("x", function (d) {
+//                            return d.x;
+//                        })
+//                                .attr("y", function (d) {
+//                                    return d.y;
+//                                });
+                    });
+                });
+                console.log("force.on done");
+            }
+
+
+            var isUpdateTree = false;
+
+            function showTheTree() {
+                d3.json(treeDataSource, function (error, flare) {
+                    if (error)
+                        return "error";
+                    root = flare;
+                    root.x0 = height / 2;
+                    root.y0 = width / 2;
+
+                    //update(root);
+
+                    //     	  setTimeout(function(){
+                    //     		  isUpdateTree=true;
+                    //     		  showTheTree();
+                    //     	  }, 3000);
+                });
+            }
+
+
+            //d3.select(self.frameElement).style("height", "800px");
+
+            //showTheTree();
+
+        </script>
+
+
+
+
+    </body>
 </html>
 
 

@@ -44,6 +44,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @Path("/viewgenerator")
@@ -224,6 +225,11 @@ public class ViewGenerator {
 						}
 						newTopo.getChildren().add(newInstance);
 					}
+                                        // in the case that unit have no instance, set it as undeployed
+                                        if(unit.getInstancesList().isEmpty()){
+                                            ServiceJsonDataTreeSimple newSU_undeployed = createServiceJsonNode(unit.getId(), "SERVICE_UNIT");
+                                            newTopo.getChildren().add(newSU_undeployed);
+                                        }
 				}
 			}
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -283,35 +289,73 @@ public class ViewGenerator {
 			String salsaFile = SalsaConfiguration.getServiceStorageDir() + "/" + serviceDeployId + ".data";
 			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
 			// add root node
-			jsonObject.addNode(service.getId(), service.getId());
+			//jsonObject.addNode(service.getId(), service.getId(), service.getState().getNodeStateString());
+                        // add all the nodes
 			for (ServiceTopology topo : service.getComponentTopologyList()) {
 				logger.debug("getServiceRuntimeForceDirect - Checking topo size: " + service.getComponentTopologyList().size());
 				logger.debug("getServiceRuntimeForceDirect - Checking topo ID  : " + topo.getId());
 				// add topo node				
-				jsonObject.addNode(topo.getId(), service.getId());
-				jsonObject.addLink(service.getId(), topo.getId(), "abstract");
+				jsonObject.addNode(topo.getId(), service.getId(),"TOPOLOGY", topo.getState().getNodeStateString());
+				//jsonObject.addLink(service.getId(), topo.getId(), "abstract");
 				for (ServiceUnit unit : topo.getComponents()) {		
 					logger.debug("getServiceRuntimeForceDirect - Checking unit ID  : " + unit.getId());
 					for (ServiceInstance instance : unit.getInstancesList()) {
 						logger.debug("getServiceRuntimeForceDirect - Checking instance ID  : " + instance.getInstanceId());
 						String fullInstanceId = unit.getId()+"_"+instance.getInstanceId();
-						jsonObject.addNode(fullInstanceId, topo.getId());	// group is topology id
-						jsonObject.addLink(topo.getId(), fullInstanceId, "abstract");
-						if (topo.getComponentById(unit.getHostedId()) != null){
-							if (!topo.getComponentById(unit.getHostedId()).getInstancesList().isEmpty()){
-								jsonObject.addLink(unit.getHostedId()+"_"+topo.getComponentById(unit.getHostedId()).getInstancesList().get(0).getInstanceId(), fullInstanceId, "HOSTON");
+						jsonObject.addNode(fullInstanceId, topo.getId(), "INSTANCE", instance.getState().getNodeStateString());	// group is topology id
+						//jsonObject.addLink(topo.getId(), fullInstanceId, "abstract");
+//						if (topo.getComponentById(unit.getHostedId()) != null){
+//							if (!topo.getComponentById(unit.getHostedId()).getInstancesList().isEmpty()){
+//								jsonObject.addLink(unit.getHostedId()+"_"+topo.getComponentById(unit.getHostedId()).getInstancesList().get(0).getInstanceId(), fullInstanceId, "HOSTON");
+//							}
+//						}
+//						for (String connectUnit : unit.getConnecttoId()) {
+//							if (topo.getComponentById(connectUnit)!=null){
+//								if (!topo.getComponentById(connectUnit).getInstancesList().isEmpty()){
+//									jsonObject.addLink(fullInstanceId, connectUnit +"_"+ topo.getComponentById(connectUnit).getInstancesList().get(0).getInstanceId(), "CONNECTTO");
+//								}
+//							}
+//						}
+					}					
+				}				
+			}
+                        
+                        // add all the link
+                        List<ServiceTopology> topoTmps = new CopyOnWriteArrayList<>(service.getComponentTopologyList());
+                        for (ServiceTopology topo : service.getComponentTopologyList()) {
+                                for (ServiceTopology topoTmp: topoTmps){    // get rid of concurent modification of List
+                                    if (topo.getId().equals(topoTmp.getId())){
+                                        topoTmps.remove(topoTmp);
+                                        for (ServiceTopology connectTopo: topoTmps){
+                                            jsonObject.addLink(topoTmp.getId(), connectTopo.getId(), "TOPO_TOPO");
+                                        }
+                                    }                                
+                                }
+				//jsonObject.addLink(service.getId(), topo.getId(), "SERVICE_TOPO");
+				for (ServiceUnit unit : topo.getComponents()) {					
+					for (ServiceInstance instance : unit.getInstancesList()) {						
+						String fullInstanceId = unit.getId()+"_"+instance.getInstanceId();						
+						jsonObject.addLink(topo.getId(), fullInstanceId, "TOPOLOGY_INSTANCE");
+						if (service.getComponentById(unit.getHostedId()) != null){
+							if (!service.getComponentById(unit.getHostedId()).getInstancesList().isEmpty()){
+								jsonObject.addLink(unit.getHostedId()+"_"+service.getComponentById(unit.getHostedId()).getInstancesList().get(0).getInstanceId(), fullInstanceId, "HOSTON");
 							}
 						}
 						for (String connectUnit : unit.getConnecttoId()) {
-							if (topo.getComponentById(connectUnit)!=null){
-								if (!topo.getComponentById(connectUnit).getInstancesList().isEmpty()){
-									jsonObject.addLink(fullInstanceId, connectUnit +"_"+ topo.getComponentById(connectUnit).getInstancesList().get(0).getInstanceId(), "CONNECTTO");
+							if (service.getComponentById(connectUnit)!=null){
+								if (!service.getComponentById(connectUnit).getInstancesList().isEmpty()){
+									jsonObject.addLink(fullInstanceId, connectUnit +"_"+ service.getComponentById(connectUnit).getInstancesList().get(0).getInstanceId(), "CONNECTTO");
 								}
 							}
 						}
 					}					
 				}				
 			}
+                        // TOPO_TOPO link
+                        
+                        
+                        
+                        
 		} catch (Exception e){
 			e.printStackTrace();
 		}
