@@ -46,5 +46,9 @@ public class SalsaPioneerConfiguration {
 	public static String getSalsaCenterEndpoint() {
 		return salsaCenterEndpoint;
 	}
+        
+        public static String getWorkingDirOfInstance(String nodeID, int instanceID){
+            return getWorkingDir()+"/"+nodeID+"."+instanceID;
+        }
 
 }

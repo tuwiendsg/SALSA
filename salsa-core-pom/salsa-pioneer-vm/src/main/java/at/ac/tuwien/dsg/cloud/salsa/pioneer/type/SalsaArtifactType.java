@@ -15,8 +15,10 @@ public enum SalsaArtifactType {
         shcont("shcont"),
 	apt("apt-get"),
 	chef("chef"),
-	chefSolo("chef-solo"),
-	war("war");
+	chefSolo("chef-solo"),        
+	war("war"),
+        dockerfile("dockerfile"),
+        misc("misc");
 	
 	private String prop;
 	

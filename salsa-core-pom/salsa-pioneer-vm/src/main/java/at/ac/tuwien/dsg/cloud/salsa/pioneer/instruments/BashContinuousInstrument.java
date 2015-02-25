@@ -34,11 +34,11 @@ public class BashContinuousInstrument extends InstrumentShareData implements Ins
 		PioneerLogger.logger.debug("Executing command: bash " + runArt);		
 		
 		Map<String,String> env = pb.environment();
-		String envPATH = env.get("PATH")+":"+SalsaPioneerConfiguration.getWorkingDir();
+		String envPATH = env.get("PATH")+":"+SalsaPioneerConfiguration.getWorkingDirOfInstance(node.getId(), Integer.parseInt(instanceId));
 		env.put("PATH", envPATH);
 		PioneerLogger.logger.debug("env PATH="+envPATH);
 		// e.g, working in /opt/salsa/<nodeid>
-		pb.directory(new File(SalsaPioneerConfiguration.getWorkingDir()+File.separator+node.getId()));
+		pb.directory(new File(SalsaPioneerConfiguration.getWorkingDirOfInstance(node.getId(), Integer.parseInt(instanceId))));
 		try {
 			p = pb.start();
 			return p;
