@@ -15,8 +15,11 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
@@ -58,10 +61,39 @@ public class DockerConfigurator{
 	}
 	
         // this method does not install salsa pioneer
-        public String installDockerNodeWithDockerFile(String nodeId, int instanceId, String dockerFile){
+        public String installDockerNodeWithDockerFile(String nodeId, int instanceId, String dockerFile) {
             String newDockerImage=UUID.randomUUID().toString().substring(0, 5);
-            SystemFunctions.executeCommand("sudo docker build -t "+ newDockerImage +" . ", SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), null, "");
-            String returnValue = SystemFunctions.executeCommand("sudo docker run -d --name "+nodeId+"_"+instanceId+" -t " + newDockerImage, SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), null, "");            
+            if (!dockerFile.equals("Dockerfile")){
+                SystemFunctions.executeCommand("mv " + dockerFile + " Dockerfile", SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), null, "");
+            }
+            // add port mapping 
+            SystemFunctions.executeCommand("sudo docker build -t "+ newDockerImage +" .", SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), null, "");
+            
+            
+            // search for porting MAP be reading the EXPOSE in dockerFile
+            String portMap = "";
+            String exportToDocker = "";
+            String hostIP = SystemFunctions.getEth0IPAddress();            
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(new File(SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId)+"/Dockerfile")));
+                String line;
+                while ((line = br.readLine()) != null) {
+                   if (line.startsWith("EXPOSE")){
+                       String[] exposesFull = line.split("\\s+");
+                       String[] exposes = Arrays.copyOfRange(exposesFull, 1, exposesFull.length); // remove the EXPOSE keyword
+                       for(String port : exposes){
+                           portMap += " -p " + hostIP +":"+getPortMapOnHost(Long.parseLong(port), instanceId)+":"+port; // aware of no space after this
+                           exportToDocker += " -e SALSA_ENV_PORTMAP_"+port+"="+hostIP +":"+getPortMapOnHost(Long.parseLong(port), instanceId);
+                       }
+                   }
+                }
+                br.close();
+            } catch (IOException e) {
+                PioneerLogger.logger.error("Cannot read the Docker file: " + dockerFile);
+            }
+            
+            
+            String returnValue = SystemFunctions.executeCommand("sudo docker run -d --name "+nodeId+"_"+instanceId+portMap+exportToDocker+" -t " + newDockerImage, SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), null, "");            
             PioneerLogger.logger.debug("installDockerNodeWithDockerFile. Return value: " + returnValue);
             return returnValue;
         }
@@ -102,12 +134,21 @@ public class DockerConfigurator{
         String portMap=portPrefix+ dockerInstanceId;
         String cmd = "/bin/bash pioneer_install.sh " + nodeId +" " + instanceId;
         //return executeCommand("sudo docker run -p " + portMap + ":9000 " + "-d -t " + newDockerImage +" " + cmd +" ");
+        
+        // get the port map
+        
+        
+        
         return SystemFunctions.executeCommand("sudo docker run -d --name "+nodeId+"_"+instanceId+" -t " + newDockerImage +" " + cmd +" ", null, null, null);
 	}
 	
 	public SalsaInstanceDescription_VM getDockerInfo(String containerID){
+            if (containerID == null || containerID.isEmpty()){
+                PioneerLogger.logger.error("Cannot get Docker information. Container ID is null or empty !");
+                return null;
+            }
         // TODO: a bit hack here
-		SalsaInstanceDescription_VM dockerMachine = new SalsaInstanceDescription_VM("local@dockerhost", containerID);
+        SalsaInstanceDescription_VM dockerMachine = new SalsaInstanceDescription_VM("local@dockerhost", containerID);
         dockerMachine.setBaseImage("salsa.ubuntu");
         dockerMachine.setInstanceType("os");
         String isRunning = SystemFunctions.executeCommand("docker inspect --format='{{.State.Running}}' " + containerID, null, null, null);
@@ -116,7 +157,6 @@ public class DockerConfigurator{
         } else {
         	dockerMachine.setState("STOPPED");
         }
-        // get IP
         String ip = SystemFunctions.executeCommand("docker inspect --format='{{.NetworkSettings.IPAddress}}' " + containerID, null, null, null);
         dockerMachine.setPrivateIp(ip);
         dockerMachine.setPublicIp(ip);
@@ -142,6 +182,12 @@ public class DockerConfigurator{
 //		}
 	}
 	
-	
+	private Long getPortMapOnHost(Long portOnDocker, int dockerInstanceID){
+            if (portOnDocker<1024){
+                return portOnDocker + dockerInstanceID + 9000;
+            } else {
+                return portOnDocker + dockerInstanceID;
+            }
+        }
 	
 }

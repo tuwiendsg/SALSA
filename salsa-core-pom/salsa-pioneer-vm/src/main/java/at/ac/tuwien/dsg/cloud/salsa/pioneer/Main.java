@@ -272,11 +272,12 @@ private static class pullingTaskThread implements Runnable {
 									// unqueue action before execute it
 									con.unqueueActions(service.getId(), unit.getId(), instance.getInstanceId());
 									String returnValue=pioneer.executeAction(unit.getId(), instance.getInstanceId(), actionName);
-                                                                        if (!returnValue.equals("0")){
-                                                                            con.updateNodeState(service.getId(), topologyId, unit.getId(), instance.getInstanceId(), SalsaEntityState.ERROR);
+                                                                       if (returnValue == null){
+                                                                           PioneerLogger.logger.debug("Action is not successfull because return value is: " + returnValue);
+                                                                           con.updateNodeState(service.getId(), topologyId, unit.getId(), instance.getInstanceId(), SalsaEntityState.ERROR);
                                                                         } else {
                                                                                     if (!actionName.equals("undeploy")){
-                                                                                        con.updateNodeState(service.getId(), topologyId, unit.getId(), instance.getInstanceId(), SalsaEntityState.DEPLOYED);
+                                                                                        con.updateNodeState(service.getId(), topologyId, unit.getId(), instance.getInstanceId(), SalsaEntityState.UNDEPLOYED);
                                                                                     }
                                                                                 }
 								}
@@ -325,7 +326,8 @@ private static class pullingTaskThread implements Runnable {
                                                                                 // unqueue action before execute it
                                                                                 con.unqueueActions(service.getId(), unit.getId(), instance.getInstanceId());
                                                                                 String returnValue = pioneer.executeAction(unit.getId(), instance.getInstanceId(), actionName);
-                                                                                if (!returnValue.equals("0")){
+                                                                                if (returnValue == null){
+                                                                                    PioneerLogger.logger.debug("Action is not successfull because return value is: " + returnValue);
                                                                                     con.updateNodeState(service.getId(), topologyId, unit.getId(), instance.getInstanceId(), SalsaEntityState.ERROR);
                                                                                 } else {
                                                                                     if (!actionName.equals("undeploy")){

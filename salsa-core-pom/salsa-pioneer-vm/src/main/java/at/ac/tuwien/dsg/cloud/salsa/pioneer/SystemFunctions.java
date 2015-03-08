@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 public class SystemFunctions {
 
@@ -60,6 +61,10 @@ public class SystemFunctions {
         return "";
     }
 
+    public static String getEth0IPAddress() {
+        return executeCommand("hostname -i", null, null, null);
+    }
+
     /**
      * Run a command and wait
      *
@@ -74,27 +79,42 @@ public class SystemFunctions {
         if (centerCon != null) {
             centerCon.logMessage("Execute command from: " + executeFrom + ". Cmd: " + cmd);
         }
+        if (workingDir == null) {
+            workingDir = "/tmp";
+        }
         try {
-            Process p;
-            if (workingDir == null) {
-                p = Runtime.getRuntime().exec(cmd);
-            } else {
-                p = Runtime.getRuntime().exec(cmd, null, new File(workingDir));
-            }
+            String[] splitStr = cmd.split("\\s+");
+            ProcessBuilder pb = new ProcessBuilder(splitStr);
+            pb.directory(new File(workingDir));
+            Map<String, String> env = pb.environment();
+            String path = env.get("PATH");
+            path = path + File.pathSeparator + "/usr/bin:/usr/sbin";
+            PioneerLogger.logger.debug("PATH to execute command: " + pb.environment().get("PATH"));
+            env.put("PATH", path);
+
+            Process p = pb.start();
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line = "";
+            String line;
             StringBuffer output = new StringBuffer();
-            int lineCount=0;
+            int lineCount = 0;
             while ((line = reader.readLine()) != null) {
-                if (lineCount<10){  // only get 10 lines to prevent the overflow
+                if (lineCount < 10) {  // only get 10 lines to prevent the overflow
                     output.append(line);
                 }
-                lineCount+=1;
-                PioneerLogger.logger.debug(line);
+                lineCount += 1;
+                PioneerLogger.logger.debug(line);                
             }
             p.waitFor();
             System.out.println("Execute Commang output: " + output.toString().trim());
-            return output.toString().trim();
+            
+            if (p.exitValue() == 0) {
+                PioneerLogger.logger.debug("Command exit 0, result: " + output.toString().trim());
+                return output.toString().trim();
+            } else {
+                PioneerLogger.logger.debug("Command return non zero code: " + p.exitValue());
+                return null;
+            }
         } catch (InterruptedException | IOException e1) {
             PioneerLogger.logger.error("Error when execute command. Error: " + e1);
         }

@@ -47,6 +47,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import generated.oasis.tosca.TArtifactTemplate;
 import java.io.FileReader;
+import java.util.logging.Level;
 
 public class ArtifactDeployer {
 
@@ -177,6 +178,10 @@ public class ArtifactDeployer {
                 String containerID = docker.installDockerNodeWithDockerFile(node.getId(), instanceId, dockerFileName);
                 logger.debug("Create docker container done. ID: " + containerID);
                 SalsaInstanceDescription_VM dockerVM = docker.getDockerInfo(containerID);
+                if (containerID==null || containerID.isEmpty()){
+                    centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.ERROR);
+                    return null;
+                }
                 // read first line of the dockerfile
                 String localDockerFile = SalsaPioneerConfiguration.getWorkingDirOfInstance(node.getId(), instanceId)+"/"+dockerFileName;
                 try {                    
@@ -186,13 +191,22 @@ public class ArtifactDeployer {
                 } catch (IOException e) {
                     logger.error("Cannot read dockerfile at: " + localDockerFile);
                 }
-                centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.DEPLOYED);
-                logger.debug("Updating docker info. ID = " + dockerVM.getInstanceId() + ", IP = " + dockerVM.getInstanceId());
+                centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.INSTALLING);
+                while (!dockerVM.getState().equals("RUNNING")){
+                    dockerVM = docker.getDockerInfo(containerID);
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ex) {
+                        PioneerLogger.logger.error("Interrupt sleep!");
+                    }
+                }
+                
                 centerCon.updateInstanceUnitProperty(serviceId, topologyId, nodeId, instanceId, dockerVM);
+                logger.debug("Updating docker info. ID = " + dockerVM.getInstanceId() + ", IP = " + dockerVM.getInstanceId());
+                centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.DEPLOYED);
                 return Integer.toString(instanceId);
             }
 
-            // or just run the docker file
         }
 
         // check if it is hosted by a docker, forward the request to that docker
@@ -227,7 +241,7 @@ public class ArtifactDeployer {
         centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.INSTALLING);
 
         runNodeArtifacts(node, Integer.toString(instanceId), def);
-
+        centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.DEPLOYED);
         return Integer.toString(instanceId);
     }
 
@@ -265,8 +279,7 @@ public class ArtifactDeployer {
         private synchronized void executeDeploymentNode() throws SalsaEngineException {
             logger.debug("Executing the deployment for node: " + node.getId() + ", instance: " + instanceId);
             //runNodeArtifacts(node, Integer.toString(instanceId), def);
-            deploySingleNode(node, instanceId);
-            centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.DEPLOYED);
+            String id = deploySingleNode(node, instanceId);
         }
 
         @Override
