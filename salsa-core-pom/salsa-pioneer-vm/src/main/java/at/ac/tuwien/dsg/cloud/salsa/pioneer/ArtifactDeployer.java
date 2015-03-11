@@ -183,7 +183,7 @@ public class ArtifactDeployer {
                     return null;
                 }
                 // read first line of the dockerfile
-                String localDockerFile = SalsaPioneerConfiguration.getWorkingDirOfInstance(node.getId(), instanceId)+"/"+dockerFileName;
+                String localDockerFile = SalsaPioneerConfiguration.getWorkingDirOfInstance(node.getId(), instanceId)+"/Dockerfile";
                 try {                    
                     BufferedReader brTest = new BufferedReader(new FileReader(localDockerFile));
                     String text = brTest.readLine().substring(5); // extract the name only in the first line: FROM imageName
@@ -389,7 +389,7 @@ public class ArtifactDeployer {
         String artType = "";  // currently being get from Deployment Artifact
         try {
             if (node.getDeploymentArtifacts() == null) {
-                PioneerLogger.logger.debug("node " + node.getId() + " have null artifact");
+                PioneerLogger.logger.debug("Node " + node.getId() + " has no artifact, checking the script");
                 // try to get script from the actions
                 ServiceUnit unit = serviceRuntimeInfo.getComponentById(node.getId());
                 PrimitiveOperation po = unit.getPrimitiveByName("deploy");
@@ -401,11 +401,25 @@ public class ArtifactDeployer {
                 }
                 return;
             }
-            TDeploymentArtifact firstArt = node.getDeploymentArtifacts().getDeploymentArtifact().get(0);
-            artType = firstArt.getArtifactType().getLocalPart();
+            // get the first artifact which is not misc
+            TDeploymentArtifact actualArtifact = null;
+            for(TDeploymentArtifact aart: node.getDeploymentArtifacts().getDeploymentArtifact()){
+                if (!aart.getArtifactType().getLocalPart().equals(SalsaArtifactType.misc.getString())){
+                     PioneerLogger.logger.debug("Found an artifact to deploy: " + aart.getName() + ", type: " + aart.getArtifactType().getLocalPart());
+                    actualArtifact = aart;
+                    break;
+                }
+            }
+            
+            if (actualArtifact == null){
+                PioneerLogger.logger.error("Node " + node.getId() + " has artifact, but none of them can be used for deploying");
+                return;
+            }
+            
+            artType = actualArtifact.getArtifactType().getLocalPart();
             PioneerLogger.logger.debug("Artifact type:" + artType);
 
-            List<String> arts = ToscaStructureQuery.getDeployArtifactTemplateReferenceList(node, def);
+            List<String> arts = ToscaStructureQuery.getDeployArtifactTemplateReferenceList(node, def);            
             URL url = new URL(arts.get(0));	// run the first artifact
 
             runArt = FilenameUtils.getName(url.getFile());

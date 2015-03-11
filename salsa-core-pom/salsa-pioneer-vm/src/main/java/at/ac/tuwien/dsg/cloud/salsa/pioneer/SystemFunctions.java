@@ -1,6 +1,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.pioneer;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.pioneer.StacksConfigurator.DockerConfigurator;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -11,7 +12,16 @@ import java.net.InetAddress;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.Inet4Address;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 
 public class SystemFunctions {
 
@@ -51,7 +61,7 @@ public class SystemFunctions {
 
     }
 
-    public static String getLocalIpAddress() {
+    private static String getLocalIpAddress() {
         try {
             String ip = InetAddress.getLocalHost().getHostAddress();
             return ip;
@@ -61,8 +71,41 @@ public class SystemFunctions {
         return "";
     }
 
-    public static String getEth0IPAddress() {
+    @Deprecated
+    private static String getEth0IPAddress_not_work() {
         return executeCommand("hostname -i", null, null, null);
+    }
+    
+    @Deprecated
+    public static String getEth0IPAddress_failToUse() {
+        try {
+                for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                    NetworkInterface intf = en.nextElement();
+                    for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                        InetAddress inetAddress = enumIpAddr.nextElement();
+                        if (!inetAddress.isLoopbackAddress()&&inetAddress instanceof Inet4Address) {
+                            String ipAddress=inetAddress.getHostAddress().toString();
+                            PioneerLogger.logger.debug("Getting the IP Address (quite hard to do): " + ipAddress);
+                            return ipAddress;
+                        }
+                    }
+                }
+            } catch (SocketException ex) {
+                
+            }
+        return null;
+    }
+    
+    public static String getEth0IPAddress() {
+        // copy the getEth0IPv4 to /tmp and execute it, return the value        
+        URL inputUrl = SystemFunctions.class.getResource("/pioneer-scripts/getEth0IPv4.sh");
+        File dest = new File("/tmp/getEth0IPv4.sh");
+        try {
+            FileUtils.copyURLToFile(inputUrl, dest);
+        } catch (IOException ex) {
+            Logger.getLogger(DockerConfigurator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return executeCommand("/tmp/getEth0IPv4.sh", "/tmp", null, null);
     }
 
     /**
@@ -103,11 +146,11 @@ public class SystemFunctions {
                     output.append(line);
                 }
                 lineCount += 1;
-                PioneerLogger.logger.debug(line);                
+                PioneerLogger.logger.debug(line);
             }
             p.waitFor();
             System.out.println("Execute Commang output: " + output.toString().trim());
-            
+
             if (p.exitValue() == 0) {
                 PioneerLogger.logger.debug("Command exit 0, result: " + output.toString().trim());
                 return output.toString().trim();

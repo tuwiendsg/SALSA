@@ -5,9 +5,27 @@ DOCKER_INSTANCE_ID=$2
 
 . /etc/salsa.variables
 
-echo \"Running the customization scripts\" 
-sudo apt-get -q update
-sudo apt-get -q -y install openjdk-7-jre-headless wget
+echo \"Running the script for installing SALSA Pioneer\" >> /tmp/salsa.pioneer.log
+
+# Check for Java
+if type -p java; then
+    echo "Found java executable in PATH" >> /tmp/salsa.pioneer.log
+elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+    echo "Found java executable in JAVA_HOME" >> /tmp/salsa.pioneer.log
+    export PATH=$JAVA_HOME/bin:$PATH
+else
+    echo "Java is not found so installing JRE now" >> /tmp/salsa.pioneer.log
+    sudo apt-get -q update
+    sudo apt-get -q -y install openjdk-7-jre-headless wget
+fi
+
+# Check for wget
+if type -p wget; then
+    echo found wget executable in PATH
+else
+    sudo apt-get -q update
+    sudo apt-get -q -y install wget
+fi
 
 TMPFILE=salsa.variables.$DOCKER_NODE_ID.$DOCKER_INSTANCE_ID
 
