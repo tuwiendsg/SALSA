@@ -19,6 +19,7 @@ public enum SalsaEntityState { //	UNDEPLOYED("undeployed"),
 	INSTALLING("installing"),	// the deployment action is executed
 	DEPLOYED("deployed"), // deployed
 	ERROR("error");
+        
 	
 	private String nodeState;
 	

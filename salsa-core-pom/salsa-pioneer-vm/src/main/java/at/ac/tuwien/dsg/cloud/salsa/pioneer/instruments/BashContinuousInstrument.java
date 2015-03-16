@@ -30,8 +30,8 @@ public class BashContinuousInstrument extends InstrumentShareData implements Ins
 	public Object deployArtifact(String uri, String instanceId) {
 		String runArt = uri;
 		Process p;
-		ProcessBuilder pb = new ProcessBuilder("bash",runArt);
-		PioneerLogger.logger.debug("Executing command: bash " + runArt);		
+		ProcessBuilder pb = new ProcessBuilder("/bin/bash",runArt);
+		PioneerLogger.logger.debug("Executing command: /bin/bash " + runArt);		
 		
 		Map<String,String> env = pb.environment();
 		String envPATH = env.get("PATH")+":"+SalsaPioneerConfiguration.getWorkingDirOfInstance(node.getId(), Integer.parseInt(instanceId));
