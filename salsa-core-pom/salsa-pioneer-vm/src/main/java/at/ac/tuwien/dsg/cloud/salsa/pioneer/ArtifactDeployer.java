@@ -234,7 +234,13 @@ public class ArtifactDeployer {
         logger.debug("Set status for instance " + instanceId + " to CONFIGURING !");
         centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.CONFIGURING);
 
-        downloadNodeArtifacts(node, def, instanceId);
+        boolean downloadDone = downloadNodeArtifacts(node, def, instanceId);
+        
+        if (!downloadDone){
+            centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.ERROR);
+            return null;
+        }
+        
         // deploy the artifact
         logger.debug("Executing the deployment for node: " + node.getId() + ", instance: " + instanceId);
 
@@ -334,11 +340,11 @@ public class ArtifactDeployer {
     }
 
     // Download node artifact
-    private void downloadNodeArtifacts(TNodeTemplate node, TDefinitions def, int instanceID) {
+    private boolean downloadNodeArtifacts(TNodeTemplate node, TDefinitions def, int instanceID) {
         PioneerLogger.logger.debug("Preparing artifact for node: " + node.getId());
         if (node.getDeploymentArtifacts() == null) {
             PioneerLogger.logger.debug("There is no node artifact to download");
-            return;
+            return true;
         }
         PioneerLogger.logger.debug("Number of artifact: " + node.getDeploymentArtifacts().getDeploymentArtifact().size());
         PioneerLogger.logger.debug("Debug: " + node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getName());
@@ -347,7 +353,7 @@ public class ArtifactDeployer {
 
         if (node.getDeploymentArtifacts().getDeploymentArtifact().get(0).getArtifactType().getLocalPart().equals(SalsaArtifactType.chef.getString())) {
             PioneerLogger.logger.debug("Chef artifact");
-            return;
+            return true;
         }
         // get Artifact list
         List<String> arts = ToscaStructureQuery.getDeployArtifactTemplateReferenceList(node, def);
@@ -367,12 +373,13 @@ public class ArtifactDeployer {
 
                 // if the artifact is an archieve, try to extract it
                 extractFile(filePath, SalsaPioneerConfiguration.getWorkingDirOfInstance(node.getId(), instanceID));
-            } catch (IOException e) {
+            } catch (IOException e) {   // in the case cannot create artifact
                 PioneerLogger.logger.error("Error while downloading artifact for: " + node.getId() + ". URL:" + art);
                 PioneerLogger.logger.error(e.toString());
+                return false;
             }
         }
-
+        return true;
     }
 
     private void extractFile(String filePath, String workingDir) {

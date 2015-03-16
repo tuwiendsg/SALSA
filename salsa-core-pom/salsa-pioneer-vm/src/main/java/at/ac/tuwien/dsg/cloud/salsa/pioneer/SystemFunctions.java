@@ -105,7 +105,7 @@ public class SystemFunctions {
         } catch (IOException ex) {
             Logger.getLogger(DockerConfigurator.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return executeCommand("/tmp/getEth0IPv4.sh", "/tmp", null, null);
+        return executeCommand("/bin/bash /tmp/getEth0IPv4.sh", "/tmp", null, null);
     }
 
     /**
