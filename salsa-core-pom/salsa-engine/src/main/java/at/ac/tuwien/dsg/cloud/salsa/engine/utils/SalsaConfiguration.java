@@ -11,24 +11,15 @@ import org.apache.log4j.Logger;
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.SalsaCloudProviders;
 
 public class SalsaConfiguration {
-	private static Properties configuration;
-	static Logger logger;
-	static String CONFIG_FILE_2="/etc/salsa.engine.properties";
-	static String CURRENT_DIR;
-	static String CONFIG_FILE_1="unknown";
+	static final Properties configuration = new Properties();
+	static final Logger logger;
+	static final String CONFIG_FILE_2="/etc/salsa.engine.properties";
+	static final String CURRENT_DIR = System.getProperty("user.dir");;
+	static final String CONFIG_FILE_1= CURRENT_DIR + "/salsa.engine.properties";
 	
 	static {
-		logger = Logger.getLogger("deploymentLogger");
-		
-		configuration = new Properties();
-		if (ClassLoader.getSystemClassLoader().getResource(".") != null){
-			//CURRENT_DIR = ClassLoader.getSystemClassLoader().getResource(".").getPath();
-			CURRENT_DIR = System.getProperty("user.dir");
-			CONFIG_FILE_1= CURRENT_DIR + "/salsa.engine.properties";
-		}
-		CURRENT_DIR = System.getProperty("user.dir");
-		CONFIG_FILE_1= CURRENT_DIR + "/salsa.engine.properties";
-		
+		logger = Logger.getLogger("deploymentLogger");		
+		//configuration = new Properties();		
 		try {
 			File f1 = new File(CONFIG_FILE_1);
 			File f2 = new File(CONFIG_FILE_2);
@@ -51,6 +42,10 @@ public class SalsaConfiguration {
 			ex.printStackTrace();
 		}
 	}
+        
+        private void generateDefaultConfigurationFile(){
+            
+        }
 	
 	public static String getRepoPrefix(){
 		return configuration.getProperty("SALSA_REPO");
