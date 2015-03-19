@@ -214,11 +214,11 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
                         Map<String, String> map = actionProp.getMapData();
                         if (map.get(SalsaEntityActions.STOP.getActionString()) != null && !map.get(SalsaEntityActions.STOP.getActionString()).isEmpty()) {
                             PioneerLogger.logger.debug("Execute Stopping action for: " + nodeForRemove.getId() + "/" + instanceId);
-                            SystemFunctions.executeCommand(map.get(SalsaEntityActions.STOP.getActionString()), SalsaPioneerConfiguration.getWorkingDir()+"/"+nodeID, null, null);
+                            SystemFunctions.executeCommand(map.get(SalsaEntityActions.STOP.getActionString()), SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeID, instanceId), null, null);
                         }
                         if (map.get(SalsaEntityActions.UNDEPLOY.getActionString()) != null && !map.get(SalsaEntityActions.UNDEPLOY.getActionString()).isEmpty()) {
                             PioneerLogger.logger.debug("Execute Undeploying action for: " + nodeForRemove.getId() + "/" + instanceId);
-                            SystemFunctions.executeCommand(map.get(SalsaEntityActions.UNDEPLOY.getActionString()), SalsaPioneerConfiguration.getWorkingDir()+"/"+nodeID, null, null);
+                            SystemFunctions.executeCommand(map.get(SalsaEntityActions.UNDEPLOY.getActionString()), SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeID, instanceId), null, null);
                         }
                     }
                 }
