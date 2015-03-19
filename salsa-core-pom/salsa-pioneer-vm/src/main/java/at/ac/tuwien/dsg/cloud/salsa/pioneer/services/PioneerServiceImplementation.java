@@ -84,12 +84,12 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
                         PioneerLogger.logger.debug("Actions MAP : " + map);
                         if (map.get(SalsaEntityActions.DEPLOY.getActionString()) != null && !map.get(SalsaEntityActions.DEPLOY.getActionString()).isEmpty()) {
                             PioneerLogger.logger.debug("Execute DEPLOY action for: " + thisNode.getId() + "/" + instanceId);
-                            result = SystemFunctions.executeCommand(map.get(SalsaEntityActions.DEPLOY.getActionString()), SalsaPioneerConfiguration.getWorkingDir()+"/"+nodeID, centerCon, nodeID+"_"+instanceId);                            
+                            result = SystemFunctions.executeCommand(map.get(SalsaEntityActions.DEPLOY.getActionString()), SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeID, instanceId), centerCon, nodeID+"_"+instanceId);                            
                             
                         }
                         if (map.get(SalsaEntityActions.START.getActionString()) != null && !map.get(SalsaEntityActions.START.getActionString()).isEmpty()) {
                             PioneerLogger.logger.debug("Execute START action for: " + thisNode.getId() + "/" + instanceId);
-                            result = SystemFunctions.executeCommand(map.get(SalsaEntityActions.START.getActionString()), SalsaPioneerConfiguration.getWorkingDir()+"/"+nodeID, centerCon, nodeID+"_"+instanceId);
+                            result = SystemFunctions.executeCommand(map.get(SalsaEntityActions.START.getActionString()), SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeID, instanceId), centerCon, nodeID+"_"+instanceId);
                         }
                         if (result==null){
                             centerCon.updateNodeState(serviceId, topologyId, nodeID, instanceId, SalsaEntityState.ERROR);
