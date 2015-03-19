@@ -170,7 +170,7 @@ public class DeploymentEngineNodeLevel {
 		
 		SalsaCloudProviders provider = SalsaCloudProviders.fromString(instanceDesc.getProvider());
 		
-		userDataBuffer.append("echo 'SALSA_CENTER_ENDPOINT=").append(SalsaConfiguration.getSalsaCenterEndpointForCloudProvider(provider)).append("' >> ").append(specificVariableFile).append(" \n");
+		userDataBuffer.append("echo 'SALSA_CENTER_ENDPOINT=").append(SalsaConfiguration.getSalsaCenterEndpoint()).append("' >> ").append(specificVariableFile).append(" \n");
 
 		// download pioneer
 		List<String> fileLst=Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));

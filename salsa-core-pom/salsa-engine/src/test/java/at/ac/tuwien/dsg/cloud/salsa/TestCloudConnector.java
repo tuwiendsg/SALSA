@@ -63,13 +63,6 @@ public class TestCloudConnector {
 	
 	
 	
-	private static void testCenterConfigurations() throws Exception{
-		SalsaConfiguration config = new SalsaConfiguration();
-		System.out.println(config.getSalsaCenterEndpoint());
-		System.out.println(config.getSalsaCenterEndpointForCloudProvider(SalsaCloudProviders.DSG_OPENSTACK));
-		System.out.println(config.getSalsaCenterEndpointForCloudProvider(SalsaCloudProviders.LAL_STRATUSLAB));
-	}
-	
 		
 
 	private static void testMultiCloudConnector() {
