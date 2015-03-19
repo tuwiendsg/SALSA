@@ -8,7 +8,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
   
-  <context:property-placeholder location="classpath:salsa.engine.properties"/>
   <context:component-scan base-package="at.ac.tuwien.dsg.cloud.salsa"/>
   
   <jaxrs:server id="engineService" address="/">
