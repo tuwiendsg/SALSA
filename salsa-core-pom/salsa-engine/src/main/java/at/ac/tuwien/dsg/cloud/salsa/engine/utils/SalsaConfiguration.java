@@ -62,6 +62,7 @@ public class SalsaConfiguration {
                 configuration.put(SALSA_REPO_KEY, "http://localhost:8080/salsa/upload/files");
             }
             configuration.list(System.out);
+            logger.debug("Center endpoint: " + getSalsaCenterEndpoint());            
             
             (new File(getWorkingDir())).mkdirs();
             (new File(getServiceStorageDir())).mkdirs();

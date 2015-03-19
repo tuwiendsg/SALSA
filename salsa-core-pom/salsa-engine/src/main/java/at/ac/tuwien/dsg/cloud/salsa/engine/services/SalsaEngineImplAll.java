@@ -228,8 +228,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String nodeId,
             int quantity) throws SalsaEngineException {
         logger.debug("SPAWNING MORE INSTANCE: " + serviceId + "/" + topologyId + "/" + nodeId + ". Quantity:" + quantity);
-
-        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
+        
+        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         TDefinitions def = centerCon.getToscaDescription(serviceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         ServiceUnit node = service.getComponentById(nodeId);
@@ -250,7 +250,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 
     @Override
     public Response scaleOutNode(String serviceId, String nodeId) throws SalsaEngineException {
-        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
+        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         ServiceTopology topo = service.getTopologyOfNode(nodeId);
 
@@ -294,7 +294,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
     }
 
     public Response scaleInNode(String serviceId, String nodeId) throws SalsaEngineException {
-        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
+        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         ServiceTopology topo = service.getTopologyOfNode(nodeId);
         ServiceUnit unit = topo.getComponentById(nodeId);
@@ -306,7 +306,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
     }
 
     public Response scaleInVM(String serviceId, String vmIp) throws SalsaEngineException {
-        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
+        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         for (ServiceTopology topo : service.getComponentTopologyList()) {
             for (ServiceUnit unit : topo.getComponentsByType(SalsaEntityType.OPERATING_SYSTEM)) {
@@ -334,7 +334,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
     }
 
     public Response scaleOutVM(String serviceId, String vmIp) throws SalsaEngineException {
-        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
+        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 
         return null;
@@ -392,7 +392,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         logger.debug("Deployment request for this node: " + serviceId + " - " + nodeId + " - " + instanceId);
         logger.debug("PUT 1 MORE INSTANCE: " + serviceId + "/" + topologyId + "/" + nodeId);
 
-        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
+        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         TDefinitions def = centerCon.getToscaDescription(serviceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         ServiceUnit node = service.getComponentById(nodeId);

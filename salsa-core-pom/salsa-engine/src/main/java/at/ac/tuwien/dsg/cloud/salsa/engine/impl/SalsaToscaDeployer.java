@@ -49,8 +49,7 @@ public class SalsaToscaDeployer {
 	static final String CLOUD_NODE_NAME = SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString();
 	File configFile;
 	static SalsaCenterConnector centerCon = new SalsaCenterConnector(
-                SalsaConfiguration.getSalsaCenterEndpoint().replaceAll("http://.*?:", "http://localhost:"), "/tmp", EngineLogger.logger);
-			//SalsaConfiguration.getSalsaCenterEndpoint(), "/tmp", EngineLogger.logger);
+                SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
 
 	public SalsaToscaDeployer(File config) {
 		configFile = config;

@@ -38,7 +38,7 @@
 	<tosca:ArtifactTemplate id="deployScript" type="salsa:sh">		
 		<tosca:ArtifactReferences>
 			<tosca:ArtifactReference
-				reference="http://128.130.172.215/salsa/upload/files/pioneer/test/bashloop.sh" />				
+				reference="http://128.130.172.215/salsa/upload/files/daas/fakescripts/donothing.sh" />				
 		</tosca:ArtifactReferences>
 	</tosca:ArtifactTemplate>
 </tosca:Definitions>
