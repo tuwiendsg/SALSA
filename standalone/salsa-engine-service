@@ -10,7 +10,19 @@
 
 RUN_MODE="daemons"
 
+# Checking for java
 JAVA=/opt/jre1.7.0/bin/java
+if type -p $JAVA; then
+		echo "Default java found !"
+elif type -p java; then
+    JAVA=`which java`
+elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+    JAVA=$JAVA_HOME/bin:$PATH
+else
+    echo "Java is not found, please check !"
+   	exit 1
+fi
+
 NAME=salsa-engine-service
 DAEMONDIR=./
 DAEMON=salsa-engine.jar
