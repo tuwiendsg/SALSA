@@ -4,10 +4,8 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.UUID;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.SystemFunctions;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
@@ -20,7 +18,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
@@ -71,24 +68,24 @@ public class DockerConfigurator {
         if (!dockerFile.equals("Dockerfile")) {
             SystemFunctions.executeCommand("mv " + dockerFile + " Dockerfile", SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), null, "");
         }
-        
+
         // copy the pioneer_install.sh to /tmp/, so the image will be build with it
         URL inputUrl = getClass().getResource("/pioneer-scripts/pioneer_install.sh");
-        File dest = new File(newSalsaWorkingDirInsideDocker+"/pioneer_install.sh");
+        File dest = new File(newSalsaWorkingDirInsideDocker + "/pioneer_install.sh");
         try {
             FileUtils.copyURLToFile(inputUrl, dest);
         } catch (IOException ex) {
             Logger.getLogger(DockerConfigurator.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         // add salsa-pioneer deployment. The COPY command in the Dockerfile get only current folder file, cannot use absolute path on HOST
         StringBuilder sb = new StringBuilder();
-        SystemFunctions.executeCommand("cp "+SalsaPioneerConfiguration.getWorkingDir()+"/salsa.variables " + newSalsaWorkingDirInsideDocker, SalsaPioneerConfiguration.getWorkingDir(), null, dockerFile);
+        SystemFunctions.executeCommand("cp " + SalsaPioneerConfiguration.getWorkingDir() + "/salsa.variables " + newSalsaWorkingDirInsideDocker, SalsaPioneerConfiguration.getWorkingDir(), null, dockerFile);
         sb.append("\n COPY ./salsa.variables /etc/salsa.variables \n");
         sb.append("RUN mkdir -p " + newSalsaWorkingDirInsideDocker + "\n");
-        sb.append("COPY ./pioneer_install.sh " + newSalsaWorkingDirInsideDocker + "/pioneer_install.sh \n");        
+        sb.append("COPY ./pioneer_install.sh " + newSalsaWorkingDirInsideDocker + "/pioneer_install.sh \n");
         sb.append("RUN chmod +x " + newSalsaWorkingDirInsideDocker + "/pioneer_install.sh  \n");
-                
+
         // and append to the Dockerfile
         try {
             String filename = SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId) + "/Dockerfile";
@@ -132,7 +129,7 @@ public class DockerConfigurator {
             PioneerLogger.logger.debug("Container spawn done, now trying to push Pioneer inside the container..");
 
             // and execute it
-            String pushingResult = SystemFunctions.executeCommand("sudo docker exec -d " + returnValue + " " +SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId) +"/pioneer_install.sh " + nodeId +" " + instanceId + " \n" , SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), null, "");
+            String pushingResult = SystemFunctions.executeCommand("sudo docker exec -d " + returnValue + " " + SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId) + "/pioneer_install.sh " + nodeId + " " + instanceId + " \n", SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), null, "");
             PioneerLogger.logger.debug("Pushing result: " + pushingResult);
         }
         // return container ID

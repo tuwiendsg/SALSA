@@ -153,7 +153,7 @@ public class DeploymentEngineNodeLevel {
         userDataBuffer.append("echo \"Running the customization scripts\" \n");
 
         // add the code to check and install java for pioneer
-        File java_checking = new File(SystemFunctions.class.getResource("/scripts/java_checking.sh").getFile());
+        File java_checking = new File(SystemFunctions.class.getResource("/scripts/java_install_default.sh").getFile());
         try (Scanner scanner = new Scanner(java_checking)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
