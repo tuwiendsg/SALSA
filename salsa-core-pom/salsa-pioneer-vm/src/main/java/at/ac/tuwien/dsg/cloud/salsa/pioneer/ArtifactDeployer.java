@@ -45,6 +45,7 @@ import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
+import generated.oasis.tosca.TArtifactReference;
 import generated.oasis.tosca.TArtifactTemplate;
 import java.io.FileReader;
 import java.util.logging.Level;
@@ -73,7 +74,7 @@ public class ArtifactDeployer {
     // Deploy upper nodes which are hosted on the current VM node
     public void deployNodeChain(TNodeTemplate thisNode)
             throws IOException, SalsaEngineException {
-			// download full topology from web
+        // download full topology from web
         //def = centerCon.updateTopology();
         //PioneerLogger.logger.debug("Update topology service: " + def.getId());
         // List of upper nodes, which will be deployed
@@ -83,7 +84,7 @@ public class ArtifactDeployer {
 
         logger.debug("Chain for node: " + thisNode.getId());
         for (TNodeTemplate chainNode : upperNodes) {
-				//SalsaInstanceDescription_Artifact artiProps = new SalsaInstanceDescription_Artifact();			
+            //SalsaInstanceDescription_Artifact artiProps = new SalsaInstanceDescription_Artifact();			
 
             logger.debug("Starting deploy node: " + chainNode.getId());
 				// don't need it ? setting state for ServiceUnit, not for Instance. Set -1 as instanceId will do the job
@@ -118,7 +119,7 @@ public class ArtifactDeployer {
                 logger.debug("Set status for instance " + i + " to CONFIGURING !");
                 centerCon.updateNodeState(serviceId, topologyId, chainNode.getId(), i, SalsaEntityState.CONFIGURING);
             }
-				//downloadNodeArtifacts(chainNode, def);
+            //downloadNodeArtifacts(chainNode, def);
             // execute multi threads for multi instance
             multiThreadRunArtifacts(chainNode, instanceIdList);
 
@@ -178,13 +179,13 @@ public class ArtifactDeployer {
                 String containerID = docker.installDockerNodeWithDockerFile(node.getId(), instanceId, dockerFileName);
                 logger.debug("Create docker container done. ID: " + containerID);
                 SalsaInstanceDescription_VM dockerVM = docker.getDockerInfo(containerID);
-                if (containerID==null || containerID.isEmpty()){
+                if (containerID == null || containerID.isEmpty()) {
                     centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.ERROR);
                     return null;
                 }
                 // read first line of the dockerfile
-                String localDockerFile = SalsaPioneerConfiguration.getWorkingDirOfInstance(node.getId(), instanceId)+"/Dockerfile";
-                try {                    
+                String localDockerFile = SalsaPioneerConfiguration.getWorkingDirOfInstance(node.getId(), instanceId) + "/Dockerfile";
+                try {
                     BufferedReader brTest = new BufferedReader(new FileReader(localDockerFile));
                     String text = brTest.readLine().substring(5); // extract the name only in the first line: FROM imageName
                     dockerVM.setBaseImage(text);
@@ -192,7 +193,7 @@ public class ArtifactDeployer {
                     logger.error("Cannot read dockerfile at: " + localDockerFile);
                 }
                 centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.INSTALLING);
-                while (!dockerVM.getState().equals("RUNNING")){
+                while (!dockerVM.getState().equals("RUNNING")) {
                     dockerVM = docker.getDockerInfo(containerID);
                     try {
                         Thread.sleep(5000);
@@ -200,7 +201,7 @@ public class ArtifactDeployer {
                         PioneerLogger.logger.error("Interrupt sleep!");
                     }
                 }
-                
+
                 centerCon.updateInstanceUnitProperty(serviceId, topologyId, nodeId, instanceId, dockerVM);
                 logger.debug("Updating docker info. ID = " + dockerVM.getInstanceId() + ", IP = " + dockerVM.getInstanceId());
                 centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.DEPLOYED);
@@ -229,18 +230,18 @@ public class ArtifactDeployer {
         logger.debug("Instance ID: " + instanceId);
 
         waitingForCapabilities(node, def);
-			// wait for downloading and configuring artifact itself
+        // wait for downloading and configuring artifact itself
 
         logger.debug("Set status for instance " + instanceId + " to CONFIGURING !");
         centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.CONFIGURING);
 
         boolean downloadDone = downloadNodeArtifacts(node, def, instanceId);
-        
-        if (!downloadDone){
+
+        if (!downloadDone) {
             centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.ERROR);
             return null;
         }
-        
+
         // deploy the artifact
         logger.debug("Executing the deployment for node: " + node.getId() + ", instance: " + instanceId);
 
@@ -265,7 +266,7 @@ public class ArtifactDeployer {
             thread.start();
             threads.add(thread);
         }
-			// waiting for all thread run and put node in to finish
+        // waiting for all thread run and put node in to finish
 
     }
 
@@ -363,7 +364,7 @@ public class ArtifactDeployer {
                 URL url = new URL(art);
                 String filePath = SalsaPioneerConfiguration.getWorkingDirOfInstance(node.getId(), instanceID)
                         + File.separator + FilenameUtils.getName(url.getFile());
-					// get the last file in the list
+                // get the last file in the list
                 // TODO: there could be multi mirror of an artifact, check !
                 //runArt = FilenameUtils.getName(url.getFile()); 
                 // download file to dir: nodeId/fileName
@@ -410,24 +411,27 @@ public class ArtifactDeployer {
             }
             // get the first artifact which is not misc
             TDeploymentArtifact actualArtifact = null;
-            for(TDeploymentArtifact aart: node.getDeploymentArtifacts().getDeploymentArtifact()){
-                if (!aart.getArtifactType().getLocalPart().equals(SalsaArtifactType.misc.getString())){
-                     PioneerLogger.logger.debug("Found an artifact to deploy: " + aart.getName() + ", type: " + aart.getArtifactType().getLocalPart());
+            for (TDeploymentArtifact aart : node.getDeploymentArtifacts().getDeploymentArtifact()) {
+                if (!aart.getArtifactType().getLocalPart().equals(SalsaArtifactType.misc.getString())) {
+                    PioneerLogger.logger.debug("Found an artifact to deploy: " + aart.getName() + ", type: " + aart.getArtifactType().getLocalPart());
                     actualArtifact = aart;
                     break;
                 }
             }
-            
-            if (actualArtifact == null){
+
+            if (actualArtifact == null) {
                 PioneerLogger.logger.error("Node " + node.getId() + " has artifact, but none of them can be used for deploying");
                 return;
             }
-            
+
             artType = actualArtifact.getArtifactType().getLocalPart();
             PioneerLogger.logger.debug("Artifact type:" + artType);
 
-            List<String> arts = ToscaStructureQuery.getDeployArtifactTemplateReferenceList(node, def);            
-            URL url = new URL(arts.get(0));	// run the first artifact
+            TArtifactTemplate artTemplate = ToscaStructureQuery.getArtifactTemplateById(actualArtifact.getArtifactRef().getLocalPart(), def);
+            if (artTemplate == null) {
+                PioneerLogger.logger.error("There is no ArtifactTemplate with ID:" + actualArtifact.getArtifactRef().getLocalPart() + " that match with the DeploymentArtifact of the node "+nodeId);
+            }
+            URL url = new URL(((TArtifactReference) artTemplate.getArtifactReferences().getArtifactReference().get(0)).getReference());
 
             runArt = FilenameUtils.getName(url.getFile());
             PioneerLogger.logger.debug("Artifact reference:" + runArt);
@@ -483,21 +487,21 @@ public class ArtifactDeployer {
 
         // if this node is part of CONNECTTO, send the IP after running artifact
         if (node.getCapabilities() != null) {
-            logger.debug("This node has ConnectTo capability, set it !");
+            logger.debug("This node has a capability, set it ! (Only support CONNECT-TO relationship now)");
+            // TODO: maybe support other capability types
             for (TCapability capa : node.getCapabilities().getCapability()) {
-                TRequirement req = ToscaStructureQuery.getRequirementSuitsCapability(capa, def);
-                TRelationshipTemplate rela = ToscaStructureQuery.getRelationshipBetweenTwoCapaReq(capa, req, def);
-                if (rela.getType().getLocalPart().equals(SalsaRelationshipType.CONNECTTO.getRelationshipTypeString())) {
-//						try{
-                    logger.debug("Sending the IP of this node to the capability of CONNECTTO");
-//							String ip = InetAddress.getLocalHost().getHostAddress();
-//							SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), ip);
-                    SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), "salsa:localIP");
-                    centerCon.updateInstanceUnitCapability(serviceId, topologyId, node.getId(), Integer.parseInt(instanceId), capaString);
-//						} catch (UnknownHostException e){
-//							PioneerLogger.logger.error("Cannot get the IP of the host of node: " + node.getId());
-//						}
-                }
+                SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), "salsa:localIP");
+                centerCon.updateInstanceUnitCapability(serviceId, topologyId, node.getId(), Integer.parseInt(instanceId), capaString);
+                logger.debug("Update the IP for the capability done !");
+                
+//                TRequirement req = ToscaStructureQuery.getRequirementSuitsCapability(capa, def);
+//                TRelationshipTemplate rela = ToscaStructureQuery.getRelationshipBetweenTwoCapaReq(capa, req, def);
+//                if (rela.getType().getLocalPart().equals(SalsaRelationshipType.CONNECTTO.getRelationshipTypeString())) {
+//                    logger.debug("Sending the IP of this node to the capability of CONNECTTO");
+//                    SalsaCapaReqString capaString = new SalsaCapaReqString(capa.getId(), "salsa:localIP");
+//                    centerCon.updateInstanceUnitCapability(serviceId, topologyId, node.getId(), Integer.parseInt(instanceId), capaString);
+//
+//                }
             }
         }
 
@@ -517,7 +521,7 @@ public class ArtifactDeployer {
             return false;
         }
 
-			// check if there are a replica of node with Ready state
+        // check if there are a replica of node with Ready state
         // it doesn't care about which node, just check if existing ONE replica
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         logger.debug("checkCapabilityReady - service: " + service.getId());
@@ -563,7 +567,7 @@ public class ArtifactDeployer {
             } catch (InterruptedException e) {
             }
         }
-			// set the environment variable. Write the value to node_capability_id
+        // set the environment variable. Write the value to node_capability_id
         // if the value is of CONNECTTO relationship, write to NodeOfCapability_IP
         // SystemFunctions.writeSystemVariable(nodeOfCapa.getId()+"_"+capa.getId(), value);
         PioneerLogger.logger.debug("123. Check the relationship: " + rela.getType().getLocalPart());
