@@ -17,6 +17,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnitRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 
 public class SalsaXmlDataProcess {
@@ -31,7 +32,8 @@ public class SalsaXmlDataProcess {
 							ServiceTopology.class,
 							ServiceUnit.class,
 							ServiceInstance.class,
-							SalsaInstanceDescription_VM.class,	// describe VM
+							SalsaInstanceDescription_VM.class,	// describe VM, Docker
+                                                        SalsaInstanceDescription_Docker.class,
 							SalsaCapaReqString.class,
 							ServiceUnitRelationship.class,
 							PrimitiveOperation.class);	// capability
@@ -54,6 +56,7 @@ public class SalsaXmlDataProcess {
 						ServiceUnit.class,
 						ServiceInstance.class,						
 						SalsaInstanceDescription_VM.class,	// describe VM
+                                                SalsaInstanceDescription_Docker.class,
 						SalsaCapaReqString.class,
 						ServiceUnitRelationship.class);	// capability
 						
@@ -69,7 +72,8 @@ public class SalsaXmlDataProcess {
 						ServiceTopology.class,
 						ServiceUnit.class,
 						ServiceInstance.class,
-						SalsaInstanceDescription_VM.class);
+						SalsaInstanceDescription_VM.class,
+                                                SalsaInstanceDescription_Docker.class);
 						
 		Unmarshaller um = context.createUnmarshaller();
 		StringReader reader = new StringReader(xml);

@@ -170,8 +170,10 @@ function CreateTableViewSalsaReplicaNodeTable(data, nodeId) {   // data is Compo
        	str += '<td>' + x[i].getAttribute('state') + '</td>';
         
         
-        // Properties
+        // Properties        
         str += '<td>';
+        // for VM ==> code is duplicate, need to be fix
+        if (data.getAttribute('type')==="os"){
         var arrayProp=x[i].getElementsByTagName("SalsaInstanceDescription");
         //str+=arrayCapa.toString();
         for (var j=0; j<arrayProp.length; j++){
@@ -186,6 +188,27 @@ function CreateTableViewSalsaReplicaNodeTable(data, nodeId) {   // data is Compo
         	str += getElementByTagNameToString('publicDNS', arrayProp[j]);
         	str += getElementByTagNameToString('state', arrayProp[j]);        	
         }
+    }
+        if (data.getAttribute('type')==="docker"){
+        // for DOCKER ==> duplicate code
+        var arrayProp=x[i].getElementsByTagName("SalsaInstanceDescriptionDocker");
+        //str+=arrayCapa.toString();
+        for (var j=0; j<arrayProp.length; j++){
+                //str += arrayProp[j].getAttribute('id') +" = " + arrayCapa[j].getAttribute('value') +";<br> ";
+        	str += getElementByTagNameToString('provider', arrayProp[j]);
+        	str += getElementByTagNameToString('baseImage', arrayProp[j]);
+        	str += getElementByTagNameToString('instanceType', arrayProp[j]);
+        	str += getElementByTagNameToString('id', arrayProp[j]);
+        	str += getElementByTagNameToString('privateIp', arrayProp[j]);
+        	str += getElementByTagNameToString('publicIP', arrayProp[j]);
+        	str += getElementByTagNameToString('privateDNS', arrayProp[j]);
+        	str += getElementByTagNameToString('publicDNS', arrayProp[j]);
+        	str += getElementByTagNameToString('state', arrayProp[j]);        	
+                str += getElementByTagNameToString('portmap', arrayProp[j]); 
+                str += getElementByTagNameToString('dockername', arrayProp[j]); 
+        }
+    }
+        
         str+='</td>';
         
      // Show capabilities

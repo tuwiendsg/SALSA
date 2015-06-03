@@ -37,6 +37,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityS
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineServiceIntenal;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
@@ -466,6 +467,7 @@ public class SalsaCenterConnector {
 		 JAXBContext jaxbContext = JAXBContext
 					.newInstance(data.getClass(),												
 								 SalsaInstanceDescription_VM.class,
+                                                                 SalsaInstanceDescription_Docker.class,
 								 SalsaCapaReqString.class);
 		Marshaller msl = jaxbContext.createMarshaller();
 		msl.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

@@ -43,6 +43,7 @@ import at.ac.tuwien.dsg.cloud.salsa.pioneer.type.SalsaArtifactType;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import generated.oasis.tosca.TArtifactReference;
@@ -167,7 +168,7 @@ public class ArtifactDeployer {
                 logger.debug("There is no dockerfile input, use the default docker file with SALSA pioneer ! Node/instance: " + node.getId() + "/" + instanceId);
                 String containerID = docker.installDockerNodeWithSALSA(node.getId(), instanceId);
                 logger.debug("Create docker container done. ID: " + containerID);
-                SalsaInstanceDescription_VM dockerVM = docker.getDockerInfo(containerID);
+                SalsaInstanceDescription_Docker dockerVM = docker.getDockerInfo(containerID);
                 centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.INSTALLING);
                 logger.debug("Updating docker info. ID = " + dockerVM.getInstanceId() + ", IP = " + dockerVM.getInstanceId());
                 centerCon.updateInstanceUnitProperty(serviceId, topologyId, nodeId, instanceId, dockerVM);
@@ -178,7 +179,7 @@ public class ArtifactDeployer {
                 docker.initDocker(false);
                 String containerID = docker.installDockerNodeWithDockerFile(node.getId(), instanceId, dockerFileName);
                 logger.debug("Create docker container done. ID: " + containerID);
-                SalsaInstanceDescription_VM dockerVM = docker.getDockerInfo(containerID);
+                SalsaInstanceDescription_Docker dockerVM = docker.getDockerInfo(containerID);
                 if (containerID == null || containerID.isEmpty()) {
                     centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.ERROR);
                     return null;
@@ -201,9 +202,9 @@ public class ArtifactDeployer {
                         PioneerLogger.logger.error("Interrupt sleep!");
                     }
                 }
-
+                logger.debug("Updating docker properties ...");
                 centerCon.updateInstanceUnitProperty(serviceId, topologyId, nodeId, instanceId, dockerVM);
-                logger.debug("Updating docker info. ID = " + dockerVM.getInstanceId() + ", IP = " + dockerVM.getInstanceId());
+                logger.debug("Updated docker info. ID = " + dockerVM.getInstanceId() + ", IP = " + dockerVM.getInstanceId());
                 centerCon.updateNodeState(serviceId, topologyId, node.getId(), instanceId, SalsaEntityState.DEPLOYED);
                 return Integer.toString(instanceId);
             }

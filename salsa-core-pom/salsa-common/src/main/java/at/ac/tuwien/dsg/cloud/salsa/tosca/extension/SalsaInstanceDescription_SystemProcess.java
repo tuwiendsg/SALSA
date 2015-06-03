@@ -16,7 +16,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.Salsa
 
 /**
  * 
- * This class acts as a container for all the information of Salsa Virtual Machine instances
+ * This class acts as a container for all the information of Salsa system process instances
  * 
  * @author Le Duc Hung
  * TODO: Unified instance type. Currently: use String.
@@ -25,7 +25,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.Salsa
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "SalsaInstanceDescription")
-public class SalsaInstanceDescription_Service {
+public class SalsaInstanceDescription_SystemProcess {
 
 	@XmlElement(name = "pid")
 	private String pid;
@@ -34,10 +34,10 @@ public class SalsaInstanceDescription_Service {
 	private String state;
 
 	
-	public SalsaInstanceDescription_Service(){
+	public SalsaInstanceDescription_SystemProcess(){
 	}
 	
-	public SalsaInstanceDescription_Service(String process_id){
+	public SalsaInstanceDescription_SystemProcess(String process_id){
 		this.pid = process_id;
 	}		
 
