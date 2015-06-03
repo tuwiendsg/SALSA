@@ -16,239 +16,228 @@ import javax.xml.bind.annotation.XmlType;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.SalsaMappingProperty;
 
-
 /**
- * 
+ *
  * This class acts as a container for all the information of Salsa Virtual Machine instances
- * 
- * @author Le Duc Hung
- * TODO: Unified instance type. Currently: use String.
+ *
+ * @author Le Duc Hung TODO: Unified instance type. Currently: use String.
  */
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "SalsaInstanceDescription")
 public class SalsaInstanceDescription_VM {
 
-	@XmlElement(name = "provider")
-	private String provider;
-	
-	@XmlElement(name = "baseImage")
-	private String baseImage;
-	
-	@XmlElement(name = "instanceType")
-	private String instanceType;
+    @XmlElement(name = "provider")
+    protected String provider;
 
-	@XmlElement(name = "id")
-	private String instanceId;
+    @XmlElement(name = "baseImage")
+    protected String baseImage;
 
-	@XmlElement(name = "privateIp")
-	private String privateIp;
-	@XmlElement(name = "publicIP")
-	private String publicIp;
-	@XmlElement(name = "privateDNS")
-	private String privateDNS;
-	@XmlElement(name = "publicDNS")
-	private String publicDNS;
-	
-	@XmlElement(name = "state")
-	private String state;
-	
-	@XmlElement(name="quota")
-	private int quota;
-	
-	@XmlElement(name = "Packages")
-	PackagesDependencies packagesDependencies;
+    @XmlElement(name = "instanceType")
+    protected String instanceType;
 
-	public SalsaInstanceDescription_VM(){
-	}
-	
-	public SalsaInstanceDescription_VM(String provider, String instanceId){
-		this.provider = provider;
-		this.instanceId = instanceId;
-//		this.replicaNumber = replicaNumber;
-	}
-	
-	
+    @XmlElement(name = "id")
+    protected String instanceId;
 
-	public void setState(String state) {
-		this.state = state;
-	}
+    @XmlElement(name = "privateIp")
+    protected String privateIp;
+    @XmlElement(name = "publicIP")
+    protected String publicIp;
+    @XmlElement(name = "privateDNS")
+    protected String privateDNS;
+    @XmlElement(name = "publicDNS")
+    protected String publicDNS;
 
-	public String getState() {
-		return state;
-	}
+    @XmlElement(name = "state")
+    protected String state;
 
-	
-	public int getQuota() {
-		return quota;
-	}
+    @XmlElement(name = "quota")
+    protected int quota;
 
-	public void setQuota(int quota) {
-		this.quota = quota;
-	}
+    @XmlElement(name = "Packages")
+    protected PackagesDependencies packagesDependencies;
 
-	//	public int getReplicaNumber() {
+    public SalsaInstanceDescription_VM() {
+    }
+
+    public SalsaInstanceDescription_VM(String provider, String instanceId) {
+        this.provider = provider;
+        this.instanceId = instanceId;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public int getQuota() {
+        return quota;
+    }
+
+    public void setQuota(int quota) {
+        this.quota = quota;
+    }
+
+    //	public int getReplicaNumber() {
 //		return replicaNumber;
 //	}
-	public void setInstanceId(String instanceId) {
-		this.instanceId = instanceId;
-	}
-	public void setPrivateIp(String privateIp) {
-		this.privateIp = privateIp;
-	}
-	public void setPublicIp(String publicIp) {
-		this.publicIp = publicIp;
-	}
-	public void setPrivateDNS(String privateDNS) {
-		this.privateDNS = privateDNS;
-	}
-	public void setPublicDNS(String publicDNS) {
-		this.publicDNS = publicDNS;
-	}
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
+
+    public void setPrivateIp(String privateIp) {
+        this.privateIp = privateIp;
+    }
+
+    public void setPublicIp(String publicIp) {
+        this.publicIp = publicIp;
+    }
+
+    public void setPrivateDNS(String privateDNS) {
+        this.privateDNS = privateDNS;
+    }
+
+    public void setPublicDNS(String publicDNS) {
+        this.publicDNS = publicDNS;
+    }
 //	public void setReplicaNumber(int replicaNumber) {
 //		this.replicaNumber = replicaNumber;
 //	}
 
-	
+    public String getInstanceId() {
+        return instanceId;
+    }
 
+    public String getPrivateIp() {
+        return privateIp;
+    }
 
-	public String getInstanceId() {
-		return instanceId;
-	}
+    public String getPublicIp() {
+        return publicIp;
+    }
 
-	
+    public String getPrivateDNS() {
+        return privateDNS;
+    }
 
-	public String getPrivateIp() {
-		return privateIp;
-	}
+    public String getPublicDNS() {
+        return publicDNS;
+    }
 
-	public String getPublicIp() {
-		return publicIp;
-	}
+    public String getProvider() {
+        return provider;
+    }
 
-	public String getPrivateDNS() {
-		return privateDNS;
-	}
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
 
-	public String getPublicDNS() {
-		return publicDNS;
-	}
-	
-	
-	public String getProvider() {
-		return provider;
-	}
+    public String getBaseImage() {
+        return baseImage;
+    }
 
-	public void setProvider(String provider) {
-		this.provider = provider;
-	}
+    public void setBaseImage(String baseImage) {
+        this.baseImage = baseImage;
+    }
 
-	public String getBaseImage() {
-		return baseImage;
-	}
+    public String getInstanceType() {
+        return instanceType;
+    }
 
-	public void setBaseImage(String baseImage) {
-		this.baseImage = baseImage;
-	}
+    public void setInstanceType(String instanceType) {
+        this.instanceType = instanceType;
+    }
 
-	public String getInstanceType() {
-		return instanceType;
-	}
+    public PackagesDependencies getPackagesDependenciesList() {
+        return packagesDependencies;
+    }
 
-	public void setInstanceType(String instanceType) {
-		this.instanceType = instanceType;
-	}
-	
-	public PackagesDependencies getPackagesDependenciesList() {
-		return packagesDependencies;
-	}
+    public void setPackagesDependencies(PackagesDependencies packagesDependencies) {
+        this.packagesDependencies = packagesDependencies;
+    }
 
-	public void setPackagesDependencies(PackagesDependencies packagesDependencies) {
-		this.packagesDependencies = packagesDependencies;
-	}
+    @Override
+    public String toString() {
+        return "SalsaInstanceDescription [provider=" + provider
+                + ", baseImage=" + baseImage + ", instanceType=" + instanceType
+                + ", instanceId=" + instanceId + ", privateIp=" + privateIp
+                + ", publicIp=" + publicIp + ", privateDNS=" + privateDNS
+                + ", publicDNS=" + publicDNS + ", state=" + state + "]";
+    }
 
-	@Override
-	public String toString() {
-		return "SalsaInstanceDescription [provider=" + provider
-				+ ", baseImage=" + baseImage + ", instanceType=" + instanceType
-				+ ", instanceId=" + instanceId + ", privateIp=" + privateIp
-				+ ", publicIp=" + publicIp + ", privateDNS=" + privateDNS
-				+ ", publicDNS=" + publicDNS + ", state=" + state + "]";
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SalsaInstanceDescription_VM) {
+            return instanceId.equals(((SalsaInstanceDescription_VM) obj)
+                    .getInstanceId());
+        }
+        return false;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof SalsaInstanceDescription_VM) {
-			return instanceId.equals(((SalsaInstanceDescription_VM) obj)
-					.getInstanceId());
-		}
-		return false;
-	}
-	
-	
-	public void updateFromMappingProperties(SalsaMappingProperties maps){
-		for (SalsaMappingProperty	map : maps.getProperties()) {
-			if (map.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
-				this.provider = map.get("provider");
-				this.baseImage = map.get("baseImage");
-				this.instanceType = map.get("instanceType");
-				String packageStr = map.get("packages");
-				if (packageStr!=null){
-					List<String> packagelist = new ArrayList<String>(Arrays.asList(packageStr.split(",")));	
-					this.packagesDependencies = new PackagesDependencies();
-					this.packagesDependencies.setPackageDependency(packagelist);
-				}
-			}			
-		}
-	}
-	
-	public Map<String,String> exportToMap(){
-		Map<String,String> resMap = new HashMap<String, String>();
-		Map<String,String> map = new HashMap<String, String>();
-		map.put("provider", this.provider);
-		map.put("baseImage", this.baseImage);
-		map.put("instanceType", this.instanceType);
-		map.put("instanceId", this.instanceId);
-		map.put("publicIp", this.publicIp);
-		map.put("privateIp", this.privateIp);
-		map.put("publicDNS", this.publicDNS);
-		Iterator iterator = map.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry<String, String> mapEntry = (Map.Entry<String,String>) iterator.next();
-			if (mapEntry.getValue()!=null){
-				resMap.put(mapEntry.getKey(), mapEntry.getValue());
-			}
-		}
-		
-		return resMap;
-	}
-	
-	@XmlAccessorType(XmlAccessType.FIELD)
-	@XmlType(name = "Packages")
-	public static class PackagesDependencies{
-		
-		@XmlElement(name = "Package")
-		List<String> packageDependency;
+    public void updateFromMappingProperties(SalsaMappingProperties maps) {
+        for (SalsaMappingProperty map : maps.getProperties()) {
+            if (map.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
+                this.provider = map.get("provider");
+                this.baseImage = map.get("baseImage");
+                this.instanceType = map.get("instanceType");
+                String packageStr = map.get("packages");
+                if (packageStr != null) {
+                    List<String> packagelist = new ArrayList<String>(Arrays.asList(packageStr.split(",")));
+                    this.packagesDependencies = new PackagesDependencies();
+                    this.packagesDependencies.setPackageDependency(packagelist);
+                }
+            }
+        }
+    }
 
-		
-		public List<String> getPackageDependency() {
-			return packageDependency;
-		}
+    public Map<String, String> exportToMap() {
+        Map<String, String> resMap = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("provider", this.provider);
+        map.put("baseImage", this.baseImage);
+        map.put("instanceType", this.instanceType);
+        map.put("instanceId", this.instanceId);
+        map.put("publicIp", this.publicIp);
+        map.put("privateIp", this.privateIp);
+        map.put("publicDNS", this.publicDNS);
+        Iterator iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> mapEntry = (Map.Entry<String, String>) iterator.next();
+            if (mapEntry.getValue() != null) {
+                resMap.put(mapEntry.getKey(), mapEntry.getValue());
+            }
+        }
 
-		public void setPackageDependency(List<String> packageDependency) {
-			if (this.packageDependency == null){
-				this.packageDependency = new ArrayList<>();
-			}
-			this.packageDependency = packageDependency;
-		}
+        return resMap;
+    }
 
-		@Override
-		public String toString() {
-			return "PackagesDependencies [packageDependency="
-					+ packageDependency + "]";
-		}			
-		
-	}
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "Packages")
+    public static class PackagesDependencies {
+
+        @XmlElement(name = "Package")
+        List<String> packageDependency;
+
+        public List<String> getPackageDependency() {
+            return packageDependency;
+        }
+
+        public void setPackageDependency(List<String> packageDependency) {
+            if (this.packageDependency == null) {
+                this.packageDependency = new ArrayList<>();
+            }
+            this.packageDependency = packageDependency;
+        }
+
+        @Override
+        public String toString() {
+            return "PackagesDependencies [packageDependency="
+                    + packageDependency + "]";
+        }
+
+    }
 
 }

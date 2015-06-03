@@ -9,6 +9,7 @@ import java.util.UUID;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.SystemFunctions;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -177,25 +178,69 @@ public class DockerConfigurator {
         return SystemFunctions.executeCommand("sudo docker run -d --name " + nodeId + "_" + instanceId + " -t " + newDockerImage + " " + cmd + " ", null, null, null);
     }
 
-    public SalsaInstanceDescription_VM getDockerInfo(String containerID) {
+    public SalsaInstanceDescription_Docker getDockerInfo(String containerID) {
         if (containerID == null || containerID.isEmpty()) {
             PioneerLogger.logger.error("Cannot get Docker information. Container ID is null or empty !");
             return null;
         }
-        // TODO: a bit hack here
-        SalsaInstanceDescription_VM dockerMachine = new SalsaInstanceDescription_VM("local@dockerhost", containerID);
+        String ip = SystemFunctions.executeCommand("docker inspect --format='{{.NetworkSettings.IPAddress}}' " + containerID, null, null, null);
+        String isRunning = SystemFunctions.executeCommand("docker inspect --format='{{.State.Running}}' " + containerID, null, null, null);
+        String name = SystemFunctions.executeCommand("docker inspect --format='{{.Name}}' " + containerID, null, null, null);
+        String dockerPortInfo = SystemFunctions.executeCommand("docker inspect --format='{{.HostConfig.PortBindings}}' " + containerID, null, null, null);
+        PioneerLogger.logger.debug("Adding docker info: ip=" + ip + ", isRunning=" + isRunning + ", portinfo: " + dockerPortInfo);
+        String portmap = formatPortMap(dockerPortInfo.trim());
+        PioneerLogger.logger.debug("portmap string after formating: " + portmap);
+
+        SalsaInstanceDescription_Docker dockerMachine = new SalsaInstanceDescription_Docker("local@dockerhost", containerID, name);
         dockerMachine.setBaseImage("salsa.ubuntu");
         dockerMachine.setInstanceType("os");
-        String isRunning = SystemFunctions.executeCommand("docker inspect --format='{{.State.Running}}' " + containerID, null, null, null);
+        dockerMachine.setPortmap(portmap);
+        
         if (isRunning.equals("true")) {
             dockerMachine.setState("RUNNING");
         } else {
             dockerMachine.setState("STOPPED");
         }
-        String ip = SystemFunctions.executeCommand("docker inspect --format='{{.NetworkSettings.IPAddress}}' " + containerID, null, null, null);
+
         dockerMachine.setPrivateIp(ip);
         dockerMachine.setPublicIp(ip);
+        dockerMachine.setPortmap(portmap);        
+        PioneerLogger.logger.debug("Docker get info done: " + dockerMachine.toString());
         return dockerMachine;
+    }
+
+    /**
+     * Convert from map[5683/tcp:[map[HostIp:10.99.0.32 HostPort:5686]] 80/tcp:[map[HostIp:10.99.0.32 HostPort:9083]] 2812/tcp:[map[HostIp:10.99.0.32
+     * HostPort:2815]]] s1-->5683/tcp:[map[HostIp:10.99.0.32 HostPort:5686]] 80/tcp:[map[HostIp:10.99.0.32 HostPort:9083]] 2812/tcp:[map[HostIp:10.99.0.32
+     * HostPort:2815]] s-->5683/tcp:[map[HostIp:10.99.0.32 HostPort:5686]] to 5683:5685 80:9083 2812:2815
+     *
+     * @param dockerPortInfo
+     * @return
+     */
+    private String formatPortMap(String dockerPortInfo) {
+        PioneerLogger.logger.debug("Formating port map");
+        String s1 = dockerPortInfo.substring(4, dockerPortInfo.lastIndexOf("]"));
+        PioneerLogger.logger.debug("s1: " + s1);
+        String[] sa1 = s1.trim().split("] ");
+        String result = "";
+        for (String s : sa1) {
+            PioneerLogger.logger.debug("s: " + s);
+            if (!s.trim().equals("")) {
+                // s:  2812/tcp:[map[HostIp:10.99.0.32 HostPort:2817]
+                s=s.replace(" ", "]");  // because HostIP and HostPort can be in reverse order
+                // s: 2812/tcp:[map[HostIp:10.99.0.32]HostPort:2817]
+                int hostPortStrIndex = s.lastIndexOf("HostPort:") + 9;
+                result += s.substring(0, s.indexOf("/tcp")) + ":" + s.substring(hostPortStrIndex, s.indexOf("]", hostPortStrIndex)) + " ";
+            }
+        }
+        PioneerLogger.logger.debug("Format done: " + result.trim());
+        return result.trim();
+    }
+
+    public static void main(String[] args) {
+        DockerConfigurator docker = new DockerConfigurator("randomID");
+        String s = "map[2812/tcp:[map[HostIp:10.99.0.32 HostPort:2817]] 5683/tcp:[map[HostPort:5688 HostIp:10.99.0.32]] 80/tcp:[map[HostIp:10.99.0.32 HostPort:9085]]]";
+        System.out.println(docker.formatPortMap(s));
     }
 
     public String removeDockerContainer(String containerID) {

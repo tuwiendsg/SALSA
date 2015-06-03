@@ -65,6 +65,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.MutualFileAccessControl;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SystemFunctions;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
@@ -934,13 +935,14 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String topologyId,
             String nodeId,
             int instanceId) {
-        logger.debug("update instance unit prop 1");
+        logger.debug("update instance unit prop 1. Raw string data: " + data);
         MutualFileAccessControl.lockFile();
         try {
             logger.debug("update instance unit prop 2");
             String serviceFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
             logger.debug("Setting property. Read service file: " + serviceFile);
             CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(serviceFile);
+            ServiceUnit unit = service.getComponentById(nodeId);
             logger.debug("update instance unit prop 3: " + service.getId());
             ServiceInstance rep = service.getInstanceById(nodeId, instanceId);
 
@@ -948,11 +950,26 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             if (props == null) {
                 props = new Properties();
             }
-            // marshall data and add to props
-            JAXBContext context = JAXBContext.newInstance(SalsaInstanceDescription_VM.class);
-            Unmarshaller um = context.createUnmarshaller();
-            Object propData = um.unmarshal(new StringReader(data));	// object can be any kind of above class ??			
-            props.setAny(propData);
+            // marshall data and add to props. Currently only can receive VM and Docker properties
+            JAXBContext context;            
+//            context = JAXBContext.newInstance(SalsaInstanceDescription_Docker.class, SalsaInstanceDescription_VM.class); // both, not sure it run
+            if (unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
+                logger.debug("update instance unit: marshall VM description ");
+                context = JAXBContext.newInstance(SalsaInstanceDescription_VM.class);
+                Unmarshaller um = context.createUnmarshaller();
+                SalsaInstanceDescription_VM propData = (SalsaInstanceDescription_VM) um.unmarshal(new StringReader(data));
+                logger.debug("VM properties captured: " + propData.getInstanceId() +", ip: " + propData.getPrivateIp());
+                props.setAny(propData);
+            } else if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())){
+                logger.debug("update instance unit: marshall DOCKER description ");
+                context = JAXBContext.newInstance(SalsaInstanceDescription_Docker.class);
+                Unmarshaller um = context.createUnmarshaller();
+                SalsaInstanceDescription_Docker propData = (SalsaInstanceDescription_Docker)um.unmarshal(new StringReader(data));
+                logger.debug("Docker properties captured: " + propData.getDockername() +", portmap: " + propData.getPortmap());
+                props.setAny(propData);
+            } 
+            
+            
             rep.setProperties(props);
             SalsaXmlDataProcess.writeCloudServiceToFile(service, serviceFile);
             logger.debug("update instance unit prop END: " + service.getId());

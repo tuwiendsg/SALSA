@@ -132,7 +132,7 @@ public class FlexiantConnector implements CloudInterface {
             meta.setPublicMetadata(updateUserData);
             server.setResourceMetadata(meta);
 
-            logger.debug("The instance type have CPU: " + server.getCpu() + " and RAM: " + server.getRam());
+            logger.debug("The instance type have CPU: " + server.getCpu() + " and RAM: " + server.getRam() + ". Image: " + imageId);
             server.getNics().add(networkInterface);
 
             List<String> sshKeys = new ArrayList<>();
