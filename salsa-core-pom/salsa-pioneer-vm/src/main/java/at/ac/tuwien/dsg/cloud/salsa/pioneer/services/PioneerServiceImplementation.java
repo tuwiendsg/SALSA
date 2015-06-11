@@ -26,6 +26,7 @@ import at.ac.tuwien.dsg.cloud.salsa.pioneer.StacksConfigurator.DockerConfigurato
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.SystemFunctions;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SalsaPioneerConfiguration;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
@@ -228,7 +229,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
         }
 
         if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
-            SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) instance.getProperties().getAny();
+            SalsaInstanceDescription_Docker vm = (SalsaInstanceDescription_Docker) instance.getProperties().getAny();
             if (vm != null) {
                 String containerID = vm.getInstanceId();
                 DockerConfigurator docker = new DockerConfigurator("default");
@@ -240,6 +241,10 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
         PioneerLogger.logger.debug("Pioneer is updating UNDEPLOYED state for instance: " + serviceId + "/" + topologyId + "/" + nodeID + "/" + instanceId);
         String result = centerCon.updateNodeState(serviceId, topologyId, nodeID, instanceId, SalsaEntityState.UNDEPLOYED);
         PioneerLogger.logger.debug("Update string: " + result);
+        
+        // delete the folder of the instance
+        SystemFunctions.executeCommand("rm -rf " + SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeID, instanceId), SalsaPioneerConfiguration.getWorkingDir(), centerCon, nodeID+"_"+instanceId);
+        
         PioneerLogger.logger.debug("@Daniel: This ended, so it should pass " + result);
         return "Instance " + nodeID+"/" +instanceId + " is removed!";
     }

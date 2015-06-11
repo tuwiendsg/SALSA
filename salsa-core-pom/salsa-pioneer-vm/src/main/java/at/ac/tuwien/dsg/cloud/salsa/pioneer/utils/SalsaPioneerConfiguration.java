@@ -38,7 +38,7 @@ public class SalsaPioneerConfiguration {
 	public static String getWorkingDir() {
 		return configuration.getProperty("SALSA_WORKING_DIR");
 	}
-
+                
 	public static String getSalsaVariableFile() {		
 		return CONFIG_FILE;
 	}

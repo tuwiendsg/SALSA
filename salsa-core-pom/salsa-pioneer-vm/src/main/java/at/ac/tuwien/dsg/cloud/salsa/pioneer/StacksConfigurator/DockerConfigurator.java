@@ -82,7 +82,7 @@ public class DockerConfigurator {
         // add salsa-pioneer deployment. The COPY command in the Dockerfile get only current folder file, cannot use absolute path on HOST
         StringBuilder sb = new StringBuilder();
         SystemFunctions.executeCommand("cp " + SalsaPioneerConfiguration.getWorkingDir() + "/salsa.variables " + newSalsaWorkingDirInsideDocker, SalsaPioneerConfiguration.getWorkingDir(), null, dockerFile);
-        sb.append("\n COPY ./salsa.variables /etc/salsa.variables \n");
+        sb.append("\nCOPY ./salsa.variables /etc/salsa.variables \n");
         sb.append("RUN mkdir -p " + newSalsaWorkingDirInsideDocker + "\n");
         sb.append("COPY ./pioneer_install.sh " + newSalsaWorkingDirInsideDocker + "/pioneer_install.sh \n");
         sb.append("RUN chmod +x " + newSalsaWorkingDirInsideDocker + "/pioneer_install.sh  \n");
@@ -92,6 +92,7 @@ public class DockerConfigurator {
             String filename = SalsaPioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId) + "/Dockerfile";
             FileWriter fw = new FileWriter(filename, true);
             fw.write(sb.toString());
+            fw.flush();
             fw.close();
         } catch (IOException ioe) {
             System.err.println("IOException: " + ioe.getMessage());
