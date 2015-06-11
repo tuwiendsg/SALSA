@@ -48,6 +48,6 @@ mkdir -p $SALSA_WORKING_DIR
 mv -f $TMPFILE $SALSA_WORKING_DIR/salsa.variables
 cd $SALSA_WORKING_DIR
 
-wget -q $SALSA_PIONEER_WEB/$SALSA_PIONEER_RUN
+wget -qN $SALSA_PIONEER_WEB/$SALSA_PIONEER_RUN
 
 java -jar salsa-pioneer.jar startserver

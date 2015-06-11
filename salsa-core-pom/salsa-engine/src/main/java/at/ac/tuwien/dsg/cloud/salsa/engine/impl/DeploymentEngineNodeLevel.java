@@ -194,7 +194,7 @@ public class DeploymentEngineNodeLevel {
         // download pioneer
         List<String> fileLst = Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));
         for (String file : fileLst) {
-            userDataBuffer.append("wget -q --content-disposition ").append(SalsaConfiguration.getPioneerWeb()).append("/").append(file).append(" \n");
+            userDataBuffer.append("wget -qN --content-disposition ").append(SalsaConfiguration.getPioneerWeb()).append("/").append(file).append(" \n");
 //			userDataBuffer.append("chmod +x "+file +" \n");
 //			userDataBuffer.append("cp " + file + " /usr/local/bin \n");
         }
