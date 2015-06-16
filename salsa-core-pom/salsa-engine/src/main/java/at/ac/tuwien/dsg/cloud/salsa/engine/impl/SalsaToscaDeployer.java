@@ -230,14 +230,41 @@ public class SalsaToscaDeployer {
 			EngineLogger.logger.debug("Checking the referece for ServiceUnit: " + input.getId() + " => Bad reference string, should be serviceID/serviceunitID, but length=" + refStr.length);
 			return null;
 		}		
-		CloudService service = centerCon.getUpdateCloudServiceRuntime(refStr[0]);
-		if (service !=null){
-			EngineLogger.logger.debug("Checking the reference for ServiceUnit: " + input.getId() + " => FOUND !");
-			return service.getComponentById(refStr[1]);
-		} else {
-			EngineLogger.logger.debug("Checking the reference for ServiceUnit: " + input.getId() + " => A reference but could not find the target service to refer to.");
-			return null;
-		}
+
+    SalsaCenterConnector otherSalsa;
+    String otherCloudServiceID;
+    String otherServiceUnitID;
+    if (refStr.length == 3)
+    {
+      EngineLogger.logger.debug("Parsing reference node of other salsa at: " + refStr[0].trim());      
+      String otherSalsaEndpoint = "http://" + refStr[0] + "/salsa-engine";
+      otherSalsa = new SalsaCenterConnector(otherSalsaEndpoint, "/tmp", EngineLogger.logger);
+      otherCloudServiceID = refStr[1];
+      otherServiceUnitID = refStr[2];
+    }
+    else
+    {
+      otherSalsa = centerCon;
+      otherCloudServiceID = refStr[0];
+      otherServiceUnitID = refStr[1];
+    }
+    EngineLogger.logger.debug("Getting information from other SALSA for service: " + otherCloudServiceID + ", node:" + otherServiceUnitID);
+    
+    CloudService service = otherSalsa.getUpdateCloudServiceRuntime(otherCloudServiceID);
+    if (service != null)
+    {
+      EngineLogger.logger.debug("Checking the reference for ServiceUnit: " + input.getId() + " => FOUND !");
+      return service.getComponentById(otherServiceUnitID);
+    }
+    EngineLogger.logger.debug("Checking the reference for ServiceUnit: " + input.getId() + " => A reference but could not find the target service to refer to.");
+    return null;
+                
+                
+                
+                
+                
+                
+		
 	}
 
 	static boolean orchestating = false;
