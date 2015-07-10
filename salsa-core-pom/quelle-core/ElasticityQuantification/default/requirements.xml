@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MultiLevelRequirements level="SERVICE" name="ServiceReqs_overall_elasticity_multi">
+    <OptimizationStrategy type="Requirements.OVERALL"/>
+    <OptimizationStrategy type="Elasticity.QUALITY"/>
+    <OptimizationStrategy type="Elasticity.COST"/>
+    <OptimizationStrategy type="Properties.MINIMUM_COST"/>
+    <Requirements Name="Monitoring">
+        <Requirement name="MonitoringFreqReq">
+            <TargetMetric type="QUALITY" measurementUnit="min" name="monitoredFreq"/>
+            <Condition Type="GREATER_EQUAL">
+                <MetricValue ValueType="NUMERIC">
+                    <Value xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">5</Value>
+                </MetricValue>
+            </Condition>
+        </Requirement>
+    </Requirements>
+    <MultiLevelRequirements level="SERVICE_TOPOLOGY" name="EventProcessingTopology">
+        <Requirements Name="Monitoring">
+            <Requirement name="MonitoringFreqReq">
+                <TargetMetric type="QUALITY" measurementUnit="min" name="monitoredFreq"/>
+                <Condition Type="LESS_EQUAL">
+                    <MetricValue ValueType="NUMERIC">
+                        <Value xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">1</Value>
+                    </MetricValue>
+                </Condition>
+            </Requirement>
+        </Requirements>
+        <MultiLevelRequirements level="SERVICE_UNIT" name="EventProcessingTopology">
+            <Requirements Name="EventProcessingUnit">
+                <Requirement name="CPUArchitectureReq">
+                    <TargetMetric type="RESOURCE" measurementUnit="type" name="Architecture"/>
+                    <Condition Type="EQUAL">
+                        <MetricValue ValueType="TEXT">
+                            <Value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">64</Value>
+                        </MetricValue>
+                    </Condition>
+                </Requirement>
+                <Requirement name="CPUCoresReq">
+                    <TargetMetric type="RESOURCE" measurementUnit="number" name="VCPU"/>
+                    <Condition Type="GREATER_EQUAL">
+                        <MetricValue ValueType="NUMERIC">
+                            <Value xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">2</Value>
+                        </MetricValue>
+                    </Condition>
+                </Requirement>
+                <Requirement name="NetworkPerformanceReq">
+                    <TargetMetric type="QUALITY" measurementUnit="performance" name="Network"/>
+                    <Condition Type="ENUMERATION">
+                        <MetricValue ValueType="TEXT">
+                            <Value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Moderate</Value>
+                        </MetricValue>
+                        <MetricValue ValueType="TEXT">
+                            <Value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">High</Value>
+                        </MetricValue>
+                        <MetricValue ValueType="TEXT">
+                            <Value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">10 Gigabit</Value>
+                        </MetricValue>
+                    </Condition>
+                </Requirement>
+                <Requirement name="MemorySizeReq">
+                    <TargetMetric type="RESOURCE" measurementUnit="GB" name="Memory"/>
+                    <Condition Type="GREATER_EQUAL">
+                        <MetricValue ValueType="NUMERIC">
+                            <Value xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">5</Value>
+                        </MetricValue>
+                    </Condition>
+                </Requirement>
+            </Requirements>
+            <Requirements Name="MessageOrientedMiddleware">
+                <Requirement name="MessagingReq">
+                    <TargetMetric type="RESOURCE" measurementUnit="queue" name="message"/>
+                    <Condition Type="EQUAL">
+                        <MetricValue ValueType="TEXT">
+                            <Value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></Value>
+                        </MetricValue>
+                    </Condition>
+                </Requirement>
+            </Requirements>
+        </MultiLevelRequirements>
+    </MultiLevelRequirements>
+    <MultiLevelRequirements level="SERVICE_TOPOLOGY" name="DataEndTopology">
+        <MultiLevelRequirements level="SERVICE_UNIT" name="DataEndTopology">
+            <Requirements Name="DataEndUnit">
+                <Requirement name="CPUArchitectureReq">
+                    <TargetMetric type="RESOURCE" measurementUnit="type" name="Architecture"/>
+                    <Condition Type="EQUAL">
+                        <MetricValue ValueType="TEXT">
+                            <Value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">64</Value>
+                        </MetricValue>
+                    </Condition>
+                </Requirement>
+                <Requirement name="CPUCoresReq">
+                    <TargetMetric type="RESOURCE" measurementUnit="number" name="VCPU"/>
+                    <Condition Type="GREATER_EQUAL">
+                        <MetricValue ValueType="NUMERIC">
+                            <Value xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">2</Value>
+                        </MetricValue>
+                    </Condition>
+                </Requirement>
+                <Requirement name="NetworkPerformanceReq">
+                    <TargetMetric type="QUALITY" measurementUnit="performance" name="Network"/>
+                    <Condition Type="ENUMERATION">
+                        <MetricValue ValueType="TEXT">
+                            <Value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Moderate</Value>
+                        </MetricValue>
+                        <MetricValue ValueType="TEXT">
+                            <Value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">High</Value>
+                        </MetricValue>
+                        <MetricValue ValueType="TEXT">
+                            <Value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">10 Gigabit</Value>
+                        </MetricValue>
+                    </Condition>
+                </Requirement>
+                <Requirement name="MemorySizeReq">
+                    <TargetMetric type="RESOURCE" measurementUnit="GB" name="Memory"/>
+                    <Condition Type="GREATER_EQUAL">
+                        <MetricValue ValueType="NUMERIC">
+                            <Value xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">10</Value>
+                        </MetricValue>
+                    </Condition>
+                </Requirement>
+                <Requirement name="IOPerformanceReq">
+                    <TargetMetric type="QUALITY" measurementUnit="IOPS" name="Storage"/>
+                    <Condition Type="GREATER_EQUAL">
+                        <MetricValue ValueType="TEXT">
+                            <Value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">1000</Value>
+                        </MetricValue>
+                    </Condition>
+                </Requirement>
+            </Requirements>
+        </MultiLevelRequirements>
+    </MultiLevelRequirements>
+</MultiLevelRequirements>

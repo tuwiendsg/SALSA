@@ -5,7 +5,7 @@ import generated.oasis.tosca.TEntityTemplate.Properties;
 import generated.oasis.tosca.TNodeTemplate;
 import generated.oasis.tosca.TServiceTemplate;
 import generated.oasis.tosca.TTopologyTemplate;
-import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.ToscaEnricher;
+import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.SALSA.ToscaEnricherSALSA;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
@@ -24,7 +24,7 @@ public class TestToscaEnricher {
 				
 		// ENRICH
 		
-		ToscaEnricher enricher = new ToscaEnricher(def);
+		ToscaEnricherSALSA enricher = new ToscaEnricherSALSA(def);
 		enricher.enrichHighLevelTosca();
 		
 //		

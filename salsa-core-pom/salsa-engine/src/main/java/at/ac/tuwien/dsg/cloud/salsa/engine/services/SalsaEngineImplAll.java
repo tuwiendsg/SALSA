@@ -57,8 +57,11 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.rSYBL.deploymentDe
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineServiceIntenal;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
+import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.WholeAppCapabilityInterface;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.SalsaToscaDeployer;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.AsyncUnitCapability;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.WholeAppEnrichedTosca;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.MutualFileAccessControl;
@@ -75,31 +78,12 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 
     static Logger logger;
-    static File configFile;
-    SalsaToscaDeployer deployer = new SalsaToscaDeployer(configFile);
+    
+    WholeAppCapabilityInterface wholeAppCapability = new WholeAppEnrichedTosca();
+    UnitCapabilityInterface unitCapability = new AsyncUnitCapability();
 
     static {
-        logger = Logger.getLogger("EngineLogger");
-        String userFile = SalsaConfiguration.getCloudUserParameters();
-        if (userFile != null && !userFile.equals("")) {
-            logger.debug("Found the user file in the main engine configuration. Load cloud configuration at: " + userFile);
-            configFile = new File(userFile);
-        } else {
-            String CURRENT_DIR = System.getProperty("user.dir");
-            File file1 = new File(CURRENT_DIR + "/cloudUserParameters.ini");
-            File tmpFile = new File("/etc/cloudUserParameters.ini");
-            if (file1.exists()) {
-                logger.debug("Load cloud configuration at: " + file1.getAbsolutePath());
-                configFile = file1;
-            } else if (tmpFile.exists()) {
-                logger.debug("Load cloud configuration at: " + tmpFile.getAbsolutePath());
-                configFile = tmpFile;
-            } else {
-                logger.debug("Load cloud configuration at: default resource folder");
-                configFile = new File(SalsaEngineImplAll.class.getResource("/cloudUserParameters.ini").getFile());
-            }
-
-        }
+        logger = Logger.getLogger("EngineLogger");        
     }
 
     /*
@@ -118,9 +102,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             MutualFileAccessControl.writeToFile(uploadedInputStream, tmpFile);
             TDefinitions def = ToscaXmlProcess.readToscaFile(tmpFile);
 
-            this.deployer = new SalsaToscaDeployer(configFile);
             //CloudService service = deployer.deployNewService(def, serviceName);
-            CloudService service = deployer.orchestrateNewService(def, serviceName);
+            CloudService service = wholeAppCapability.addService(serviceName, def);
             String output = "Deployed service. Id: " + service.getId();
             logger.debug(output);
 
@@ -160,7 +143,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
                 return Response.status(404).entity("Error. Service Name is bad: " + serviceId).build();
             }
             //CloudService service = deployer.deployNewService(def, serviceId);
-            CloudService service = deployer.orchestrateNewService(def, serviceId);
+            CloudService service = this.wholeAppCapability.addService(serviceId, def);
             String output = "Deployed service. Id: " + service.getId();
             logger.debug(output);
             // return 201: resource created
@@ -198,10 +181,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
      */
     @Override
     public Response undeployService(String serviceId) throws SalsaEngineException {
-        logger.debug("DELETING SERVICE: " + serviceId);
-        if (deployer.cleanAllService(serviceId)) {
-			// deregister service here
-
+        logger.debug("DELETING SERVICE: " + serviceId);        
+        if (wholeAppCapability.cleanService(serviceId)) {// deregister service here
             String fileName = SalsaConfiguration.getServiceStorageDir() + "/" + serviceId;
             File file = new File(fileName);
             File datafile = new File(fileName.concat(".data"));
@@ -242,8 +223,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         centerCon.updateNodeIdCounter(serviceId, correctTopologyID, nodeId, node.getIdCounter() + quantity); // update first the number + quantity		
         String returnVal = "";
         for (int i = node.getIdCounter(); i < node.getIdCounter() + quantity; i++) {
-            //centerCon.addInstanceUnit(topologyId, nodeId, i);
-            new Thread(new asynSpawnInstances(deployer, serviceId, correctTopologyID, nodeId, i, def, service)).start();
+            unitCapability.deploy(serviceId, nodeId, i);            
             returnVal += i + " ";
         }
         return Response.status(201).entity(returnVal).build();
@@ -341,49 +321,6 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         return null;
     }
 
-    /**
-     * This function add new ServiceUnit to the existing application structure, also deploy minimum instances of the node
-     *
-     * @return The list of the instance IDs
-     */
-//	@POST
-//	@Path("/services/{serviceId}/topologies/{topologyId}/nodes")
-//	@Consumes(MediaType.APPLICATION_XML)
-//	public Response spawnServiceUnit(
-//			String xmlObject,
-//			@PathParam("serviceId") String serviceId,
-//            @PathParam("topologyId") String topologyId){
-//		
-//		return null;
-//	}
-    private class asynSpawnInstances implements Runnable {
-
-        SalsaToscaDeployer deployer;
-        TDefinitions def;
-        CloudService service;
-        String serviceId, topoId, nodeId;
-        int instanceId;
-
-        asynSpawnInstances(SalsaToscaDeployer deployer, String serviceId, String topoId, String nodeId, int instanceId, TDefinitions def, CloudService service) {
-            this.deployer = new SalsaToscaDeployer(configFile);
-            this.serviceId = serviceId;
-            this.topoId = topoId;
-            this.nodeId = nodeId;
-            this.def = def;
-            this.service = service;
-            this.instanceId = instanceId;
-        }
-
-        @Override
-        public void run() {
-            try {
-                deployer.deployOneMoreInstance(serviceId, topoId, nodeId, instanceId, def, service);
-            } catch (SalsaEngineException e) {
-                EngineLogger.logger.error(e.getMessage());
-            }
-        }
-    }
-
     @Override
     public Response deployInstance(
             String serviceId,
@@ -401,8 +338,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             EngineLogger.logger.error("May be the id of node is invalided");
             return Response.status(500).entity("Error: Node ID is not found.").build();
         }
-        String correctTopologyID = service.getTopologyOfNode(node.getId()).getId();
-        new Thread(new asynSpawnInstances(deployer, serviceId, correctTopologyID, nodeId, instanceId, def, service)).start();
+        unitCapability.deploy(serviceId, nodeId, instanceId);
         return Response.status(201).entity(instanceId).build();
         //TODO: What happen if it is fail to spawn a VM ? 
     }
@@ -413,13 +349,10 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String topologyId,
             String nodeId,
             int instanceId) throws SalsaEngineException {
-        logger.debug("Removing service instance: " + serviceId + "/" + topologyId + "/" + nodeId + "/" + instanceId);
-        if (deployer.removeOneInstance(serviceId, topologyId, nodeId, instanceId)) {
-            return Response.status(200).entity("Undeployed instance: " + serviceId + "/" + nodeId + "/" + instanceId).build();
-        } else {
-            // return 404: resource not found. The instance is not found to be undeployed
-            return Response.status(404).entity("Could not undeployed instance.").build();
-        }
+        logger.debug("Removing service instance: " + serviceId + "/" + topologyId + "/" + nodeId + "/" + instanceId);        
+        unitCapability.remove(serviceId, nodeId, instanceId);
+        return Response.status(200).entity("Undeployed instance: " + serviceId + "/" + nodeId + "/" + instanceId).build();
+        
     }
 
     @Override
@@ -1195,17 +1128,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             }
         }
     }
-
-    private CloudService getCloudService(String serviceId) {
-        String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
-        try {
-            return SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
-        } catch (JAXBException | IOException e) {
-            logger.debug("Not found the pioneer artifact !");
-            e.printStackTrace();
-        }
-        return null;
-    }
+    
 
     @Override
     public String health() {
@@ -1231,28 +1154,6 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             EngineLogger.logger.error(e.toString());
         }
         return Response.status(201).entity("saved message: " + data).build();
-    }
-
-    private Response logAndResponse(LOGLEVEL level, String message) {
-        switch (level) {
-            case INFO:
-                logger.info(message);
-                return Response.status(200).entity(message).build();
-            case USER_ERROR:
-                logger.error(message);
-                return Response.status(404).entity(message).build();
-            case SERVER_ERROR:
-                logger.error(message);
-                return Response.status(500).entity(message).build();
-            default:
-                logger.debug(message);
-                return Response.status(200).entity(message).build();
-        }
-    }
-
-    private enum LOGLEVEL {
-
-        INFO, USER_ERROR, SERVER_ERROR, DEBUG
     }
 
 }

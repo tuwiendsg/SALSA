@@ -1,0 +1,62 @@
+refactor Jun 16 2015
+
+DeploymentEngineNodeLevel.java
+  deployVMNode
+  updateVMProperties
+  prepareUserDataChef (DEL)
+  prepareUserData
+  
+SalsaToscaDeployer.java
+  deployNewService
+  orchestrateNewService
+  updateInstancesForReferenceNode
+  getReferenceServiceUnit
+  deployOneMoreInstance
+  setLock
+  releaseLock
+  firstDeploymentService
+  deployOneMoreInstance_Artifact
+  deployOneVmThread ==> DeploymentEngineNodeLevel.deployVMNode
+  deployOneSoftwareThread ==> deployOneMoreInstance_Artifact
+  removeOneSoftwareThread
+  removeOneInstance
+  buildRuntimeDataFromTosca
+  cleanAllService
+  
+SalsaEngineImplAll.java
+  static: cloudUserParameter
+  deployService
+  deployServiceFromXML
+  redeployService
+  undeployService
+  spawnInstance
+  scaleOutNode
+  scaleInNode
+  scaleInVM
+  scaleOutVM
+  asynSpawnInstances  ==> SalsaToscaDeployer.deployOneMoreInstance
+  deployInstance
+  destroyInstance
+  removeInstanceMetadata
+  checkForServiceName 
+  deployTopology
+  undeployTopology
+  destroyInstanceOfNodeType
+  getService
+  getToscaService
+  getServiceSYBL_DEP_DESP
+  getIpOfServiceInstance
+  addRelationship
+  updateNodeIdCounter
+  addInstanceUnitMetaData
+  addServiceUnitMetaData
+  addServiceUnitMetaData
+  updateInstanceUnitCapability
+  updateInstanceUnitProperties
+  updateNodeState
+  getRequirementValue
+  queueAction
+  unqueueAction
+  getPioneerArtifact
+  updateComponentStateBasedOnInstance
+  

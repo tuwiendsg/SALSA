@@ -259,10 +259,10 @@ public class SalsaCenterConnector {
 		}
 	}
 	
-	public ServiceUnit getUpdateServiceUnit(String serviceId, String topoId, String nodeId) throws SalsaEngineException{
+	public ServiceUnit getUpdateServiceUnit(String serviceId, String nodeId) throws SalsaEngineException{
 		CloudService service = getUpdateCloudServiceRuntime(serviceId);
 		System.out.println("Update service: " + service.getId());
-		return service.getComponentById(topoId, nodeId);
+		return service.getComponentById(nodeId);
 	}
 
 	/**

@@ -1,0 +1,126 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+    	<version>1.0-SNAPSHOT</version>
+
+    
+    <properties>
+        <spring.version>4.0.0.RELEASE</spring.version>
+        <slf4j.version>1.7.7</slf4j.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <artifactId>QUELLE-Core-ElasticityQuantification-SALSA</artifactId>
+    <packaging>jar</packaging>
+
+    <name>QUELLE-Core-ElasticityQuantification-SALSA</name>
+    <url>http://maven.apache.org</url>
+ 
+    
+    <dependencies>
+      
+ 
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+      
+        <dependency>
+            <groupId>xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.2.2</version>
+        </dependency>     
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.1.12</version>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+         
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+  
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.6.3</version>
+            <type>jar</type>
+        </dependency>
+            
+            
+        <dependency>
+            <groupId>at.ac.tuwien.quelle</groupId>
+            <artifactId>QUELLE-Core-CloudServicesModel</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+      
+    </dependencies>
+    
+    <profiles>
+
+        <profile>
+            <id>Development</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+         
+    </profiles>
+    <repositories>
+    <repository>
+            <id>infosys-maven-ext</id>
+            <name>infosys-maven-releases</name>
+            <url>http://repo.infosys.tuwien.ac.at/artifactory/ext</url>
+        </repository>
+        
+        <repository>
+            <id>infosys-maven-comot</id>
+            <name>infosys-maven-releases</name>
+            <url>http://repo.infosys.tuwien.ac.at/artifactory/comot</url>
+        </repository>
+        <repository>
+            <id>infosys-repo</id>
+            <url>http://www.infosys.tuwien.ac.at/mvn</url>
+        </repository>
+
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
