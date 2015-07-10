@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+    <artifactId>QUELLE-Core-SALSA</artifactId>
+    <packaging>pom</packaging>
+   	<version>1.0-SNAPSHOT</version>
+    
+    <name>QUELLE-Core-Pom-SALSA</name>
+    <url>http://maven.apache.org</url>
+ 
+    <properties>
+        <spring.version>4.0.0.RELEASE</spring.version>
+        <slf4j.version>1.7.7</slf4j.version>
+    </properties>
+
+    <modules>
+        <module>CloudServicesModel</module>
+        <module>ElasticityQuantification</module> 
+    </modules>
+
+    <dependencies>
+        <!-- Spring Framework dependencies -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <!-- SLF4J dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+    </dependencies>
+ 
+ <repositories>
+ <repository>
+            <id>infosys-maven-ext</id>
+            <name>infosys-maven-releases</name>
+            <url>http://repo.infosys.tuwien.ac.at/artifactory/ext</url>
+        </repository>
+        
+        <repository>
+            <id>infosys-maven-comot</id>
+            <name>infosys-maven-releases</name>
+            <url>http://repo.infosys.tuwien.ac.at/artifactory/comot</url>
+        </repository>
+
+    </repositories>
+
+  
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0-beta-6</version>
+            </extension>
+        </extensions>
+  
+    </build>
+
+
+</project>

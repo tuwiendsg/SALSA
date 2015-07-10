@@ -19,7 +19,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
-import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaPioneerInterface;
+
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.InstrumentShareData;
@@ -185,23 +185,7 @@ public class Main {
 //		}		
 //	}
 	
-	private static void startRESTService(){
-		try{
-			System.out.println("Starting the server ...");
-			String ip = InetAddress.getLocalHost().getHostAddress();
-			
-			JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
-	        sf.setResourceClasses(SalsaPioneerInterface.class);
-	        sf.setResourceProvider(SalsaPioneerInterface.class, 
-	            new SingletonResourceProvider(new PioneerServiceImplementation()));
-	        //sf.setAddress("http://" + ip + ":9000/");
-	        sf.setAddress("http://0.0.0.0:9000/");	        
-	        sf.create();			
-			
-		} catch (UnknownHostException e){
-			PioneerLogger.logger.error("Unknown host exception error !");			
-		}
-	}
+	
 	
 //	
 //	private static void startLocalService(){		

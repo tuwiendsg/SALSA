@@ -15,6 +15,8 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
       <ref bean="engineBean" />
       <ref bean="viewBean" />
       <ref bean="monitorBean" />
+       <ref bean="QuelleBean" />
+       <ref bean="SmartDeploymentBean" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="exceptionBean" />
@@ -25,6 +27,8 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
   <bean id="viewBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.ViewGenerator" />
   <bean id="monitorBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaMonitoringInfo" />
   <bean id="exceptionBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineServiceExceptionMapper" />
+  <bean id="QuelleBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.QuelleService" />
+  <bean id="SmartDeploymentBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.main.SmartDeploymentService" />
    
 <!-- 	<bean id="swaggerConfig" class="com.wordnik.swagger.jaxrs.config.BeanConfig"> -->
 <!-- 	    <property name="resourcePackage" value="at.ac.tuwien.dsg.cloud.salsa.common.interfaces"/> -->

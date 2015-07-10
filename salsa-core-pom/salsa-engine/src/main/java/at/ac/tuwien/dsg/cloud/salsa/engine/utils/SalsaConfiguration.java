@@ -4,11 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
 
-
-
-import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.SalsaCloudProviders;
-import java.io.BufferedOutputStream;
-import java.io.PrintWriter;
+import at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineImplAll;
 import org.slf4j.Logger;
 
 public class SalsaConfiguration {
@@ -30,7 +26,10 @@ public class SalsaConfiguration {
     static final String DEFAULT_PIONEER_RUN="salsa-pioneer.jar";
     static final String DEFAULT_SALSA_PRIVATE_KEY="id_rsa";
     static final String DEFAULT_VARIABLE_FILE="salsa.variables";
-
+    
+       
+    static File configFile;
+    
     static {
         // try to load property files at current folder, then /etc/
         try {
@@ -64,12 +63,38 @@ public class SalsaConfiguration {
             configuration.list(System.out);
             logger.debug("Center endpoint: " + getSalsaCenterEndpoint());            
             
-            (new File(getWorkingDir())).mkdirs();
+            (new File(getPioneerWorkingDir())).mkdirs();
             (new File(getServiceStorageDir())).mkdirs();
         } catch (Exception ex) {
             logger.error("Error occured when configuring salsa engine: " + ex.getMessage());
             ex.printStackTrace();
         }
+        
+        // load configure file
+        String userFile = SalsaConfiguration.getCloudUserParameters();
+        if (userFile != null && !userFile.equals("")) {
+            logger.debug("Found the user file in the main engine configuration. Load cloud configuration at: " + userFile);
+            configFile = new File(userFile);
+        } else {
+            String CURRENT_DIR = System.getProperty("user.dir");
+            File file1 = new File(CURRENT_DIR + "/cloudUserParameters.ini");
+            File tmpFile = new File("/etc/cloudUserParameters.ini");
+            if (file1.exists()) {
+                logger.debug("Load cloud configuration at: " + file1.getAbsolutePath());
+                configFile = file1;
+            } else if (tmpFile.exists()) {
+                logger.debug("Load cloud configuration at: " + tmpFile.getAbsolutePath());
+                configFile = tmpFile;
+            } else {
+                logger.debug("Load cloud configuration at: default resource folder");
+                configFile = new File(SalsaEngineImplAll.class.getResource("/cloudUserParameters.ini").getFile());
+            }             
+        }        
+    }
+    
+    
+    public static File getCloudUserParametersFile(){
+        return configFile;
     }
     
     private static String getSALSA_CENTER_IP(){
@@ -105,7 +130,7 @@ public class SalsaConfiguration {
     }
 
     // working dir of the pioneer
-    public static String getWorkingDir() {
+    public static String getPioneerWorkingDir() {
         return configuration.getProperty(SALSA_PIONEER_WORKING_DIR_KEY);
     }
 
@@ -122,14 +147,6 @@ public class SalsaConfiguration {
         return "http://localhost:"+getSALSA_CENTER_PORT()+"/salsa-engine";
     }
 
-    @Deprecated
-    private static String getSalsaCenterEndpointForCloudProvider(SalsaCloudProviders provider) {
-        if (provider == SalsaCloudProviders.DSG_OPENSTACK) {
-            return configuration.getProperty("SALSA_CENTER_ENDPOINT_LOCAL");
-        } else {
-            return configuration.getProperty("SALSA_CENTER_ENDPOINT");
-        }
-    }
 
     public static String getServiceStorageDir() {
         return configuration.getProperty(SALSA_CENTER_WORKING_DIR_KEY)+"/services";
@@ -141,6 +158,10 @@ public class SalsaConfiguration {
 
     public static String getToscaTemplateStorage() {
         return configuration.getProperty(SALSA_CENTER_WORKING_DIR_KEY)+"/tosca_templates";
+    }
+    
+    public static String getCloudProviderDescriptionDir() {
+        return configuration.getProperty(SALSA_CENTER_WORKING_DIR_KEY)+"/cloudDescriptions";
     }
 
     public static String getCloudUserParameters() {

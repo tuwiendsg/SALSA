@@ -1,5 +1,6 @@
 package at.ac.tuwien.dsg.cloud.salsa.tosca.processing;
 
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import generated.oasis.tosca.TArtifactReference;
 import generated.oasis.tosca.TArtifactTemplate;
 import generated.oasis.tosca.TCapability;
@@ -481,5 +482,18 @@ public class ToscaStructureQuery {
 		}
 		return null;
 	}
+        
+        
+        public static TNodeTemplate getNodeTemplate_ofOSType_ThatHost(TNodeTemplate node, TDefinitions def){
+            // this is the OS Node
+            if (node.getType().getLocalPart().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
+                return node;
+            }
+            TNodeTemplate hostNode = getHostOnNode(node, def);
+            while (hostNode!=null && !hostNode.getType().getLocalPart().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
+                hostNode = getHostOnNode(hostNode, def);
+            }
+            return hostNode;
+        }
 	
 }

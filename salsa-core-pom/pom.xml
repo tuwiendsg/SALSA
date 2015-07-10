@@ -23,6 +23,8 @@
 	<module>salsa-engine</module>
 	<module>salsa-pioneer-vm</module>
     <module>salsa-knowledge</module>
+    <module>quelle-core</module>
+    
   </modules>
   
    <dependencies>

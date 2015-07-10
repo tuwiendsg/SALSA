@@ -80,6 +80,7 @@ public class ToscaXmlProcess {
 		try {
 			File file = new File(fileName);
 			JAXBContext jaxbContext = getJaxbContextForTosca();
+                        
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			
