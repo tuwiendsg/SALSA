@@ -124,7 +124,7 @@ public class SystemFunctions {
                 Query.match(Query.attr("protocol"), Query.value("HTTP/1.1")));
         String hostname = InetAddress.getLocalHost().getHostName();
         InetAddress[] addresses = InetAddress.getAllByName(hostname);
-        ArrayList<String> endPoints = new ArrayList<String>();
+        ArrayList<String> endPoints = new ArrayList<>();
         for (Iterator<ObjectName> i = objs.iterator(); i.hasNext();) {
             ObjectName obj = i.next();
             String scheme = mbs.getAttribute(obj, "scheme").toString();

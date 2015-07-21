@@ -21,12 +21,10 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityT
 import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.QuelleService;
 import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.RecommendationSummaries;
-import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.SALSA.ToscaEnricherCEclipse;
 import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.SALSA.ToscaEnricherSALSA;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.SalsaMappingProperty;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 import at.ac.tuwien.dsg.mela.common.monitoringConcepts.Metric;
@@ -35,7 +33,6 @@ import at.ac.tuwien.dsg.mela.common.monitoringConcepts.MonitoredElement;
 import at.ac.tuwien.dsg.mela.common.requirements.Condition;
 import at.ac.tuwien.dsg.mela.common.requirements.Requirement;
 import at.ac.tuwien.dsg.mela.common.requirements.Requirements;
-import at.ac.tuwien.dsg.quelle.cloudServicesModel.concepts.CloudProvider;
 import at.ac.tuwien.dsg.quelle.cloudServicesModel.requirements.MultiLevelRequirements;
 import at.ac.tuwien.dsg.quelle.cloudServicesModel.requirements.Strategy;
 import at.ac.tuwien.dsg.quelle.cloudServicesModel.requirements.StrategyCategory;
@@ -48,8 +45,6 @@ import generated.oasis.tosca.TTopologyTemplate;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
-import static java.nio.channels.spi.AsynchronousChannelProvider.provider;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +64,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -105,11 +99,9 @@ public class SmartDeploymentService {
             TDefinitions def = ToscaXmlProcess.readToscaXML(toscaXML);
             ToscaXmlProcess.writeToscaDefinitionToFile(def, saveAs);
         } catch (JAXBException e) {
-            EngineLogger.logger.error("Fail to pass the TOSCA !");
-            e.printStackTrace();
+            EngineLogger.logger.error("Fail to pass the TOSCA !", e);
         } catch (IOException ex) {
-            EngineLogger.logger.error("Cannot write the TOSCA to disk !");
-            ex.printStackTrace();
+            EngineLogger.logger.error("Cannot write the TOSCA to disk !", ex);
         }
         EngineLogger.logger.debug("Saved/Updated cloud description in : " + saveAs);
         return true;
@@ -142,8 +134,7 @@ public class SmartDeploymentService {
             try {
                 FileUtils.copyFile(new File(SalsaConfiguration.getToscaTemplateStorage() + "/" + serviceName + this.origineExt), new File(file));
             } catch (IOException ex) {
-                EngineLogger.logger.error("The original Tosca is not found to copy. Cannot enrich.");
-                ex.printStackTrace();
+                EngineLogger.logger.error("The original Tosca is not found to copy. Cannot enrich.", ex);
             }
         }
 
@@ -154,11 +145,9 @@ public class SmartDeploymentService {
                 ToscaEnricherSALSA salsaEnricher = new ToscaEnricherSALSA(def);
                 salsaEnricher.enrichHighLevelTosca();
                 ToscaXmlProcess.writeToscaDefinitionToFile(def, file);
-            } catch (JAXBException | IOException ex) {
-                ex.printStackTrace();
-            } catch (SalsaException ex) {
-                ex.printStackTrace();
-            }
+            } catch (JAXBException | IOException | SalsaException ex) {
+                EngineLogger.logger.error("Error when reading TOSCA to enrich.", ex);
+            } 
         }
 
         if (list.contains(EnrichFunctions.QuelleCloudServiceRecommendation.toString())) {
@@ -176,14 +165,13 @@ public class SmartDeploymentService {
                 ToscaXmlProcess.writeToscaDefinitionToFile(def, file);
                 EngineLogger.logger.debug("Writing down Quelle enriched file done");
             } catch (JAXBException | IOException ex) {
-                ex.printStackTrace();
+                EngineLogger.logger.error("Error when enriching TOSCA.", ex);
             }
         }
         try {
             return FileUtils.readFileToString(new File(file));
         } catch (IOException ex) {
-            EngineLogger.logger.error("Cannot read the enriched file. Big problem !");
-            ex.printStackTrace();
+            EngineLogger.logger.error("Cannot read the enriched file. Big problem !", ex);            
             return null;
         }
     }
@@ -198,8 +186,7 @@ public class SmartDeploymentService {
             try {
                 FileUtils.copyFile(new File(SalsaConfiguration.getToscaTemplateStorage() + "/" + serviceName + this.origineExt), new File(file));
             } catch (IOException ex) {
-                EngineLogger.logger.error("The original Tosca is not found to copy. Cannot enrich.");
-                ex.printStackTrace();
+                EngineLogger.logger.error("The original Tosca is not found to copy. Cannot enrich.", ex);                
             }
         }
 
@@ -230,15 +217,14 @@ public class SmartDeploymentService {
                 EngineLogger.logger.debug("Writing down Quelle enriched file done");
 
             } catch (JAXBException | IOException ex) {
-                ex.printStackTrace();
+                EngineLogger.logger.error("Failure in enriching CAMF TOSCA.", ex);            
             }
         }
 
         try {
             return FileUtils.readFileToString(new File(file));
         } catch (IOException ex) {
-            EngineLogger.logger.error("Cannot read the enriched file. Big problem !");
-            ex.printStackTrace();
+            EngineLogger.logger.error("Cannot read the enriched file. Big problem !", ex);            
             return null;
         }
     }
@@ -261,8 +247,7 @@ public class SmartDeploymentService {
             MultiLevelRequirements reqs = (MultiLevelRequirements) jaxbUnmarshaller.unmarshal(new File(saveAs));
             return reqs;
         } catch (JAXBException ex) {
-            EngineLogger.logger.error("Cannot marshall the multilevel requirements that you submitted !");
-            ex.printStackTrace();
+            EngineLogger.logger.error("Cannot marshall the multilevel requirements that you submitted !", ex);
             return null;
         }
     }

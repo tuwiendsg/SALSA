@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,11 +42,9 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnitRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataForceDirect;
@@ -198,6 +195,7 @@ public class ViewGenerator {
 	/**
 	 * This generate the JSON to view in the appstructure.html, which reuses the MELA visualization
 	 * 
+     * @param serviceDeployId
 	 * @return
 	 */
 	@GET
@@ -209,9 +207,7 @@ public class ViewGenerator {
 		}
 		try {
 			String salsaFile = SalsaConfiguration.getServiceStorageDir() + "/" + serviceDeployId + ".data";
-			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
-			List<SalsaEntity> processing = new ArrayList<SalsaEntity>();
-			processing.add(service);
+			CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);			
 			ServiceJsonDataTreeSimple jsonObject = new ServiceJsonDataTreeSimple();
 			// add clouservice
 			jsonObject.setName(service.getName());
@@ -373,8 +369,8 @@ public class ViewGenerator {
                         
                         
                         
-		} catch (Exception e){
-			e.printStackTrace();
+		} catch (JAXBException | IOException e){
+			logger.error("Error when build force direct graph", e);
 		}
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		return gson.toJson(jsonObject);
