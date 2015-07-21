@@ -19,7 +19,7 @@ package at.ac.tuwien.dsg.cloud.salsa.pioneer;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class CommonLifecycle {
     public static final String DEPLOY = "deploy";

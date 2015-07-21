@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * This class define the artifact type
- * @author hungld
+ * @author Duc-Hung Le
  *
  */
 

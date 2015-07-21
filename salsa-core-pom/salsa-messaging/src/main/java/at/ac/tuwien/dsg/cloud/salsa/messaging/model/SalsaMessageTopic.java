@@ -21,7 +21,7 @@ import java.util.UUID;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class SalsaMessageTopic {
 

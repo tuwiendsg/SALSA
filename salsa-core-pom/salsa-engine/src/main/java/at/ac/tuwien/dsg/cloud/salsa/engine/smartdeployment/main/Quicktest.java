@@ -31,7 +31,7 @@ import javax.xml.bind.Marshaller;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class Quicktest {
 

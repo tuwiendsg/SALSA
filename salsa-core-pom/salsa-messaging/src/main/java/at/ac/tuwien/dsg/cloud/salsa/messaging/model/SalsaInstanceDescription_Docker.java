@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * Description for docker instances
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class SalsaInstanceDescription_Docker extends SalsaInstanceDescription_VM {
 

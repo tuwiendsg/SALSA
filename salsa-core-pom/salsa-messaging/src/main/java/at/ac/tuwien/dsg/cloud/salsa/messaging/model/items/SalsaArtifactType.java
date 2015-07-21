@@ -25,7 +25,7 @@ package at.ac.tuwien.dsg.cloud.salsa.messaging.model.items;
  *  - chef: only install chef client and let the real deployment for user
  *  - chef-solo: get the input by the software name in Chef Community repository and deploy
  *  - war: copy and remove the war artifact into Tomcat webapps folder.
- * @author hungld
+ * @author Duc-Hung Le
  */
 public enum SalsaArtifactType {
 	sh("sh"),

@@ -60,7 +60,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
  *
  * This class is referred to the ControlService of Salsa-center-services
  *
- * @author Le Duc Hung
+ * @author Duc-Hung Le
  *
  */
 public class SalsaCenterConnector {

@@ -25,7 +25,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class SalsaMsgConfigureState {
 

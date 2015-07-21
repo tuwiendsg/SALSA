@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * Each pioneer is assigned with an ID, then some information: where it is deployed.
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class PioneerManager {
 

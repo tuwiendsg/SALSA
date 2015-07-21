@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlValue;
  *		</MappingProperty>	<br/>
  * </MappingProperties>	<br/>
  * 
- * @author Le Duc Hung
+ * @author Duc-Hung Le
  *
  */
 

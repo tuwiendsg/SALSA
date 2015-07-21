@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "NodeProperties")

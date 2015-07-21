@@ -68,7 +68,7 @@ import java.util.logging.Logger;
 /**
  * This class contain methods to enrich the Tosca: - Generate dependency nodes - Reduce node to the infrastructure level at different format
  *
- * @author hungld
+ * @author Duc-Hung Le
  *
  */
 public class ToscaEnricherSALSA {

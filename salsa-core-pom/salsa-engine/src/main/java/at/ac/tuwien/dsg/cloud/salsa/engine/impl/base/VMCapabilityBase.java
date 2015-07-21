@@ -52,7 +52,7 @@ import java.util.Scanner;
 /**
  * This class contain methods for manage virtual machine stack. The class still requires some information from SALSA
  *
- * @author hungld TODO: - Instances management - Running information model
+ * @author Duc-Hung Le TODO: - Instances management - Running information model
  */
 public class VMCapabilityBase implements UnitCapabilityInterface {
 

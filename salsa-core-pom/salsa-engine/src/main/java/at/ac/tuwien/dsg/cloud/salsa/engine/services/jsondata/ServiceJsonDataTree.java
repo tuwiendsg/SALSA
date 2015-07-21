@@ -36,7 +36,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 /**
  * The class contains information to be visualized as graph
  *
- * @author hungld
+ * @author Duc-Hung Le
  *
  */
 public class ServiceJsonDataTree {

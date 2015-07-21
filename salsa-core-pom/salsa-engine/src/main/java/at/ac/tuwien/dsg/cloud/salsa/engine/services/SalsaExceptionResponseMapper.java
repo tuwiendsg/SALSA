@@ -24,7 +24,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 @Provider
 public class SalsaExceptionResponseMapper implements ExceptionMapper<SalsaException> {

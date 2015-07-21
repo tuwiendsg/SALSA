@@ -26,7 +26,7 @@ import generated.oasis.tosca.TDefinitions;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class WholeAppEnrichedTosca implements WholeAppCapabilityInterface{
 

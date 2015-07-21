@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * Description for docker instances
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")

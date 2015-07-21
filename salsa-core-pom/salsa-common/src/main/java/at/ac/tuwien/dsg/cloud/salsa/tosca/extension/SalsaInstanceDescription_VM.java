@@ -37,7 +37,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.Salsa
  *
  * This class acts as a container for all the information of Salsa Virtual Machine instances
  *
- * @author Le Duc Hung TODO: Unified instance type. Currently: use String.
+ * @author Duc-Hung Le TODO: Unified instance type. Currently: use String.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")

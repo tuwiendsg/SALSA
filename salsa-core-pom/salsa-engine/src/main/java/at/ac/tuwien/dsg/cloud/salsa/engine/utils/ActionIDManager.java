@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * This class map action with an instance ID. It says that: those actions are executed on these instances
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class ActionIDManager {
 

@@ -28,7 +28,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class MQTTConnector {
 

@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The wrapper class for the recommendation results
- * @author hungld
+ * @author Duc-Hung Le
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "Recommendations")

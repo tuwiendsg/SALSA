@@ -32,7 +32,7 @@ import org.junit.Test;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class TestQuelle {
     

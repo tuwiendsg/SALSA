@@ -29,7 +29,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 
 /**
  * List of file in a folder without filter. May add more information.
- * @author hungld
+ * @author Duc-Hung Le
  *
  */
 public class FolderJsonList {

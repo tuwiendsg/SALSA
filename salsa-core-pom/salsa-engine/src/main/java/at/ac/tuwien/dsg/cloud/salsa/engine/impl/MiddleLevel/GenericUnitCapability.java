@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * This class generalize the capability of application and VM into service unit. The states control is enabled here.
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class GenericUnitCapability implements UnitCapabilityInterface {
 

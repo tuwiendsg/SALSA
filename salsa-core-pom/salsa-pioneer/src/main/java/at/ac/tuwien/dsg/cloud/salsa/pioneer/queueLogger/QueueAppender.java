@@ -29,7 +29,7 @@ import org.apache.log4j.spi.LoggingEvent;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class QueueAppender extends AppenderSkeleton {
 

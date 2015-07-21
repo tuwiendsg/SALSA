@@ -39,7 +39,7 @@ import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.VMStates;
  * This connector enable deployment on localhost machine
  * In the future should be extended to further mechanism
  * 
- * @author hungld
+ * @author Duc-Hung Le
  *
  */
 public class LocalhostConnector implements CloudInterface {

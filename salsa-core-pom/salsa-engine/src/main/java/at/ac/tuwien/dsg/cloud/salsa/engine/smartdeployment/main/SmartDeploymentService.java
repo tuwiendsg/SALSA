@@ -76,7 +76,7 @@ import org.springframework.stereotype.Service;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 @Service
 @Path("/smart")

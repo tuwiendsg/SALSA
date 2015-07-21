@@ -62,7 +62,7 @@ import org.springframework.stereotype.Service;
 /**
  * This service integrate with QUELLE to
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 @Service
 @Path("/quelle")

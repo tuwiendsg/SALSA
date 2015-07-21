@@ -25,7 +25,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class MQTTPublish extends MQTTConnector implements MessagePublishInterface {
 

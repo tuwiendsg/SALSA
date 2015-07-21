@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * This is the state of configuration action
- * @author hungld
+ * @author Duc-Hung Le
  *
  */
 @XmlType(name = "SalsaEntityStateEnum")

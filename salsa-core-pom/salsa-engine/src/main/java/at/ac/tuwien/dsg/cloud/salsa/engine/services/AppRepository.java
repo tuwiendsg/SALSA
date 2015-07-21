@@ -40,7 +40,7 @@ import com.google.gson.GsonBuilder;
 /**
  * This Service support the customer in storing application description (TOSCA) and application artifacts. It act as a repository of service.
  *
- * @author hungld
+ * @author Duc-Hung Le
  *
  */
 @Path("/app")
