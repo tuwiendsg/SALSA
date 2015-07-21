@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * This enum contains actions which Salsa can to on Application entities.
  * These values must be describe exactly in Tosca, at ScriptArtifactProperty
- * @author hungld
+ * @author Duc-Hung Le
  *
  */
 @XmlType(name = "SalsaEntityActionsEnum")

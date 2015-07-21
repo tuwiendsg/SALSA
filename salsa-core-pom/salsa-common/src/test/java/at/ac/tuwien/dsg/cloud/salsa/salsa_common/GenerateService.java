@@ -28,7 +28,7 @@ import generated.oasis.tosca.TRequirementDefinition;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class GenerateService {
     public static void main(String[] args) {

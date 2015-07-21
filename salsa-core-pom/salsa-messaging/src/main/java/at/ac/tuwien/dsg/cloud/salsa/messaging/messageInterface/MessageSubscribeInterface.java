@@ -21,7 +21,7 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessage;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public interface MessageSubscribeInterface {
 

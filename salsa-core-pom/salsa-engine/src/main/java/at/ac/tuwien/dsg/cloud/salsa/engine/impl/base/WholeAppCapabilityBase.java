@@ -43,7 +43,7 @@ import javax.xml.bind.JAXBException;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
 

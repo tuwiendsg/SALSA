@@ -51,7 +51,7 @@ import org.apache.commons.io.FilenameUtils;
 /**
  * The class contain functionalities for preparing the task at salsa center, then request pioneer to execute it
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class AppCapabilityBase implements UnitCapabilityInterface {
 

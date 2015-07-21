@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 /**
  * This is the same with BASH instrument, but for running the process which does not exit
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class BashContinuousInstrument extends BashContinuousManagement implements ArtifactConfigurationInterface {
 

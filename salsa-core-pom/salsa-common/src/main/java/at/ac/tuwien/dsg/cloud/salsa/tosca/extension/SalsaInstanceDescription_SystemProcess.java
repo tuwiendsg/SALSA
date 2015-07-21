@@ -35,7 +35,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.Salsa
  * 
  * This class acts as a container for all the information of Salsa system process instances
  * 
- * @author Le Duc Hung
+ * @author Duc-Hung Le
  * TODO: Unified instance type. Currently: use String.
  */
 

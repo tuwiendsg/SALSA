@@ -19,7 +19,7 @@ package at.ac.tuwien.dsg.cloud.salsa.messaging.model.items;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public enum ServiceStack {
     Infrastructure, 

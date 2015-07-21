@@ -21,7 +21,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class IllegalConfigurationAPICallException extends SalsaException {
 

@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "Recommendations")

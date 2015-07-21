@@ -19,7 +19,7 @@ package at.ac.tuwien.dsg.cloud.salsa.engine.exception;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class EngineConnectionException extends SalsaException {
 

@@ -29,7 +29,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public abstract class MQTTSubscribe extends MQTTConnector implements MessageSubscribeInterface {
 

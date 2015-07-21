@@ -27,7 +27,7 @@ import java.util.Map;
  *
  * This class acts as a container for all the information of Salsa Virtual Machine instances
  *
- * @author Le Duc Hung TODO: Unified instance type. Currently: use String.
+ * @author Duc-Hung Le TODO: Unified instance type. Currently: use String.
  */
 public class SalsaInstanceDescription_VM {
 

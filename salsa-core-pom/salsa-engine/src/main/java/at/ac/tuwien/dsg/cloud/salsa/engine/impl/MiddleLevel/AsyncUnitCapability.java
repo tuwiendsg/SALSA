@@ -24,7 +24,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class AsyncUnitCapability implements UnitCapabilityInterface {
 

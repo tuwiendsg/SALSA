@@ -36,7 +36,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityS
 /**
  * This class is abstract for CloudService, ComponentTopology and Component
  * These can be map into TOSCA object in order: Definition, ServiceTemplate, NodeTemplate 
- * @author hungld
+ * @author Duc-Hung Le
  */
 
 @XmlAccessorType(XmlAccessType.FIELD)

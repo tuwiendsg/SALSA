@@ -29,7 +29,7 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 
 /**
  * Read the INI configuration file for cloud connectors
- * @author Le Duc Hung
+ * @author Duc-Hung Le
  *
  */
 public class CloudParametersUser {

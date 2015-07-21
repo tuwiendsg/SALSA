@@ -48,7 +48,7 @@ import java.util.List;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class InfoManagement {
 

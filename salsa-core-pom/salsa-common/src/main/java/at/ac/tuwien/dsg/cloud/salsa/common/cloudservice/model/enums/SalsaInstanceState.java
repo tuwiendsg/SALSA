@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * This class define instance states
- * @author hungld
+ * @author Duc-Hung Le
  *
  */
 @XmlType(name = "SalsaInstanceStateEnum")

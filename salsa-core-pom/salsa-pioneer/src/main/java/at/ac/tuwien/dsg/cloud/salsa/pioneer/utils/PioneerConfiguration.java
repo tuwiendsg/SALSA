@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author hungld
+ * @author Duc-Hung Le
  */
 public class PioneerConfiguration {
 
