@@ -4,7 +4,7 @@
 
   <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
   <artifactId>SALSA</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>2.0</version>
   <packaging>pom</packaging>
 
   <name>SALSA</name>
@@ -18,6 +18,7 @@
 		<module>salsa-cloud-connector</module>
 		<module>salsa-core-pom</module>
 <module>standalone</module>
-  </modules>
+	 <module>salsa-information-pom</module>
+	</modules>
 
 </project>

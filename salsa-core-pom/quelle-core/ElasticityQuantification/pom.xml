@@ -2,9 +2,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
-    	<version>1.0-SNAPSHOT</version>
-
+    <parent>
+        <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+        <artifactId>QUELLE-Core-SALSA</artifactId>
+        <version>2.0</version>
+    </parent>
     
     <properties>
         <spring.version>4.0.0.RELEASE</spring.version>
@@ -79,7 +81,7 @@
          
     </profiles>
     <repositories>
-    <repository>
+        <repository>
             <id>infosys-maven-ext</id>
             <name>infosys-maven-releases</name>
             <url>http://repo.infosys.tuwien.ac.at/artifactory/ext</url>

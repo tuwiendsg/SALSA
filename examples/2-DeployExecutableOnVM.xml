@@ -11,15 +11,15 @@
 		<tosca:TopologyTemplate>
 			<tosca:NodeTemplate id="helloWorld"	name="Hello World" type="software" minInstances="1" maxInstances="50">
 				<tosca:DeploymentArtifacts>
-					<tosca:DeploymentArtifact artifactType="salsa:shcont" name="Deployment script" artifactRef="deployScript"/>
+					<tosca:DeploymentArtifact artifactType="sh" name="Deployment script" artifactRef="deployScript"/>
 				</tosca:DeploymentArtifacts>
 			</tosca:NodeTemplate>
 			
-			<tosca:NodeTemplate type="salsa:os" id="SimpleOS" minInstances="1" maxInstances="1">
+			<tosca:NodeTemplate type="os" id="SimpleOS" minInstances="1" maxInstances="1">
 				 <tosca:Properties>
            <MappingProperties>						
-						<MappingProperty type="salsa:os">
-							<property name="instanceType">000000960</property>
+						<MappingProperty type="os">
+							<property name="instanceType">000001920</property>
 							<property name="provider">dsg@openstack</property> 
 							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>
 							<property name="packages">openjdk-7-jre</property>
@@ -27,7 +27,7 @@
 					</MappingProperties>
                 </tosca:Properties>
 			</tosca:NodeTemplate> 
-			<tosca:RelationshipTemplate type="salsa:HOSTON" id="app_on_os">
+			<tosca:RelationshipTemplate type="HOSTON" id="app_on_os">
 				<tosca:SourceElement ref="helloWorld"/>
 				<tosca:TargetElement ref="SimpleOS"/>
 			</tosca:RelationshipTemplate>
@@ -35,7 +35,7 @@
 		
 	</tosca:ServiceTemplate>
 
-	<tosca:ArtifactTemplate id="deployScript" type="salsa:sh">		
+	<tosca:ArtifactTemplate id="deployScript" type="sh">		
 		<tosca:ArtifactReferences>
 			<tosca:ArtifactReference
 				reference="http://128.130.172.215/salsa/upload/files/daas/fakescripts/donothing.sh" />				

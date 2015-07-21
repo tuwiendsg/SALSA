@@ -1,10 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+        <artifactId>salsa-core-pom</artifactId>
+        <version>2.0</version>
+    </parent>
 
-    <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
-    <artifactId>salsa-engine</artifactId>
-    <version>1.0</version>
+    <artifactId>salsa-engine</artifactId>    
     <packaging>war</packaging>
 
     <name>salsa-engine</name>
@@ -18,10 +22,6 @@
         <slf4j.version>1.7.5</slf4j.version>
     </properties>
     
-    
-    
-   
-
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -91,13 +91,19 @@
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
             <artifactId>salsa-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>2.0</version>
         </dependency>
 		
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
             <artifactId>salsa-cloud-connector</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>2.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+            <artifactId>salsa-messaging</artifactId>
+            <version>2.0</version>
         </dependency>
 		
         <dependency>
@@ -110,12 +116,12 @@
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
             <artifactId>QUELLE-Core-CloudServicesModel-SALSA</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
             <artifactId>QUELLE-Core-ElasticityQuantification-SALSA</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>at.ac.tuwien.mela</groupId>
@@ -124,23 +130,23 @@
             <type>jar</type>
         </dependency> 
         <!--
-        <dependency>
-            <groupId>at.ac.tuwien.quelle</groupId>
-            <artifactId>QUELLE-Core-CloudServicesModel</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>at.ac.tuwien.quelle</groupId>
-            <artifactId>QUELLE-Core-ElasticityQuantification</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>at.ac.tuwien.mela</groupId>
-            <artifactId>MELA-Common</artifactId>
-            <version>3.0-SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>        
--->
+                <dependency>
+                    <groupId>at.ac.tuwien.quelle</groupId>
+                    <artifactId>QUELLE-Core-CloudServicesModel</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>at.ac.tuwien.quelle</groupId>
+                    <artifactId>QUELLE-Core-ElasticityQuantification</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>at.ac.tuwien.mela</groupId>
+                    <artifactId>MELA-Common</artifactId>
+                    <version>3.0-SNAPSHOT</version>
+                    <type>jar</type>
+                </dependency>        
+        -->
     </dependencies>
 
     <build>

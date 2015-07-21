@@ -1,46 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:jaxrs="http://cxf.apache.org/jaxrs" 
-  xmlns:context="http://www.springframework.org/schema/context"
-  xsi:schemaLocation="
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
   
-  <context:component-scan base-package="at.ac.tuwien.dsg.cloud.salsa"/>
+    <context:component-scan base-package="at.ac.tuwien.dsg.cloud.salsa"/>
   
-  <jaxrs:server id="engineService" address="/">
-    <jaxrs:serviceBeans>
-      <ref bean="engineBean" />
-      <ref bean="viewBean" />
-      <ref bean="monitorBean" />
-       <ref bean="QuelleBean" />
-       <ref bean="SmartDeploymentBean" />
-    </jaxrs:serviceBeans>
-    <jaxrs:providers>
-      <ref bean="exceptionBean" />
-  	</jaxrs:providers>  	
-  </jaxrs:server>
+    <jaxrs:server id="engineService" address="/">
+        <jaxrs:serviceBeans>
+            <ref bean="engineBean" />
+            <ref bean="viewBean" />
+            <ref bean="monitorBean" />
+            <ref bean="QuelleBean" />
+            <ref bean="SmartDeploymentBean" />
+            <ref bean="EngineListener" />            
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="ExceptionMapper" />
+        </jaxrs:providers>  	
+    </jaxrs:server>
  
-  <bean id="engineBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineImplAll" />
-  <bean id="viewBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.ViewGenerator" />
-  <bean id="monitorBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaMonitoringInfo" />
-  <bean id="exceptionBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineServiceExceptionMapper" />
-  <bean id="QuelleBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.QuelleService" />
-  <bean id="SmartDeploymentBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.main.SmartDeploymentService" />
+    <bean id="engineBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineImplAll" />
+    <bean id="viewBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.ViewGenerator" />
+    <bean id="monitorBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaMonitoringInfo" />    
+    <bean id="QuelleBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.QuelleService" />
+    <bean id="SmartDeploymentBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.main.SmartDeploymentService" />
+    <bean id="EngineListener" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineListener" />
+    <bean id="ExceptionMapper" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaExceptionResponseMapper" />
    
-<!-- 	<bean id="swaggerConfig" class="com.wordnik.swagger.jaxrs.config.BeanConfig"> -->
-<!-- 	    <property name="resourcePackage" value="at.ac.tuwien.dsg.cloud.salsa.common.interfaces"/> -->
-<!-- 	    <property name="version" value="0.1.0"/> -->
-<!-- 	    <property name="basePath" value="http://localhost:8080/salsa-engine/rest"/> -->
-<!-- 	    <property name="title" value="SALSA Engine service"/> -->
-<!-- 	    <property name="description" value="A service for configuration cloud applications" /> -->
-<!-- 	    <property name="contact" value="d.le@dsg.tuwien.ac.at"/> -->
-<!-- 	    <property name="license" value="Apache 2.0 License"/> -->
-<!-- 	    <property name="licenseUrl" value="http://www.apache.org/licenses/LICENSE-2.0.html"/> -->
-<!-- 	    <property name="scan" value="true"/> -->
-<!-- 	</bean> -->
+    <!-- 	<bean id="swaggerConfig" class="com.wordnik.swagger.jaxrs.config.BeanConfig"> -->
+    <!-- 	    <property name="resourcePackage" value="at.ac.tuwien.dsg.cloud.salsa.common.interfaces"/> -->
+    <!-- 	    <property name="version" value="0.1.0"/> -->
+    <!-- 	    <property name="basePath" value="http://localhost:8080/salsa-engine/rest"/> -->
+    <!-- 	    <property name="title" value="SALSA Engine service"/> -->
+    <!-- 	    <property name="description" value="A service for configuration cloud applications" /> -->
+    <!-- 	    <property name="contact" value="d.le@dsg.tuwien.ac.at"/> -->
+    <!-- 	    <property name="license" value="Apache 2.0 License"/> -->
+    <!-- 	    <property name="licenseUrl" value="http://www.apache.org/licenses/LICENSE-2.0.html"/> -->
+    <!-- 	    <property name="scan" value="true"/> -->
+    <!-- 	</bean> -->
    
    
    

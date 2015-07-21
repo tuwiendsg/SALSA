@@ -6,6 +6,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.main;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.QuelleService;
 import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.RecommendationSummaries;
 import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.SALSA.ToscaEnricherCEclipse;
@@ -142,6 +143,8 @@ public class SmartDeploymentService {
                 salsaEnricher.enrichHighLevelTosca();
                 ToscaXmlProcess.writeToscaDefinitionToFile(def, file);
             } catch (JAXBException | IOException ex) {
+                ex.printStackTrace();
+            } catch (SalsaException ex) {
                 ex.printStackTrace();
             }
         }

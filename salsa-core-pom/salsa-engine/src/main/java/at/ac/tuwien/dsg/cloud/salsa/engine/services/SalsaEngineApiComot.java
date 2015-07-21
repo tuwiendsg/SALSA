@@ -20,92 +20,89 @@ import org.springframework.stereotype.Service;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineApiInterface;
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineServiceIntenal;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 
 @Service
 @Path("/comot")
 public class SalsaEngineApiComot implements SalsaEngineApiInterface {
-	static Logger logger;
-	SalsaEngineServiceIntenal engine = new SalsaEngineImplAll();
-	
-	@Override
-	@PUT
-	@Path("/services/{serviceName}")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response deployService(
-			@PathParam("serviceName") String serviceName,
-			@Multipart("file") InputStream uploadedInputStream) throws SalsaEngineException{		
-		return engine.deployService(serviceName, uploadedInputStream);
-	}
-	
-	@PUT
-	@Path("/services/xml")
-	@Consumes(MediaType.APPLICATION_XML)
-	public Response deployServiceFromXML(String uploadedInputStream) throws SalsaEngineException{
-		return engine.deployServiceFromXML(uploadedInputStream);
-	}
-	
-	
-	@POST
-	@Path("/services/{serviceId}/nodes/{nodeId}/scaleout")
-	public Response scaleOutNode(@PathParam("serviceId")String serviceId, 
-								 @PathParam("nodeId") String nodeId) throws SalsaEngineException{
-		return engine.scaleOutNode(serviceId, nodeId);
-	}
-	
-	@POST
-	@Path("/services/{serviceId}/nodes/{nodeId}/scalein")
-	public Response scaleInNode(@PathParam("serviceId")String serviceId, 
-								 @PathParam("nodeId") String nodeId) throws SalsaEngineException{
-		return engine.scaleInNode(serviceId, nodeId);
-	}
-	
-	
-	@Override
-	@DELETE
-	@Path("/services/{serviceId}")
-	public Response undeployService(@PathParam("serviceId")String serviceId) throws SalsaEngineException {
-		return engine.undeployService(serviceId);
-	}
-	
-	@Override
-	@POST
+
+    static Logger logger;
+    SalsaEngineServiceIntenal engine = new SalsaEngineImplAll();
+
+    @Override
+    @PUT
+    @Path("/services/{serviceName}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response deployService(
+            @PathParam("serviceName") String serviceName,
+            @Multipart("file") InputStream uploadedInputStream) throws SalsaException {
+        return engine.deployService(serviceName, uploadedInputStream);
+    }
+
+    @PUT
+    @Path("/services/xml")
+    @Consumes(MediaType.APPLICATION_XML)
+    public Response deployServiceFromXML(String uploadedInputStream) throws SalsaException {
+        return engine.deployServiceFromXML(uploadedInputStream);
+    }
+
+    @POST
+    @Path("/services/{serviceId}/nodes/{nodeId}/scaleout")
+    public Response scaleOutNode(@PathParam("serviceId") String serviceId,
+            @PathParam("nodeId") String nodeId) throws SalsaException {
+        return engine.scaleOutNode(serviceId, nodeId);
+    }
+
+    @POST
+    @Path("/services/{serviceId}/nodes/{nodeId}/scalein")
+    public Response scaleInNode(@PathParam("serviceId") String serviceId,
+            @PathParam("nodeId") String nodeId) throws SalsaException {
+        return engine.scaleInNode(serviceId, nodeId);
+    }
+
+    @Override
+    @DELETE
+    @Path("/services/{serviceId}")
+    public Response undeployService(@PathParam("serviceId") String serviceId) throws SalsaException {
+        return engine.undeployService(serviceId);
+    }
+
+    @Override
+    @POST
     @Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instance-count/{quantity}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response spawnInstance(@PathParam("serviceId") String serviceId,
-                                  @PathParam("topologyId") String topologyId,
-                                  @PathParam("nodeId") String nodeId,
-                                  @PathParam("quantity") int quantity) throws SalsaEngineException {
-		return engine.spawnInstance(serviceId, topologyId, nodeId, quantity);
-	}
-	
-	/**
-	 * Undeploy an instance
-	 * @param serviceId
-	 * @param topologyId
-	 * @param nodeId
-	 * @param instanceId
-	 * @return
-	 */
-	@Override
-	@DELETE
-	@Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}")
-	public Response destroyInstance(
-			@PathParam("serviceId") String serviceId,
-			@PathParam("topologyId") String topologyId,
-			@PathParam("nodeId") String nodeId,
-			@PathParam("instanceId") String instanceId){
-		return destroyInstance(serviceId, topologyId, nodeId, instanceId);
-	}
+            @PathParam("topologyId") String topologyId,
+            @PathParam("nodeId") String nodeId,
+            @PathParam("quantity") int quantity) throws SalsaException {
+        return engine.spawnInstance(serviceId, topologyId, nodeId, quantity);
+    }
 
-	@Override
-	@GET
-	@Path("/services/{serviceId}")
-	public Response fetchStatus(@PathParam("serviceId") String serviceId) throws SalsaEngineException {		
-		return engine.getService(serviceId);
-	}
-	
-	
-	
-	
+    /**
+     * Undeploy an instance
+     *
+     * @param serviceId
+     * @param topologyId
+     * @param nodeId
+     * @param instanceId
+     * @return
+     */
+    @Override
+    @DELETE
+    @Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}")
+    public Response destroyInstance(
+            @PathParam("serviceId") String serviceId,
+            @PathParam("topologyId") String topologyId,
+            @PathParam("nodeId") String nodeId,
+            @PathParam("instanceId") String instanceId) {
+        return destroyInstance(serviceId, topologyId, nodeId, instanceId);
+    }
+
+    @Override
+    @GET
+    @Path("/services/{serviceId}")
+    public Response fetchStatus(@PathParam("serviceId") String serviceId) throws SalsaException {
+        return engine.getService(serviceId);
+    }
+
 }

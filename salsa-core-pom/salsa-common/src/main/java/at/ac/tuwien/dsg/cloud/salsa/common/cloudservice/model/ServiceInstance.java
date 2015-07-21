@@ -26,55 +26,54 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "Replica")
-@XmlSeeAlso({  
-    ServiceTopology.class  
+@XmlSeeAlso({
+    ServiceTopology.class
 })
-public class ServiceInstance extends SalsaEntity {	
-	
-	@XmlAttribute(name = "replica")
-	int instanceId=0;
-	
-	@XmlAttribute(name = "uuid")
-	UUID uuid = UUID.randomUUID();
-	
-	@XmlAttribute(name = "hostedId")
-	int hostedId=2147483647;	// by default, it is hosted on nothing
-	
-	@XmlAttribute(name = "instanceState")
-	SalsaInstanceState instanceState = SalsaInstanceState.UNDEPLOYED;
-	
-	@XmlElement(name = "Properties")
-	protected ServiceInstance.Properties properties;	
-	
-	@XmlElement(name = "Capabilities")
-	protected Capabilities capabilities;
-	
+public class ServiceInstance extends SalsaEntity {
+
+    @XmlAttribute(name = "replica")
+    int instanceId = 0;
+
+    @XmlAttribute(name = "uuid")
+    UUID uuid = UUID.randomUUID();
+
+    @XmlAttribute(name = "hostedId")
+    int hostedId = 2147483647;	// by default, it is hosted on nothing
+
+    @XmlAttribute(name = "instanceState")
+    SalsaInstanceState instanceState = SalsaInstanceState.UNDEPLOYED;
+
+    @XmlAttribute(name = "extra")
+    String extra="";
+
+    @XmlElement(name = "Properties")
+    protected ServiceInstance.Properties properties;
+
+    @XmlElement(name = "Capabilities")
+    protected Capabilities capabilities;
+
 //	@XmlElement(name = "actionqueue")
 //	protected Queue<String> actionqueue = new LinkedList();
-	
 //	@XmlElement(name = "StagingAction")
 //	protected String stagingActionName;
-	
-	
-	
 //	@XmlElement(name = "Requirements")
 //	protected Capabilities requirements;	
-	
-	@XmlAccessorType(XmlAccessType.FIELD)
+    @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
     public static class Capabilities {
-		@XmlElement(name = "Capability")
+
+        @XmlElement(name = "Capability")
         protected List<SalsaCapaReqString> capability = new ArrayList<>();
 
-		public List<SalsaCapaReqString> getCapability() {
-			return capability;
-		}
+        public List<SalsaCapaReqString> getCapability() {
+            return capability;
+        }
 
-		public void setCapability(List<SalsaCapaReqString> capabilities) {
-			this.capability = capabilities;
-		}  		
+        public void setCapability(List<SalsaCapaReqString> capabilities) {
+            this.capability = capabilities;
+        }
     }
-	
+
 //	@XmlAccessorType(XmlAccessType.FIELD)
 //    @XmlType(name = "")
 //    public static class Requirements {
@@ -89,15 +88,13 @@ public class ServiceInstance extends SalsaEntity {
 //			this.requirement = requirements;
 //		}  		
 //    }
-	
-	
-	@XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {  "any" })
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "", propOrder = {"any"})
     public static class Properties {
 
         @XmlAnyElement(lax = true)
         protected Object any;
-  
+
         public Object getAny() {
             return any;
         }
@@ -107,66 +104,65 @@ public class ServiceInstance extends SalsaEntity {
         }
     }
 
-	public String getCapabilityValue(String id){
-		if (this.capabilities != null){
-			for (SalsaCapaReqString capaStr : this.capabilities.getCapability()) {
-				if (capaStr.getId().equals(id)){
-					return capaStr.getValue();
-				}
-			}
-		}
-		return null;
-	}
-	
-	public ServiceInstance(int replica, ServiceInstance.Properties pros){
-		this.instanceId = replica;
-		this.properties = pros;
-	}
-	
-	public ServiceInstance(int replica){
-		this.instanceId = replica;		
-	}
-	
-	public ServiceInstance(){}
-	
-	public int getInstanceId() {
-		return instanceId;
-	}
+    public String getCapabilityValue(String id) {
+        if (this.capabilities != null) {
+            for (SalsaCapaReqString capaStr : this.capabilities.getCapability()) {
+                if (capaStr.getId().equals(id)) {
+                    return capaStr.getValue();
+                }
+            }
+        }
+        return null;
+    }
 
+    public ServiceInstance(int replica, ServiceInstance.Properties pros) {
+        this.instanceId = replica;
+        this.properties = pros;
+    }
 
-	public void setInstanceId(int instance) {
-		this.instanceId = instance;
-	}
-	
-	public int getHostedId_Integer() {
-		return hostedId;
-	}
+    public ServiceInstance(int replica) {
+        this.instanceId = replica;
+    }
 
-	public void setHostedId_Integer(int hostedId) {
-		this.hostedId = hostedId;
-	}
+    public ServiceInstance() {
+    }
 
-	public ServiceInstance.Properties getProperties() {		
-		return properties;
-	}
+    public int getInstanceId() {
+        return instanceId;
+    }
 
+    public void setInstanceId(int instance) {
+        this.instanceId = instance;
+    }
 
-	public void setProperties(ServiceInstance.Properties properties) {		
-		this.properties = properties;
-	}
+    public int getHostedId_Integer() {
+        return hostedId;
+    }
 
-	public Capabilities getCapabilities() {
-		return capabilities;
-	}
+    public void setHostedId_Integer(int hostedId) {
+        this.hostedId = hostedId;
+    }
 
-	public void setCapabilities(Capabilities capabilities) {
-		this.capabilities = capabilities;
-	}
-		
-	public UUID getUuid() {
-		return uuid;
-	}
-	
+    public ServiceInstance.Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(ServiceInstance.Properties properties) {
+        this.properties = properties;
+    }
+
+    public Capabilities getCapabilities() {
+        return capabilities;
+    }
+
+    public void setCapabilities(Capabilities capabilities) {
+        this.capabilities = capabilities;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
 //	public void addQueueAction(String action){
 //		this.actionqueue.add(action);		
 //	}
@@ -174,7 +170,6 @@ public class ServiceInstance extends SalsaEntity {
 //	public String popQueueAction(){
 //		return actionqueue.poll();
 //	}
-	
 //	public String getStagingActionName() {
 //		return stagingActionName;
 //	}
@@ -182,27 +177,33 @@ public class ServiceInstance extends SalsaEntity {
 //	public void setStagingActionName(String stagingActionName) {
 //		this.stagingActionName = stagingActionName;
 //	}
+    public SalsaInstanceState getInstanceState() {
+        return instanceState;
+    }
 
-	public SalsaInstanceState getInstanceState() {
-		return instanceState;
-	}
+    public String getExtra() {
+        return extra;
+    }
 
-	public void setInstanceState(SalsaInstanceState instanceState) {
-		this.instanceState = instanceState;
-	}
+    public void setExtra(String extra) {
+        this.extra = extra;
+    }    
 
-	public String convertToXML() throws JAXBException{
-		JAXBContext jaxbContext = JAXBContext // beside data.class, addition
-				// classes for contents
-				.newInstance(ServiceUnit.class, // e.g. when update Replica, need its capability and InstanceDes.
-							 SalsaInstanceDescription_VM.class,
-							 SalsaCapaReqString.class);
-		Marshaller msl = jaxbContext.createMarshaller();
-		msl.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		StringWriter result = new StringWriter();
-		msl.marshal(this, result);
-		return result.toString();
-	}
-	
-	
+    public void setInstanceState(SalsaInstanceState instanceState) {
+        this.instanceState = instanceState;
+    }
+
+    public String convertToXML() throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext // beside data.class, addition
+                // classes for contents
+                .newInstance(ServiceUnit.class, // e.g. when update Replica, need its capability and InstanceDes.
+                        SalsaInstanceDescription_VM.class,
+                        SalsaCapaReqString.class);
+        Marshaller msl = jaxbContext.createMarshaller();
+        msl.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        StringWriter result = new StringWriter();
+        msl.marshal(this, result);
+        return result.toString();
+    }
+
 }

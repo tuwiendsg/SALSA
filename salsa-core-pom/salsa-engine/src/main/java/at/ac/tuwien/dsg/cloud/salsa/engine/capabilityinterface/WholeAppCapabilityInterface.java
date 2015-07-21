@@ -6,7 +6,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 import generated.oasis.tosca.TDefinitions;
 
 /**
@@ -15,7 +15,7 @@ import generated.oasis.tosca.TDefinitions;
  */
 public interface WholeAppCapabilityInterface {
 
-    public CloudService addService(String serviceName, TDefinitions def) throws SalsaEngineException;
+    public CloudService addService(String serviceName, TDefinitions def) throws SalsaException;
 
-    public boolean cleanService(String serviceId) throws SalsaEngineException;
+    public boolean cleanService(String serviceId) throws SalsaException;
 }

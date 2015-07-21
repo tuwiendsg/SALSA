@@ -1,53 +1,53 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<tosca:Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:elasticity="http://www.example.org/NewXMLSchema" 
-	xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12"
-	xmlns:salsa="http://example.com"
-	xsi:schemaLocation="http://docs.oasis-open.org/tosca/ns/2011/12 TOSCA-v1.0.xsd"
-	targetNamespace="http://tempuri.org"
-	id="SalsaExample">
-	
-	<tosca:ServiceTemplate id="SampleService">
-		<tosca:TopologyTemplate>
-			<tosca:NodeTemplate id="helloWorld"	name="Hello World" type="salsa:software">
-							
-				<tosca:DeploymentArtifacts>
-					<tosca:DeploymentArtifact artifactType="salsa:sh" name="Deployment script" artifactRef="deployScript"/>
-				</tosca:DeploymentArtifacts>
-			</tosca:NodeTemplate>
-
-			<tosca:NodeTemplate id="docker"	name="docker_node" type="salsa:docker" minInstances="1" maxInstances="5" />
-			
-			<tosca:NodeTemplate type="salsa:os" id="SimpleOS" minInstances="1" maxInstances="1">
-				 <tosca:Properties>
-                    <MappingProperties>						
-						<MappingProperty type="salsa:os">
-							<property name="instanceType">000000960</property>
-							<property name="provider">dsg@openstack</property> 
-							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>
-							<property name="packages">openjdk-7-jre</property>
-						</MappingProperty>
-					</MappingProperties>
-                </tosca:Properties>
-			</tosca:NodeTemplate> 
-
-			<tosca:RelationshipTemplate type="salsa:HOSTON" id="app_on_docker">
-				<tosca:SourceElement ref="helloWorld"/>
-				<tosca:TargetElement ref="docker"/>
-			</tosca:RelationshipTemplate>
-
-			<tosca:RelationshipTemplate type="salsa:HOSTON" id="docker_on_os">
-				<tosca:SourceElement ref="docker"/>
-				<tosca:TargetElement ref="SimpleOS"/>
-			</tosca:RelationshipTemplate>
-
-		</tosca:TopologyTemplate>			
-	</tosca:ServiceTemplate>
-
-	<tosca:ArtifactTemplate id="deployScript" type="salsa:sh">		
-		<tosca:ArtifactReferences>
-			<tosca:ArtifactReference
-				reference="http://128.130.172.215/salsa/upload/files/daas/fakescripts/donothing.sh" />				
-		</tosca:ArtifactReferences>
-	</tosca:ArtifactTemplate>
-</tosca:Definitions>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:Definitions id="IoTSensors" name="IoTSensors" xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12">
+    <ns2:ServiceTemplate id="IoTTopology">
+        <ns2:TopologyTemplate>
+            <ns2:RelationshipTemplate id="SensorOnDocker" type="HOSTON">
+                <ns2:SourceElement ref="sensorUnit"/>
+                <ns2:TargetElement ref="gatewayDocker"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="dockerOnVM" type="HOSTON">
+                <ns2:SourceElement ref="gatewayDocker"/>
+                <ns2:TargetElement ref="gatewayVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="sensorUnit" type="software">                
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="deploySensorUnit" artifactType="salsa:sh" artifactRef="script" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="gatewayVM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">7ac2cc53-2301-40d7-a030-910d72f552ff</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="gatewayDocker" type="docker">                
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="dockerFileArtifact" artifactType="salsa:dockerfile" artifactRef="dockerFileArtifact" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>            
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    
+    <ns2:ArtifactTemplate id="dockerFileArtifact" type="dockerfile">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/rtGovOps/Dockerfile-UB"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="script" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/salsa/upload/files/daas/fakescripts/donothing.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+</ns2:Definitions>

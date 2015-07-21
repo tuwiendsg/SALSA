@@ -150,7 +150,7 @@ public class ServiceJsonDataTree {
 
     public void addProperty(String key, String value) {
         if (this.properties == null) {
-            this.properties = new HashMap<String, String>();
+            this.properties = new HashMap<>();
         }
         this.properties.put(key, value);
     }
@@ -211,6 +211,7 @@ public class ServiceJsonDataTree {
                 this.addProperty("Capability[" + capaStr.getId() + "]", capaStr.getValue());
             }
         }
+        
 
         this.setNodeType(abstractNode.getType());
         //logger.debug("Let check connectto ID ");
@@ -247,6 +248,7 @@ public class ServiceJsonDataTree {
                 this.setProperties(props.exportToMap());
             }
         }
+        this.addProperty("extra", instance.getExtra());
 		// TODO: properties for others
 
 		// recursive components which host on this node
@@ -262,6 +264,7 @@ public class ServiceJsonDataTree {
         if (abstractNode.getReference() != null) {
             this.addProperty("reference", abstractNode.getReference() + "/" + instance.getInstanceId());
         }
+        
     }
 
     // remove the abstract node, return instance children

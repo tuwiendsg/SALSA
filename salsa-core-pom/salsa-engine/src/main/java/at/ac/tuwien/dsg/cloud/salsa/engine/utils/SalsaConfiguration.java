@@ -20,12 +20,17 @@ public class SalsaConfiguration {
     static final String SALSA_CENTER_WORKING_DIR_KEY = "SALSA_CENTER_WORKING_DIR";
     static final String SALSA_PIONEER_WORKING_DIR_KEY = "SALSA_PIONEER_WORKING_DIR";
     static final String SALSA_REPO_KEY = "SALSA_REPO";
+    static final String SALSA_USERNAME_KEY = "USERNAME";
+    static final String SALSA_BROKER_KEY = "BROKER";
     
     // default value of internal SASLA
     static final String DEFAULT_PIONEER_FILES="salsa-pioneer.jar";
     static final String DEFAULT_PIONEER_RUN="salsa-pioneer.jar";
     static final String DEFAULT_SALSA_PRIVATE_KEY="id_rsa";
     static final String DEFAULT_VARIABLE_FILE="salsa.variables";
+    
+    static final String USERNAME="salsa-default";
+    static final String BROKER="";
     
        
     static File configFile;
@@ -60,6 +65,12 @@ public class SalsaConfiguration {
             if (configuration.get(SALSA_REPO_KEY) == null){
                 configuration.put(SALSA_REPO_KEY, "http://localhost:8080/salsa/upload/files");
             }
+            if (configuration.get(SALSA_USERNAME_KEY) == null){
+                configuration.put(SALSA_USERNAME_KEY, "salsa-default");
+            }
+            if (configuration.get(SALSA_BROKER_KEY) == null){
+                configuration.put(SALSA_BROKER_KEY, "tcp://iot.eclipse.org:1883");
+            }
             configuration.list(System.out);
             logger.debug("Center endpoint: " + getSalsaCenterEndpoint());            
             
@@ -92,9 +103,12 @@ public class SalsaConfiguration {
         }        
     }
     
-    
     public static File getCloudUserParametersFile(){
         return configFile;
+    }
+    
+    public static String getBroker(){
+        return configuration.getProperty(SALSA_BROKER_KEY);
     }
     
     private static String getSALSA_CENTER_IP(){
@@ -107,6 +121,10 @@ public class SalsaConfiguration {
 
     public static String getRepoPrefix() {
         return configuration.getProperty("SALSA_REPO");
+    }
+    
+    public static String getUserName(){
+        return configuration.getProperty(SALSA_USERNAME_KEY);
     }
 
     public static String getPioneerFiles() {
