@@ -5,37 +5,51 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel;
 
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.base.AppCapability;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.base.VMCapability;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.base.AppCapabilityBase;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.base.VMCapabilityBase;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineConnectionException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.VMProvisionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import java.util.List;
 
 /**
- * This class generalize the capability of application and VM into service unit.
- * The states control is enabled here.
+ * This class generalize the capability of application and VM into service unit. The states control is enabled here.
+ *
  * @author hungld
  */
 public class GenericUnitCapability implements UnitCapabilityInterface {
-    SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
+
+    SalsaCenterConnector centerCon;
+
+    {
+        try {
+            centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
+        } catch (EngineConnectionException ex) {
+            EngineLogger.logger.error("Cannot connect to SALSA service in localhost: " + SalsaConfiguration.getSalsaCenterEndpointLocalhost() + ". This is a fatal error !");
+        }
+    }
+
     @Override
-    public ServiceInstance deploy(String serviceId,  String nodeId, int instanceId) throws SalsaEngineException {
+    public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {
+        EngineLogger.logger.info("Start generic unit deployment for node: {}/{}/{}", serviceId, nodeId, instanceId);
         CloudService newservice = centerCon.getUpdateCloudServiceRuntime(serviceId);
         String topologyId = newservice.getTopologyOfNode(nodeId).getId();
         ServiceUnit node = newservice.getComponentById(topologyId, nodeId);
         EngineLogger.logger.debug("Node type: " + node.getType() + ". String: " + SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString());
         ServiceInstance repData = new ServiceInstance(instanceId, null);
         repData.setState(SalsaEntityState.ALLOCATING);
+        repData.setExtra("Waiting for dependencies");
         repData.setHostedId_Integer(2147483647);
-        
+
         java.util.Date date = new java.util.Date();
         EngineLogger.logger.debug("TIMESTAMP - Node: " + nodeId + "/" + instanceId + ", state: Allocating(manual)" + ", Time: " + date.getTime());
 
@@ -43,34 +57,33 @@ public class GenericUnitCapability implements UnitCapabilityInterface {
             if (node.getInstanceNumber() >= node.getMax()) {
                 EngineLogger.logger.error("Not enough cloud resource quota for the node: " + nodeId + ". Quit !");
                 // out of quota
-                throw new SalsaEngineException("Not enough cloud resource quota to deploy the node: " + nodeId, false);
+                throw new VMProvisionException(VMProvisionException.VMProvisionError.QUOTA_LIMITED, "Not enough quota as described to deploy the node: " + serviceId + nodeId + instanceId + ". This node can have maxinum " + node.getMax() + " instances");
             } else {
                 centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId, repData);
-                VMCapability vmCap = new VMCapability();
+                VMCapabilityBase vmCap = new VMCapabilityBase();
                 vmCap.deploy(serviceId, nodeId, instanceId);
-                centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.CONFIGURING);
+                centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.CONFIGURING, "Pioneer is configuring artifacts");
                 EngineLogger.logger.debug("Updated VM state for node: " + nodeId + " to CONFIGURING !");
+                EngineLogger.logger.info("Generic unit deployment for VM node: {}/{}/{} is done", serviceId, nodeId, instanceId);
                 return new ServiceInstance(instanceId);
             }
         } else {
             centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId, repData);
-            AppCapability appCapa = new AppCapability();
+            AppCapabilityBase appCapa = new AppCapabilityBase();
             appCapa.deploy(serviceId, nodeId, instanceId);
-            centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.STAGING); // high level done, this line will trigger a pioneer to execute deployment
+            EngineLogger.logger.info("Generic unit deployment for artifact node: {}/{}/{} is done", serviceId, nodeId, instanceId);
             return new ServiceInstance(instanceId);
         }
+        
     }
-    
+
     @Override
-    public void remove(String serviceId, String nodeId, int instanceId) throws SalsaEngineException {
+    public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {
+        EngineLogger.logger.info("Start remove generic node: {}/{}/{}", serviceId, nodeId, instanceId);        
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
-        ServiceUnit node = service.getComponentById(nodeId);        
+        ServiceUnit node = service.getComponentById(nodeId);
         ServiceInstance instance = node.getInstanceById(instanceId);
-        if (instance.getState().equals(SalsaEntityState.ALLOCATING)) {
-            EngineLogger.logger.debug("Just remove metadata");
-            //TODO: REMOVE METADATA HERE !
-            return;
-        }
+        
         List<ServiceUnit> listUnit = service.getAllComponent();
 
         // undeploy dependency chain first. It is recursive.
@@ -81,7 +94,7 @@ public class GenericUnitCapability implements UnitCapabilityInterface {
                 for (ServiceInstance i : u.getInstanceHostOn(instanceId)) {   // the instance of above unit and hosted on current instance
                     EngineLogger.logger.debug("Found instance need to be remove first: " + u.getId() + "/" + i.getInstanceId());
                     GenericUnitCapability geneCapa = new GenericUnitCapability();
-                    geneCapa.remove(serviceId, u.getId(), i.getInstanceId());                    
+                    geneCapa.remove(serviceId, u.getId(), i.getInstanceId());
                 }
             }
             for (String connectoId : u.getConnecttoId()) {    // the unit u can connect to something
@@ -98,12 +111,12 @@ public class GenericUnitCapability implements UnitCapabilityInterface {
         }
         EngineLogger.logger.debug("The dependency should be cleaned for the node: " + nodeId + "/" + instanceId);
 
-                // check all instance of hoston and connect to are undeployed
+        // check all instance of hoston and connect to are undeployed
         // do similar things and check if all the list are empty
         boolean cleaned;
         do {
             service = centerCon.getUpdateCloudServiceRuntime(serviceId);
-            node = service.getComponentById(nodeId);            
+            node = service.getComponentById(nodeId);
             listUnit = service.getAllComponent();
             cleaned = true;
             EngineLogger.logger.debug("Checking if dependency is really clean for node: " + nodeId + "/" + instanceId);
@@ -135,13 +148,24 @@ public class GenericUnitCapability implements UnitCapabilityInterface {
 
         EngineLogger.logger.debug("It is TRUE, the dependency is now cleaned for the node: " + nodeId + "/" + instanceId);
 
+        // if the state is ALLOCATING, just remove the metadata
+        if (instance.getState().equals(SalsaEntityState.ALLOCATING)) {
+            EngineLogger.logger.warn("Removing metadata for node {},{},{}. However, the state is ALLOCATING, maybe the actual instance is created but will not be removed.", serviceId, nodeId, instanceId);
+            centerCon.removeInstanceMetadata(serviceId, nodeId, instanceId);
+            EngineLogger.logger.info("Removed generic node: {}/{}/{} with warning", serviceId, nodeId, instanceId);
+            return;
+        }
+        
+        
         // Call appropriate catapbility based on type
         if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
-            VMCapability vmCapability = new VMCapability();
+            VMCapabilityBase vmCapability = new VMCapabilityBase();
             vmCapability.remove(serviceId, nodeId, instanceId);
         } else {
-            AppCapability appCapa = new AppCapability();
+            AppCapabilityBase appCapa = new AppCapabilityBase();
             appCapa.remove(serviceId, nodeId, instanceId);
         }
+        EngineLogger.logger.info("Removed generic node: {}/{}/{}", serviceId, nodeId, instanceId);
     }
+    
 }

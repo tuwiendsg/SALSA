@@ -37,12 +37,16 @@ import at.ac.tuwien.dsg.cloud.salsa.common.artifact.Repositories;
 import at.ac.tuwien.dsg.cloud.salsa.common.artifact.RepositoryFormat;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaRelationshipType;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.ServicedataProcessingException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.SalsaMappingProperty;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class contain methods to enrich the Tosca: - Generate dependency nodes - Reduce node to the infrastructure level at different format
@@ -76,7 +80,7 @@ public class ToscaEnricherSALSA {
         }
     }
 
-    public TDefinitions enrichHighLevelTosca() {
+    public TDefinitions enrichHighLevelTosca() throws SalsaException {
         // TODO: implement the looping of all ServiceTemplate Topology
 
         List<TExtensibleElements> ees = toscaDef.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
@@ -100,9 +104,7 @@ public class ToscaEnricherSALSA {
                 cleanLOCALRelationship(topo);
 
                 enrichArtifactRepo(SalsaConfiguration.getRepoPrefix() + "/" + toscaDef.getId());
-
                 addOSNodeConfig(topo);
-
                 createComplexRelationship(SalsaRelationshipType.CONNECTTO, this.toscaDef);
             }
         }
@@ -117,7 +119,7 @@ public class ToscaEnricherSALSA {
      */
     int counter = 0;
 
-    public TNodeTemplate addHostonNodeForOneNodeTemplate(TNodeTemplate node, TTopologyTemplate topo) {
+    public TNodeTemplate addHostonNodeForOneNodeTemplate(TNodeTemplate node, TTopologyTemplate topo) throws SalsaException{
 
         /* iterate through the knowledge topology and extend a node if needed.
          *  - Retrieve new node, add an artifact reference, add into this.def
@@ -207,7 +209,8 @@ public class ToscaEnricherSALSA {
             nextNode.setProperties(new Properties());
         }
 
-//		SalsaMappingProperties operProps = (SalsaMappingProperties)nextNode.getProperties().getAny();
+        try {
+            //		SalsaMappingProperties operProps = (SalsaMappingProperties)nextNode.getProperties().getAny();
 //		SalsaMappingProperties.SalsaMappingProperty map = new SalsaMappingProperties.SalsaMappingProperty();
 //		map.setPropType("operations");
 //		if (art!=null && art.getOperationList()!=null){
@@ -216,8 +219,11 @@ public class ToscaEnricherSALSA {
 //			}
 //			operProps.getProperties().add(map);
 //		}
-        //some debug
-        ToscaXmlProcess.writeToscaDefinitionToFile(toscaDef, "/tmp/salsa/" + counter + ".xml");
+            //some debug
+            ToscaXmlProcess.writeToscaDefinitionToFile(toscaDef, "/tmp/salsa/" + counter + ".xml");
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(toscaDef.getId(), ex);
+        }
 
         // recursive
         addHostonNodeForOneNodeTemplate(nextNode, topo);
@@ -631,9 +637,11 @@ public class ToscaEnricherSALSA {
         // tomcat-LOCAL-jre,
         // add
         // jre-hoston-os_tomcat
-
-        ToscaXmlProcess.writeToscaElementToFile(defi,
-                "/tmp/salsa.knowledge.xml");
+        try {
+            ToscaXmlProcess.writeToscaElementToFile(defi,"/tmp/salsa.knowledge.xml");
+        } catch (JAXBException | IOException ex) {
+            System.out.println("Cannot write TOSCA knowlegde file.");
+        }
 
         // Generate the repository
 //        Repositories repos = new Repositories();

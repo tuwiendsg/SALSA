@@ -20,7 +20,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityS
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.ArtifactDeployer;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.StacksConfigurator.DockerConfigurator;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.SystemFunctions;
@@ -56,7 +56,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
         CloudService serviceRuntimeInfo;
         try {
             serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime(serviceId);
-        } catch (SalsaEngineException e) {
+        } catch (SalsaException e) {
             return "";
         }
 
@@ -65,7 +65,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
         String newId = "";
         try {
             newId = deployer.deploySingleNode(thisNode, instanceId);
-        } catch (SalsaEngineException e) {
+        } catch (SalsaException e) {
         }
 
         try {
@@ -118,7 +118,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
         CloudService service;
         try {
             service = centerCon.getUpdateCloudServiceRuntime(serviceId);
-        } catch (SalsaEngineException e) {
+        } catch (SalsaException e) {
             return null;
         }
         ServiceUnit unit = service.getComponentById(nodeId);
@@ -195,7 +195,7 @@ public class PioneerServiceImplementation implements SalsaPioneerInterface {
         CloudService serviceRuntimeInfo;
         try {
             serviceRuntimeInfo = centerCon.getUpdateCloudServiceRuntime(serviceId);
-        } catch (SalsaEngineException e) {
+        } catch (SalsaException e) {
             return null;
         }
         ArtifactDeployer deployer = new ArtifactDeployer(serviceId, topologyId, nodeID, thisInstanceId, def, centerCon, serviceRuntimeInfo);

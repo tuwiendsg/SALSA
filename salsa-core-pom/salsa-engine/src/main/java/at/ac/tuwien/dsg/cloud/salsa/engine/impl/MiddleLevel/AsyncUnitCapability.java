@@ -6,7 +6,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 
@@ -17,14 +17,14 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 public class AsyncUnitCapability implements UnitCapabilityInterface {
 
     @Override
-    public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaEngineException {
+    public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {
         new Thread(new asynSpawnInstances(serviceId, nodeId, instanceId)).start();
-        EngineLogger.logger.debug("This message to annonce that the error may occur after this point, because the Thread.run cannot return the ServiceInstance object, then this method just return a null.");
+        EngineLogger.logger.debug("This message to annonce that a problem may occur after this point, because the Thread.run cannot return the ServiceInstance object, then this method just return a null.");
         return null;
     }
 
     @Override
-    public void remove(String serviceId, String nodeId, int instanceId) throws SalsaEngineException {
+    public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {
         GenericUnitCapability geneCapa = new GenericUnitCapability();
         geneCapa.remove(serviceId, nodeId, instanceId);
     }
@@ -45,7 +45,7 @@ public class AsyncUnitCapability implements UnitCapabilityInterface {
             try {
                 GenericUnitCapability geneCapa = new GenericUnitCapability();
                 geneCapa.deploy(serviceId, nodeId, instanceId);
-            } catch (SalsaEngineException e) {
+            } catch (SalsaException e) {
                 EngineLogger.logger.error(e.getMessage());
             }
         }

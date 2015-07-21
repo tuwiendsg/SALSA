@@ -41,6 +41,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.PrimitiveOperation;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.SalsaEntity;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance.Capabilities;
@@ -59,14 +60,27 @@ import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.WholeAppCapabilityInterface;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineMisconfiguredException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.ServicedataProcessingException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.IllegalConfigurationAPICallException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.AsyncUnitCapability;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.InfoManagement;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.WholeAppEnrichedTosca;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.ActionIDManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.MutualFileAccessControl;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SystemFunctions;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor.MQTTPublish;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessage;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessageTopic;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureArtifact;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.items.SalsaArtifactType;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.items.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
@@ -74,24 +88,23 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 
 @Service
-//@Path("/")
 public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 
     static Logger logger;
-    
+
     WholeAppCapabilityInterface wholeAppCapability = new WholeAppEnrichedTosca();
     UnitCapabilityInterface unitCapability = new AsyncUnitCapability();
 
     static {
-        logger = Logger.getLogger("EngineLogger");        
+        logger = Logger.getLogger("EngineLogger");
     }
 
     /*
      * MAIN SERVICES TO EXPOSE TO USERS
      */
     @Override
-    public Response deployService(String serviceName, InputStream uploadedInputStream) throws SalsaEngineException {
-        logger.debug("Recieved deployment request with name: " + serviceName);
+    public Response deployService(String serviceName, InputStream uploadedInputStream) throws SalsaException {
+        logger.info("Recieved a deployment request with service name: " + serviceName);
         String tmp_id = UUID.randomUUID().toString();
         String tmpFile = "/tmp/salsa_tmp_" + tmp_id;
         serviceName = serviceName.replaceAll("\\s", "");
@@ -130,7 +143,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
     }
 
     @Override
-    public Response deployServiceFromXML(String uploadedInputStream) throws SalsaEngineException {
+    public Response deployServiceFromXML(String uploadedInputStream) throws SalsaException {
         String tmp_id = UUID.randomUUID().toString();
         String tmpFile = "/tmp/salsa_tmp_" + tmp_id;
 
@@ -159,7 +172,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         }
     }
 
-    public Response redeployService(String serviceId) throws SalsaEngineException {
+    public Response redeployService(String serviceId) throws SalsaException {
         String ogininalToscaFile = SalsaConfiguration.getServiceStorageDir() + "/" + serviceId + ".original";
         try {
             String originalTosca = FileUtils.readFileToString(new File(ogininalToscaFile));
@@ -180,8 +193,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
      * @see at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineIntenalInterface#undeployService(java.lang.String)
      */
     @Override
-    public Response undeployService(String serviceId) throws SalsaEngineException {
-        logger.debug("DELETING SERVICE: " + serviceId);        
+    public Response undeployService(String serviceId) throws SalsaException {
+        logger.debug("DELETING SERVICE: " + serviceId);
         if (wholeAppCapability.cleanService(serviceId)) {// deregister service here
             String fileName = SalsaConfiguration.getServiceStorageDir() + "/" + serviceId;
             File file = new File(fileName);
@@ -208,29 +221,28 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
     public Response spawnInstance(String serviceId,
             String topologyId,
             String nodeId,
-            int quantity) throws SalsaEngineException {
+            int quantity) throws SalsaException {
         logger.debug("SPAWNING MORE INSTANCE: " + serviceId + "/" + topologyId + "/" + nodeId + ". Quantity:" + quantity);
-        
+
         SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         TDefinitions def = centerCon.getToscaDescription(serviceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         ServiceUnit node = service.getComponentById(nodeId);
         if (node == null) {
-            EngineLogger.logger.error("May be the id of node is invalided");
-            return Response.status(500).entity("Error: Node ID is not found.").build();
+            throw new IllegalConfigurationAPICallException("Cannot find the node with id: " + serviceId +"/" + topologyId +"/" + nodeId );            
         }
         String correctTopologyID = service.getTopologyOfNode(node.getId()).getId();
         centerCon.updateNodeIdCounter(serviceId, correctTopologyID, nodeId, node.getIdCounter() + quantity); // update first the number + quantity		
         String returnVal = "";
         for (int i = node.getIdCounter(); i < node.getIdCounter() + quantity; i++) {
-            unitCapability.deploy(serviceId, nodeId, i);            
+            unitCapability.deploy(serviceId, nodeId, i);
             returnVal += i + " ";
         }
         return Response.status(201).entity(returnVal).build();
     }
 
     @Override
-    public Response scaleOutNode(String serviceId, String nodeId) throws SalsaEngineException {
+    public Response scaleOutNode(String serviceId, String nodeId) throws SalsaException {
         SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         ServiceTopology topo = service.getTopologyOfNode(nodeId);
@@ -274,7 +286,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         return Response.status(201).entity(vm.getPrivateIp()).build();
     }
 
-    public Response scaleInNode(String serviceId, String nodeId) throws SalsaEngineException {
+    @Override
+    public Response scaleInNode(String serviceId, String nodeId) throws SalsaException {
         SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         ServiceTopology topo = service.getTopologyOfNode(nodeId);
@@ -286,7 +299,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         return Response.status(404).entity("Found no instance to remove").build();
     }
 
-    public Response scaleInVM(String serviceId, String vmIp) throws SalsaEngineException {
+    @Override
+    public Response scaleInVM(String serviceId, String vmIp) throws SalsaException {
         SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         for (ServiceTopology topo : service.getComponentTopologyList()) {
@@ -314,7 +328,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         return Response.status(404).entity("Not found a VM nodes of IP: " + vmIp).build();
     }
 
-    public Response scaleOutVM(String serviceId, String vmIp) throws SalsaEngineException {
+    @Override
+    public Response scaleOutVM(String serviceId, String vmIp) throws SalsaException {
         SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
 
@@ -326,7 +341,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String serviceId,
             String topologyId,
             String nodeId,
-            int instanceId) throws SalsaEngineException {
+            int instanceId) throws SalsaException {
         logger.debug("Deployment request for this node: " + serviceId + " - " + nodeId + " - " + instanceId);
         logger.debug("PUT 1 MORE INSTANCE: " + serviceId + "/" + topologyId + "/" + nodeId);
 
@@ -348,18 +363,18 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String serviceId,
             String topologyId,
             String nodeId,
-            int instanceId) throws SalsaEngineException {
-        logger.debug("Removing service instance: " + serviceId + "/" + topologyId + "/" + nodeId + "/" + instanceId);        
+            int instanceId) throws SalsaException {
+        logger.debug("Removing service instance: " + serviceId + "/" + topologyId + "/" + nodeId + "/" + instanceId);
         unitCapability.remove(serviceId, nodeId, instanceId);
         return Response.status(200).entity("Undeployed instance: " + serviceId + "/" + nodeId + "/" + instanceId).build();
-        
+
     }
 
     @Override
     public Response removeInstanceMetadata(
             String serviceId,
             String nodeId,
-            int instanceId) throws SalsaEngineException {
+            int instanceId) throws SalsaException {
         // remove metadata
         try {
             MutualFileAccessControl.lockFile();
@@ -406,11 +421,11 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
                 return false;
             }
         }
-
         return true;
     }
 
-    public Response deployTopology(String serviceId, String topologyId) throws SalsaEngineException {
+    @Override
+    public Response deployTopology(String serviceId, String topologyId) throws SalsaException {
         String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
         try {
             CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
@@ -429,7 +444,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         }
     }
 
-    public Response undeployTopology(String serviceId, String topologyId) throws SalsaEngineException {
+    @Override
+    public Response undeployTopology(String serviceId, String topologyId) throws SalsaException {
         String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
         try {
             CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
@@ -450,7 +466,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         }
     }
 
-    public Response destroyInstanceOfNodeType(String serviceId, String topologyId, String nodeId) throws SalsaEngineException {
+    @Override
+    public Response destroyInstanceOfNodeType(String serviceId, String topologyId, String nodeId) throws SalsaException {
         String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
         logger.debug("Remove all instances of node: " + nodeId);
         try {
@@ -473,61 +490,40 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
     /*
      * INTERNAL SERVICES FOR CLOUD SERVICES
      */
-	//static boolean getServiceLocked=false;
+    //static boolean getServiceLocked=false;
     @Override
-    public Response getService(String serviceDeployId) throws SalsaEngineException {
+    public Response getService(String serviceDeployId) throws SalsaException {
         if (serviceDeployId.equals("")) {
-            return Response.status(400).entity("").build();
+            throw new IllegalConfigurationAPICallException("Query service data, but the service ID is empty !");
         }
         String fileName = SalsaConfiguration.getServiceStorageDir() + "/" + serviceDeployId + ".data";
-        // wait for unlock !
-//		int count=0;
-//		while (!getServiceLocked && count < 50){ // wait for maximum 5 sec and release the lock 			
-//			try{
-//				Thread.sleep(100);
-//			} catch (InterruptedException e) {}
-//		}
-//		getServiceLocked=false;
         try {
             String xml = FileUtils.readFileToString(new File(fileName));
             return Response.status(200).entity(xml).build();
         } catch (Exception e) {
             logger.error("Could not find service: " + serviceDeployId + ". Data did not be sent. Error: " + e.toString());
             logger.debug("THROWING AN EXCEPTION OF FAILURE TO GET SERVICE !");
-            throw new SalsaEngineException("Could not find service: " + serviceDeployId, false);
+            throw new ServicedataProcessingException("Cannot read the service data for service ID: " + serviceDeployId);
         }
     }
 
-//	@Override
-//	public Response getServiceAndLock(@PathParam("serviceId")String serviceDeployId){
-//		getServiceLocked = true;
-//		return getService(serviceDeployId);
-//	}
-//	
-//	@Override
-//	public Response getServiceToUnLock(@PathParam("serviceId")String serviceDeployId){
-//		getServiceLocked=false;
-//		return Response.status(200).entity("done").build();
-//	}
     @Override
-    public Response getToscaService(String serviceDeployId) {
+    public Response getToscaService(String serviceDeployId) throws SalsaException {
         logger.debug("Read Tosca file and return !");
         if (serviceDeployId.equals("")) {
-            return Response.status(400).entity("").build();
+            throw new IllegalConfigurationAPICallException("Query TOSCA, but the service ID is empty !");
         }
         String fileName = SalsaConfiguration.getServiceStorageDir() + "/" + serviceDeployId;
         try {
             String xml = FileUtils.readFileToString(new File(fileName));
             return Response.status(200).entity(xml).build();
         } catch (Exception e) {
-            logger.error("Could not find service: " + serviceDeployId + ". Data did not be sent. Error: " + e.toString());
-            logger.debug("YOU ARE HERE FAIL !!");
-            return Response.status(500).entity("").build();
+            throw new ServicedataProcessingException("Cannot read the TOSCA for service ID: " + serviceDeployId);
         }
     }
 
     @Override
-    public Response getServiceSYBL_DEP_DESP(String serviceId) {
+    public Response getServiceSYBL_DEP_DESP(String serviceId) throws SalsaException {
         String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
         logger.debug("Generating deployment desp for SYBL");
         try {
@@ -571,13 +567,9 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             mar.marshal(sybl, xmlWriter);
             return Response.status(200).entity(xmlWriter.toString()).build();
         } catch (JAXBException e1) {
-            String errorMsg = "Internal error: JAXB couldn't parse the service data";
-            logger.error(errorMsg);
-            return Response.status(500).entity(errorMsg).build();
+            throw new ServicedataProcessingException("Cannot parse the data using JAXB for service ID: " + serviceId);
         } catch (IOException e2) {
-            String errorMsg = "Internal error: Couldn't read the service data.";
-            logger.error(errorMsg);
-            return Response.status(500).entity(errorMsg).build();
+            throw new ServicedataProcessingException("Cannot read the data for service ID: " + serviceId);
         }
     }
 
@@ -626,7 +618,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
     public Response addRelationship(
             ServiceUnitRelationship data,
             String serviceId,
-            String topologyId) {
+            String topologyId) throws SalsaException {
         String salsaFile = SalsaConfiguration.getServiceStorageDir()
                 + File.separator + serviceId + ".data";
         try {
@@ -641,10 +633,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             //rels.addRelationship(data.getValue());
             rels.addRelationship(data);
             SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
-        } catch (Exception e) {
-            logger.error("Could not add relationship for: " + serviceId + ", " + topologyId);
-            logger.error(e.toString());
-            return Response.status(404).entity("Error update node status").build();
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceId, ex);
         } finally {
             MutualFileAccessControl.releaseFile();
         }
@@ -660,7 +650,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String serviceId,
             String topologyId,
             String nodeId,
-            int value) {
+            int value) throws SalsaException {
         try {
             MutualFileAccessControl.lockFile();
             String salsaFile = SalsaConfiguration.getServiceStorageDir()
@@ -672,10 +662,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             ServiceUnit nodeData = topo.getComponentById(nodeId);
             nodeData.setIdCounter(value);
             SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
-        } catch (Exception e) {
-            logger.error(e.toString());
-            return Response.status(404).entity("Cannot uodate node " + nodeId + " on service " + serviceId
-                    + " node ID counter: " + value).build();
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceId, ex);
         } finally {
             MutualFileAccessControl.releaseFile();
         }
@@ -690,7 +678,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
     public Response addInstanceUnitMetaData(ServiceInstance data,
             String serviceId,
             String topologyId,
-            String nodeId) {
+            String nodeId) throws SalsaException {
         EngineLogger.logger.debug("addInstanceUnitMetaData. STARTING: " + serviceId + "/" + topologyId + "/" + nodeId + "/" + data.getInstanceId());
         String fileName = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
         try {
@@ -716,10 +704,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             }
             EngineLogger.logger.debug("addInstanceUnitMetaData. writing down service id: " + service.getId());
             SalsaXmlDataProcess.writeCloudServiceToFile(service, fileName);
-        } catch (JAXBException e1) {
-            logger.error(e1);
-        } catch (IOException e2) {
-            logger.error(e2);
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceId, ex);
         } finally {
             MutualFileAccessControl.releaseFile();
         }
@@ -730,7 +716,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 
     @Override
     public Response addServiceUnitMetaData(ServiceUnit data,
-            String serviceId, String topologyId) {
+            String serviceId, String topologyId) throws SalsaException {
         String fileName = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
         String toscaFileName = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId;
         try {
@@ -759,7 +745,6 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             TArtifactTemplate artTemp = new TArtifactTemplate();
             ArtifactReferences artRefs = new ArtifactReferences();
             TArtifactReference artRef = new TArtifactReference();
-            artRef.setReference(data.getArtifactURL());
 
             artRefs.getArtifactReference().add(artRef);
             artTemp.setArtifactReferences(artRefs);
@@ -784,10 +769,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             ToscaStructureQuery.getTopologyTemplate(topologyId, def).getNodeTemplateOrRelationshipTemplate().add(rela);
 
             ToscaXmlProcess.writeToscaDefinitionToFile(def, toscaFileName);
-        } catch (IOException e1) {
-            logger.error(e1);
-        } catch (JAXBException e2) {
-            logger.error(e2);
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceId, ex);
         } finally {
             MutualFileAccessControl.releaseFile();
         }
@@ -797,7 +780,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 
     @Override
     public Response addServiceUnitMetaData(String toscaXML,
-            String serviceId, String topologyId) {
+            String serviceId, String topologyId) throws SalsaException {
         String fileName = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
         try {
             MutualFileAccessControl.lockFile();
@@ -812,10 +795,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(fileName);
             ServiceTopology topo = service.getComponentTopologyById(topologyId);
             topo.addComponent(data);
-        } catch (IOException e1) {
-            logger.error(e1);
-        } catch (JAXBException e2) {
-            logger.error(e2);
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceId, ex);
         } finally {
             MutualFileAccessControl.releaseFile();
         }
@@ -828,7 +809,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String serviceId,
             String topologyId,
             String nodeId,
-            int instanceId) {
+            int instanceId) throws SalsaException {
         MutualFileAccessControl.lockFile();
         try {
             String serviceFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
@@ -848,10 +829,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             }
             capaLst.add(data);
             SalsaXmlDataProcess.writeCloudServiceToFile(service, serviceFile);
-        } catch (Exception e) {
-            logger.error("Could not read service for update capability: " + serviceId + "/" + topologyId + "/" + nodeId + "/" + instanceId);
-            e.printStackTrace();
-            return Response.status(404).entity("Error update capability").build();
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceId, ex);
         } finally {
             MutualFileAccessControl.releaseFile();
         }
@@ -867,7 +846,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String serviceId,
             String topologyId,
             String nodeId,
-            int instanceId) {
+            int instanceId) throws SalsaException {
         logger.debug("update instance unit prop 1. Raw string data: " + data);
         MutualFileAccessControl.lockFile();
         try {
@@ -884,37 +863,30 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
                 props = new Properties();
             }
             // marshall data and add to props. Currently only can receive VM and Docker properties
-            JAXBContext context;            
+            JAXBContext context;
 //            context = JAXBContext.newInstance(SalsaInstanceDescription_Docker.class, SalsaInstanceDescription_VM.class); // both, not sure it run
-            if (unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())){
+            if (unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
                 logger.debug("update instance unit: marshall VM description ");
                 context = JAXBContext.newInstance(SalsaInstanceDescription_VM.class);
                 Unmarshaller um = context.createUnmarshaller();
                 SalsaInstanceDescription_VM propData = (SalsaInstanceDescription_VM) um.unmarshal(new StringReader(data));
-                logger.debug("VM properties captured: " + propData.getInstanceId() +", ip: " + propData.getPrivateIp());
+                logger.debug("VM properties captured: " + propData.getInstanceId() + ", ip: " + propData.getPrivateIp());
                 props.setAny(propData);
-            } else if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())){
+            } else if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
                 logger.debug("update instance unit: marshall DOCKER description ");
                 context = JAXBContext.newInstance(SalsaInstanceDescription_Docker.class);
                 Unmarshaller um = context.createUnmarshaller();
-                SalsaInstanceDescription_Docker propData = (SalsaInstanceDescription_Docker)um.unmarshal(new StringReader(data));
-                logger.debug("Docker properties captured: " + propData.getDockername() +", portmap: " + propData.getPortmap());
+                SalsaInstanceDescription_Docker propData = (SalsaInstanceDescription_Docker) um.unmarshal(new StringReader(data));
+                logger.debug("Docker properties captured: " + propData.getDockername() + ", portmap: " + propData.getPortmap());
                 props.setAny(propData);
-            } 
-            
-            
+            }
+
             rep.setProperties(props);
             SalsaXmlDataProcess.writeCloudServiceToFile(service, serviceFile);
             logger.debug("update instance unit prop END: " + service.getId());
 
-        } catch (JAXBException e) {
-            logger.error("updateInstanceUnitProperties - Cannot parse the service file: " + serviceId);
-            logger.error(e);
-            return Response.status(404).entity("updateInstanceUnitProperties - Error update node property").build();
-        } catch (IOException e1) {
-            logger.error("updateInstanceUnitProperties - Could not read service for update property: " + serviceId);
-            logger.error(e1);
-            return Response.status(500).entity("updateInstanceUnitProperties - Error update node property").build();
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceId, ex);
         } finally {
             MutualFileAccessControl.releaseFile();
         }
@@ -927,7 +899,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String topologyId, // topology is not need
             String nodeId,
             int instanceId,
-            String value) {
+            String value,
+            String extra) throws SalsaException {
         try {
             java.util.Date date = new java.util.Date();
             logger.debug("UPDATE NODE STATE: " + nodeId + ", instance: " + instanceId + ", state: " + value);
@@ -937,29 +910,24 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             ServiceUnit nodeData = service.getComponentById(nodeId);
 
             if (instanceId == -1) {	// update for node data
-                nodeData.setState(SalsaEntityState.fromString(value));
+                nodeData.setState(SalsaEntityState.fromString(value));         
                 updateComponentStateBasedOnInstance(service);
                 SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
             } else { // update for instance
                 ServiceInstance replicaInst = nodeData.getInstanceById(instanceId);
                 if (SalsaEntityState.fromString(value) != null) {
                     replicaInst.setState(SalsaEntityState.fromString(value));
+                    replicaInst.setExtra(extra);
                     updateComponentStateBasedOnInstance(service);	// update the Tosca node
                     SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
                     // ToscaXmlProcess.writeToscaDefinitionToFile(def, toscaFile);
                 } else {
-
-                    return Response.status(404).entity("Unknown node state of node " + nodeId
-                            + " on service " + serviceId
-                            + " deployed status: " + value).build();
+                    throw new ServicedataProcessingException(serviceId+"/"+nodeId+"/"+instanceId);
                 }
             }
 
-        } catch (Exception e) {
-            logger.error("Could not read service for update node status: " + nodeId + "/" + instanceId);
-            logger.error(e.toString());
-            e.printStackTrace();
-            return Response.status(500).entity("Error update node status").build();
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceId, ex);
         } finally {
             MutualFileAccessControl.releaseFile();
         }
@@ -973,7 +941,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String topologyId,
             String nodeId,
             int instanceId,
-            String reqId) {
+            String reqId) throws SalsaException {
         try {
             // read current TOSCA and SalsaCloudService
             String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
@@ -996,12 +964,10 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             ServiceInstance nodeInstanceOfCapa = nodeData.getInstanceById(0);
             String reqAndCapaValue = nodeInstanceOfCapa.getCapabilityValue(capaid);
             return Response.status(200).entity(reqAndCapaValue).build();
-        } catch (IOException e1) {
-            logger.error(e1);
-        } catch (JAXBException e2) {
-            logger.error(e2);
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceId, ex);
         }
-        return Response.status(201).entity("").build();
+
     }
 
     @Override
@@ -1009,24 +975,67 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String serviceId,
             String nodeId,
             int instanceId,
-            String actionName) {
+            String actionName) throws SalsaException {
         try {
             EngineLogger.logger.debug("Queueing action: " + serviceId + "/" + nodeId + "/" + instanceId + "/" + actionName);
             MutualFileAccessControl.lockFile();
             String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + ".data";
             CloudService service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
             ServiceUnit nodeData = service.getComponentById(nodeId);
+            String topoID = service.getTopologyOfNode(nodeData.getId()).getId();
 
             //ConfigurationCapability confCapa = nodeData.getCapabilityByName(actionName);
             ServiceInstance instance = nodeData.getInstanceById(instanceId);
             instance.queueAction(actionName);
             instance.setState(SalsaEntityState.STAGING_ACTION);
 
+            String runByMe = "";
+            if (nodeData.getPrimitiveByName(actionName) != null) {
+                runByMe = nodeData.getPrimitiveByName(actionName).getExecutionREF();
+            }
+            String preRunByMe = "";
+
+            String newActionID = UUID.randomUUID().toString();
+            ServiceCategory theCategory = InfoManagement.mapOldAndNewCategory(SalsaEntityType.fromString(nodeData.getType()));
+            // if the action name is undeploy, so undeploy. Only support artifact type of script. E.g., do not support stop docker
+            if (actionName.equals("undeploy")) {
+                PrimitiveOperation stopAction = nodeData.getPrimitiveByName("stop");
+                if (stopAction != null) {  // there is a stop action, add it before the runByMe
+                    logger.debug("Found a stop action to  run before undeploy action");
+                    preRunByMe = stopAction.getExecutionREF();
+                    logger.debug("The command will be sent is: " + preRunByMe + " and undeploy following: " + runByMe + ". Undeploy apply for node type: " + InfoManagement.mapOldAndNewCategory(SalsaEntityType.fromString(nodeData.getType())));
+                }
+                // to undeploy Docker, we send the DockerID into runByMe
+                if (theCategory == ServiceCategory.AppContainer) {
+                    SalsaInstanceDescription_Docker vm = (SalsaInstanceDescription_Docker) instance.getProperties().getAny();
+                    if (vm != null) {
+                        runByMe = vm.getInstanceId();
+                    }
+                }
+                // TODO: maybe support more things
+            }
+            // search for the first artifact type which is not misc, which is used to install the service
+            SalsaArtifactType artifactTypeOfDeployment = null;
+            for (ServiceUnit.Artifacts art : nodeData.getArtifacts()) {
+                if (!art.getType().equals(SalsaArtifactType.misc.getString())) {
+                    artifactTypeOfDeployment = SalsaArtifactType.fromString(art.getType());
+                    break;
+                }
+            }
+            String pioneerID = PioneerManager.getPioneerIDForNode(SalsaConfiguration.getUserName(), serviceId, nodeId, instanceId, service);
+            if (pioneerID == null) {
+                EngineLogger.logger.error("The pioneer on node {}/{}/{}/{} is not registered to SalsaEngine, deployment aborted !", SalsaConfiguration.getUserName(), serviceId, nodeId, instanceId);
+                return null;
+            }
+            SalsaMsgConfigureArtifact configCommand = new SalsaMsgConfigureArtifact(newActionID, actionName, pioneerID, SalsaConfiguration.getUserName(), serviceId, topoID, nodeId, instanceId, theCategory, "", runByMe, artifactTypeOfDeployment, "");
+            ActionIDManager.addAction(newActionID, configCommand);
+            SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.reconfigure, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.CENTER_REQUEST_PIONEER, "", configCommand.toJson());
+            MessagePublishInterface publish = new MQTTPublish(SalsaConfiguration.getBroker());
+            publish.pushMessage(msg);
+
             SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
-        } catch (Exception e) {
-            logger.error(e.toString());
-            return Response.status(404).entity("Cannot queue task for node " + nodeId + " on service " + serviceId
-                    + " node ID counter: " + actionName).build();
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceId, ex);
         } finally {
             MutualFileAccessControl.releaseFile();
         }
@@ -1038,7 +1047,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
     public Response unqueueAction(
             String serviceId,
             String nodeId,
-            int instanceId) {
+            int instanceId) throws SalsaException {
         try {
             EngineLogger.logger.debug("Unqueueing action: " + serviceId + "/" + nodeId + "/" + instanceId);
             MutualFileAccessControl.lockFile();
@@ -1055,10 +1064,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             EngineLogger.logger.debug("Debug - Unqueueing action 5");
 
             SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(e.toString());
-            return Response.status(404).entity("Cannot queue task for node " + nodeId + " on service " + serviceId).build();
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceId, ex);
         } finally {
             MutualFileAccessControl.releaseFile();
         }
@@ -1066,7 +1073,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
     }
 
     @Override
-    public Response getPioneerArtifact(String fileName) {
+    public Response getPioneerArtifact(String fileName) throws SalsaException {
         logger.debug("Getting pioneer artifact and return: " + SalsaConfiguration.getPioneerLocalFile());
         File file = new File(SalsaConfiguration.getPioneerLocalFile());
         if (fileName == null || fileName.equals("")) {
@@ -1077,8 +1084,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
                     .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
                     .build();
         }
-        logger.debug("Not found the pioneer artifact !");
-        return Response.status(404).entity("Do not found pioneer artifact: " + file.getAbsolutePath()).build();
+        throw new EngineMisconfiguredException(fileName, "Not found the pioneer artifact !");
     }
 
     protected void updateComponentStateBasedOnInstance(SalsaEntity nodeData) {
@@ -1128,7 +1134,6 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             }
         }
     }
-    
 
     @Override
     public String health() {

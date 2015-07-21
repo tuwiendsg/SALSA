@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
-  <artifactId>salsa-core-pom</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+    <parent>
+        <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+        <artifactId>SALSA</artifactId>
+        <version>2.0</version>
+    </parent>
 
-  <name>salsa-core-pom</name>
-  <url>http://maven.apache.org</url>
+    <artifactId>salsa-core-pom</artifactId>
+    <packaging>pom</packaging>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-            <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <name>salsa-core-pom</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>4.0.2.RELEASE</spring.version>
         <slf4j.version>1.7.5</slf4j.version>
         <cxf.version>3.0.0-milestone1</cxf.version>
-  </properties>
+    </properties>
 
-  <modules>
-	<module>salsa-common</module>
-	<module>salsa-engine</module>
-	<module>salsa-pioneer-vm</module>
-    <module>salsa-knowledge</module>
-    <module>quelle-core</module>
-    
-  </modules>
+    <modules>
+        <module>salsa-common</module>
+        <module>salsa-engine</module>
+        <module>salsa-knowledge</module>
+        <module>quelle-core</module>
+        <module>salsa-messaging</module>
+        <module>salsa-pioneer</module>
+    </modules>
   
-   <dependencies>
+    <dependencies>
         <!-- Spring Framework dependencies -->
-        <dependency>
+        <!--        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
@@ -43,7 +47,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
             <version>${spring.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!-- SLF4J dependencies -->
         <dependency>

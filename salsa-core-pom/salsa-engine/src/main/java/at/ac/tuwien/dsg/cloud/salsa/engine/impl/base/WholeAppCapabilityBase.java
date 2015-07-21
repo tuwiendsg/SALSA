@@ -12,7 +12,11 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityT
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.WholeAppCapabilityInterface;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineConnectionException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineMisconfiguredException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.ServicedataProcessingException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.AppDescriptionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.AsyncUnitCapability;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.InfoManagement;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
@@ -20,62 +24,84 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 import generated.oasis.tosca.TDefinitions;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBException;
 
 /**
  *
  * @author hungld
  */
-public class WholeAppCapability implements WholeAppCapabilityInterface {
+public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
 
-    SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
+    SalsaCenterConnector centerCon;
+
+    {
+        try {
+            centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
+        } catch (EngineConnectionException ex) {
+            EngineLogger.logger.error("Cannot connect to SALSA service in localhost: " + SalsaConfiguration.getSalsaCenterEndpointLocalhost() + ". This is a fatal error !");
+        }
+    }
 
     File configFile;
 
-    public WholeAppCapability() {
+    public WholeAppCapabilityBase() {
         this.configFile = SalsaConfiguration.getCloudUserParametersFile();
     }
 
     @Override
-    public CloudService addService(String serviceName, TDefinitions def) throws SalsaEngineException {
+    public CloudService addService(String serviceName, TDefinitions def) throws SalsaException {
+        EngineLogger.logger.info("Start to add a new cloud service with ID: {}", serviceName);
         if (configFile == null) {
-            EngineLogger.logger.error("No config file specified");
-            throw new SalsaEngineException("There is no SALSA configuation file specific. Please check /etc/salsa.engine.properties", true);
+            throw new EngineMisconfiguredException("./salsa.engine.properties", "The file is missing");
         }
-
         String deployID = serviceName;
-        EngineLogger.logger.info("Orchestrating service id: " + deployID);
 
         String ogininalToscaFile = SalsaConfiguration.getServiceStorageDir() + "/" + deployID + ".original";
-        ToscaXmlProcess.writeToscaDefinitionToFile(def, ogininalToscaFile);
+        try {
+            ToscaXmlProcess.writeToscaDefinitionToFile(def, ogininalToscaFile);
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceName, ex);
+        }
 
         // register service, all state is INITIAL
         String fullToscaFile = SalsaConfiguration.getServiceStorageDir() + "/" + deployID;
 
-        ToscaXmlProcess.writeToscaDefinitionToFile(def, fullToscaFile);
+        try {
+            ToscaXmlProcess.writeToscaDefinitionToFile(def, fullToscaFile);
+        } catch (JAXBException | IOException ex) {
+            throw new ServicedataProcessingException(serviceName, ex);
+        }
 
         EngineLogger.logger.debug("debugggg Sep 8 - 1");
 
         // register service running data
         String fullSalsaDataFile = SalsaConfiguration.getServiceStorageDir() + "/" + deployID + ".data";
         EngineLogger.logger.debug("debugggg Sep 8 - 2");
-        CloudService serviceData = InfoManagement.buildRuntimeDataFromTosca(def);
+        CloudService serviceData = null;
+        try {
+            serviceData = InfoManagement.buildRuntimeDataFromTosca(def);
+        } catch (Exception e) {
+            throw new AppDescriptionException("TOSCA description", "Cannot build the cloud service model from input TOSCA. Please check: ID consistency, relationship orders.", e);
+        }
         EngineLogger.logger.debug("debugggg Sep 8 - 3");
         serviceData.setId(deployID);
         serviceData.setName(def.getId());
         SalsaXmlDataProcess.writeCloudServiceToFile(serviceData, fullSalsaDataFile);
         EngineLogger.logger.debug("debugggg Sep 8 - 4");
 
+        EngineLogger.logger.info("Adding a new cloud service done with ID: {}", serviceName);
         return actualCreateNewService(serviceData);
     }
 
     @Override
-    public boolean cleanService(String serviceId) throws SalsaEngineException {
+    public boolean cleanService(String serviceId) throws SalsaException {
+        EngineLogger.logger.info("Start to clean service: {}", serviceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         if (service == null) {
-            EngineLogger.logger.error("Cannot clean service. Service description is not found.");
-            throw new SalsaEngineException("Cannot clean service. Service description is not found for service: " + serviceId, false);
+            throw new ServicedataProcessingException(serviceId);
         }
 
         List<ServiceUnit> suList = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
@@ -85,16 +111,17 @@ public class WholeAppCapability implements WholeAppCapabilityInterface {
                 //List<ServiceInstance> repLst = service.getAllReplicaByType(SalsaEntityType.OPERATING_SYSTEM);
                 for (ServiceInstance rep : repLst) {
                     if (rep.getProperties() != null) {
-                        VMCapability vmCapa = new VMCapability();
+                        VMCapabilityBase vmCapa = new VMCapabilityBase();
                         vmCapa.remove(serviceId, su.getId(), rep.getInstanceId());
                     }
                 }
             }
         }
+        EngineLogger.logger.info("Clean service done: {}", serviceId);
         return true;
     }
 
-    private CloudService actualCreateNewService(CloudService serviceData) throws SalsaEngineException {
+    private CloudService actualCreateNewService(CloudService serviceData) throws SalsaException {
         // here find all the TOP node
         List<ServiceUnit> nodes = serviceData.getAllComponent();
         List<ServiceUnit> topNodes = new ArrayList<>();

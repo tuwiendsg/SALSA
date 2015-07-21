@@ -11,7 +11,6 @@ import at.ac.tuwien.dsg.quelle.cloudServicesModel.requirements.MultiLevelRequire
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TNodeTemplate;
 import generated.oasis.tosca.TPolicy;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import javax.xml.bind.JAXBContext;

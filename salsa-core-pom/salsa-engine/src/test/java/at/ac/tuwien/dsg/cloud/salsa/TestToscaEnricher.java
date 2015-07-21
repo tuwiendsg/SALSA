@@ -1,5 +1,6 @@
 package at.ac.tuwien.dsg.cloud.salsa;
 
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TEntityTemplate.Properties;
 import generated.oasis.tosca.TNodeTemplate;
@@ -9,6 +10,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.SALSA.ToscaEnricherSA
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
+import javax.xml.bind.JAXBException;
 
 public class TestToscaEnricher {
 
@@ -19,25 +21,25 @@ public class TestToscaEnricher {
 //						"/cassandra_old/tosca_Cassandra_example_fakescripts.xml").getFile());
 		//TDefinitions def = ToscaXmlProcess.readToscaFile("/home/hungld/test/DAASPilot/tosca_DaaS_high_level_with_SYBL.xml");
 		//TDefinitions def = ToscaXmlProcess.readToscaFile("/home/hungld/test/IoTSensor/onlyIoT_multiple_topologies_wiring.xml");
-		TDefinitions def = ToscaXmlProcess.readToscaFile("/home/hungld/test/tosca/4-DeployWithTomcat.xml");
-		System.out.println(ToscaXmlProcess.writeToscaDefinitionToXML(def));
+//		TDefinitions def = ToscaXmlProcess.readToscaFile("/home/hungld/test/tosca/4-DeployWithTomcat.xml");
+//		System.out.println(ToscaXmlProcess.writeToscaDefinitionToXML(def));
 				
 		// ENRICH
 		
-		ToscaEnricherSALSA enricher = new ToscaEnricherSALSA(def);
-		enricher.enrichHighLevelTosca();
+//		ToscaEnricherSALSA enricher = new ToscaEnricherSALSA(def);
+//		enricher.enrichHighLevelTosca();
 		
 //		
 
 //		
-		ToscaXmlProcess.writeToscaDefinitionToFile(def, "/tmp/salsa/enriched.xml");
+//		ToscaXmlProcess.writeToscaDefinitionToFile(def, "/tmp/salsa/enriched.xml");
 		
 		} catch (Exception e){
 			e.printStackTrace();
 		}
 	}
 	
-	private static void checkSalsaMapProperties(){
+	private static void checkSalsaMapProperties() throws Exception{
 		TDefinitions def = new TDefinitions();
 		TServiceTemplate ser = new TServiceTemplate();
 		def.getServiceTemplateOrNodeTypeOrNodeTypeImplementation().add(ser);

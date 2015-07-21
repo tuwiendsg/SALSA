@@ -21,7 +21,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityS
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.InstrumentShareData;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.services.PioneerServiceImplementation;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerLogger;
@@ -59,7 +59,7 @@ public class Main {
 	private static SalsaCenterConnector centerCon;
 	private static CloudService serviceRuntimeInfo;
 
-	public static void main(String[] args) throws IOException, JAXBException, SalsaEngineException {
+	public static void main(String[] args) throws IOException, JAXBException, SalsaException {
 		// Some ready variables		
 		
 		if (args[0].equals("test")){

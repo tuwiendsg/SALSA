@@ -1,44 +1,55 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
-	<artifactId>salsa-pioneer-vm</artifactId>
-	<version>1.0</version>
-	<packaging>jar</packaging>
+    <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+    <artifactId>salsa-pioneer-vm</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
 
-	<name>salsa-pioneer-vm</name>
-	<url>http://maven.apache.org</url>
+    <name>salsa-pioneer-vm</name>
+    <url>http://maven.apache.org</url>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.7</java.version>
-		<spring.version>4.0.2.RELEASE</spring.version>
-		<cxf.version>3.0.0-milestone1</cxf.version>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.7</java.version>
+        <spring.version>4.0.2.RELEASE</spring.version>
+        <cxf.version>3.0.0-milestone1</cxf.version>
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
-			<artifactId>salsa-common</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+            <artifactId>salsa-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+                
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>1.9.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-xc</artifactId>        
+            <version>1.9.13</version>    
+        </dependency> 
 		
-<!-- 		<dependency> -->
-<!-- 		    <groupId>javax.ws.rs</groupId> -->
-<!-- 		    <artifactId>javax.ws.rs-api</artifactId> -->
-<!-- 		    <version>2.0-m10</version> -->
-<!-- 		</dependency> -->
+        <!-- 		<dependency> -->
+        <!-- 		    <groupId>javax.ws.rs</groupId> -->
+        <!-- 		    <artifactId>javax.ws.rs-api</artifactId> -->
+        <!-- 		    <version>2.0-m10</version> -->
+        <!-- 		</dependency> -->
 		
-		<!-- Spring Framework dependencies -->
-<!--        <dependency>
+        <!-- Spring Framework dependencies -->
+        <!--        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
@@ -54,132 +65,132 @@
             <version>${spring.version}</version>
         </dependency>-->
         
-	<!-- Apache CXF dependencies -->
-<!--		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
-			<version>${cxf.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-transports-http</artifactId>
-			<version>${cxf.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-transports-http-jetty</artifactId>
-			<version>${cxf.version}</version>
-		</dependency>-->
+        <!-- Apache CXF dependencies -->
+        <!--		<dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+                <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http</artifactId>
+                <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http-jetty</artifactId>
+                <version>${cxf.version}</version>
+        </dependency>-->
 
 
 	
 		
-	</dependencies>
+    </dependencies>
 
-	<build>
-		<finalName>salsa-pioneer</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
-			</plugin>
-			<plugin>
+    <build>
+        <finalName>salsa-pioneer</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
 					
-				<!-- Build an executable JAR -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>at.ac.tuwien.dsg.cloud.salsa.pioneer.Main</mainClass>
-						</manifest>
-					</archive>							
-				</configuration>
+                <!-- Build an executable JAR -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>at.ac.tuwien.dsg.cloud.salsa.pioneer.Main</mainClass>
+                        </manifest>
+                    </archive>							
+                </configuration>
 
-			</plugin>
+            </plugin>
 
-			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-shade-plugin</artifactId>
-		        <version>1.4</version>
-		            <executions>
-		                <execution>
-		                    <phase>package</phase>
-		                    <goals>
-		                        <goal>shade</goal>
-		                    </goals>
-		                    <configuration>		                    		
-		                        <transformers>
-		                            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-		                                <mainClass>at.ac.tuwien.dsg.cloud.salsa.pioneer.Main</mainClass>
-		                            </transformer>
-		                            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-		                                <resource>META-INF/spring.handlers</resource>
-		                            </transformer>
-		                            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-		                                <resource>META-INF/spring.schemas</resource>
-		                            </transformer>
-		                            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-		                                <resource>META-INF/services/com.sun.tools.xjc.Plugin</resource>
-		                            </transformer>
-		                            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-		                                <resource>META-INF/cxf/cxf.extension</resource>
-		                            </transformer>
-		                            <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
-		                                <resource>META-INF/extensions.xml</resource>
-		                            </transformer>
-		                            <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
-		                                <resource>META-INF/cxf/extensions.xml</resource>
-		                            </transformer>
-		                            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-		                                <resource>META-INF/cxf/bus-extensions.txt</resource>
-		                            </transformer>
-		                            <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
-		                                <resource>META-INF/cxf/bus-extensions.xml</resource>
-		                            </transformer>
-		                            <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
-		                                <resource>META-INF/wsdl.plugin.xml</resource>
-		                            </transformer>
-		                            <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
-		                                <resource>META-INF/tools.service.validator.xml</resource>
-		                            </transformer>
-		                            <transformer implementation="org.apache.cxf.maven.PluginTransformer">
-		                                <resource>META-INF/tools-plugin.xml</resource>
-		                            </transformer>
-		                            <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
-		                                <resource>META-INF/cxf/java2wsbeans.xml</resource>
-		                            </transformer>
-		                            <transformer implementation="org.apache.cxf.maven.CXFAllTransformer" />
-		                        </transformers>
-<!-- 		                        <shadedArtifactAttached>true</shadedArtifactAttached> -->
-<!-- 		                        <shadedClassifierName>executable</shadedClassifierName> -->
-		                    </configuration>
-		                </execution>
-		            </executions>
-		            <dependencies>
-		                <dependency>
-		                    <groupId>org.apache.cxf</groupId>
-		                    <artifactId>cxf-buildtools</artifactId>
-		                    <version>2.2.12</version>
-		                    <type>jar</type>
-		                    <scope>compile</scope>
-		                </dependency>
-		                <dependency>
-							<groupId>org.apache.cxf</groupId>
-							<artifactId>cxf-bundle-jaxrs</artifactId>
-							<version>2.7.0</version>
-						</dependency>			                			                
-		            </dependencies>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>		                    		
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>at.ac.tuwien.dsg.cloud.salsa.pioneer.Main</mainClass>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.handlers</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.schemas</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/services/com.sun.tools.xjc.Plugin</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/cxf/cxf.extension</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                                    <resource>META-INF/extensions.xml</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                                    <resource>META-INF/cxf/extensions.xml</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/cxf/bus-extensions.txt</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                                    <resource>META-INF/cxf/bus-extensions.xml</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                                    <resource>META-INF/wsdl.plugin.xml</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                                    <resource>META-INF/tools.service.validator.xml</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.cxf.maven.PluginTransformer">
+                                    <resource>META-INF/tools-plugin.xml</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
+                                    <resource>META-INF/cxf/java2wsbeans.xml</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.cxf.maven.CXFAllTransformer" />
+                            </transformers>
+                            <!-- 		                        <shadedArtifactAttached>true</shadedArtifactAttached> -->
+                            <!-- 		                        <shadedClassifierName>executable</shadedClassifierName> -->
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.cxf</groupId>
+                        <artifactId>cxf-buildtools</artifactId>
+                        <version>2.2.12</version>
+                        <type>jar</type>
+                        <scope>compile</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.cxf</groupId>
+                        <artifactId>cxf-bundle-jaxrs</artifactId>
+                        <version>2.7.0</version>
+                    </dependency>			                			                
+                </dependencies>
+            </plugin>
 
-		</plugins>
-	</build>
+        </plugins>
+    </build>
 
 
 

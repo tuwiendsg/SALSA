@@ -1,18 +1,16 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright 2013 Technische Universitat Wien (TUW), Distributed Systems Group E184
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the
+ * License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****************************************************************************
+ */
 package at.ac.tuwien.dsg.cloud.salsa.engine.services;
 
 import java.io.File;
@@ -35,88 +33,66 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-
 /**
- * This Service support the customer in storing application description (TOSCA)
- * and application artifacts. It act as a repository of service.
+ * This Service support the customer in storing application description (TOSCA) and application artifacts. It act as a repository of service.
+ *
  * @author hungld
  *
  */
 @Path("/app")
 public class AppRepository {
-		
-	static Logger logger = Logger.getLogger("SalsaCenterLogger");;
-		
-//	@POST
-//	@Path("/upload/artifact")
-//	@Consumes(MediaType.MULTIPART_FORM_DATA)
-//	public Response submitService(
-//			@Multipart("file") InputStream uploadedInputStream,
-//			@Multipart("file") FormDataContentDisposition fileDetail) {
-//		String artifactName = fileDetail.getFileName(); // file name is the service
-//		checkAndCreateFolder(CenterConfiguration.getArtifactStoragePath());
-//		String uploadedFileLocation = CenterConfiguration
-//				.getArtifactStoragePath() + File.separator + artifactName;
-//		writeToFile(uploadedInputStream, uploadedFileLocation);
-//		String output = "Uploaded artifact: " + artifactName;
-//		return Response.status(200).entity(output).build();
-//	}
+
+    static Logger logger = Logger.getLogger("SalsaCenterLogger");
+
+    ;
+
 	
 	@GET
-	@Path("/getservicetemplatejsonlist")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getservicetemplatejsonlist() {
-		logger.debug("Get service template list at: " + SalsaConfiguration.getToscaTemplateStorage());
-		return listFolderToJson(SalsaConfiguration.getToscaTemplateStorage());
-	}
-	
-	@GET
-	@Path("/getartifactjsonlist")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getartifactjsonlist() {
-		
-		return listFolderToJson(SalsaConfiguration.getArtifactStorage());		
-	}
-	
-	
-	private String listFolderToJson(String pathName){
-		try {
-			FolderJsonList serviceList = new FolderJsonList(pathName);
-			Gson json = new GsonBuilder().setPrettyPrinting().create();
-			return json.toJson(serviceList);
-		} catch (Exception e) {
-			logger.error("Could not list the folder: " + pathName);
-			return "";
-		}
-	}
-	
-	
-	// save uploaded file to new location
-		private static void writeToFile(InputStream uploadedInputStream,
-				String uploadedFileLocation) {	
-			try {
-				OutputStream out = new FileOutputStream(new File(
-						uploadedFileLocation));
-				int read = 0;
-				byte[] bytes = new byte[1024];
-				
-				while ((read = uploadedInputStream.read(bytes)) != -1) {
-					out.write(bytes, 0, read);
-				}
-				out.flush();
-				out.close();
-			} catch (IOException e) {			
-				EngineLogger.logger.error("Error writing to file: "
-						+ uploadedFileLocation);
-				EngineLogger.logger.error(e.toString());
-			}		
-		}
-		
-		private static void checkAndCreateFolder(String folderName){
-			File f = new File(folderName);
-			if (!f.exists()){
-				f.mkdir();
-			}
-		}
-	
+    @Path("/getservicetemplatejsonlist")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getservicetemplatejsonlist() {
+        logger.debug("Get service template list at: " + SalsaConfiguration.getToscaTemplateStorage());
+        return listFolderToJson(SalsaConfiguration.getToscaTemplateStorage());
+    }
+
+    @GET
+    @Path("/getartifactjsonlist")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getartifactjsonlist() {
+
+        return listFolderToJson(SalsaConfiguration.getArtifactStorage());
+    }
+
+    private String listFolderToJson(String pathName) {
+        try {
+            FolderJsonList serviceList = new FolderJsonList(pathName);
+            Gson json = new GsonBuilder().setPrettyPrinting().create();
+            return json.toJson(serviceList);
+        } catch (Exception e) {
+            logger.error("Could not list the folder: " + pathName);
+            return "";
+        }
+    }
+
+    // save uploaded file to new location
+    private static void writeToFile(InputStream uploadedInputStream,
+            String uploadedFileLocation) {
+        try {
+            OutputStream out = new FileOutputStream(new File(
+                    uploadedFileLocation));
+            int read = 0;
+            byte[] bytes = new byte[1024];
+
+            while ((read = uploadedInputStream.read(bytes)) != -1) {
+                out.write(bytes, 0, read);
+            }
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            EngineLogger.logger.error("Error writing to file: "
+                    + uploadedFileLocation);
+            EngineLogger.logger.error(e.toString());
+        }
+    }
+
 }

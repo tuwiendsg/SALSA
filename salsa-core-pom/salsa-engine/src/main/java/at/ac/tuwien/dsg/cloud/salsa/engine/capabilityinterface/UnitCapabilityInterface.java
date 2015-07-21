@@ -6,7 +6,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 
 /**
  *
@@ -14,7 +14,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaEngineException;
  */
 public interface UnitCapabilityInterface {
 
-    public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaEngineException;
+    public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException;
 
-    public void remove(String serviceId, String nodeId, int instanceId) throws SalsaEngineException;
+    public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException;
 }
