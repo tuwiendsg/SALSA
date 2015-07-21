@@ -35,19 +35,10 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureArtifact;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureState;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Layout;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
-import org.apache.log4j.pattern.LogEvent;
 import org.apache.log4j.spi.LoggingEvent;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -94,8 +85,7 @@ public class SalsaEngineListener {
                                 updateInstanceCapability(fullID, state);
                                 ActionIDManager.removeAction(state.getActionID());
                             } catch (SalsaException ex) {
-                                EngineLogger.logger.error("Deployment action failed. ActionID: {}",fullID.getActionID());
-                                ex.printStackTrace();
+                                EngineLogger.logger.error("Deployment action failed. ActionID: {}",fullID.getActionID(), ex);
                             }
                         }
                         salsaState = SalsaEntityState.DEPLOYED;

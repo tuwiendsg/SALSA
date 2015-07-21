@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties.SalsaMappingProperty;
+import java.util.Objects;
 
 /**
  *
@@ -192,6 +193,13 @@ public class SalsaInstanceDescription_VM {
                     .getInstanceId());
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + Objects.hashCode(this.instanceId);
+        return hash;
     }
 
     public void updateFromMappingProperties(SalsaMappingProperties maps) {

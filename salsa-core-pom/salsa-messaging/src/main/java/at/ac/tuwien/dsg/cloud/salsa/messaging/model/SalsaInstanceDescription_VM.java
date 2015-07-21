@@ -22,12 +22,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  *
  * This class acts as a container for all the information of Salsa Virtual Machine instances
  *
- * @author Duc-Hung Le TODO: Unified instance type. Currently: use String.
+ * @author Duc-Hung Le TODO:
+ * Unified instance type. Currently: use String.
  */
 public class SalsaInstanceDescription_VM {
 
@@ -155,6 +157,13 @@ public class SalsaInstanceDescription_VM {
                     .getInstanceId());
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 31 * hash + Objects.hashCode(this.instanceId);
+        return hash;
     }
 
     public Map<String, String> exportToMap() {

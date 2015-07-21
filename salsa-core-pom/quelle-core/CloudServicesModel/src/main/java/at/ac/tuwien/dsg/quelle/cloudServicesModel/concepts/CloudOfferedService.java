@@ -58,12 +58,12 @@ public class CloudOfferedService extends Unit {
 //    private List<serviceUnit> mandatoryAssociations;
 //    private List<serviceUnit> optionalAssociations;
     {
-        costFunctions = new ArrayList<CostFunction>();
-        qualityProperties = new ArrayList<Quality>();
-        resourceProperties = new ArrayList<Resource>();
+        costFunctions = new ArrayList<>();
+        qualityProperties = new ArrayList<>();
+        resourceProperties = new ArrayList<>();
 //        optionalAssociations = new ArrayList<serviceUnit>();
 //        mandatoryAssociations = new ArrayList<serviceUnit>();
-        elasticityCapabilities = new ArrayList<ElasticityCapability>();
+        elasticityCapabilities = new ArrayList<>();
     }
 
     public CloudOfferedService() {
@@ -188,7 +188,7 @@ public class CloudOfferedService extends Unit {
 
     public List<ElasticityCapability> getServiceUnitAssociations() {
 
-        List<ElasticityCapability> mandatoryAssociations = new ArrayList<ElasticityCapability>();
+        List<ElasticityCapability> mandatoryAssociations = new ArrayList<>();
 
         for (ElasticityCapability capability : getElasticityCapabilities()) {
 
@@ -205,7 +205,7 @@ public class CloudOfferedService extends Unit {
 
     public List<ElasticityCapability> getResourceAssociations() {
 
-        List<ElasticityCapability> optionalAssociations = new ArrayList<ElasticityCapability>();
+        List<ElasticityCapability> optionalAssociations = new ArrayList<>();
 
         for (ElasticityCapability capability : getElasticityCapabilities()) {
 
@@ -222,7 +222,7 @@ public class CloudOfferedService extends Unit {
 
     public List<ElasticityCapability> getQualityAssociations() {
 
-        List<ElasticityCapability> optionalAssociations = new ArrayList<ElasticityCapability>();
+        List<ElasticityCapability> optionalAssociations = new ArrayList<>();
 
         for (ElasticityCapability capability : getElasticityCapabilities()) {
 
@@ -239,7 +239,7 @@ public class CloudOfferedService extends Unit {
 
     public List<ElasticityCapability> getCostAssociations() {
 
-        List<ElasticityCapability> optionalAssociations = new ArrayList<ElasticityCapability>();
+        List<ElasticityCapability> optionalAssociations = new ArrayList<>();
 
         for (ElasticityCapability capability : getElasticityCapabilities()) {
 
@@ -256,7 +256,7 @@ public class CloudOfferedService extends Unit {
 
     public List<ElasticityCapability> getElasticityCapabilities(Class capabilitiesTargetClass) {
 
-        List<ElasticityCapability> optionalAssociations = new ArrayList<ElasticityCapability>();
+        List<ElasticityCapability> optionalAssociations = new ArrayList<>();
 
         for (ElasticityCapability capability : getElasticityCapabilities()) {
             if (!capability.getTargetType().equals(capabilitiesTargetClass)) {
@@ -274,7 +274,7 @@ public class CloudOfferedService extends Unit {
         PaaS("PaaS"),
         MaaS("MaaS");
 
-        private String name;
+        private final String name;
 
         private Category(String name) {
             this.name = name;
@@ -320,6 +320,12 @@ public class CloudOfferedService extends Unit {
         }
         return true;
     }
+    
+    
+    
+    
+    
+    
 
     public CloudOfferedService withCategory(final String category) {
         this.category = category;
