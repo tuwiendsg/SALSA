@@ -147,15 +147,6 @@
         </dependency>
         
         
-        
-        
-        <dependency>
-            <groupId>at.ac.tuwien.dsg.comot.elise</groupId>
-            <artifactId>elise-service</artifactId>
-            <version>1.0</version>
-        </dependency>
-        
-        
     </dependencies>
 
     <build>
