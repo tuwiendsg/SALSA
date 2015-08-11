@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -43,9 +44,11 @@ import javax.management.ObjectName;
 import javax.management.Query;
 import javax.management.ReflectionException;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
 
 public class SystemFunctions {
     private final static File envFileGlobal = new File("/etc/environment");
+    private static Logger logger = EngineLogger.logger;
 
     public static String getEth0IPAddress() {
         // copy the getEth0IPv4 to /tmp and execute it, return the value        
@@ -57,23 +60,66 @@ public class SystemFunctions {
         } catch (IOException ex) {
             EngineLogger.logger.error("Cannot create template script file from: " + inputUrl + " to: " + dest.getPath());
         }
-        return executeCommand("/bin/bash /tmp/getEth0IPv4.sh", "/tmp", null, null);
+        return executeCommandGetOutput("/bin/bash /tmp/getEth0IPv4.sh", "/tmp", null);
+    }
+    
+    public static void executeCommandSimple(String cmd, String workingDir){
+        logger.debug("Running command: {} in folder: {}", cmd, workingDir);
+         Process p;
+        try {
+            String newCmd = "cd " + workingDir + " && " + cmd;
+            logger.debug("The whole command to execute: {}", newCmd);
+            p = Runtime.getRuntime().exec(newCmd);
+            p.waitFor();
+        } catch (IOException | InterruptedException ex) {
+            logger.error("Error when run command: {}", cmd , ex);
+        }
     }
 
+    public static int executeCommandGetReturnCode(String cmd, String workingDir, String executeFrom) {        
+        if (workingDir == null) {
+            workingDir = "/tmp";
+        }
+        logger.debug("Execute command: " + cmd +". Working dir: " + workingDir);
+        try {
+            String[] splitStr = cmd.split("\\s+");
+            ProcessBuilder pb = new ProcessBuilder(splitStr);
+            pb.directory(new File(workingDir));
+            pb = pb.redirectErrorStream(true);  // this is important to redirect the error stream to output stream, prevent blocking with long output
+            Map<String, String> env = pb.environment();
+            String path = env.get("PATH");
+            path = path + File.pathSeparator + "/usr/bin:/usr/sbin";
+            logger.debug("PATH to execute command: " + pb.environment().get("PATH"));
+            env.put("PATH", path);
+
+            Process p = pb.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {               
+                logger.debug(line);
+            }
+            p.waitFor();
+            int returnCode = p.exitValue();
+            logger.debug("Execute command done: " + cmd +". Get return code: " + returnCode);
+            return returnCode;
+        } catch (InterruptedException | IOException e1) {
+            logger.error("Error when execute command. Error: " + e1);
+        }
+        return -1;
+    }
+    
+    
     /**
      * Run a command and wait
      *
      * @param cmd The command to run
      * @param workingDir The folder where the command is run
-     * @param centerCon A center connection to log to the center. Null = no log
      * @param executeFrom For logging message to the center of where to execute the command.
-     * @return the output of the command
+     * @return
      */
-    public static String executeCommand(String cmd, String workingDir, SalsaCenterConnector centerCon, String executeFrom) {
-        EngineLogger.logger.debug("Execute command: " + cmd);
-        if (centerCon != null) {
-            centerCon.logMessage("Execute command from: " + executeFrom + ". Cmd: " + cmd);
-        }
+    public static String executeCommandGetOutput(String cmd, String workingDir, String executeFrom) {
+        logger.debug("Execute command: " + cmd);
         if (workingDir == null) {
             workingDir = "/tmp";
         }
@@ -81,10 +127,11 @@ public class SystemFunctions {
             String[] splitStr = cmd.split("\\s+");
             ProcessBuilder pb = new ProcessBuilder(splitStr);
             pb.directory(new File(workingDir));
+            pb = pb.redirectErrorStream(true);  // this is important to redirect the error stream to output stream, prevent blocking with long output
             Map<String, String> env = pb.environment();
             String path = env.get("PATH");
             path = path + File.pathSeparator + "/usr/bin:/usr/sbin";
-            EngineLogger.logger.debug("PATH to execute command: " + pb.environment().get("PATH"));
+            logger.debug("PATH to execute command: " + pb.environment().get("PATH"));
             env.put("PATH", path);
 
             Process p = pb.start();
@@ -98,20 +145,23 @@ public class SystemFunctions {
                     output.append(line);
                 }
                 lineCount += 1;
-                EngineLogger.logger.debug(line);
+                logger.debug(line);
+            }
+            if (lineCount>=10){
+                logger.debug("... there are alot of more output here which is not shown ! ...");
             }
             p.waitFor();
             System.out.println("Execute Commang output: " + output.toString().trim());
 
             if (p.exitValue() == 0) {
-                EngineLogger.logger.debug("Command exit 0, result: " + output.toString().trim());
+                logger.debug("Command exit 0, result: " + output.toString().trim());
                 return output.toString().trim();
             } else {
-                EngineLogger.logger.debug("Command return non zero code: " + p.exitValue());
+                logger.debug("Command return non zero code: " + p.exitValue());
                 return null;
             }
         } catch (InterruptedException | IOException e1) {
-            EngineLogger.logger.error("Error when execute command. Error: " + e1);
+            logger.error("Error when execute command. Error: " + e1);
         }
         return null;
     }

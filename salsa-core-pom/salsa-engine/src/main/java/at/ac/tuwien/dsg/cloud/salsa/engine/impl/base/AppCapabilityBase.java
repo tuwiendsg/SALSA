@@ -30,19 +30,22 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInt
 import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineConnectionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.DependencyConfigurationException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.PioneerManagementException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.GenericUnitCapability;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.InfoManagement;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineImplAll;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.ActionIDManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor.MQTTPublish;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessage;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessageTopic;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureArtifact;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.items.SalsaArtifactType;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
+import generated.oasis.tosca.TDefinitions;
+import generated.oasis.tosca.TRelationshipTemplate;
 import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.core.Response;
@@ -197,9 +200,9 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
                     if (!masterNode.getInstancesList().get(0).getState().equals(SalsaEntityState.DEPLOYED)) {
                         EngineLogger.logger.debug("Node: " + unit.getId() + "/" + instanceId + " is waiting for connectto node: " + masterNode.getId() + " but the state is not DEPLOYED, it is: " + masterNode.getInstancesList().get(0).getState());
                         fullfilled = false;
-                        if (masterNode.getInstancesList().get(0).getState().equals(SalsaEntityState.ERROR)){
-                            centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.ERROR, "Error due to a configuration failed from node: " + masterNode.getId()+"/"+masterNode.getInstancesList().get(0).getInstanceId());
-                            throw new DependencyConfigurationException(serviceId+"/"+nodeId+"/"+instanceId, serviceId+"/"+ masterNode.getId()+"/"+masterNode.getInstancesList().get(0).getInstanceId(), "Domino effect: configuration failed due to an error of a dependency");
+                        if (masterNode.getInstancesList().get(0).getState().equals(SalsaEntityState.ERROR)) {
+                            centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.ERROR, "Error due to a configuration failed from node: " + masterNode.getId() + "/" + masterNode.getInstancesList().get(0).getInstanceId());
+                            throw new DependencyConfigurationException(serviceId + "/" + nodeId + "/" + instanceId, serviceId + "/" + masterNode.getId() + "/" + masterNode.getInstancesList().get(0).getInstanceId(), "Domino effect: configuration failed due to an error of a dependency");
                         }
                         break;
                     }
@@ -214,7 +217,23 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
                     EngineLogger.logger.debug("Querying capability of node: {}/{}/{}/{} " + serviceId, topologyId, nodeId, instanceId, masterNode.getCapabilityVars().get(0));
 
                     String env = centerCon.getCapabilityValue(serviceId, topologyId, masterNode.getId(), masterInstance.getInstanceId(), masterNode.getCapabilityVars().get(0));
+                    // Here export the env (the capability) into different variable names. Currently, only apply for the FIRST capability value
+                    // export to masternode_IP
                     environment += masterNode.getId() + "_IP=" + env + ";";
+                    // export also to the capaID
+                    if (masterInstance.getCapabilities() !=null && !masterInstance.getCapabilities().getCapability().isEmpty()){
+                        String capaID=masterInstance.getCapabilities().getCapability().get(0).getId();
+                        environment += capaID + "=" + env +";";
+                    }
+                    //export even to the connectto relationship ID between master and node?
+                    TDefinitions def = centerCon.getToscaDescription(serviceId);
+                    TRelationshipTemplate rela = ToscaStructureQuery.getRelationshipBetweenTwoNode(ToscaStructureQuery.getNodetemplateById(masterNode.getId(), def), ToscaStructureQuery.getNodetemplateById(unit.getId(), def), def);
+                    if (rela!=null){
+                        environment += rela.getId() + "_IP=" + env +";";
+                    }
+                    
+                    
+                    
                 }
                 try {
                     Thread.sleep(3000);
@@ -225,12 +244,11 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
 
             EngineLogger.logger.debug("Set state to STAGING for node: " + nodeId + "/" + instanceId + " which will be hosted on " + hostedUnit.getId() + "/" + hostInstanceId);
 
-            
             // publish a message to pioneer
             String actionID = UUID.randomUUID().toString();
-            
+
             centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.STAGING, "Configuration request is sending to Pioneer. Action ID: " + actionID);
-            
+
             // note: with the capability "deploy", the runByMe parameter is null, pioneer will check this         
             String pioneerID = PioneerManager.getPioneerIDForNode(SalsaConfiguration.getUserName(), serviceId, nodeId, instanceId, newService);
             if (pioneerID == null) {
@@ -251,8 +269,10 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
             // find the actual script/ artifact to run, that is the runByMe field
             // add an action
             ActionIDManager.addAction(actionID, command);
-            SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.deploy, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.CENTER_REQUEST_PIONEER, null, command.toJson());
-            MessagePublishInterface publish = new MQTTPublish(SalsaConfiguration.getBroker());
+            SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_deploy, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.CENTER_REQUEST_PIONEER, null, command.toJson());
+            
+            MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBroker(), SalsaConfiguration.getBrokerType());
+            MessagePublishInterface publish = factory.getMessagePublisher();
             publish.pushMessage(msg);
         }
 

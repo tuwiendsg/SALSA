@@ -93,11 +93,11 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SystemFunctions;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor.MQTTPublish;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessage;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessageTopic;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureArtifact;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.items.SalsaArtifactType;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.items.ServiceCategory;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
@@ -1043,8 +1043,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             }
             SalsaMsgConfigureArtifact configCommand = new SalsaMsgConfigureArtifact(newActionID, actionName, pioneerID, SalsaConfiguration.getUserName(), serviceId, topoID, nodeId, instanceId, theCategory, "", runByMe, artifactTypeOfDeployment, "");
             ActionIDManager.addAction(newActionID, configCommand);
-            SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.reconfigure, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.CENTER_REQUEST_PIONEER, "", configCommand.toJson());
-            MessagePublishInterface publish = new MQTTPublish(SalsaConfiguration.getBroker());
+            SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_reconfigure, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.CENTER_REQUEST_PIONEER, "", configCommand.toJson());
+            MessagePublishInterface publish = SalsaConfiguration.getMessageClientFactory().getMessagePublisher();
             publish.pushMessage(msg);
 
             SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);

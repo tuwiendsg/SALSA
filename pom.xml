@@ -1,24 +1,132 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
-  <artifactId>SALSA</artifactId>
-  <version>2.0</version>
-  <packaging>pom</packaging>
+    <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+    <artifactId>SALSA</artifactId>
+    <version>2.0</version>
+    <packaging>pom</packaging>
 
-  <name>SALSA</name>
-  <url>http://maven.apache.org</url>
+    <name>SALSA</name>
+    <url>http://maven.apache.org</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <slf4j.version>1.7.5</slf4j.version>
+    </properties>
 	
-	<modules>
-		<module>salsa-cloud-connector</module>
-		<module>salsa-core-pom</module>
-<module>standalone</module>
-	 <module>salsa-information-pom</module>
-	</modules>
+    <modules>
+        <module>salsa-cloud-connector</module>
+        <module>salsa-core-pom</module>
+        <module>standalone</module>
+        <module>elise-pom</module>
+    </modules>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>4.0.4.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-neo4j</artifactId>
+                <version>3.3.0.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-frontend-jaxrs</artifactId>  
+                <version>3.1.1</version>          
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http</artifactId>   
+                <version>3.0.3</version>                   
+            </dependency>
+            <dependency> 
+                <groupId>org.apache.cxf</groupId> 
+                <artifactId>cxf-rt-rs-client</artifactId>       
+                <version>3.0.3</version>
+            </dependency> 
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http-hc</artifactId>
+                <version>3.0.3</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-jaxrs</artifactId>            
+                <version>1.9.13</version>
+            </dependency>            
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-core-asl</artifactId>
+                <version>1.9.13</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-xc</artifactId>     
+                <version>1.9.13</version>       
+            </dependency> 
+            
+            
+            
+            
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>			                
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+        
+    
+    <!-- Common dependency of all SALSA sub-projects -->
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>			
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+       
+        
+    </dependencies>
+
+    
+    <repositories>
+
+        <repository>
+            <id>neo4j</id>
+            <name>Neo4j</name>
+            <url>http://m2.neo4j.org/</url>
+        </repository>
+
+        <repository>
+            <id>spring-releases</id>
+            <name>Spring Releases</name>
+            <url>http://repo.spring.io/libs-release</url>
+        </repository>
+    </repositories>
+
 
 </project>

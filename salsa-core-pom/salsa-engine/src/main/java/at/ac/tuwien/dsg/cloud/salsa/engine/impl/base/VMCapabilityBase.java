@@ -199,6 +199,8 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
         userDataBuffer.append("echo 'SALSA_PIONEER_WEB=").append(SalsaConfiguration.getPioneerWeb()).append("' >> ").append(specificVariableFile).append(" \n");
         userDataBuffer.append("echo 'SALSA_PIONEER_RUN=").append(SalsaConfiguration.getPioneerRun()).append("' >> ").append(specificVariableFile).append(" \n");
         userDataBuffer.append("echo 'SALSA_CENTER_ENDPOINT=").append(SalsaConfiguration.getSalsaCenterEndpoint()).append("' >> ").append(specificVariableFile).append(" \n");
+        userDataBuffer.append("echo 'BROKER=").append(SalsaConfiguration.getBroker()).append("' >> ").append(specificVariableFile).append(" \n");
+        userDataBuffer.append("echo 'BROKER_TYPE=").append(SalsaConfiguration.getBrokerType()).append("' >> ").append(specificVariableFile).append(" \n");
 
         // download pioneer
         List<String> fileLst = Arrays.asList(SalsaConfiguration.getPioneerFiles().split(","));

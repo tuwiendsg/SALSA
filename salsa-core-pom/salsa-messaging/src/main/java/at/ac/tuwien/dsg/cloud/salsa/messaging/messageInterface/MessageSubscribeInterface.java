@@ -17,8 +17,6 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface;
 
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessage;
-
 /**
  *
  * @author Duc-Hung Le
@@ -26,6 +24,6 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessage;
 public interface MessageSubscribeInterface {
 
     public void subscribe(String topic);
+    public void disconnect();
 
-    public void handleMessage(SalsaMessage paramSalsaMessage);
 }

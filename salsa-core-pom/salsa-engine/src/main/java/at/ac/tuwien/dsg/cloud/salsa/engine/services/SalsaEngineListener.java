@@ -27,31 +27,34 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.ActionIDManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor.MQTTSubscribe;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeInterface;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.PioneerInfo;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessage;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessageTopic;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureArtifact;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureState;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.PioneerInfo;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureState;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import java.io.File;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.spi.LoggingEvent;
-import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
  * @author Duc-Hung Le
  */
 public class SalsaEngineListener {
+    MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBroker(), SalsaConfiguration.getBrokerType());
 
     @PostConstruct
     public void init() {
-        EngineLogger.logger.debug("Subscribing to the control topic : " + SalsaMessageTopic.PIONEER_SYNC + " and " + SalsaMessageTopic.PIONEER_UPDATE_STATE);
-        MessageSubscribeInterface subscriber1 = new MQTTSubscribe(SalsaConfiguration.getBroker()) {
+        EngineLogger.logger.debug("Subscribing to the control topic : " + SalsaMessageTopic.PIONEER_REGISTER + " and " + SalsaMessageTopic.PIONEER_UPDATE_STATE);
+        
+        
+        MessageSubscribeInterface subscriber1 = factory.getMessageSubscriber(new SalsaMessageHandling() {
 
             @Override
             public void handleMessage(SalsaMessage msg) {
@@ -108,10 +111,12 @@ public class SalsaEngineListener {
                     }
                 }
             }
-        };
+        });
+       
         subscriber1.subscribe(SalsaMessageTopic.PIONEER_UPDATE_STATE);
 
-        MessageSubscribeInterface subscriber2 = new MQTTSubscribe(SalsaConfiguration.getBroker()) {
+        MessageSubscribeInterface subscriber2 = factory.getMessageSubscriber(new SalsaMessageHandling() {
+
             @Override
             public void handleMessage(SalsaMessage msg) {
                 PioneerInfo piInfo = PioneerInfo.fromJson(msg.getPayload());
@@ -126,11 +131,11 @@ public class SalsaEngineListener {
                     } 
                 }
             }
-        };
-        subscriber2.subscribe(SalsaMessageTopic.PIONEER_SYNC);
-
-        MessageSubscribeInterface subscribe3 = new MQTTSubscribe(SalsaConfiguration.getBroker()) {
-            ObjectMapper mapper = new ObjectMapper();
+        });      
+        subscriber2.subscribe(SalsaMessageTopic.PIONEER_REGISTER);
+        
+        
+        MessageSubscribeInterface subscribe3 = factory.getMessageSubscriber(new SalsaMessageHandling() {
 
             @Override
             public void handleMessage(SalsaMessage msg) {
@@ -143,7 +148,7 @@ public class SalsaEngineListener {
                     EngineLogger.logger.warn("Cannot create log files for pioneer " + msg.getFromSalsa(), ex);
                 }
             }
-        };
+        });
         subscribe3.subscribe(SalsaMessageTopic.PIONEER_LOG);
 
     }

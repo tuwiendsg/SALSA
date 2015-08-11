@@ -18,9 +18,9 @@
 package at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor;
 
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeInterface;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessage;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessageTopic;
-import java.util.Arrays;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -31,13 +31,12 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
  *
  * @author Duc-Hung Le
  */
-public abstract class MQTTSubscribe extends MQTTConnector implements MessageSubscribeInterface {
+public class MQTTSubscribe extends MQTTConnector implements MessageSubscribeInterface {
+    SalsaMessageHandling handler;
 
-    public MQTTSubscribe(String broker) {
+    public MQTTSubscribe(String broker, SalsaMessageHandling handling) {
         super(broker);
-    }
-
-    public MQTTSubscribe() {
+        this.handler = handling;
     }
 
     @Override
@@ -53,20 +52,21 @@ public abstract class MQTTSubscribe extends MQTTConnector implements MessageSubs
             @Override
             public void messageArrived(String topic, MqttMessage mm) throws Exception {                
                 ObjectMapper mapper = new ObjectMapper();
-                SalsaMessage em = (SalsaMessage) mapper.readValue(mm.getPayload(), SalsaMessage.class);
+                SalsaMessage em = (SalsaMessage) mapper.readValue(mm.getPayload(), SalsaMessage.class);                
+                
                 if (!topic.equals(SalsaMessageTopic.PIONEER_LOG)) {
-                    logger.debug("A message arrived. From: " + em.getFromSalsa() + ". MsgType: " + em.getMsgType() + "Payload: " + em.getPayload());                    
-                }                
-                handleMessage(em);
+                    logger.debug("A message arrived. From: " + em.getFromSalsa() + ". MsgType: " + em.getMsgType() + ". Payload: " + em.getPayload());                    
+                }
+                handler.handleMessage(em);
             }
 
             @Override
 
             public void deliveryComplete(IMqttDeliveryToken imdt) {
                 logger.debug("Deliver complete. ");
-
             }
         };
+        
         if (this.queueClient == null) {
             connect();
         }
@@ -77,9 +77,8 @@ public abstract class MQTTSubscribe extends MQTTConnector implements MessageSubs
         } catch (MqttException ex) {
             logger.error("Failed to subscribed to the topic: " + topic);
             ex.printStackTrace();
-        }
+        } 
     }
 
-    @Override
-    public abstract void handleMessage(SalsaMessage msg);
+    
 }

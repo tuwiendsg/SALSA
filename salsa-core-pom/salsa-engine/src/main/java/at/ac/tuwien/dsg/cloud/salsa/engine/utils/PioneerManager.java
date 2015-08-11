@@ -21,7 +21,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.PioneerInfo;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.PioneerInfo;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -170,6 +170,9 @@ public class SalsaInstanceDescription_VM {
     }
 
     public PackagesDependencies getPackagesDependenciesList() {
+        if (this.packagesDependencies==null){
+            this.packagesDependencies = new PackagesDependencies();
+        }
         return packagesDependencies;
     }
 
@@ -244,16 +247,13 @@ public class SalsaInstanceDescription_VM {
     public static class PackagesDependencies {
 
         @XmlElement(name = "Package")
-        List<String> packageDependency;
+        List<String> packageDependency = new ArrayList<>();
 
         public List<String> getPackageDependency() {
             return packageDependency;
         }
 
-        public void setPackageDependency(List<String> packageDependency) {
-            if (this.packageDependency == null) {
-                this.packageDependency = new ArrayList<>();
-            }
+        public void setPackageDependency(List<String> packageDependency) {            
             this.packageDependency = packageDependency;
         }
 

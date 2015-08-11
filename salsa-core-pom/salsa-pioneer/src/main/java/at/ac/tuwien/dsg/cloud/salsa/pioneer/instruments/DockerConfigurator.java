@@ -17,10 +17,10 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments;
 
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaInstanceDescription_Docker;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureArtifact;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureState;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.items.SalsaArtifactType;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.DockerInfo;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureState;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SystemFunctions;
 import java.io.BufferedReader;
@@ -85,7 +85,7 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         return "";
     }
 
-    public SalsaInstanceDescription_Docker getDockerInfo(String containerID) {
+    public DockerInfo getDockerInfo(String containerID) {
         if (containerID == null || containerID.isEmpty()) {
             logger.error("Cannot get Docker information. Container ID is null or empty !");
             return null;
@@ -98,7 +98,7 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         String portmap = formatPortMap(dockerPortInfo.trim());
         logger.debug("portmap string after formating: " + portmap);
 
-        SalsaInstanceDescription_Docker dockerMachine = new SalsaInstanceDescription_Docker("local@dockerhost", containerID, name);
+        DockerInfo dockerMachine = new DockerInfo("local@dockerhost", containerID, name);
         dockerMachine.setBaseImage("salsa.ubuntu");
         dockerMachine.setInstanceType("os");
         dockerMachine.setPortmap(portmap);
