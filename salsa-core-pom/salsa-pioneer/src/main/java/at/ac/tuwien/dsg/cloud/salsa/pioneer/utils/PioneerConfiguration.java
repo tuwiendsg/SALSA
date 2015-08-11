@@ -17,8 +17,8 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.pioneer.utils;
 
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.PioneerInfo;
-import at.ac.tuwien.dsg.cloud.salsa.pioneer.queueLogger.QueueAppender;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.PioneerInfo;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.UUID;
-import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +65,10 @@ public class PioneerConfiguration {
     public static String getBroker() {
         return getGenericParameter("BROKER", "tcp://iot.eclipse.org:1883");
     }
+    
+    public static String getBrokerType() {
+        return getGenericParameter("BROKER_TYPE", "mqtt");
+    }
 
     public static String getWorkingDir() {
         return getGenericParameter("SALSA_WORKING_DIR", "/tmp");
@@ -74,6 +77,8 @@ public class PioneerConfiguration {
     public static String getWorkingDirOfInstance(String nodeID, int instanceID) {
         return getWorkingDir() + "/" + nodeID + "." + instanceID;
     }
+    
+    
 
     public static PioneerInfo getPioneerInfo() {
         return new PioneerInfo(getGenericParameter("SALSA_USER_NAME", "salsa-default"),

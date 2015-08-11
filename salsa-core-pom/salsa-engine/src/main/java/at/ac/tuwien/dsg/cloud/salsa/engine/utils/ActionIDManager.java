@@ -17,7 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.engine.utils;
 
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureArtifact;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
 import java.util.HashMap;
 import java.util.Map;
 

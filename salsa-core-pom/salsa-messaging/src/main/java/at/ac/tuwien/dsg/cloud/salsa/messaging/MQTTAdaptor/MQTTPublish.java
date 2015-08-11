@@ -18,8 +18,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor;
 
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessage;
-import java.util.Arrays;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
@@ -43,8 +42,8 @@ public class MQTTPublish extends MQTTConnector implements MessagePublishInterfac
                 connect();
             }
             System.out.println("Publishing message: " + content.getMsgType() + ", " + content.getTopic());
-            if (content.getPayload().length() < 2048) {
-                logger.debug("Content: " + content.getPayload());
+            if (content.getPayload() != null && content.getPayload().length() < 2048) {
+                logger.debug("Content: " + content);
             }
             MqttMessage message = new MqttMessage(content.toJson().getBytes());            
             message.setQos(this.qos);

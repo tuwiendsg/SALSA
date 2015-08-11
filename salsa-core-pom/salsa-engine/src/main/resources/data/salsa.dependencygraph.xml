@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Node inner="false" type="root" name="root">
+    <childrens inner="false" type="sw" name="ganglia">
+        <childrens inner="false" type="os" name="Ubuntu">
+            <childrens script="install ganglia on ubuntu" inner="false" type="sw" name="ganglia-ubuntu"/>
+        </childrens>
+        <childrens inner="false" type="os" name="CentOS">
+            <childrens script="install ganglia on centos" inner="false" type="sw" name="ganglia-centos"/>
+        </childrens>
+    </childrens>
+    <childrens script="script to install war" inner="false" type="sw" name="war">
+        <childrens inner="false" type="sw" name="Tomcat">
+            <childrens inner="false" type="os" name="Ubuntu">
+                <childrens script="install tomcat ubuntu" inner="false" type="sw" name="tomcat-ubuntu"/>
+            </childrens>
+            <childrens inner="false" type="os" name="Centos">
+                <childrens script="install tomcat centos" inner="false" type="sw" name="tomcat-centos"/>
+            </childrens>
+        </childrens>
+    </childrens>
+    <childrens inner="false" type="sw" name="python">
+        <childrens inner="false" type="os" name="Ubuntu">
+            <childrens script="install python on ubuntu" inner="false" type="sw" name="python-ubuntu"/>
+        </childrens>
+        <childrens inner="false" type="os" name="CentOS">
+            <childrens script="install python on centos" inner="false" type="sw" name="python-centos"/>
+        </childrens>
+    </childrens>
+    <childrens script="Script to install Jar" inner="false" type="sw" name="jar">
+        <childrens inner="false" type="sw" name="jre">
+            <childrens inner="true" type="jre:ver" name="1.8">
+                <childrens script="jre.1.7.centos.sh" inner="false" type="os" name="CentOS"/>
+                <childrens script="jre.1.8.ubuntu.sh" inner="false" type="os" name="Ubuntu"/>
+            </childrens>
+            <childrens inner="true" type="jre:ver" name="1.7">
+                <childrens script="jre.1.7.ubuntu.sh" inner="false" type="os" name="Ubuntu"/>
+                <childrens script="jre.1.8.ubuntu.sh" inner="false" type="os" name="CentOS"/>
+            </childrens>
+        </childrens>
+    </childrens>
+</Node>

@@ -21,7 +21,7 @@
 						<MappingProperty type="os">
 							<property name="instanceType">000001920</property>
 							<property name="provider">dsg@openstack</property> 
-							<property name="baseImage">8f1428ac-f239-42e0-ab35-137f6e234101</property>
+							<property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
 							<property name="packages">openjdk-7-jre</property>
 						</MappingProperty>
 					</MappingProperties>

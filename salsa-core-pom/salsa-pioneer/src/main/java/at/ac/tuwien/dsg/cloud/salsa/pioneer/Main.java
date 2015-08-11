@@ -17,15 +17,23 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.pioneer;
 
-import at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor.MQTTPublish;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor.MQTTSubscribe;
+import static at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType.apt;
+import static at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType.chef;
+import static at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType.chefSolo;
+import static at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType.dockerfile;
+import static at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType.sh;
+import static at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType.shcont;
+import static at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType.war;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeInterface;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessage;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessageTopic;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureArtifact;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureState;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.items.ServiceCategory;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureState;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
+import static at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage.MESSAGE_TYPE.discover;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.AptGetInstrument;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.ArtifactConfigurationInterface;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.BashContinuousInstrument;
@@ -34,20 +42,15 @@ import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.BashInstrument;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.ChefSoloInstrument;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.DockerConfigurator;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.WarInstrument;
-import at.ac.tuwien.dsg.cloud.salsa.pioneer.queueLogger.QueueAppender;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SystemFunctions;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import java.util.logging.LogManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -56,6 +59,7 @@ import org.slf4j.LoggerFactory;
 public class Main {
 
     static Logger logger = PioneerConfiguration.logger;
+    
 
     public static void main(String[] args) {
 
@@ -65,15 +69,17 @@ public class Main {
             command = args[0];
         }
 
-        MessageSubscribeInterface subscribe = new MQTTSubscribe(PioneerConfiguration.getBroker()) {
+        final MessageClientFactory factory = new MessageClientFactory(PioneerConfiguration.getBroker(), PioneerConfiguration.getBrokerType());
+        
+        MessageSubscribeInterface subscribe = factory.getMessageSubscriber(new SalsaMessageHandling() {
+
             @Override
             public void handleMessage(SalsaMessage msg) {
-
                 switch (msg.getMsgType()) {
                     case discover: {
                         break;
                     }
-                    case deploy: {
+                    case salsa_deploy: {
                         SalsaMsgConfigureArtifact confInfo = SalsaMsgConfigureArtifact.fromJson(msg.getPayload());
                         if (!confInfo.getPioneerID().equals(PioneerConfiguration.getPioneerID())) {
                             break;
@@ -81,8 +87,8 @@ public class Main {
                         logger.debug("Received message for DEPLOYMENT: " + msg.toJson());
                         // feedback that Pioneer is PROCESSING the request
                         SalsaMsgConfigureState confState = new SalsaMsgConfigureState(confInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.PROCESSING, 0, "Pioneer received the request and is processing. Action ID: " + confInfo.getActionID());
-                        SalsaMessage notifyMsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.messageReceived, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_STATE, "", confState.toJson());
-                        MessagePublishInterface publish_deploy = new MQTTPublish(PioneerConfiguration.getBroker());
+                        SalsaMessage notifyMsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_messageReceived, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_STATE, "", confState.toJson());
+                        MessagePublishInterface publish_deploy = factory.getMessagePublisher();
                         publish_deploy.pushMessage(notifyMsg);
 
                         logger.debug("The command is attracted: Target to pioneer {}, and mine is {}!", confInfo.getPioneerID(), PioneerConfiguration.getPioneerID());
@@ -94,8 +100,8 @@ public class Main {
                                 logger.debug("Yes, the action name is: deploy");
                                 SalsaMsgConfigureState downloadResult = downloadArtifact(confInfo);
                                 if (downloadResult.getState().equals(SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR)) {
-                                    MessagePublishInterface publish_conf = new MQTTPublish(PioneerConfiguration.getBroker());
-                                    SalsaMessage reply = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.answer, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_STATE, null, downloadResult.toJson());
+                                    MessagePublishInterface publish_conf = factory.getMessagePublisher();
+                                    SalsaMessage reply = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_configurationStateUpdate, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_STATE, null, downloadResult.toJson());
                                     publish_conf.pushMessage(reply);
                                     logger.error("Artifact download failed for unit: {}/{}/{}. The result is sent back to center." + confInfo.getService(), confInfo.getUnit(), confInfo.getInstance());
                                 } else {
@@ -105,8 +111,8 @@ public class Main {
                                     SalsaMsgConfigureState confResult = confModule.configureArtifact(confInfo);
                                     logger.debug("Configuration done ! Result: " + confResult.getState() + ", Info: " + confResult.getInfo());
 
-                                    MessagePublishInterface publish_conf = new MQTTPublish(PioneerConfiguration.getBroker());
-                                    SalsaMessage reply = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.answer, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_STATE, null, confResult.toJson());
+                                    MessagePublishInterface publish_conf = factory.getMessagePublisher();
+                                    SalsaMessage reply = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_configurationStateUpdate, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_STATE, null, confResult.toJson());
                                     publish_conf.pushMessage(reply);
                                     logger.debug("Result is published !");
                                 }
@@ -115,22 +121,22 @@ public class Main {
                         }
                         break;
                     }
-                    case reconfigure: {
+                    case salsa_reconfigure: {
                         SalsaMsgConfigureArtifact cmd = SalsaMsgConfigureArtifact.fromJson(msg.getPayload());
                         logger.debug("Received a reconfiguration command for: " + cmd.getUser() + "/" + cmd.getService() + "/" + cmd.getUnit() + "/" + cmd.getInstance() + ". ActionName: " + cmd.getActionName() + ", ActionID: " + cmd.getActionID());
                         // send back message that the pioneer received the command
                         SalsaMsgConfigureState confState = new SalsaMsgConfigureState(cmd.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.PROCESSING, 0, "Pioneer received the request and is processing. Action ID: " + cmd.getActionID());
-                        SalsaMessage notifyMsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.messageReceived, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_STATE, "", confState.toJson());
-                        MessagePublishInterface publish = new MQTTPublish(PioneerConfiguration.getBroker());
+                        SalsaMessage notifyMsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_messageReceived, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_STATE, "", confState.toJson());
+                        MessagePublishInterface publish = factory.getMessagePublisher();
                         publish.pushMessage(notifyMsg);
                         // now reconfigure: only support script now
                         SystemFunctions.executeCommandGetReturnCode(cmd.getRunByMe(), PioneerConfiguration.getWorkingDirOfInstance(cmd.getUnit(), cmd.getInstance()), PioneerConfiguration.getPioneerID());
                         break;
                     }
-                    case answer: {
+                    case salsa_configurationStateUpdate: {
                         break;
                     }
-                    case messageReceived: {
+                    case salsa_messageReceived: {
                         break;
                     }
                     default: {
@@ -139,12 +145,16 @@ public class Main {
                     }
                 }
             }
-        };
+        });
+        if (subscribe==null){
+            logger.error("Cannot subscribe to the message queue: {}, type: {}. Pioneer QUIT !", PioneerConfiguration.getBroker(), PioneerConfiguration.getBrokerType());
+            return;
+        }
         subscribe.subscribe(SalsaMessageTopic.CENTER_REQUEST_PIONEER);
-
+        
         // send information of this pioneer
-        MessagePublishInterface publish = new MQTTPublish(PioneerConfiguration.getBroker());
-        publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.pioneer_alived, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_SYNC, null, PioneerConfiguration.getPioneerInfo().toJson()));
+        MessagePublishInterface publish = factory.getMessagePublisher();
+        publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_pioneerActivated, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_REGISTER, null, PioneerConfiguration.getPioneerInfo().toJson()));
     }
 
     private static SalsaMsgConfigureState downloadArtifact(SalsaMsgConfigureArtifact confInfo) {

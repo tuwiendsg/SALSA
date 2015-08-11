@@ -17,12 +17,10 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments;
 
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureArtifact;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.commands.SalsaMsgConfigureState;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.items.SalsaArtifactType;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureState;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SystemFunctions;
-import org.apache.commons.io.FilenameUtils;
 
 
 import org.slf4j.Logger;

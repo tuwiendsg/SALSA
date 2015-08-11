@@ -16,60 +16,62 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.7</java.version>
-        <cxf.version>3.0.3</cxf.version>
-        <spring.version>4.0.4.RELEASE</spring.version>
-        <slf4j.version>1.7.5</slf4j.version>
+        <java.version>1.7</java.version>        
     </properties>
     
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-            <type>jar</type>
+            <groupId>org.eclipse.camf.carl</groupId>
+            <artifactId>carlParser</artifactId>		
+            <version>1.0</version>	
+            <type>jar</type>            
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>4.5</version>
+            <classifier>complete</classifier>
         </dependency>
 
-		
+        
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>			
+            <scope>test</scope>
+        </dependency>
+
         <!-- Apache CXF dependencies -->
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-            <version>${cxf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
-            <version>${cxf.version}</version>
         </dependency>
         <dependency> 
             <groupId>org.apache.cxf</groupId> 
             <artifactId>cxf-rt-rs-client</artifactId> 
-            <version>${cxf.version}</version> 
         </dependency> 
 
         <!--Spring Framework dependencies--> 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
         </dependency>
+       
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-jaxrs</artifactId>            
-            <version>1.9.13</version>
         </dependency>
 
 	                              	
@@ -129,24 +131,31 @@
             <version>3.0-SNAPSHOT</version>
             <type>jar</type>
         </dependency> 
-        <!--
-                <dependency>
-                    <groupId>at.ac.tuwien.quelle</groupId>
-                    <artifactId>QUELLE-Core-CloudServicesModel</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                </dependency>
-                <dependency>
-                    <groupId>at.ac.tuwien.quelle</groupId>
-                    <artifactId>QUELLE-Core-ElasticityQuantification</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                </dependency>
-                <dependency>
-                    <groupId>at.ac.tuwien.mela</groupId>
-                    <artifactId>MELA-Common</artifactId>
-                    <version>3.0-SNAPSHOT</version>
-                    <type>jar</type>
-                </dependency>        
-        -->
+        
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+            <artifactId>domainmodels</artifactId>
+            <version>2.0</version>
+        </dependency>
+        
+        
+        <!--        This to build the big war file-->
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+            <artifactId>elise-master</artifactId>
+            <version>2.0</version>
+        </dependency>
+        
+        
+        
+        
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.comot.elise</groupId>
+            <artifactId>elise-service</artifactId>
+            <version>1.0</version>
+        </dependency>
+        
+        
     </dependencies>
 
     <build>
@@ -186,9 +195,9 @@
                         <phase>package</phase>
                         <configuration>
                             <path>/${project.build.finalName}</path>
-                            <!--                            <systemProperties>
+                            <systemProperties>
                                 <JAVA_OPTS>-Xms256m -Xmx512m -XX:MaxPermSize=256m</JAVA_OPTS>
-                            </systemProperties>-->
+                            </systemProperties>
                         </configuration>
                     </execution>
                 </executions>

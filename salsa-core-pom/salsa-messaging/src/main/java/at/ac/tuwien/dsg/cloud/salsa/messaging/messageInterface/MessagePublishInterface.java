@@ -17,7 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface;
 
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessage;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 
 /**
  *
@@ -26,5 +26,6 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.model.SalsaMessage;
 public interface MessagePublishInterface {
 
     public void pushMessage(SalsaMessage content);
+    public void disconnect();
 
 }

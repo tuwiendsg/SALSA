@@ -40,9 +40,9 @@ public class AsyncUnitCapability implements UnitCapabilityInterface {
         GenericUnitCapability geneCapa = new GenericUnitCapability();
         geneCapa.remove(serviceId, nodeId, instanceId);
     }
-    
-    
+
     private class asynSpawnInstances implements Runnable {
+
         String serviceId, topoId, nodeId;
         int instanceId;
 
@@ -51,7 +51,7 @@ public class AsyncUnitCapability implements UnitCapabilityInterface {
             this.nodeId = nodeId;
             this.instanceId = instanceId;
         }
-        
+
         @Override
         public void run() {
             try {
@@ -61,8 +61,7 @@ public class AsyncUnitCapability implements UnitCapabilityInterface {
                 EngineLogger.logger.error(e.getMessage());
             }
         }
-        
-        
+
     }
-    
+
 }

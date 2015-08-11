@@ -58,11 +58,12 @@ public class MQTTConnector {
             connOpts.setCleanSession(true);            
             this.queueClient.connect(connOpts);            
             if (this.queueClient.isConnected()) {
-                this.logger.debug("Connected to the broker: " + this.broker);
+                this.logger.debug("Connected to the MQTT broker: " + this.broker);
+                return true;
             } else {
                 this.logger.error("Failed to connect to the broker: " + this.broker);
-            }
-            return true;
+                return false;
+            }            
         } catch (MqttException ex) {
             this.logger.debug(ex.toString());
             ex.printStackTrace();

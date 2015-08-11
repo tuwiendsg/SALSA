@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+        <artifactId>elise-pom</artifactId>
+        <version>2.0</version>
+    </parent>
+    <artifactId>elise-model</artifactId>
+    <name>elise-model</name>
+    <packaging>jar</packaging>
+    
+    <properties>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+    </properties>
+    
+    <dependencies>        
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-neo4j</artifactId>           
+            <!--            <version>3.2.1.RELEASE</version> -->
+        </dependency>
+        
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+            <artifactId>domainmodels</artifactId>
+            <version>2.0</version>
+        </dependency>
+        
+        
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        
+      
+        
+    </dependencies>
+    
+
+    
+</project>

@@ -215,7 +215,9 @@ public class SalsaCenterConnector {
     /**
      * Query the Cloud Service Object, contain all runtime replicas of the service.
      *
+     * @param serviceId
      * @return the CloudService instance.
+     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException
      */
     public CloudService getUpdateCloudServiceRuntime(String serviceId) throws SalsaException {
         // some time it's false to get the Cloud Service because of error, retry 10 time:
@@ -256,7 +258,9 @@ public class SalsaCenterConnector {
     /**
      * Query the Cloud Service Object, contain all runtime replicas of the service.
      *
+     * @param serviceId
      * @return XML String of the object.
+     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException
      */
     public String getUpdateCloudServiceRuntimeXML(String serviceId) throws SalsaException {
         Response res = engineInternal.getService(serviceId);

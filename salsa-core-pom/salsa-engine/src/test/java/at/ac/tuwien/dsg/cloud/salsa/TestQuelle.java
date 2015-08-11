@@ -17,14 +17,10 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa;
 
-import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.QuelleService;
-import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.Recommendations;
 import at.ac.tuwien.dsg.quelle.cloudServicesModel.concepts.CloudProvider;
 import at.ac.tuwien.dsg.quelle.cloudServicesModel.requirements.MultiLevelRequirements;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import org.junit.Assert;

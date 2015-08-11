@@ -1,0 +1,30 @@
+ERROR 14:13:37,645 [main] (SalsaStackDependenciesGraph.java:140) - Error with marshalling SalsaStackDependenciesGraph
+com.sun.xml.bind.v2.runtime.IllegalAnnotationsException: 2 counts of IllegalAnnotationExceptions
+java.util.Map is an interface, and JAXB can't handle interfaces.
+	this problem is related to the following location:
+		at java.util.Map
+		at java.util.Map at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.main.SalsaStackDependenciesGraph.dependencies
+		at at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.main.SalsaStackDependenciesGraph
+java.util.Map does not have a no-arg default constructor.
+	this problem is related to the following location:
+		at java.util.Map
+		at java.util.Map at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.main.SalsaStackDependenciesGraph.dependencies
+		at at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.main.SalsaStackDependenciesGraph
+
+	at com.sun.xml.bind.v2.runtime.IllegalAnnotationsException$Builder.check(IllegalAnnotationsException.java:102)
+	at com.sun.xml.bind.v2.runtime.JAXBContextImpl.getTypeInfoSet(JAXBContextImpl.java:472)
+	at com.sun.xml.bind.v2.runtime.JAXBContextImpl.<init>(JAXBContextImpl.java:302)
+	at com.sun.xml.bind.v2.runtime.JAXBContextImpl$JAXBContextBuilder.build(JAXBContextImpl.java:1136)
+	at com.sun.xml.bind.v2.ContextFactory.createContext(ContextFactory.java:154)
+	at com.sun.xml.bind.v2.ContextFactory.createContext(ContextFactory.java:121)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at javax.xml.bind.ContextFinder.newInstance(ContextFinder.java:248)
+	at javax.xml.bind.ContextFinder.newInstance(ContextFinder.java:235)
+	at javax.xml.bind.ContextFinder.find(ContextFinder.java:432)
+	at javax.xml.bind.JAXBContext.newInstance(JAXBContext.java:637)
+	at javax.xml.bind.JAXBContext.newInstance(JAXBContext.java:584)
+	at at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.main.SalsaStackDependenciesGraph.toXML(SalsaStackDependenciesGraph.java:130)
+	at at.ac.tuwien.dsg.cloud.salsa.DependencyGraphGenerating.main(DependencyGraphGenerating.java:59)

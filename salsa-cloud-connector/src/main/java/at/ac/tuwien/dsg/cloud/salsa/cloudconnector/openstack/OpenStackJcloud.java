@@ -67,14 +67,25 @@ public class OpenStackJcloud implements CloudInterface, Cloneable {
         //logger.info(Configuration.getCloudAPIType()+" "+Configuration.getCloudUser()+" "+Configuration.getCloudPassword()+" "+Configuration.getCloudAPIEndpoint());
         this.LOGGER = logger;
         this.keyName = keyName;
-        ComputeServiceContext context = ContextBuilder.newBuilder("openstack-nova")
-                .credentials(tenant + ":" + username, password)
-                .endpoint(endpoint)
-                // .modules(modules)
-                //.buildApi(NovaApi.class);
-                .buildView(ComputeServiceContext.class);
+//        ComputeServiceContext context = ContextBuilder.newBuilder("openstack-nova")
+//                .credentials(tenant + ":" + username, password)
+//                .endpoint(endpoint)
+//                // .modules(modules)
+//                //.buildApi(NovaApi.class);
+//                .buildView(ComputeServiceContext.class);
 
-        client = (NovaApi) context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
+        //client = (NovaApi) context.unwrap(NovaApiMetadata.contextToken(null)).getApi();
+        
+        client = ContextBuilder.newBuilder("openstack-nova")
+                .endpoint(endpoint)
+                .credentials(tenant + ":" + username, password)
+                //.modules(modules)
+                .buildApi(NovaApi.class);
+        
+        
+        
+        
+        
 
         serverApi = client.getServerApiForZone(region);
 

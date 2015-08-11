@@ -19,10 +19,15 @@
 
 <web-app>
   <display-name>SALSA</display-name>
+  
   <context-param>
   	<param-name>contextConfigLocation</param-name>
-  	<param-value>WEB-INF/beans.xml</param-value>
+  	<param-value>
+            WEB-INF/beans.xml
+            WEB-INF/beans_elise.xml
+        </param-value>
   </context-param>
+  
   <listener>
   	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
@@ -38,4 +43,5 @@
   	<servlet-name>SalsaEngineServlet</servlet-name>
   	<url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
+
 </web-app>
