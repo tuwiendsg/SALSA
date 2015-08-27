@@ -17,6 +17,9 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.domainmodels.types;
 
+import javax.xml.bind.annotation.XmlType;
+
+
 public enum ServiceCategory {
 
     VirtualMachine(ServiceStack.Infrastructure),// provide operating system to run other programs

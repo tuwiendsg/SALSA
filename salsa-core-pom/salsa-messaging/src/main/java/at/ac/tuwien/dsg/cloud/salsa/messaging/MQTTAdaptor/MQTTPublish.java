@@ -59,11 +59,6 @@ public class MQTTPublish extends MQTTConnector implements MessagePublishInterfac
         }
     }
 
-    public void pushMessageAndDisconnect(SalsaMessage content) {
-        pushMessage(content);
-        disconnect();
-    }
-
     public void pushCustomData(String content, String topic) {
         try {
             if (this.queueClient == null) {

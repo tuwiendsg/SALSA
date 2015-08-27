@@ -14,14 +14,19 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
  */
 public class SystemServiceInfo extends DomainEntity {
 
-    long pID;
-    String status;
+    protected long pID;
+    protected String status;
+    
+    public enum States{
+        stopped, running
+    }
 
     public SystemServiceInfo() {
     }
 
-    public SystemServiceInfo(String domainID) {
-        super(ServiceCategory.SystemService, domainID);
+    public SystemServiceInfo(String domainID, String name) {
+        super(ServiceCategory.SystemService, domainID, name);
+        updateStateList(States.values());
     }
 
     public long getpID() {

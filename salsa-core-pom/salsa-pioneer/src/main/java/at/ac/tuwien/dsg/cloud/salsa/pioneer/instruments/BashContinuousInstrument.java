@@ -67,7 +67,7 @@ public class BashContinuousInstrument extends BashContinuousManagement implement
             System.out.println("Execute Command output: " + output.toString().trim());
 
             logger.debug("The configuration script is RUNNING. Action ID: " + configInfo.getActionID() + ", runByMe: " + configInfo.getRunByMe());
-            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.SUCCESSFUL, p.exitValue(), "Configure script DONE: " + configInfo.getRunByMe());
+            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.SUCCESSFUL, 0, "Configure script DONE: " + configInfo.getRunByMe());
         } catch (IOException e1) {
             e1.printStackTrace();
             return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR, 0, "Configure script get an IOException: " + configInfo.getRunByMe());

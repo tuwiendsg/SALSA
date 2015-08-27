@@ -204,6 +204,7 @@ public class SmartDeploymentService {
         }
     }
 
+    // This is the MAIN class which received a CSAR and return a enriched CSAR
     @POST
     @Path("/CAMFTosca/enrich/CSAR/{serviceName}")
     @Consumes(MediaType.TEXT_PLAIN)

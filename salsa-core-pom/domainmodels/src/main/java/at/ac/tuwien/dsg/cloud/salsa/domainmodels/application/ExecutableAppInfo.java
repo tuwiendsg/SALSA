@@ -16,9 +16,14 @@ public class ExecutableAppInfo extends DomainEntity{
 
     public ExecutableAppInfo() {
     }
+    
+    public enum States{
+        running, finished
+    }
 
-    public ExecutableAppInfo(String domainID) {
-        super(ServiceCategory.ExecutableApp, domainID);
+    public ExecutableAppInfo(String domainID, String name) {
+        super(ServiceCategory.ExecutableApp, domainID, name);
+        updateStateList(States.values());
     }
     
 }

@@ -81,9 +81,9 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineMisconfiguredExceptio
 import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exception.ServicedataProcessingException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.IllegalConfigurationAPICallException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.AsyncUnitCapability;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.InfoManagement;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.WholeAppEnrichedTosca;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability.AsyncUnitCapability;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.InfoManagement;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.WholeAppEnrichedTosca;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.ActionIDManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
@@ -98,6 +98,7 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability.RichInformationWholeAppCapability;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
@@ -115,7 +116,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
 
     private static final Logger LOGGER;
 
-    WholeAppCapabilityInterface wholeAppCapability = new WholeAppEnrichedTosca();
+    WholeAppCapabilityInterface wholeAppCapability = new RichInformationWholeAppCapability();
     UnitCapabilityInterface unitCapability = new AsyncUnitCapability();
     
     private final String dataFileExtension = ".data";
@@ -1073,7 +1074,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             EngineLogger.logger.debug("Debug - Unqueueing action 3. Node: " + nodeData.getId());
             ServiceInstance instance = nodeData.getInstanceById(instanceId);
             EngineLogger.logger.debug("Debug - Unqueueing action 4");
-            EngineLogger.logger.debug("Debug - Instance: " + instance.getInstanceId() + "/" + instance.getInstanceState());
+            EngineLogger.logger.debug("Debug - Instance: " + instance.getInstanceId() + "/" + instance.getState());
             instance.unqueueAction();
             EngineLogger.logger.debug("Debug - Unqueueing action 5");
 

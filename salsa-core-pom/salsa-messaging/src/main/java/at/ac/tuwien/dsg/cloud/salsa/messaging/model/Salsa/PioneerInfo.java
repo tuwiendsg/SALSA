@@ -96,4 +96,11 @@ public class PioneerInfo {
         }
     }
 
+    @Override
+    public String toString() {
+        return "PioneerInfo{" + "id=" + id + ", ip=" + ip + ", instance=" + service+"/"+topology+"/"+unit+"/"+instance + '}';
+    }
+    
+    
+
 }

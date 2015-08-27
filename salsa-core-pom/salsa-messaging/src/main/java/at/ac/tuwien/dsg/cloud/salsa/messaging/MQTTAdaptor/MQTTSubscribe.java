@@ -40,13 +40,13 @@ public class MQTTSubscribe extends MQTTConnector implements MessageSubscribeInte
     }
 
     @Override
-    public void subscribe(String topic) {
+    public void subscribe(final String topic) {
         MqttCallback callBack = new MqttCallback() {
-
+            
             @Override
             public void connectionLost(Throwable thrwbl) {
-                logger.debug("Queue disconnect " + thrwbl.getMessage());
-                thrwbl.printStackTrace();
+                logger.debug("MQTT is disconnected from topic: {}. Message: {} ", topic ,thrwbl.getMessage());
+                thrwbl.printStackTrace();                
             }
 
             @Override
@@ -63,7 +63,7 @@ public class MQTTSubscribe extends MQTTConnector implements MessageSubscribeInte
             @Override
 
             public void deliveryComplete(IMqttDeliveryToken imdt) {
-                logger.debug("Deliver complete. ");
+                logger.debug("Deliver complete to topic: " + topic);
             }
         };
         

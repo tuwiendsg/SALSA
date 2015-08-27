@@ -13,6 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.5</slf4j.version>
+        <yworks.uml.path>${basedir}/scripts/yworks-uml-doclet-3.0_02-jdk1.5</yworks.uml.path>
     </properties>
 	
     <modules>
@@ -111,6 +112,56 @@
        
         
     </dependencies>
+    
+    <build>
+        <plugins>            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8.1</version>                
+                <configuration> 
+                    <!-- bootclasspath required by Sun's JVM -->
+                    <bootclasspath>${sun.boot.class.path}</bootclasspath>
+                    <!-- General Javadoc settings -->
+                    <doctitle>${project.name} (${project.version})</doctitle>
+                    <show>protected</show>
+                    <!-- UML -->
+                    <doclet>ydoc.doclets.YStandard</doclet>
+                    <docletPath>${yworks.uml.path}/lib/ydoc.jar:${yworks.uml.path}/resources</docletPath>
+                    <additionalparam>-umlautogen</additionalparam>
+                    
+                    <!-- Apple's JVM sometimes requires more memory -->
+                    <additionalJOption>-J-Xmx1024m</additionalJOption>
+                    <verbose>true</verbose>
+                    <groups>
+                        <group>
+                            <title>Elise Model</title>
+                            <packages>at.ac.tuwien.dsg.cloud.elise.model.*</packages>
+                        </group>
+                        <group>
+                            <title>Domain Model</title>
+                            <packages>at.ac.tuwien.dsg.cloud.salsa.domainmodels*</packages>
+                        </group>
+                        <group>
+                            <title>ELISE API</title>
+                            <packages>at.ac.tuwien.dsg.cloud.elise.master.RESTService*</packages>
+                        </group>
+                    </groups>
+                    <subpackages>at.ac.tuwien.dsg.cloud.elise.model:at.ac.tuwien.dsg.cloud.salsa.domainmodels:at.ac.tuwien.dsg.cloud.elise.master.RESTService</subpackages>
+                    <reportSets>
+                        <reportSet>
+                            <reports>
+                                <report>javadoc-no-fork</report>
+                                <report>test-javadoc-no-fork</report>
+                            </reports>
+                        </reportSet>
+                    </reportSets>
+                </configuration>
+            </plugin>
+        </plugins>
+        
+        
+    </build>
 
     
     <repositories>
@@ -125,6 +176,18 @@
             <id>spring-releases</id>
             <name>Spring Releases</name>
             <url>http://repo.spring.io/libs-release</url>
+        </repository>
+        
+        <repository>
+            <id>infosys-maven-ext</id>
+            <name>infosys-maven-releases</name>
+            <url>http://repo.infosys.tuwien.ac.at/artifactory/ext</url>
+        </repository>
+        
+        <repository>
+            <id>infosys-maven-comot</id>
+            <name>infosys-maven-releases</name>
+            <url>http://repo.infosys.tuwien.ac.at/artifactory/comot</url>
         </repository>
     </repositories>
 

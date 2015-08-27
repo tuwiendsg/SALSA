@@ -30,7 +30,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInt
 import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineConnectionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.DependencyConfigurationException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.PioneerManagementException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.InfoManagement;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.InfoManagement;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineImplAll;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.ActionIDManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;

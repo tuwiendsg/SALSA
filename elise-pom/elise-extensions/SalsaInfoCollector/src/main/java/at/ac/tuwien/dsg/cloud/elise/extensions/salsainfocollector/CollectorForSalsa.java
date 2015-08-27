@@ -5,12 +5,13 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.extensions.salsainfocollector;
 
-import at.ac.tuwien.dsg.cloud.elise.model.CollectorInterface.UnitInstanceCollector;
-import at.ac.tuwien.dsg.cloud.elise.model.elasticunit.executionmodels.RestExecution;
-import at.ac.tuwien.dsg.cloud.elise.model.elasticunit.generic.Capability;
-import at.ac.tuwien.dsg.cloud.elise.model.elasticunit.identification.LocalIdentification;
-import at.ac.tuwien.dsg.cloud.elise.model.elasticunit.runtime.UnitInstance;
-import at.ac.tuwien.dsg.cloud.elise.model.type.State;
+
+import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.UnitInstanceCollector;
+import at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution;
+import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.State;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
@@ -91,17 +92,49 @@ public class CollectorForSalsa extends UnitInstanceCollector {
                 for (ServiceInstance ins : unit.getInstancesList()) {
                     logger.debug("SALSA Unit Instance: " + unit.getId() + "/" + ins.getInstanceId());
                     UnitInstance unitInst = new UnitInstance(unit.getId(), null, convertSalsaState(ins.getState()));
+
+                    unitInst.hasExtra("salsaID", service.getId() + "/" + topo.getId() + "/" + unit.getId() + "/" + ins.getInstanceId());
+                    unitInst.hasExtra("salsaState", ins.getState().getNodeStateString());
+                    // the ID in ELISE will be given by SALSA, that why we do integration
+                    unitInst.setId(ins.getUuid().toString());
+
                     if (unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
                         unitInst.setCategory(ServiceCategory.VirtualMachine);
+                        // get basic VM information
+                        SalsaInstanceDescription_VM vmDescription = getVMOfUnit(service, topo, unit, ins);
+                        VirtualMachineInfo VMInfo = new VirtualMachineInfo(vmDescription.getProvider(), vmDescription.getInstanceId(), "VM:" + vmDescription.getPrivateIp());
+                        VMInfo.setPrivateIp(vmDescription.getPrivateIp());
+                        VMInfo.setPublicIp(vmDescription.getPublicIp());
+                        if (VMInfo.getPackagesDependencies() != null && VMInfo.getPackagesDependencies().getPackageDependency() != null) {
+                            VMInfo.getPackagesDependencies().getPackageDependency().addAll(vmDescription.getPackagesDependenciesList().getPackageDependency());
+                        }
+                        VMInfo.setState(vmDescription.getState());
+                        unitInst.setDomainInfo(VMInfo.toJson());
+
                     } else if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
                         unitInst.setCategory(ServiceCategory.AppContainer);
+                        // get basic docker info
+                        SalsaInstanceDescription_Docker dockerDescription = getDockerUnit(service, topo, unit, ins);
+                        if (dockerDescription != null) {
+                            logger.debug("Adding docker feature ...");
+                            DockerInfo dockerInfo = new DockerInfo("docker", dockerDescription.getInstanceId(), dockerDescription.getDockername());
+                            unitInst.setDomainInfo(dockerInfo.toJson());
+                        }
+
                     } else if (unit.getType().equals(SalsaEntityType.TOMCAT.getEntityTypeString())) {
                         unitInst.setCategory(ServiceCategory.WebContainer);
                     } else if (unit.getId().toLowerCase().startsWith("sensor")) {
                         unitInst.setCategory(ServiceCategory.Sensor);
+                    } else if (unit.getType().equals(SalsaEntityType.SOFTWARE.getEntityTypeString())) {
+                        // get basic information of app
+                        // TODO: fix service type
+                        SystemServiceInfo systemServiceInfo = new SystemServiceInfo("unknownPID", "unknownName");
+                        systemServiceInfo.setStatus("unknown status");
+                        unitInst.setDomainInfo(systemServiceInfo.toJson());
                     } else {
                         unitInst.setCategory(ServiceCategory.SystemService);
                     }
+
                     List<at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.PrimitiveOperation> pos = ins.getPrimitive();
                     boolean existedDeploy = false;
                     boolean existedUnDeploy = false;
@@ -120,39 +153,6 @@ public class CollectorForSalsa extends UnitInstanceCollector {
                         }
                     }
 
-                    unitInst.hasExtra("salsaID", service.getId() + "/" + topo.getId() + "/" + unit.getId() + "/" + ins.getInstanceId());
-                    unitInst.hasExtra("salsaState", ins.getState().getNodeStateString());
-                    
-                    // get basic VM information
-                    SalsaInstanceDescription_VM vmDescription = getVMOfUnit(service, topo, unit, ins);
-                    VirtualMachineInfo VMInfo = new VirtualMachineInfo(vmDescription.getProvider(), vmDescription.getInstanceId());
-                    VMInfo.setPrivateIp(vmDescription.getPrivateIp());
-                    VMInfo.setPublicIp(vmDescription.getPublicIp());
-                    if (VMInfo.getPackagesDependencies() != null && VMInfo.getPackagesDependencies().getPackageDependency() != null) {
-                        VMInfo.getPackagesDependencies().getPackageDependency().addAll(vmDescription.getPackagesDependenciesList().getPackageDependency());
-                    }
-                    VMInfo.setState(vmDescription.getState());
-                    unitInst.addDomainInfo(VMInfo.toJson());
-
-                    // get basic docker info if available
-                    SalsaInstanceDescription_Docker dockerDescription = getDockerUnit(service, topo, unit, ins);
-                    if (dockerDescription != null) {
-                        logger.debug("Add docker feature ...");
-                        DockerInfo dockerInfo = new DockerInfo("docker", dockerDescription.getInstanceId(), dockerDescription.getDockername());
-                        unitInst.addDomainInfo(dockerInfo.toJson());
-                    }
-
-                    // get basic information of app
-                    // TODO: fix service type
-                    if (unit.getType().equals(SalsaEntityType.SOFTWARE.getEntityTypeString())){
-                        SystemServiceInfo systemServiceInfo = new SystemServiceInfo("unknown PID");                        
-                        systemServiceInfo.setStatus("unknown status");
-                        unitInst.addDomainInfo(systemServiceInfo);
-                    }
-                    
-                    
-                    
-
                     if (!existedUnDeploy) {
                         String destroyInstanceStr = this.salsaEndpoint + "/services/" + service.getId() + "/topologies/" + topo.getId() + "/nodes/" + unit.getId() + "/instances/" + ins.getInstanceId();
                         unitInst.hasCapability(new Capability("undeploy", Capability.ExecutionMethod.REST, new RestExecution(destroyInstanceStr, RestExecution.RestMethod.DELETE, "")).executedBy("SALSA"));
@@ -161,10 +161,17 @@ public class CollectorForSalsa extends UnitInstanceCollector {
                         String deploymore = this.salsaEndpoint + "/services/" + service.getId() + "/topologies/" + topo.getId() + "/nodes/" + unit.getId() + "/instance-count/{quantity}";
                         unitInst.hasCapability(new Capability("deploy", Capability.ExecutionMethod.REST, new RestExecution(deploymore, RestExecution.RestMethod.POST, "")).hasParameters("quantity", "1").executedBy("SALSA"));
                     }
+                    
+                    /**
+                     * Collect relationship between instances
+                     */
+                    
+                    
+                    
+                    
                     logger.debug("Adding unit instance, ID: " + unitInst.getId());
                     boolean adding = instances.add(unitInst);
                     logger.debug("Added result: " + adding + ", array now have : " + instances.size());
-
                 }
             }
         }
@@ -179,32 +186,33 @@ public class CollectorForSalsa extends UnitInstanceCollector {
     @Override
     public LocalIdentification identify(UnitInstance instance) {
         logger.debug("Identify for unit instance: \n" + instance.getName());
-
-        String structureID = instance.getExtra().get("salsaID");
-        VirtualMachineInfo vminfo = (VirtualMachineInfo) instance.findDomainInfoByCategory(ServiceCategory.VirtualMachine);
-        String ip = vminfo.getPrivateIp();
+        String structureID = instance.getExtra().get("salsaID");        
 
         LocalIdentification id = new LocalIdentification(instance.getCategory(), "SALSA");
-        // rtGovOpsPortmap
-
-        DockerInfo dockerMeta = (DockerInfo) instance.findDomainInfoByCategory(ServiceCategory.AppContainer);
-
-        if ((instance.getCategory().equals(ServiceCategory.Sensor) || instance.getCategory().equals(ServiceCategory.Gateway)) && dockerMeta != null) {
-            //2812:2826 5683:5697 80:9094
-            logger.debug("Found a docker metadata, trying to attract GovOps ID");
-            // get portmap, padding a space for something
-            String fullportmap = dockerMeta.getPortmap() + " ";
-            logger.debug("Get full portmap string: " + fullportmap);
-            // fix for generating rtGovOps ID
-            int startIndex = fullportmap.indexOf("80:") + 3;
-            String portmap = fullportmap.substring(startIndex, fullportmap.indexOf(" ", startIndex));
-            String rtGovOpsPortmap = ip + ":" + portmap;
-            logger.debug("rtGovOps ID: " + rtGovOpsPortmap);
-            id.hasIdentification("rtGovOpsID", rtGovOpsPortmap);
-        }
-
         id.hasIdentification("id", structureID);
-        id.hasIdentification("ip", ip);
+        
+//        VirtualMachineInfo vminfo = (VirtualMachineInfo) instance.findDomainInfoByCategory(ServiceCategory.VirtualMachine);
+//        String ip = vminfo.getPrivateIp();
+        
+        // rtGovOpsPortmap       
+
+//        DockerInfo dockerMeta = (DockerInfo) instance.findDomainInfoByCategory(ServiceCategory.AppContainer);
+//
+//        if ((instance.getCategory().equals(ServiceCategory.Sensor) || instance.getCategory().equals(ServiceCategory.Gateway)) && dockerMeta != null) {
+//            //2812:2826 5683:5697 80:9094
+//            logger.debug("Found a docker metadata, trying to attract GovOps ID");
+//            // get portmap, padding a space for something
+//            String fullportmap = dockerMeta.getPortmap() + " ";
+//            logger.debug("Get full portmap string: " + fullportmap);
+//            // fix for generating rtGovOps ID
+//            int startIndex = fullportmap.indexOf("80:") + 3;
+//            String portmap = fullportmap.substring(startIndex, fullportmap.indexOf(" ", startIndex));
+//            String rtGovOpsPortmap = ip + ":" + portmap;
+//            logger.debug("rtGovOps ID: " + rtGovOpsPortmap);
+//            id.hasIdentification("rtGovOpsID", rtGovOpsPortmap);
+//        }
+//        id.hasIdentification("ip", ip);
+        
         return id;
 
     }

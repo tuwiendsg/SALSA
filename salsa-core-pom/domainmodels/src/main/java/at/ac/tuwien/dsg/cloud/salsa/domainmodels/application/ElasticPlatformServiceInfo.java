@@ -14,14 +14,19 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
  */
 public class ElasticPlatformServiceInfo extends DomainEntity{
 
-    String apiEndpoint;
-    String apiType;
+    protected String apiEndpoint;
+    protected String apiType;
     
     public ElasticPlatformServiceInfo() {
     }
+    
+    public enum States{
+        stopped, running
+    }
 
-    public ElasticPlatformServiceInfo(String domainID) {
-        super(ServiceCategory.ElasticPlatformService, domainID);
+    public ElasticPlatformServiceInfo(String domainID, String name) {
+        super(ServiceCategory.ElasticPlatformService, domainID, name);
+        updateStateList(States.values());
     }
     
     

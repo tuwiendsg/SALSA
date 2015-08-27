@@ -14,13 +14,18 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
  */
 public class WebAppInfo extends DomainEntity{
 
-    String accessPoint; 
+    protected String accessPoint; 
+    
+    public enum States{
+        stopped, running
+    }
     
     public WebAppInfo() {
     }
 
-    public WebAppInfo(String domainID) {
-        super(ServiceCategory.WebApp, domainID);
+    public WebAppInfo(String domainID, String name) {
+        super(ServiceCategory.WebApp, domainID, name);
+        updateStateList(States.values());
     }
     
 }

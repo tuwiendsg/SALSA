@@ -14,14 +14,19 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
  */
 public class WebContainerInfo extends DomainEntity {
 
-    String type;
-    String apiEndpoint;
+    protected String type;
+    protected String apiEndpoint;
+    
+    public enum States{
+        stopped, running
+    }
 
     public WebContainerInfo() {
     }
 
-    public WebContainerInfo(String domainID) {
-        super(ServiceCategory.WebContainer, domainID);
+    public WebContainerInfo(String domainID, String name) {
+        super(ServiceCategory.WebContainer, domainID, name);
+        updateStateList(States.values());
     }
 
 }

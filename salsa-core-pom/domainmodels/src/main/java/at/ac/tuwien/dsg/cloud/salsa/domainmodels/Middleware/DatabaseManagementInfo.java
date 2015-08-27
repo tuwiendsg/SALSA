@@ -13,12 +13,17 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
  * @author Duc-Hung LE
  */
 public class DatabaseManagementInfo extends DomainEntity {
+    
+    public enum States{
+        stopped, running
+    }
 
     public DatabaseManagementInfo() {
     }
 
-    public DatabaseManagementInfo(String domainID) {
-        super(ServiceCategory.DatabaseManagement, domainID);
+    public DatabaseManagementInfo(String domainID, String name) {
+        super(ServiceCategory.DatabaseManagement, domainID, name);
+        updateStateList(States.values());
     }
 
 }

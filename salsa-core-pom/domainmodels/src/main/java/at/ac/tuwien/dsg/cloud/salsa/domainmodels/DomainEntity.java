@@ -17,6 +17,9 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.application.SystemServiceInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.application.WebAppInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
@@ -44,23 +47,44 @@ import org.codehaus.jackson.map.ObjectMapper;
 })
 public class DomainEntity {
 
-    String domainID;
-    String name;
-    ServiceCategory category;
+    protected String domainID;
+    protected String name;
+    protected ServiceCategory category;
+    protected Set<String> states;
 
     public DomainEntity() {
     }
 
-    public DomainEntity(ServiceCategory category, String domainID, String name) {
+    public DomainEntity(ServiceCategory category, String domainID, String name, String... states) {
         this.category = category;
         this.domainID = domainID;
         this.name = name;
+        // default states
+        this.states = new HashSet<>();
+        hasState("undeployed");
+        hasState("error");
+        
+        if (states.length > 0) {
+            this.states = new HashSet(Arrays.asList(states));
+        }
     }
     
-    public DomainEntity(ServiceCategory category, String domainID) {
-        this.category = category;
-        this.domainID = domainID;
-        this.name = "undefined";
+    public void updateStateList(Object[] theStates){
+        for (Object s: theStates){
+            this.hasState(s.toString());
+        }
+    }
+
+    public Set<String> getStates() {
+        return states;
+    }
+
+    public DomainEntity hasState(String state) {
+        if (this.states == null) {
+            this.states = new HashSet<>();
+        }
+        this.states.add(state);
+        return this;
     }
 
     public String getDomainID() {

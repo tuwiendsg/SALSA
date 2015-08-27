@@ -14,12 +14,17 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
  */
 public class SensorInfo extends DomainEntity {
     
-    String localtion;
+    protected String localtion;
 
     public SensorInfo() {
     }
+    
+    public enum States{
+        stopped, activated
+    }
 
-    public SensorInfo(String domainID) {
-        super(ServiceCategory.Sensor, domainID);
+    public SensorInfo(String domainID, String name) {
+        super(ServiceCategory.Sensor, domainID, name);
+        updateStateList(States.values());
     }
 }

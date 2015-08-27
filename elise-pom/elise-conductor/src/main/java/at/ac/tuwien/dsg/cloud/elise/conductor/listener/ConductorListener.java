@@ -6,11 +6,11 @@
 package at.ac.tuwien.dsg.cloud.elise.conductor.listener;
 
 import at.ac.tuwien.dsg.cloud.elise.collector.CollectorSettings.ConductorConfiguration;
-import at.ac.tuwien.dsg.cloud.elise.model.CollectorInterface.UnitInstanceCollector;
-import at.ac.tuwien.dsg.cloud.elise.model.elasticunit.identification.GlobalIdentification;
-import at.ac.tuwien.dsg.cloud.elise.model.elasticunit.identification.LocalIdentification;
-import at.ac.tuwien.dsg.cloud.elise.model.elasticunit.runtime.UnitInstance;
-import at.ac.tuwien.dsg.cloud.elise.model.elasticunit.wrapper.UnitInstanceWrapper;
+import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.UnitInstanceCollector;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
+import at.ac.tuwien.dsg.cloud.elise.model.wrapper.UnitInstanceWrapper;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryProcessNotification;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;

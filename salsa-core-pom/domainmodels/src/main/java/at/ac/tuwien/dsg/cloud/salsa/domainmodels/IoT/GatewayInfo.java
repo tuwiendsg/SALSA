@@ -16,9 +16,14 @@ public class GatewayInfo extends DomainEntity {
 
     public GatewayInfo() {
     }
+    
+    public enum States{
+        stopped, running
+    }
 
-    public GatewayInfo(String domainID) {
-        super(ServiceCategory.Gateway, domainID);
+    public GatewayInfo(String domainID, String name) {
+        super(ServiceCategory.Gateway, domainID, name);
+        updateStateList(States.values());
     }
 
 }
