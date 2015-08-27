@@ -1,0 +1,14 @@
+at.ac.tuwien.dsg.cloud.elise.master.RESTService
+at.ac.tuwien.dsg.cloud.elise.model.generic
+at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels
+at.ac.tuwien.dsg.cloud.elise.model.provider
+at.ac.tuwien.dsg.cloud.elise.model.relationships
+at.ac.tuwien.dsg.cloud.elise.model.runtime
+at.ac.tuwien.dsg.cloud.elise.model.structure
+at.ac.tuwien.dsg.cloud.elise.model.wrapper
+at.ac.tuwien.dsg.cloud.salsa.domainmodels
+at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS
+at.ac.tuwien.dsg.cloud.salsa.domainmodels.IoT
+at.ac.tuwien.dsg.cloud.salsa.domainmodels.Middleware
+at.ac.tuwien.dsg.cloud.salsa.domainmodels.application
+at.ac.tuwien.dsg.cloud.salsa.domainmodels.types
