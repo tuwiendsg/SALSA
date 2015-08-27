@@ -59,8 +59,6 @@ public class SalsaMonitoringInfo {
     public String getActions(){
         return ActionIDManager.describe();
     }
-    
-    
 
     @GET
     @Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}")

@@ -10,5 +10,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>SalsaInfoCollector</module>
+        <module>CollectorInterfaces</module>
     </modules>
 </project>

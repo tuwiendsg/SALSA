@@ -50,7 +50,6 @@ public class SalsaConfiguration {
 
     static final String USERNAME = "salsa-default";
     static final String BROKER = "";
-    
 
     static File configFile;
 
@@ -108,7 +107,7 @@ public class SalsaConfiguration {
         if (userFile != null && !userFile.equals("")) {
             logger.debug("Found the user file in the main engine configuration. Load cloud configuration at: " + userFile);
             configFile = new File(userFile);
-        } else {            
+        } else {
             File file1 = new File(CURRENT_DIR + "/cloudUserParameters.ini");
             File tmpFile = new File("/etc/cloudUserParameters.ini");
             if (file1.exists()) {
@@ -191,29 +190,41 @@ public class SalsaConfiguration {
     }
 
     public static String getServiceStorageDir() {
-        return configuration.getProperty(SALSA_CENTER_WORKING_DIR_KEY) + "/services";
+        return createFolderIfNotExisted(configuration.getProperty(SALSA_CENTER_WORKING_DIR_KEY) + "/services");
     }
 
     public static String getArtifactStorage() {
-        return configuration.getProperty(SALSA_CENTER_WORKING_DIR_KEY) + "/artifacts";
+        return createFolderIfNotExisted(configuration.getProperty(SALSA_CENTER_WORKING_DIR_KEY) + "/artifacts");
     }
 
     public static String getToscaTemplateStorage() {
-        return configuration.getProperty(SALSA_CENTER_WORKING_DIR_KEY) + "/tosca_templates";
+        return createFolderIfNotExisted(configuration.getProperty(SALSA_CENTER_WORKING_DIR_KEY) + "/tosca_templates");
     }
 
     public static String getCloudProviderDescriptionDir() {
-        return configuration.getProperty(SALSA_CENTER_WORKING_DIR_KEY) + "/cloudDescriptions";
+        return createFolderIfNotExisted(configuration.getProperty(SALSA_CENTER_WORKING_DIR_KEY) + "/cloudDescriptions");
+    }
+
+    // return folderName
+    private static String createFolderIfNotExisted(String folder) {
+        File f = new File(folder);
+        if (f.exists()) {
+            return folder;
+        } else {
+            if (f.mkdir()) {
+                return folder;
+            } else {
+                return "/tmp";
+            }
+        }
     }
 
     public static String getCloudUserParameters() {
         return configuration.getProperty("CLOUD_USER_PARAMETERS");
     }
-    
-    public static MessageClientFactory getMessageClientFactory(){
+
+    public static MessageClientFactory getMessageClientFactory() {        
         return MessageClientFactory.getFactory(getBroker(), getBrokerType());
     }
-
-    
 
 }

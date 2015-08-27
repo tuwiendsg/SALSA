@@ -19,10 +19,7 @@ package at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -51,17 +48,13 @@ public class ServiceInstance extends SalsaEntity {
     @XmlAttribute(name = "replica")
     int instanceId = 0;
 
-    @XmlAttribute(name = "uuid")
-    UUID uuid = UUID.randomUUID();
-
     @XmlAttribute(name = "hostedId")
     int hostedId = 2147483647;	// by default, it is hosted on nothing
 
-    @XmlAttribute(name = "instanceState")
-    SalsaInstanceState instanceState = SalsaInstanceState.UNDEPLOYED;
-
+//    @XmlAttribute(name = "instanceState")
+//    SalsaInstanceState instanceState = SalsaInstanceState.UNDEPLOYED;
     @XmlAttribute(name = "extra")
-    String extra="";
+    String extra = "";
 
     @XmlElement(name = "Properties")
     protected ServiceInstance.Properties properties;
@@ -176,10 +169,6 @@ public class ServiceInstance extends SalsaEntity {
         this.capabilities = capabilities;
     }
 
-    public UUID getUuid() {
-        return uuid;
-    }
-
 //	public void addQueueAction(String action){
 //		this.actionqueue.add(action);		
 //	}
@@ -194,20 +183,18 @@ public class ServiceInstance extends SalsaEntity {
 //	public void setStagingActionName(String stagingActionName) {
 //		this.stagingActionName = stagingActionName;
 //	}
-    public SalsaInstanceState getInstanceState() {
-        return instanceState;
-    }
-
+//    public SalsaInstanceState getInstanceState() {
+//        return instanceState;
+//    }
+//    public void setInstanceState(SalsaInstanceState instanceState) {
+//        this.instanceState = instanceState;
+//    }
     public String getExtra() {
         return extra;
     }
 
     public void setExtra(String extra) {
         this.extra = extra;
-    }    
-
-    public void setInstanceState(SalsaInstanceState instanceState) {
-        this.instanceState = instanceState;
     }
 
     public String convertToXML() throws JAXBException {

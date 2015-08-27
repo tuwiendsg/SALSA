@@ -29,10 +29,12 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineMisconfiguredExceptio
 import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exception.ServicedataProcessingException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.AppDescriptionException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.AsyncUnitCapability;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.MiddleLevel.InfoManagement;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability.AsyncUnitCapability;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.InfoManagement;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.PioneerInfo;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
 import generated.oasis.tosca.TDefinitions;
 import java.io.File;
@@ -129,6 +131,8 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
                 }
             }
         }
+        // unregister pioneers
+        PioneerManager.removePioneerOfWholeService(SalsaConfiguration.getUserName(), serviceId);
         EngineLogger.logger.info("Clean service done: {}", serviceId);
         return true;
     }

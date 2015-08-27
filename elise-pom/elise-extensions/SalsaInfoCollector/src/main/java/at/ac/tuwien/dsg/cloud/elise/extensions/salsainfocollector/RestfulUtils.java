@@ -5,7 +5,6 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.extensions.salsainfocollector;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;

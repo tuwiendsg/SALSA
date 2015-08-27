@@ -22,7 +22,9 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.PioneerInfo;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,7 +42,28 @@ public class PioneerManager {
     }
 
     public static void removePioneer(String pioneerID) {
-        pioneerMap.remove(pioneerID);
+        PioneerInfo p = pioneerMap.remove(pioneerID);
+        if (p!=null){
+            EngineLogger.logger.debug("Removed pioneer: " + p.toString());
+        } else {
+            EngineLogger.logger.debug("Pioneer ID: {} is not registered to be removed.", pioneerID);
+        }
+        
+    }
+    
+    public static void removePioneerOfWholeService(String userName, String serviceName){
+        EngineLogger.logger.debug("Searching for pioneerID to remove. Current pioneers: ", describe());
+        List<String> removing = new ArrayList<>();
+        for (Map.Entry<String, PioneerInfo> entry : pioneerMap.entrySet()) {
+            PioneerInfo ai = entry.getValue();
+            EngineLogger.logger.debug("Checking pioneer: {}/{}/{}/{} if it is in the service: {} ", ai.getUserName(), ai.getService(), ai.getUnit(), ai.getInstance(), serviceName);            
+            if (ai.getUserName().equals(userName) && ai.getService().equals(serviceName)) {
+                removing.add(ai.getId());
+            }
+        }
+        for(String r: removing){
+            pioneerMap.remove(r);
+        }
     }
 
     public static PioneerInfo getPioneerInformation(String pioneerID) {

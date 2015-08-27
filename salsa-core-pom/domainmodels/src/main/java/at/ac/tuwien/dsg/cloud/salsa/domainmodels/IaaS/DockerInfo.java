@@ -28,19 +28,23 @@ import java.util.Map;
  */
 public class DockerInfo extends VirtualMachineInfo {
 
-    String dockername;
+    protected String dockername;
 
     /**
      * List of port map dockerPort:hostPort, e.g.: 80:9080,8080:9999
      */
-    String portmap;
+    protected String portmap;
+    
+    public enum States{
+        creating, running
+    }
 
     public DockerInfo() {}
     
     public DockerInfo(String provider, String instanceId, String dockerName){
-		super(provider, instanceId);
+		super(provider, instanceId, dockerName);
                 this.setCategory(ServiceCategory.AppContainer);
-                this.dockername = dockerName;
+                updateStateList(States.values());                
 	}
 
     public String getDockername() {

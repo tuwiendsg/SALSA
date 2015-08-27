@@ -1,7 +1,19 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2013 Technische Universitat Wien (TUW), Distributed Systems Group. http://dsg.tuwien.ac.at
+ *
+ * This work was partially supported by the European Commission in terms of the CELAR FP7 project (FP7-ICT-2011-8 #317790), http://www.celarcloud.eu/
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  */
 package at.ac.tuwien.dsg.cloud.elise.master.RESTImp;
 
@@ -9,15 +21,17 @@ package at.ac.tuwien.dsg.cloud.elise.master.RESTImp;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.UnitInstanceRepository;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
-import at.ac.tuwien.dsg.cloud.elise.master.RESTInterface.EliseManager;
-import at.ac.tuwien.dsg.cloud.elise.master.RESTInterface.UnitInstanceDAO;
+import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseManager;
+import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceDAO;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryRule;
-import at.ac.tuwien.dsg.cloud.elise.model.elasticunit.generic.Metric;
+import at.ac.tuwien.dsg.cloud.elise.model.generic.Metric;
 
-import at.ac.tuwien.dsg.cloud.elise.model.elasticunit.identification.GlobalIdentification;
-import at.ac.tuwien.dsg.cloud.elise.model.elasticunit.identification.LocalIdentification;
-import at.ac.tuwien.dsg.cloud.elise.model.elasticunit.runtime.UnitInstance;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntityFullStack;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,8 +47,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Duc-Hung Le
  */
 public class UnitInstanceDAOImp  implements UnitInstanceDAO {
-
-   
     Logger logger = EliseConfiguration.logger;
 
     @Autowired
@@ -44,6 +56,46 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
     public Set<UnitInstance> getUnitInstanceList() {        
         return repo.listUnitInstance();
     }
+    
+    @Override
+    public UnitInstance getUnitInstanceByID(String uniqueID) {        
+        return repo.findByUniqueID(uniqueID);
+    }
+    
+     @Override
+    public UnitInstance getUnitInstanceByIDFullStack(String uniqueID) {
+        UnitInstance theInstance = repo.findByUniqueID(uniqueID);
+        Set<UnitInstance> instances = repo.findByHostOn(uniqueID);
+        DomainEntityFullStack full = new DomainEntityFullStack();
+        for (UnitInstance i: instances){
+            DomainEntity entity = DomainEntity.fromJson(i.getDomainInfo());
+            full.hasDomainEntity(entity);
+        }
+        theInstance.setDomainInfo(full.toJson());
+        return theInstance;
+    }
+
+    @Override
+    public UnitInstance getUnitInstanceFirstByName(String unitName) {
+        return repo.findByName(unitName);
+    }
+
+    @Override
+    public UnitInstance getUnitInstanceFirstByNameFullStack(String name) {
+        UnitInstance theInstance = repo.findByName(name);
+        Set<UnitInstance> instances = repo.findByHostOn(theInstance.getId());
+        DomainEntityFullStack full = new DomainEntityFullStack();
+        for (UnitInstance i: instances){
+            DomainEntity entity = DomainEntity.fromJson(i.getDomainInfo());
+            full.hasDomainEntity(entity);
+        }
+        theInstance.setDomainInfo(full.toJson());
+        return theInstance;
+    }
+    
+    
+    
+    
 
     @Override
     public String addUnitInstance(UnitInstance unitInstance) {
@@ -82,18 +134,6 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
         }
     }
     
-    @Override
-    public Set<UnitInstance> queryUnitInstanceDB(EliseQuery query){
-        logger.debug("Query in the local ELISE for instance: " + query.getCategory());        
-        logger.debug("Find instance by category: " + query.getCategory());        
-        
-        Set<UnitInstance> instances = repo.findByCategory(query.getCategory().toString());
-        Set<UnitInstance> result = filterInstance(instances, query);
-        logger.debug("Found " + result.size() + " of the query: " + query.toJson());
-        return result;
-    }
-    
-    
     @Override    
     public Set<UnitInstance> queryUnitInstance(EliseQuery query) {
         logger.debug("Find instance by category: " + query.getCategory());        
@@ -104,10 +144,7 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
         return result;
     }
 
-    @Override
-    public UnitInstance getUnitInstanceByID(String uniqueID) {        
-        return repo.findByUniqueID(uniqueID);
-    }
+    
 
     @Override
     public Set<String> getUnitCategory() {
@@ -143,13 +180,8 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
         instance.setIdentification(global.toJson());
         return global.getUuid();
     }
-
     
-    
-    
-    
-    
-    private Set<UnitInstance> filterInstance(Set<UnitInstance> instances, EliseQuery query) {
+     private Set<UnitInstance> filterInstance(Set<UnitInstance> instances, EliseQuery query) {
         Set<UnitInstance> filtered = new HashSet<>();
 
         logger.debug("Filter " + instances.size() + " of the category: " + query.getCategory().toString());
@@ -183,6 +215,19 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
         }
         return filtered;
     }
+
+    @Override
+    public void deleteUnitInstanceByID(String uniqueID) {
+        UnitInstance existedInstance = this.repo.findByUniqueID(uniqueID);
+        if (existedInstance != null){
+            logger.debug("Deleting unit instance ID {}", uniqueID);
+            repo.delete(existedInstance);
+        } else {
+            logger.debug("Cannot delete the instance unit from GraphDB with ID: {}", uniqueID);
+        }
+    }
+
+   
     
     
     

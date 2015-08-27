@@ -30,8 +30,7 @@ import java.util.Objects;
  *
  * This class acts as a container for all the information of Salsa Virtual Machine instances
  *
- * @author Duc-Hung Le TODO:
- * Unified instance type. Currently: use String.
+ * @author Duc-Hung Le TODO: Unified instance type. Currently: use String.
  */
 public class VirtualMachineInfo extends DomainEntity {
 
@@ -55,14 +54,19 @@ public class VirtualMachineInfo extends DomainEntity {
 
     protected PackagesDependencies packagesDependencies;
 
-    public VirtualMachineInfo() {
-        super(ServiceCategory.VirtualMachine, "unknown");
+    public enum State {
+
+        spawning, configuring, running
     }
 
-    public VirtualMachineInfo(String provider, String instanceId) {
-        super(ServiceCategory.VirtualMachine, instanceId);
+    public VirtualMachineInfo() {
+    }
+
+    public VirtualMachineInfo(String provider, String instanceId, String name) {
+        super(ServiceCategory.VirtualMachine, instanceId, name);
         this.provider = provider;
-        this.instanceId = instanceId;        
+        this.instanceId = instanceId;
+        updateStateList(State.values());
     }
 
     public String getProvider() {
@@ -117,7 +121,7 @@ public class VirtualMachineInfo extends DomainEntity {
         this.instanceType = instanceType;
     }
 
-    public void setInstanceId(String instanceId) {        
+    public void setInstanceId(String instanceId) {
         this.instanceId = instanceId;
     }
 

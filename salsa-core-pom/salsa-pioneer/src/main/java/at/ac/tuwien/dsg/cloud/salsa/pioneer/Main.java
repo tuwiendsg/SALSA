@@ -246,7 +246,7 @@ public class Main {
             }
             return 0;
         } else {      // other actions
-            if (cmd.getRunByMe().length() == 0) {
+            if (cmd.getRunByMe().trim().length() == 0) {
                 logger.debug("Do not find any running command for the action: " + actionName);
             }
             SystemFunctions.executeCommandGetReturnCode(cmd.getRunByMe(), PioneerConfiguration.getWorkingDirOfInstance(cmd.getUnit(), cmd.getInstance()), PioneerConfiguration.getPioneerID());

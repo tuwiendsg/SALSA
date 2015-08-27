@@ -257,7 +257,7 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
         String cloudInstanceId = vmProps.getInstanceId();
         EngineLogger.logger.debug("Removing virtual machine. Provider: " + providerName + "InstanceId: " + instanceId);
         cloudCon.removeInstance(SalsaCloudProviders.fromString(providerName), cloudInstanceId);
-        centerCon.removeInstanceMetadata(serviceId, nodeId, instanceId);
+        centerCon.removeInstanceMetadata(serviceId, nodeId, instanceId);        
     }
 
 }
