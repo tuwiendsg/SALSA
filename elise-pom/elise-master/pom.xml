@@ -7,12 +7,7 @@
         <version>2.0</version>
     </parent>
     <artifactId>elise-master</artifactId>
-    <packaging>jar</packaging>
-    <properties>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-        <spring.version>4.0.4.RELEASE</spring.version>        
-    </properties>
+    <packaging>jar</packaging>    
     
     <dependencies>
         <dependency>
@@ -30,6 +25,13 @@
             <artifactId>salsa-messaging</artifactId>
             <version>2.0</version>
         </dependency>
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+            <artifactId>CollectorInterfaces</artifactId>
+            <version>2.0</version>
+        </dependency>
+        
+        
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>

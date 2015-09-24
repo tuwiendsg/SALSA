@@ -42,7 +42,7 @@ import java.util.Objects;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "SalsaInstanceDescription")
+@XmlRootElement(name = "SalsaInstanceDescription_VM")
 public class SalsaInstanceDescription_VM {
 
     @XmlElement(name = "provider")

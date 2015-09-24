@@ -31,17 +31,18 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
-import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.DockerInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.VirtualMachineInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.application.SystemServiceInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.GenericUnitCapability;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_SystemProcess;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import java.util.Collections;
 import java.util.List;
@@ -81,7 +82,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             ServiceInstance hostedInstance = hostedUnit.getInstanceById(instance.getHostedId_Integer());
             UnitInstance hostedUnitInst = makeUnitInstance(service, hostedUnit, hostedInstance);
             unitInst.hostedOnInstance(hostedUnitInst);
-        } 
+        }
 
         // find the connectedTo instance
         for (String connecttoID : unit.getConnecttoId()) {
@@ -97,7 +98,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
 
         GlobalIdentification globalID = new GlobalIdentification(unitInst.getCategory());
         LocalIdentification id = new LocalIdentification(unitInst.getCategory(), "SALSA");
-        id.hasIdentification("id", unitInst.getExtra().get("salsaID"));        
+        id.hasIdentification("id", unitInst.getExtra().get("salsaID"));
         globalID.addLocalIdentification(id);
         logger.debug("adding localIdentification for node: {}/{} with id: {}", nodeId, instanceId, globalID.toJson());
         unitInst.setIdentification(globalID.toJson());
@@ -123,12 +124,15 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
     }
 
     private UnitInstance makeUnitInstance(CloudService service, ServiceUnit unit, ServiceInstance ins) {
-        UnitInstance unitInst = new UnitInstance(unit.getId(), null, convertSalsaState(ins.getState()));
+        UnitInstance unitInst = new UnitInstance(unit.getId(), null);
         ServiceTopology topo = service.getTopologyOfNode(unit.getId());
         unitInst.hasExtra("salsaID", service.getId() + "/" + topo.getId() + "/" + unit.getId() + "/" + ins.getInstanceId());
         unitInst.hasExtra("salsaState", ins.getState().getNodeStateString());
         unitInst.setId(ins.getUuid().toString());
 
+        /**
+         * MAKE INITIAL DOMAIN INFO
+         */
         if (unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
             unitInst.setCategory(ServiceCategory.VirtualMachine);
             // get basic VM information
@@ -139,9 +143,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             if (VMInfo.getPackagesDependencies() != null && VMInfo.getPackagesDependencies().getPackageDependency() != null) {
                 VMInfo.getPackagesDependencies().getPackageDependency().addAll(vmDescription.getPackagesDependenciesList().getPackageDependency());
             }
-            VMInfo.setState(vmDescription.getState());
             unitInst.setDomainInfo(VMInfo.toJson());
-
         } else if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
             unitInst.setCategory(ServiceCategory.AppContainer);
             // get basic docker info
@@ -156,13 +158,14 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             unitInst.setCategory(ServiceCategory.WebContainer);
         } else if (unit.getId().toLowerCase().startsWith("sensor")) {
             unitInst.setCategory(ServiceCategory.Sensor);
-        } else if (unit.getType().equals(SalsaEntityType.SOFTWARE.getEntityTypeString())) {
-            // get basic information of app
-            // TODO: fix service type
+        } else if (unit.getType().equals(SalsaEntityType.SERVICE.getEntityTypeString())) {
+            // get basic information of system service
             unitInst.setCategory(ServiceCategory.SystemService);
-            SystemServiceInfo systemServiceInfo = new SystemServiceInfo("unknownPID", "unknownName");
-            systemServiceInfo.setStatus("unknown status");
-            unitInst.setDomainInfo(systemServiceInfo.toJson());
+            if (ins.getProperties() != null) {
+                SalsaInstanceDescription_SystemProcess sysProcess = (SalsaInstanceDescription_SystemProcess) ins.getProperties().getAny();
+                SystemServiceInfo systemServiceInfo = new SystemServiceInfo(sysProcess.getName(), sysProcess.getName());
+                unitInst.setDomainInfo(systemServiceInfo.toJson());
+            }
         } else {
             unitInst.setCategory(ServiceCategory.ExecutableApp);
         }
@@ -195,26 +198,6 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         }
 
         return unitInst;
-    }
-
-    private State convertSalsaState(SalsaEntityState salsastate) {
-        if (salsastate != null) {
-            switch (salsastate) {
-                case ALLOCATING:
-                case CONFIGURING:
-                case INSTALLING:
-                case STAGING:
-                case STAGING_ACTION:
-                    return State.DEPLOYING;
-                case DEPLOYED:
-                    return State.FINAL;
-                case ERROR:
-                    return State.ERROR;
-                case UNDEPLOYED:
-                    return State.UNDEPLOYING;
-            }
-        }
-        return State.UNDEPLOYING;
     }
 
     private SalsaInstanceDescription_Docker getDockerUnit(CloudService service, ServiceTopology topo, ServiceUnit unit, ServiceInstance instance) {

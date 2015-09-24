@@ -18,7 +18,7 @@ public abstract class UnitInstanceCollector extends GenericCollector {
 
     public abstract Set<UnitInstance> collectAllInstance();
 
-    public abstract UnitInstance collectInstanceByID(ServiceCategory instanceType, String domainID);
+    public abstract UnitInstance collectInstanceByID(String domainID);
 
     public abstract LocalIdentification identify(UnitInstance paramUnitInstance);    
     

@@ -1,163 +1,173 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Salsa Deployment Engine v.2.0</title>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="scripts/jquery-1.3.2.debug.js" type="text/javascript"></script>
-<script src="scripts/json.debug.js" type="text/javascript"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="http://d3js.org/d3.v3.js"></script>
-<script src="scripts/toastr.js"></script> <!-- Notification -->
-<script src="scripts/jquery.tipsy.js"></script> <!-- Tooltips -->
-<script src="scripts/jquery-ui-1.10.4.custom.min.js"></script> <!-- jquery.ui for box -->
-<script src="scripts/jquery.ui-contextmenu.js"></script>
-<script src="scripts/spin.js"></script>
+    <head>
+        <meta charset="UTF-8">
+        <title>Salsa Deployment Engine v.2.0</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="scripts/jquery-1.3.2.debug.js" type="text/javascript"></script>
+        <script src="scripts/json.debug.js" type="text/javascript"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="http://d3js.org/d3.v3.js"></script>
+        <script src="scripts/toastr.js"></script> <!-- Notification -->
+        <script src="scripts/jquery.tipsy.js"></script> <!-- Tooltips -->
+        <script src="scripts/jquery-ui-1.10.4.custom.min.js"></script> <!-- jquery.ui for box -->
+        <script src="scripts/jquery.ui-contextmenu.js"></script>
+        <script src="scripts/spin.js"></script>
 
 
-<link href="css/toastr.css" rel="stylesheet"/>
-<link href="css/default.css" rel="stylesheet" type="text/css" />
-<link href="css/runtimeTree.css" rel="stylesheet" type="text/css" />
-<link href="css/jquery.tipsy.css" rel="stylesheet" type="text/css" />
-<link href="css/ui-lightness/jquery-ui-1.10.4.custom.min.css" rel="stylesheet" type="text/css" />
-<link href="css/ui-lightness/jquery-ui-1.10.4.custom.css" rel="stylesheet" type="text/css" />
+        <link href="css/toastr.css" rel="stylesheet"/>
+        <link href="css/default.css" rel="stylesheet" type="text/css" />
+        <link href="css/runtimeTree.css" rel="stylesheet" type="text/css" />
+        <link href="css/jquery.tipsy.css" rel="stylesheet" type="text/css" />
+        <link href="css/ui-lightness/jquery-ui-1.10.4.custom.min.css" rel="stylesheet" type="text/css" />
+        <link href="css/ui-lightness/jquery-ui-1.10.4.custom.css" rel="stylesheet" type="text/css" />
+
+        <link rel="icon" type="image/png" href="images/SALSA_icon.png">
 
 
 
-<script type="text/javascript">
-	
-	window.onerror=function(msg, url, linenumber){
-	 alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber)
-	 return true
-	}
+        <script type="text/javascript">
 
-	function getURLParameter(name) {
-		return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
-	}
-    
-	$.ajaxSetup({
-	    cache: false
-	});
+            window.onerror = function (msg, url, linenumber) {
+                alert('Error message: ' + msg + '\nURL: ' + url + '\nLine Number: ' + linenumber)
+                return true
+            }
 
-    
-    toastr.options = {
-  		  "closeButton": false,
-  		  "debug": false,
-  		  "positionClass": "toast-top-right",
-  		  "onclick": null,
-  		  "showDuration": "300",
-  		  "hideDuration": "1000",
-  		  "timeOut": "12000",
-  		  "extendedTimeOut": "1000",
-  		  "showEasing": "swing",
-  		  "hideEasing": "linear",
-  		  "showMethod": "fadeIn",
-  		  "hideMethod": "fadeOut"
-  		};
-    
-    var salsaCenterRestEndpoint="/salsa-engine/rest";
-    
-</script>
+            function getURLParameter(name) {
+                return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null
+            }
 
-</head>
-<body>
-
-<script type="text/javascript">
-window.onload = loadPart;
-
-function loadPart(){
-	if (!!getURLParameter("id")){		
-		$("#serviceRuntimeList").load("ServiceRuntimeBrieftlyDescription.html");
-		showButtons();
-		showDeploymentInfo();
-	} else {
-		$("#deploymentForm").load("DeploymentForm.html");
-		$("#serviceRuntimeList").load("ServiceRuntimeList.html");
-	}
-}
-
-function showButtons(){
-	var text = 	'<h3 style="margin-left:5px;">Switch between views</h3> <div style="white-space:nowrap;margin-left:45px;">';
-		text += '	<input type="radio" id="one" name="click_item" value="1" onclick="showDeploymentInfo();" />	';
-		text += '	<label for="one">Deployment states</label>	';
-		text += '	<input type="radio" id="two" name="click_item" value="2" onclick="showAppStructure();"/>	';
-		text += '	<label for="two">App. structure</label>	';
-		text += '   	<input type="radio" id="three" name="click_item" value="3" onclick="showRuntimeTable();"/>	';
-		text += '    	<label for="three">Detail tables</label>	';
-        //text += '   	<input type="radio" id="three" name="click_item" value="4" onclick="showHighLevel();"/>	';
-		//text += '    	<label for="three">Remove Connect To Links</label>	';
-		text += '</div>	<br />';
-
-		$('#selectionButton').html(text).fadeIn();
-}
-
-function showDeploymentInfo(){
-	//$("#treeView").load("ServiceRuntimeTreeView.html");
-	var treeDiv = document.getElementById("treeView");
-	treeDiv.innerHTML = "";
-
-	var iframe = document.createElement('iframe');	
-    iframe.setAttribute('src', "/salsa-engine/ServiceRuntimeTreeView.html?id=" + getURLParameter("id"));
-    iframe.setAttribute('style', 'width:100%; height:100%; overflow:hidden; box-shadow: 0px 0px 4px 4px #ffffff;');
-    iframe.setAttribute('frameborder', '0');
-    
-    treeDiv.appendChild(iframe);
-}
-
-function showAppStructure(){
-	//$("#treeView").load("ServiceRuntimeTreeView_Simple.html");	
-	var treeDiv = document.getElementById("treeView");	
-	treeDiv.innerHTML = "";
-	
-	var iframe = document.createElement('iframe');
-    iframe.setAttribute('src', "/salsa-engine/ServiceRuntimeTreeView_Simple.html?id=" + getURLParameter("id"));
-    iframe.setAttribute('style', 'width:100%; height:100%; overflow:hidden; box-shadow: 0px 0px 4px 4px #ffffff;');
-    iframe.setAttribute('frameborder', '0');
-    
-    treeDiv.appendChild(iframe);
-}
-
-function showHighLevel(){
-	//$("#treeView").load("ServiceRuntimeTreeView.html");
-	var treeDiv = document.getElementById("treeView");
-	treeDiv.innerHTML = "";
-
-	var iframe = document.createElement('iframe');	
-    iframe.setAttribute('src', "/salsa-engine/ServiceRuntimeTreeView_NoConnecTo.html?id=" + getURLParameter("id"));
-    iframe.setAttribute('style', 'width:100%; height:100%; overflow:hidden; box-shadow: 0px 0px 4px 4px #ffffff;');
-    iframe.setAttribute('frameborder', '0');
-    
-    treeDiv.appendChild(iframe);
-}
-
-function showRuntimeTable(){
-	$("#treeView").load("ServiceRuntimeTable.html");
-}
+            $.ajaxSetup({
+                cache: false
+            });
 
 
-</script>
-<div>
-	<div style="float:left; width: 100%;">
-		<div id="deploymentForm"></div>
-		<hr/>
-		<div id="serviceRuntimeList"></div>		
-		<hr/>
-		<div id="selectionButton"></div>
-		<div id="treeView" style="width: 100%; height: auto;"></div>
-		<hr/>
-		<div id="serviceRuntimeTable"></div>
-	</div>
-	<div style="float:left;">
-		<div id="serviceTemplateTable"></div>
-	</div>
-</div>
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "positionClass": "toast-top-right",
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "12000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
 
-<footer id="colophon" role="contentinfo">
-	<div>
-		Copyright &copy;2013 TU Wien, Distributed Systems Group. http://dsg.tuwien.ac.at.
-	</div><!-- .site-info -->
-</footer><!-- #colophon -->
+            var salsaCenterRestEndpoint = "/salsa-engine/rest";
+
+        </script>
+
+    </head>
+    <body>
+
+        <script type="text/javascript">
+            window.onload = loadPart;
+
+            function loadPart() {
+                if (!!getURLParameter("id")) {
+                    $("#serviceRuntimeList").load("ServiceRuntimeBrieftlyDescription.html");
+                    showButtons();
+                    showDeploymentInfo();
+                } else {
+                    $("#deploymentForm").load("DeploymentForm.html");
+                    $("#serviceRuntimeList").load("ServiceRuntimeList.html");
+                }
+            }
+
+            function showButtons() {
+                var text = '<h3 style="margin-left:5px;">Switch between views</h3> <div style="white-space:nowrap;margin-left:45px;">';
+                text += '	<input type="radio" id="one" name="click_item" value="1" onclick="showDeploymentInfo();" />	';
+                text += '	<label for="one">Deployment states</label>	';
+                text += '	<input type="radio" id="two" name="click_item" value="2" onclick="showAppStructure();"/>	';
+                text += '	<label for="two">App. structure</label>	';
+                text += '   	<input type="radio" id="three" name="click_item" value="3" onclick="showRuntimeTable();"/>	';
+                text += '    	<label for="three">Detail tables</label>	';
+                //text += '   	<input type="radio" id="three" name="click_item" value="4" onclick="showHighLevel();"/>	';
+                //text += '    	<label for="three">Remove Connect To Links</label>	';
+                text += '</div>	<br />';
+
+                $('#selectionButton').html(text).fadeIn();
+            }
+
+            function showDeploymentInfo() {
+                //$("#treeView").load("ServiceRuntimeTreeView.html");
+                var treeDiv = document.getElementById("treeView");
+                treeDiv.innerHTML = "";
+
+                var iframe = document.createElement('iframe');
+                iframe.setAttribute('src', "/salsa-engine/ServiceRuntimeTreeView.html?id=" + getURLParameter("id"));
+                iframe.setAttribute('style', 'width:100%; height:100%; overflow:hidden; box-shadow: 0px 0px 4px 4px #ffffff;');
+                iframe.setAttribute('frameborder', '0');
+
+                treeDiv.appendChild(iframe);
+            }
+
+            function showAppStructure() {
+                //$("#treeView").load("ServiceRuntimeTreeView_Simple.html");	
+                var treeDiv = document.getElementById("treeView");
+                treeDiv.innerHTML = "";
+
+                var iframe = document.createElement('iframe');
+                iframe.setAttribute('src', "/salsa-engine/ServiceRuntimeTreeView_Simple.html?id=" + getURLParameter("id"));
+                iframe.setAttribute('style', 'width:100%; height:100%; overflow:hidden; box-shadow: 0px 0px 4px 4px #ffffff;');
+                iframe.setAttribute('frameborder', '0');
+
+                treeDiv.appendChild(iframe);
+            }
+
+            function showHighLevel() {
+                //$("#treeView").load("ServiceRuntimeTreeView.html");
+                var treeDiv = document.getElementById("treeView");
+                treeDiv.innerHTML = "";
+
+                var iframe = document.createElement('iframe');
+                iframe.setAttribute('src', "/salsa-engine/ServiceRuntimeTreeView_NoConnecTo.html?id=" + getURLParameter("id"));
+                iframe.setAttribute('style', 'width:100%; height:100%; overflow:hidden; box-shadow: 0px 0px 4px 4px #ffffff;');
+                iframe.setAttribute('frameborder', '0');
+
+                treeDiv.appendChild(iframe);
+            }
+
+            function showRuntimeTable() {
+                $("#treeView").load("ServiceRuntimeTable.html");
+            }
 
 
-</body>
+        </script>
+        <div>
+            <div style="float:left; width: 100%;">
+                <table border="0">
+                    <tr>
+                        <td><img src="images/SALSA_logo.png" alt="SALSA logo" align='left' style="width:288px;height:64px;float:left;"></td>
+                        <td valign="bottom"><h3 style="float:right;">version 2.0</h3></td>
+                    </tr>
+                </table>
+                <hr/>
+                <div id="deploymentForm"></div>
+                <hr/>
+                <div id="serviceRuntimeList"></div>		
+                <hr/>
+                <div id="selectionButton"></div>
+                <div id="treeView" style="width: 100%; height: auto;"></div>
+                <hr/>
+                <div id="serviceRuntimeTable"></div>
+            </div>
+            <div style="float:left;">
+                <div id="serviceTemplateTable"></div>
+            </div>
+        </div>
+
+        <footer id="colophon" role="contentinfo">
+            <div>
+                Copyright &copy;2013 TU Wien, Distributed Systems Group. <a href="http://dsg.tuwien.ac.at">http://dsg.tuwien.ac.at</a> <br/>
+                For more information, please check: <a href="http://tuwiendsg.github.io/SALSA">http://tuwiendsg.github.io/SALSA</a>
+            </div><!-- .site-info -->
+        </footer><!-- #colophon -->
+
+
+    </body>
 </html>

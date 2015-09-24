@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -44,38 +45,60 @@ import org.slf4j.Logger;
 
 public class DockerConfigurator implements ArtifactConfigurationInterface {
 
+    static final long cooldown = 2000;
+    static long lastDeploymentTime = (new java.util.Date()).getTime();
+
     static Logger logger = PioneerConfiguration.logger;
     static String portPrefix = "498";
-    static String SALSA_DOCKER_IMAGE_NAME = "leduchung/salsa";
-    static String SALSA_DOCKER_PULL = "leduchung/salsa:latest";
+    static String SALSA_DOCKER_PULL = "leduchung/ubuntu:14.04-jre7";
     static boolean inited = false;
 
-    //String dockerNodeId = "default";
+    // This assume that a docker container will always created at least 2 seconds after previous one, on a same VM
+    private void waitForCooledDown() {
+        long currentTime = (new java.util.Date()).getTime();
+        long between = currentTime - lastDeploymentTime;
+        if (between < cooldown) {
+            try {
+                logger.debug("Waiting a "+(cooldown-between)+" miliseconds to reduce the cloud failure when create many docker at a time");
+                Thread.sleep(cooldown-between);
+            } catch (InterruptedException ex) {
+                lastDeploymentTime = currentTime;
+            }
+        }
+        lastDeploymentTime = currentTime;
+    }
 
+    //String dockerNodeId = "default";
     @Override
     public SalsaMsgConfigureState configureArtifact(SalsaMsgConfigureArtifact configInfo) {
         logger.debug("THIS IS THE DOCKER NODE, INSTALL IT !");
         String dockerFileName = "";
-        for (SalsaMsgConfigureArtifact.DeploymentArtifact art : configInfo.getArtifacts()) {
-            if (art.getType().equals(SalsaArtifactType.dockerfile.getString())) {
-                dockerFileName = FilenameUtils.getName(art.getReference());
-                logger.debug("Found a DockerFile: " + dockerFileName);
+        if (configInfo.getArtifacts() != null) {
+            for (SalsaMsgConfigureArtifact.DeploymentArtifact art : configInfo.getArtifacts()) {
+                if (art.getType().equals(SalsaArtifactType.dockerfile.getString())) {
+                    dockerFileName = FilenameUtils.getName(art.getReference());
+                    logger.debug("Found a DockerFile: " + dockerFileName);
+                }
             }
         }
 
+        //wait for the cooldown        
         String containerID;
         // extract artifact, if there are dockerfile type
         if (!dockerFileName.isEmpty()) {
             initDocker(false);
+            waitForCooledDown();
             containerID = installDockerNodeWithDockerFile(configInfo.getUnit(), configInfo.getInstance(), dockerFileName);
         } else {
             initDocker(true);
+            waitForCooledDown();
             containerID = installDockerNodeWithSALSA(configInfo.getUnit(), configInfo.getInstance());
         }
-        if (containerID==null || containerID.isEmpty()) {
-            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR, 0, containerID);
+        if (containerID == null || containerID.isEmpty()) {
+            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR, 0, "Docker container is failed to created").hasDomainID(containerID);
         } else {
-            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.SUCCESSFUL, 0, containerID);
+            // the successful status must be updated by the pioneer
+            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.PROCESSING, 0, "Docker container is created.").hasDomainInfo(getDockerInfo(containerID).toJson()).hasDomainID(containerID);
         }
     }
 
@@ -99,14 +122,13 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         logger.debug("portmap string after formating: " + portmap);
 
         DockerInfo dockerMachine = new DockerInfo("local@dockerhost", containerID, name);
-        dockerMachine.setBaseImage("salsa.ubuntu");
-        dockerMachine.setInstanceType("os");
+        dockerMachine.setBaseImageID("salsa.ubuntu");
         dockerMachine.setPortmap(portmap);
 
         if (isRunning.equals("true")) {
-            dockerMachine.setState("RUNNING");
+            dockerMachine.setStatus("RUNNING");
         } else {
-            dockerMachine.setState("STOPPED");
+            dockerMachine.setStatus("STOPPED");
         }
 
         dockerMachine.setPrivateIp(ip);
@@ -135,13 +157,13 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         }
         SystemFunctions.executeCommandGetReturnCode("/bin/bash /tmp/docker_install.sh", "/tmp", "initDocker");
         if (pullSalsaImage) {
-            SystemFunctions.executeCommandGetReturnCode("sudo docker pull " + SALSA_DOCKER_IMAGE_NAME, null, "initDocker");
+            SystemFunctions.executeCommandGetReturnCode("sudo docker pull " + SALSA_DOCKER_PULL, null, "initDocker");
         }
         inited = true;
     }
 
     public DockerConfigurator() {
-        
+
     }
 
     // this method does not install salsa pioneer

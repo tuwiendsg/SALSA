@@ -23,11 +23,11 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityActions;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
-import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaEngineServiceIntenal;
-import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.SalsaEngineServiceIntenal;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineConnectionException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.DependencyConfigurationException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.PioneerManagementException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.InfoManagement;
@@ -42,8 +42,9 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TRelationshipTemplate;
 import java.util.List;
@@ -70,7 +71,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
 
     @Override
     public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {
-        EngineLogger.logger.info("Start the deployment of software stacks. Node: {}/{}/{} ", serviceId, nodeId, instanceId);
+        EventPublisher.publishINFO("Start the deployment of software stacks. Node: " + serviceId + "/" + nodeId + "/" + instanceId);
         setLock(nodeId + "/" + instanceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         // find the hosted node of this node              
@@ -111,7 +112,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
             SalsaEngineServiceIntenal serviceLayerDeployer = new SalsaEngineImplAll();
             //setLock("Lock until adding more VM node data: " + service.getId() + "/" + hostedUnit.getId() +", in order to host node:" + nodeId +"/" + instanceId);
             EngineLogger.logger.debug("Starting to invoke the spawnInstance to deploy hosted node: {}/{}/{}", service.getId(), topologyId, hostedUnit.getId());
-            Response res = serviceLayerDeployer.spawnInstance(service.getId(), topologyId, hostedUnit.getId(), 1);
+            Response res = serviceLayerDeployer.spawnInstance(service.getId(), hostedUnit.getId(), 1);
             EngineLogger.logger.debug("The invocation is done to deploy hosted node: {}/{}/{}", service.getId(), topologyId, hostedUnit.getId() + ", it return the code: " + res.getStatus());
             //GenericUnitCapability geneCapa = new GenericUnitCapability();
             //ServiceInstance hostedInstance = geneCapa.deploy(service.getId(), hostedUnit.getId(), 1);
@@ -221,19 +222,16 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
                     // export to masternode_IP
                     environment += masterNode.getId() + "_IP=" + env + ";";
                     // export also to the capaID
-                    if (masterInstance.getCapabilities() !=null && !masterInstance.getCapabilities().getCapability().isEmpty()){
-                        String capaID=masterInstance.getCapabilities().getCapability().get(0).getId();
-                        environment += capaID + "=" + env +";";
+                    if (masterInstance.getCapabilities() != null && !masterInstance.getCapabilities().getCapability().isEmpty()) {
+                        String capaID = masterInstance.getCapabilities().getCapability().get(0).getId();
+                        environment += capaID + "=" + env + ";";
                     }
                     //export even to the connectto relationship ID between master and node?
                     TDefinitions def = centerCon.getToscaDescription(serviceId);
                     TRelationshipTemplate rela = ToscaStructureQuery.getRelationshipBetweenTwoNode(ToscaStructureQuery.getNodetemplateById(masterNode.getId(), def), ToscaStructureQuery.getNodetemplateById(unit.getId(), def), def);
-                    if (rela!=null){
-                        environment += rela.getId() + "_IP=" + env +";";
+                    if (rela != null) {
+                        environment += rela.getId() + "_IP=" + env + ";";
                     }
-                    
-                    
-                    
                 }
                 try {
                     Thread.sleep(3000);
@@ -257,12 +255,19 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
 
             SalsaMsgConfigureArtifact command = new SalsaMsgConfigureArtifact(actionID, "deploy", pioneerID, SalsaConfiguration.getUserName(), serviceId, topologyId, nodeId, instanceId, InfoManagement.mapOldAndNewCategory(SalsaEntityType.fromString(unit.getType())), "", "", SalsaArtifactType.fromString(unit.getArtifactType()), environment);
             String runByMe = "";
-            for (ServiceUnit.Artifacts art : unit.getArtifacts()) {
-                command.hasArtifact(art.getName(), art.getType(), art.getReference());
-                EngineLogger.logger.debug("Comparing artifact type (" + art.getType() + ") and unit artifact type (" + unit.getArtifactType() + ")");
-                if (art.getType().equals(unit.getArtifactType()) && runByMe.isEmpty()) {
-                    runByMe = FilenameUtils.getName(art.getReference());
-                    EngineLogger.logger.debug(" -- Yes, the runByMe should be: " + runByMe);
+            // if the deploy action is explicit define, RUN IT
+            if (unit.getPrimitiveByName("deploy") != null) {
+                // TODO: consider to expand this part, this supports only SCRIPT type now
+                runByMe = unit.getPrimitiveByName("deploy").getExecutionREF();                
+            } // otherwise SALSA tries to detect via Artifact type
+            else {
+                for (ServiceUnit.Artifacts art : unit.getArtifacts()) {
+                    command.hasArtifact(art.getName(), art.getType(), art.getReference());
+                    EngineLogger.logger.debug("Comparing artifact type (" + art.getType() + ") and unit artifact type (" + unit.getArtifactType() + ")");
+                    if (art.getType().equals(unit.getArtifactType()) && runByMe.isEmpty()) {
+                        runByMe = FilenameUtils.getName(art.getReference());
+                        EngineLogger.logger.debug(" -- Yes, the runByMe should be: " + runByMe);
+                    }
                 }
             }
             command.setRunByMe(runByMe);
@@ -270,19 +275,19 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
             // add an action
             ActionIDManager.addAction(actionID, command);
             SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_deploy, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.CENTER_REQUEST_PIONEER, null, command.toJson());
-            
+
             MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBroker(), SalsaConfiguration.getBrokerType());
             MessagePublishInterface publish = factory.getMessagePublisher();
             publish.pushMessage(msg);
         }
 
-        EngineLogger.logger.info("Sending request to deploy more instance artifacts is done: {}/{}/{}", serviceId, nodeId, instanceId);
+        EventPublisher.publishINFO("Sending request to deploy more instance artifacts is done: " + serviceId + "/" + nodeId + "/" + instanceId);
         return new ServiceInstance(instanceId);
     }
 
     @Override
     public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {
-        EngineLogger.logger.info("Removing a software node somewhere: {}/{}/{}", serviceId, nodeId, instanceId);
+        EventPublisher.publishINFO("Removing a software node somewhere: " + serviceId + "/" + nodeId + "/" + instanceId);
         //set the state=STAGING and stagingAction=undeploy, the pioneer handle the rest			
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         String topologyId = service.getTopologyOfNode(nodeId).getId();
@@ -312,7 +317,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
         } catch (SalsaException e) {
             throw e;
         }
-        EngineLogger.logger.info("Removed a software node: {}/{}/{}", serviceId, nodeId, instanceId);
+        EventPublisher.publishINFO("Removed a software node: " + serviceId + "/" + nodeId + "/" + instanceId);
     }
 
     static boolean orchestating = false;

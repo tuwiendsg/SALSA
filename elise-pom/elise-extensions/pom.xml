@@ -9,7 +9,10 @@
     <artifactId>elise-extensions</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>SalsaInfoCollector</module>
+        <!-- <module>SalsaInfoCollector</module> -->
         <module>CollectorInterfaces</module>
+        <module>openstack-collector</module>
+        <module>SystemServiceCollector</module>
+        <module>operating-system-collector</module>
     </modules>
 </project>

@@ -20,7 +20,7 @@ package at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.SALSA;
 import at.ac.tuwien.dsg.cloud.salsa.common.artifact.Artifacts;
 import at.ac.tuwien.dsg.cloud.salsa.common.artifact.Repositories;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaXmlProcess;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TServiceTemplate;
 import generated.oasis.tosca.TTopologyTemplate;

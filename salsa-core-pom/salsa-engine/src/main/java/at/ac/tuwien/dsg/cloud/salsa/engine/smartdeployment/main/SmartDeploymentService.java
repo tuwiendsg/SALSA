@@ -18,15 +18,15 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.main;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.QuelleService;
 import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.RecommendationSummaries;
 import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.SALSA.ToscaEnricherSALSA;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaXmlProcess;
 import at.ac.tuwien.dsg.mela.common.monitoringConcepts.Metric;
 import at.ac.tuwien.dsg.mela.common.monitoringConcepts.MetricValue;
 import at.ac.tuwien.dsg.mela.common.monitoringConcepts.MonitoredElement;
@@ -204,22 +204,47 @@ public class SmartDeploymentService {
         }
     }
 
+    @POST
+    @Path("/CAMFTosca/enrich/CSAR/{serviceName}")
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String enrich_CAMF_CSAR(byte[] fileBytes, @PathParam("serviceName") String serviceName){
+        SalsaConfiguration.getArtifactStorage();
+        // retrieve the CSAR
+        String csarTmp = SalsaConfiguration.getToscaTemplateStorage() + "/" + serviceName + ".csar";
+        try {
+            FileUtils.writeByteArrayToFile(new File(csarTmp), fileBytes);
+            return enrich_CAMF_CSAR_Process(csarTmp, serviceName);
+        } catch (IOException ex) {
+            EngineLogger.logger.error("Fail to get byteArray of CSAR file to save to {}", csarTmp,ex);
+            return null;
+        }
+    }
+    
+    
     // This is the MAIN class which received a CSAR and return a enriched CSAR
     @POST
     @Path("/CAMFTosca/enrich/CSAR/{serviceName}")
     @Consumes(MediaType.TEXT_PLAIN)
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Produces(MediaType.TEXT_PLAIN)
     public String enrich_CAMF_CSAR(String csarURL, @PathParam("serviceName") String serviceName) {
         SalsaConfiguration.getArtifactStorage();
         // download the CSAR
         String csarTmp = SalsaConfiguration.getToscaTemplateStorage() + "/" + serviceName + ".csar";
+        try {
+            FileUtils.copyURLToFile(new URL(csarURL), new File(csarTmp));
+            return enrich_CAMF_CSAR_Process(csarTmp, serviceName);
+        } catch (IOException ex) {
+            EngineLogger.logger.error("Fail to download CSAR file at URL: {} and save to {}", csarURL, csarTmp,ex);
+            return null;
+        }
+    }
+    
+    private String enrich_CAMF_CSAR_Process(String csarTmp, String serviceName){
         String extractedFolder = csarTmp + ".extracted";
         String toscaFile = extractedFolder + "/Definitions/Application.tosca";
         String scriptDir = extractedFolder + "/Scripts/";
-
         try {
-            FileUtils.copyURLToFile(new URL(csarURL), new File(csarTmp));
-
             // extract CSAR
             CSARParser.extractCsar(new File(csarTmp), extractedFolder);
 
@@ -386,7 +411,6 @@ public class SmartDeploymentService {
         String csarURLReturn = SalsaConfiguration.getSalsaCenterEndpoint() + "/rest/smart/CAMFTosca/enrich/CSAR/" + serviceName;
         EngineLogger.logger.info("Enrich CSAR done. URL to download is: {}", csarURLReturn);
         return csarURLReturn;
-
     }
 
     @GET

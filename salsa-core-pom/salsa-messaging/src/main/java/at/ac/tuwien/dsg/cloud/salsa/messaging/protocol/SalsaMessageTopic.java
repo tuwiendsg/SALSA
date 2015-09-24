@@ -24,12 +24,16 @@ package at.ac.tuwien.dsg.cloud.salsa.messaging.protocol;
 public class SalsaMessageTopic {
 
     private static final String PREFIX = "ac.at.tuwien.dsg.cloud.salsa.";
-    // topic to send request to pioneer, need to pad pioneer ID after
+    // From CENTER to PIONEER: send request
     public static final String CENTER_REQUEST_PIONEER = PREFIX + "center.request";
-    // pioneer register
-    public static final String PIONEER_REGISTER = PREFIX + "pioneer.sync";
-    public static final String PIONEER_UPDATE_STATE = PREFIX + "pioneer.state";
+    // From Pioneer to Center: heartbeat, register
+    public static final String PIONEER_REGISTER_AND_HEARBEAT = PREFIX + "pioneer.sync";
+    // From Pioneer to Center: update configuration state
+    public static final String PIONEER_UPDATE_CONFIGURATION_STATE = PREFIX + "pioneer.state";
+    // From Pioneer to Center: Log. This is not ussually used.
     public static final String PIONEER_LOG = PREFIX + "pioneer.log";
+    // From Center to External: publish event to external queue
+    public static final String SALSA_PUBLISH_EVENT = PREFIX + "event";
 
     public String getPioneerTopicByID(String pioneerID) {
         return CENTER_REQUEST_PIONEER + "." + pioneerID;

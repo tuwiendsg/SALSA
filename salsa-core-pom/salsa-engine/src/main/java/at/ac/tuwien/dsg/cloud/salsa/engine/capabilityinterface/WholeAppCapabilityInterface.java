@@ -18,7 +18,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
 import generated.oasis.tosca.TDefinitions;
 
 /**

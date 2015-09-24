@@ -61,6 +61,9 @@ public class ServiceInstance extends SalsaEntity {
 
     @XmlElement(name = "Capabilities")
     protected Capabilities capabilities;
+    
+    @XmlElement(name = "domainID")
+    protected String domainID;
 
 //	@XmlElement(name = "actionqueue")
 //	protected Queue<String> actionqueue = new LinkedList();
@@ -84,20 +87,6 @@ public class ServiceInstance extends SalsaEntity {
         }
     }
 
-//	@XmlAccessorType(XmlAccessType.FIELD)
-//    @XmlType(name = "")
-//    public static class Requirements {
-//		@XmlElement(name = "Requirement")
-//        protected List<SalsaCapaReqString> requirement = new ArrayList<>();
-//
-//		public List<SalsaCapaReqString> getRequirement() {
-//			return requirement;
-//		}
-//
-//		public void setRequirement(List<SalsaCapaReqString> requirements) {
-//			this.requirement = requirements;
-//		}  		
-//    }
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {"any"})
     public static class Properties {
@@ -196,6 +185,14 @@ public class ServiceInstance extends SalsaEntity {
     public void setExtra(String extra) {
         this.extra = extra;
     }
+
+    public String getDomainID() {
+        return domainID;
+    }
+
+    public void setDomainID(String domainID) {
+        this.domainID = domainID;
+    }    
 
     public String convertToXML() throws JAXBException {
         JAXBContext jaxbContext = JAXBContext // beside data.class, addition

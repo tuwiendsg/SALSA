@@ -92,7 +92,7 @@ function ShowSalsaRuntime(data){ // data is CloudService
 	var str="";
 	str+="<h2><i>Artifacts information</i></h2>";
 	for (var i = 0; i < x.length; i++) {
-		if (x[i].getAttribute('type')==="software" || x[i].getAttribute('type')==="war"){
+		if (x[i].getAttribute('type')==="service" || x[i].getAttribute('type')==="software" || x[i].getAttribute('type')==="war"){
 			str+=showSingleTable(x[i],serviceId, topologyId);
 		}
 	}
@@ -323,7 +323,7 @@ function undeployInstance(serviceId, topologyId, nodeId, instanceId){
 // 	alert("Undeploying instance: " + serviceId +"/" + topologyId+"/" + nodeId+"/"+instanceId);
 // 	return;
 	$.ajax({
-	    url: salsaCenterRestEndpoint + "/services/" + serviceId +"/topologies/"+ topologyId + "/nodes/"+ nodeId +"/instances/" + instanceId,
+	    url: salsaCenterRestEndpoint + "/services/" + serviceId + "/nodes/"+ nodeId +"/instances/" + instanceId,
 	    type: 'DELETE',
 	    async: false,
 	    cache: false,

@@ -21,13 +21,13 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
-import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.WholeAppCapabilityInterface;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineConnectionException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineMisconfiguredException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.ServicedataProcessingException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineMisconfiguredException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.ServicedataProcessingException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.AppDescriptionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability.AsyncUnitCapability;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.InfoManagement;
@@ -35,7 +35,8 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.PioneerInfo;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
 import generated.oasis.tosca.TDefinitions;
 import java.io.File;
 import java.io.IOException;
@@ -66,8 +67,8 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
     }
 
     @Override
-    public CloudService addService(String serviceName, TDefinitions def) throws SalsaException {
-        EngineLogger.logger.info("Start to add a new cloud service with ID: {}", serviceName);
+    public CloudService addService(String serviceName, TDefinitions def) throws SalsaException {        
+        EventPublisher.publishINFO("Start to add a new cloud service with ID " + serviceName);
         if (configFile == null) {
             throw new EngineMisconfiguredException("./salsa.engine.properties", "The file is missing");
         }
@@ -106,13 +107,13 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
         SalsaXmlDataProcess.writeCloudServiceToFile(serviceData, fullSalsaDataFile);
         EngineLogger.logger.debug("debugggg Sep 8 - 4");
 
-        EngineLogger.logger.info("Adding a new cloud service done with ID: {}", serviceName);
+        EventPublisher.publishINFO("creating to add a new cloud service with ID " + serviceName);
         return actualCreateNewService(serviceData);
     }
 
     @Override
-    public boolean cleanService(String serviceId) throws SalsaException {
-        EngineLogger.logger.info("Start to clean service: {}", serviceId);
+    public boolean cleanService(String serviceId) throws SalsaException {        
+        EventPublisher.publishINFO("Start to clean service ID " + serviceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         if (service == null) {
             throw new ServicedataProcessingException(serviceId);
@@ -132,8 +133,8 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
             }
         }
         // unregister pioneers
-        PioneerManager.removePioneerOfWholeService(SalsaConfiguration.getUserName(), serviceId);
-        EngineLogger.logger.info("Clean service done: {}", serviceId);
+        PioneerManager.removePioneerOfWholeService(SalsaConfiguration.getUserName(), serviceId);        
+        EventPublisher.publishINFO("Clean service done: " + serviceId);
         return true;
     }
 

@@ -31,6 +31,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityS
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_SystemProcess;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 
 /**
@@ -215,7 +216,6 @@ public class ServiceJsonDataTree {
                 this.addProperty("Capability[" + capaStr.getId() + "]", capaStr.getValue());
             }
         }
-        
 
         this.setNodeType(abstractNode.getType());
         //logger.debug("Let check connectto ID ");
@@ -229,7 +229,7 @@ public class ServiceJsonDataTree {
 
         }
 
-		// set connectto links
+        // set connectto links
         // if nodeType=SOFTWARE, change it into artifactType. so if it is os, leave there
         if (abstractNode.getArtifactType() != null) {
             if (!this.nodeType.equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
@@ -239,23 +239,25 @@ public class ServiceJsonDataTree {
 
         //logger.debug("abstractNode.getType(): " + abstractNode.getType());
         SalsaEntityType type = SalsaEntityType.fromString(abstractNode.getType());
-		//logger.debug("The instance node know it parent type is: " + type);
+        //logger.debug("The instance node know it parent type is: " + type);
         // put properties
         if (type.equals(SalsaEntityType.OPERATING_SYSTEM) && instance.getProperties() != null) {
 //			logger.debug("Putting property of OS type");			
             SalsaInstanceDescription_VM props = (SalsaInstanceDescription_VM) instance.getProperties().getAny();
             this.setProperties(props.exportToMap());
-        } else {
-            if (type.equals(SalsaEntityType.DOCKER) && instance.getProperties() != null) {
+        } else if (type.equals(SalsaEntityType.DOCKER) && instance.getProperties() != null) {
 //			logger.debug("Putting property of OS type");			
-                SalsaInstanceDescription_Docker props = (SalsaInstanceDescription_Docker) instance.getProperties().getAny();
-                this.setProperties(props.exportToMap());
-            }
+            SalsaInstanceDescription_Docker props = (SalsaInstanceDescription_Docker) instance.getProperties().getAny();
+            this.setProperties(props.exportToMap());
+        } else if (type.equals(SalsaEntityType.SERVICE) && instance.getProperties() != null) {
+            SalsaInstanceDescription_SystemProcess props = (SalsaInstanceDescription_SystemProcess) instance.getProperties().getAny();
+            this.setProperties(props.exportToMap());
         }
+
         this.addProperty("extra", instance.getExtra());
 		// TODO: properties for others
 
-		// recursive components which host on this node
+        // recursive components which host on this node
 //		logger.debug("Will recursive by hostOnCompos.size(): " + hostOnCompos.size());
         for (ServiceUnit compo : hostOnCompos) {
             // if there are too much node, just combine to one.			
@@ -268,7 +270,7 @@ public class ServiceJsonDataTree {
         if (abstractNode.getReference() != null) {
             this.addProperty("reference", abstractNode.getReference() + "/" + instance.getInstanceId());
         }
-        
+
     }
 
     // remove the abstract node, return instance children

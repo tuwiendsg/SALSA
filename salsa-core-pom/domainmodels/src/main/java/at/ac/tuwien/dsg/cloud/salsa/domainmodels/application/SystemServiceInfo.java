@@ -14,11 +14,8 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
  */
 public class SystemServiceInfo extends DomainEntity {
 
-    protected long pID;
-    protected String status;
-    
     public enum States{
-        stopped, running
+        undeployed, stopped, running
     }
 
     public SystemServiceInfo() {
@@ -28,22 +25,4 @@ public class SystemServiceInfo extends DomainEntity {
         super(ServiceCategory.SystemService, domainID, name);
         updateStateList(States.values());
     }
-
-    public long getpID() {
-        return pID;
-    }
-
-    public void setpID(long pID) {
-        this.pID = pID;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    
 }

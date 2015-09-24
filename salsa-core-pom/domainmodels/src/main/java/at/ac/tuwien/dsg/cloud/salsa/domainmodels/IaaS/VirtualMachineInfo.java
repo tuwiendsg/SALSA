@@ -20,10 +20,7 @@ package at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -34,29 +31,43 @@ import java.util.Objects;
  */
 public class VirtualMachineInfo extends DomainEntity {
 
+    // info get from SALSA
     protected String provider;
-
-    protected String baseImage;
-
-    protected String instanceType;
-
+    protected String baseImageID;
+    protected String baseImageName;
     protected String instanceId;
-
     protected String privateIp;
-
     protected String publicIp;
-
-    protected String privateDNS;
-
-    protected String publicDNS;
-
-    protected String state;
-
     protected PackagesDependencies packagesDependencies;
 
-    public enum State {
+    // Some info can get from OpenStack-based cloud
+    protected String configDrive;
+    protected String flavorName;
+    protected String flavorID;
+    protected String hostId;
+    protected String keyname;
+    protected String status;
+    protected String tenantId;
+    protected String updated;
+    protected String userID;
+    
+    // some info at Operating system level
+    protected String osName;
+    protected String osArch;
+    protected String osVersion;
+    protected String sunOsPatchLevel;
+    protected String sunCpuEndian;
+    
+    protected String javaVersion;
+    protected String javaVendor;    
+    protected String javaRuntimeName;    
+    
+    protected String fileEncoding;
+    protected String fileEncodingPacket;
 
-        spawning, configuring, running
+
+    public enum State {
+        unknown, spawning, configuring, running, stopped, error
     }
 
     public VirtualMachineInfo() {
@@ -66,96 +77,15 @@ public class VirtualMachineInfo extends DomainEntity {
         super(ServiceCategory.VirtualMachine, instanceId, name);
         this.provider = provider;
         this.instanceId = instanceId;
+        
+        // we always need this to update the unified state
         updateStateList(State.values());
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public String getBaseImage() {
-        return baseImage;
-    }
-
-    public String getInstanceType() {
-        return instanceType;
-    }
-
-    public String getInstanceId() {
-        return instanceId;
-    }
-
-    public String getPrivateIp() {
-        return privateIp;
-    }
-
-    public String getPublicIp() {
-        return publicIp;
-    }
-
-    public String getPrivateDNS() {
-        return privateDNS;
-    }
-
-    public String getPublicDNS() {
-        return publicDNS;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public PackagesDependencies getPackagesDependencies() {
-        return packagesDependencies;
-    }
-
-    public void setProvider(String provider) {
-        this.provider = provider;
-    }
-
-    public void setBaseImage(String baseImage) {
-        this.baseImage = baseImage;
-    }
-
-    public void setInstanceType(String instanceType) {
-        this.instanceType = instanceType;
-    }
-
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
-    }
-
-    public void setPrivateIp(String privateIp) {
-        this.privateIp = privateIp;
-    }
-
-    public void setPublicIp(String publicIp) {
-        this.publicIp = publicIp;
-    }
-
-    public void setPrivateDNS(String privateDNS) {
-        this.privateDNS = privateDNS;
-    }
-
-    public void setPublicDNS(String publicDNS) {
-        this.publicDNS = publicDNS;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public void setPackagesDependencies(PackagesDependencies packagesDependencies) {
-        this.packagesDependencies = packagesDependencies;
     }
 
     @Override
     public String toString() {
         return "SalsaInstanceDescription [provider=" + provider
-                + ", baseImage=" + baseImage + ", instanceType=" + instanceType
-                + ", instanceId=" + instanceId + ", privateIp=" + privateIp
-                + ", publicIp=" + publicIp + ", privateDNS=" + privateDNS
-                + ", publicDNS=" + publicDNS + ", state=" + state + "]";
+                + ", instanceId=" + instanceId + ", privateIp=" + privateIp + ", state=" + status + "]";
     }
 
     @Override
@@ -174,27 +104,26 @@ public class VirtualMachineInfo extends DomainEntity {
         return hash;
     }
 
-    public Map<String, String> exportToMap() {
-        Map<String, String> resMap = new HashMap<>();
-        Map<String, String> map = new HashMap<>();
-        map.put("provider", this.provider);
-        map.put("baseImage", this.baseImage);
-        map.put("instanceType", this.instanceType);
-        map.put("instanceId", this.instanceId);
-        map.put("publicIp", this.publicIp);
-        map.put("privateIp", this.privateIp);
-        map.put("publicDNS", this.publicDNS);
-        Iterator iterator = map.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> mapEntry = (Map.Entry<String, String>) iterator.next();
-            if (mapEntry.getValue() != null) {
-                resMap.put(mapEntry.getKey(), mapEntry.getValue());
-            }
-        }
-
-        return resMap;
-    }
-
+//    public Map<String, String> exportToMap() {
+//        Map<String, String> resMap = new HashMap<>();
+//        Map<String, String> map = new HashMap<>();
+//        map.put("provider", this.provider);
+//        map.put("baseImage", this.baseImage);
+//        map.put("instanceType", this.instanceType);
+//        map.put("instanceId", this.instanceId);
+//        map.put("publicIp", this.publicIp);
+//        map.put("privateIp", this.privateIp);
+//        map.put("publicDNS", this.publicDNS);
+//        Iterator iterator = map.entrySet().iterator();
+//        while (iterator.hasNext()) {
+//            Map.Entry<String, String> mapEntry = (Map.Entry<String, String>) iterator.next();
+//            if (mapEntry.getValue() != null) {
+//                resMap.put(mapEntry.getKey(), mapEntry.getValue());
+//            }
+//        }
+//
+//        return resMap;
+//    }
     public static class PackagesDependencies {
 
         List<String> packageDependency;
@@ -218,4 +147,211 @@ public class VirtualMachineInfo extends DomainEntity {
 
     }
 
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public String getBaseImageID() {
+        return baseImageID;
+    }
+
+    public void setBaseImageID(String baseImageID) {
+        this.baseImageID = baseImageID;
+    }
+
+    public String getBaseImageName() {
+        return baseImageName;
+    }
+
+    public void setBaseImageName(String baseImageName) {
+        this.baseImageName = baseImageName;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
+
+    public String getPrivateIp() {
+        return privateIp;
+    }
+
+    public void setPrivateIp(String privateIp) {
+        this.privateIp = privateIp;
+    }
+
+    public String getPublicIp() {
+        return publicIp;
+    }
+
+    public void setPublicIp(String publicIp) {
+        this.publicIp = publicIp;
+    }
+
+    public PackagesDependencies getPackagesDependencies() {
+        return packagesDependencies;
+    }
+
+    public void setPackagesDependencies(PackagesDependencies packagesDependencies) {
+        this.packagesDependencies = packagesDependencies;
+    }
+
+    public String getConfigDrive() {
+        return configDrive;
+    }
+
+    public void setConfigDrive(String configDrive) {
+        this.configDrive = configDrive;
+    }
+
+    public String getFlavorName() {
+        return flavorName;
+    }
+
+    public void setFlavorName(String flavorName) {
+        this.flavorName = flavorName;
+    }
+
+    public String getFlavorID() {
+        return flavorID;
+    }
+
+    public void setFlavorID(String flavorID) {
+        this.flavorID = flavorID;
+    }
+
+    public String getHostId() {
+        return hostId;
+    }
+
+    public void setHostId(String hostId) {
+        this.hostId = hostId;
+    }
+
+    public String getKeyname() {
+        return keyname;
+    }
+
+    public void setKeyname(String keyname) {
+        this.keyname = keyname;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public String getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(String updated) {
+        this.updated = updated;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public String getOsName() {
+        return osName;
+    }
+
+    public void setOsName(String osName) {
+        this.osName = osName;
+    }
+
+    public String getOsArch() {
+        return osArch;
+    }
+
+    public void setOsArch(String osArch) {
+        this.osArch = osArch;
+    }
+
+    public String getOsVersion() {
+        return osVersion;
+    }
+
+    public void setOsVersion(String osVersion) {
+        this.osVersion = osVersion;
+    }
+
+    public String getSunOsPatchLevel() {
+        return sunOsPatchLevel;
+    }
+
+    public void setSunOsPatchLevel(String sunOsPatchLevel) {
+        this.sunOsPatchLevel = sunOsPatchLevel;
+    }
+
+    public String getSunCpuEndian() {
+        return sunCpuEndian;
+    }
+
+    public void setSunCpuEndian(String sunCpuEndian) {
+        this.sunCpuEndian = sunCpuEndian;
+    }
+
+    public String getJavaVersion() {
+        return javaVersion;
+    }
+
+    public void setJavaVersion(String javaVersion) {
+        this.javaVersion = javaVersion;
+    }
+
+    public String getJavaVendor() {
+        return javaVendor;
+    }
+
+    public void setJavaVendor(String javaVendor) {
+        this.javaVendor = javaVendor;
+    }
+
+    public String getJavaRuntimeName() {
+        return javaRuntimeName;
+    }
+
+    public void setJavaRuntimeName(String javaRuntimeName) {
+        this.javaRuntimeName = javaRuntimeName;
+    }
+
+    public String getFileEncoding() {
+        return fileEncoding;
+    }
+
+    public void setFileEncoding(String fileEncoding) {
+        this.fileEncoding = fileEncoding;
+    }
+
+    public String getFileEncodingPacket() {
+        return fileEncodingPacket;
+    }
+
+    public void setFileEncodingPacket(String fileEncodingPacket) {
+        this.fileEncodingPacket = fileEncodingPacket;
+    }    
 }

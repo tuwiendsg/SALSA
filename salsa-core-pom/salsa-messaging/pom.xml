@@ -7,11 +7,7 @@
         <version>2.0</version>
     </parent>
     <artifactId>salsa-messaging</artifactId>
-    <packaging>jar</packaging>
-    <properties>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-    </properties>
+    <packaging>jar</packaging>    
     
     <dependencies>
         <dependency>
@@ -26,6 +22,13 @@
             <version>3.5.4</version>
             <type>jar</type>
         </dependency>
+        
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.comot</groupId>
+            <artifactId>messaging-lightweight</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        
         <!--        <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-jaxrs</artifactId>
@@ -36,10 +39,11 @@
             <artifactId>jackson-core-asl</artifactId>
             <version>1.9.13</version>
         </dependency>-->
-        <dependency>
+<!--        <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-xc</artifactId>                     
         </dependency> 
+-->
         
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>

@@ -13,12 +13,7 @@
 
     <name>salsa-engine</name>
     <url>http://maven.apache.org</url>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.7</java.version>        
-    </properties>
-    
+        
     <dependencies>
         <dependency>
             <groupId>org.eclipse.camf.carl</groupId>
@@ -160,11 +155,7 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
+                <artifactId>maven-compiler-plugin</artifactId>                
                 <version>3.2</version>
             </plugin>
 

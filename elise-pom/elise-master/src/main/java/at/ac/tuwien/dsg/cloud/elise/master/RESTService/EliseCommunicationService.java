@@ -29,7 +29,8 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFact
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.ConductorDescription;
+import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.CollectorsForConductor;
+import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.ConductorDescription;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryProcessNotification;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -50,6 +51,8 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
@@ -114,6 +117,26 @@ public class EliseCommunicationService {
         }
         //sub.disconnect();
         return result;
+    }
+    
+    /**
+     * Send a message to inject a collector with name and configure into the conductor with ID
+     * This function publish message to all the conductor, which the conductor will filter later.
+     * @param config the configuration of the collector (via POST data)
+     * @param conductorID the conductor ID 
+     * @param collectorName the name of the collector to add
+     */
+    @POST
+    @Path("/addCollector/{conductorID}/addcollector/{collectorName}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public void addCollector(String config, @PathParam("conductorID") String conductorID, @PathParam("conductorID") String collectorName){
+        MessagePublishInterface publish = factory.getMessagePublisher();
+        // get artifact
+        
+        
+        CollectorsForConductor cfc = new CollectorsForConductor(conductorID);
+        publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_addCollector, EliseConfiguration.getEliseID(), EliseQueueTopic.QUERY_TOPIC, "", cfc.toJson()));
     }
 
     static long startTime;

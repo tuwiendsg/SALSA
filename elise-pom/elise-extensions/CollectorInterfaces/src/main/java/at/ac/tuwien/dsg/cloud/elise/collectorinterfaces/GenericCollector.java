@@ -5,12 +5,16 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.collectorinterfaces;
 
+import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.CollectorDescription;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
@@ -52,14 +56,24 @@ public abstract class GenericCollector {
         return null;
     }
 
-    public String readAllAdaptorConfig() {
+    public List<String> readAllAdaptorConfig() {
         try {
             logger.debug("Trying to read config of class: {}. AdaptorFile: {}", this.getClass().getName(), this.ADAPTOR_FILE);            
-            return FileUtils.readFileToString(new File(ADAPTOR_FILE));
+            String allConfStr = FileUtils.readFileToString(new File(ADAPTOR_FILE));
+            String[] allConfig = allConfStr.split("\\r?\\n");
+            return Arrays.asList(allConfig);
         } catch (IOException ex) {
             logger.error("Cannot read configuration file", ex);
             return null;
         }
+    }
+    
+    public String readAllAdaptorConfigOneString() {
+        String result = "";
+        for(String s: readAllAdaptorConfig()){
+            result += s + ";";
+        }
+        return result;
     }
 
     public abstract String getName();
@@ -98,7 +112,7 @@ public abstract class GenericCollector {
             packageRoot = URLDecoder.decode(packageRoot, "UTF-8");
             logger.debug("Return class container of class: {}", packageRoot);
             return packageRoot;
-        } catch (Exception e) {
+        } catch (SecurityException | UnsupportedEncodingException e) {
             throw new RuntimeException("While interrogating " + c.getName() + ", an unexpected exception was thrown.", e);
         }
     }
@@ -106,5 +120,5 @@ public abstract class GenericCollector {
     public static String replaceLast(String text, String regex, String replacement) {
         return text.replaceFirst("(?s)" + regex + "(?!.*?" + regex + ")", replacement);
     }
-
+    
 }

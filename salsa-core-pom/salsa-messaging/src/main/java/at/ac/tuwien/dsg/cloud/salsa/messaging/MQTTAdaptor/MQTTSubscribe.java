@@ -45,8 +45,8 @@ public class MQTTSubscribe extends MQTTConnector implements MessageSubscribeInte
             
             @Override
             public void connectionLost(Throwable thrwbl) {
-                logger.debug("MQTT is disconnected from topic: {}. Message: {} ", topic ,thrwbl.getMessage());
-                thrwbl.printStackTrace();                
+                logger.debug("MQTT is disconnected from topic: {}. Message: {}. Cause: {}", topic ,thrwbl.getMessage(), thrwbl.getCause().getMessage());
+                thrwbl.printStackTrace();
             }
 
             @Override

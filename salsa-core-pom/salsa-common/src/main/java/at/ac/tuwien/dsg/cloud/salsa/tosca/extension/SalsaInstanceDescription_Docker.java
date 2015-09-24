@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "SalsaInstanceDescriptionDocker")
+@XmlRootElement(name = "SalsaInstanceDescription_Docker")
 public class SalsaInstanceDescription_Docker extends SalsaInstanceDescription_VM {
 
     @XmlElement(name = "dockername")

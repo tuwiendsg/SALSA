@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2013 Technische Universitat Wien (TUW), Distributed Systems Group. http://dsg.tuwien.ac.at
  *
@@ -25,16 +26,18 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaRelationshipType;
-import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineConnectionException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.AppDescriptionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_SystemProcess;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import generated.oasis.tosca.TArtifactTemplate;
 import generated.oasis.tosca.TCapability;
 import generated.oasis.tosca.TDefinitions;
@@ -53,6 +56,7 @@ import java.util.List;
 public class InfoManagement {
 
     static SalsaCenterConnector centerCon;
+
     {
         try {
             centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
@@ -75,7 +79,7 @@ public class InfoManagement {
     }
 
     public static void updateInstancesForReferenceNode(ServiceUnit sourceSU, String targetServiceID, String targetTopoID, String targetSUID) throws SalsaException {
-        for (ServiceInstance instance : sourceSU.getInstancesList())  {
+        for (ServiceInstance instance : sourceSU.getInstancesList()) {
             EngineLogger.logger.debug("Adding instance to: " + targetServiceID + "/" + targetSUID + "/" + instance.getInstanceId());
             Object tmpProp = null;
             if (instance.getProperties() != null) {
@@ -97,7 +101,7 @@ public class InfoManagement {
         }
         EngineLogger.logger.debug("Checking the referece for ServiceUnit: " + input.getId() + " => We got the reference string: " + input.getReference());
         String[] refStr = input.getReference().split("/");
-        if (refStr.length < 2) {            
+        if (refStr.length < 2) {
             throw new AppDescriptionException(input.getId(), "Too short reference String, should be in format [serviceID/serviceunitID], but number of elements is only" + refStr.length);
         }
 
@@ -121,7 +125,7 @@ public class InfoManagement {
         if (service != null) {
             EngineLogger.logger.debug("Checking the reference for ServiceUnit: " + input.getId() + " => FOUND !");
             return service.getComponentById(otherServiceUnitID);
-        }        
+        }
         throw new AppDescriptionException(input.getId(), "A reference but could not find the target service to refer to.");
     }
 
@@ -142,12 +146,18 @@ public class InfoManagement {
                     .getRelationshipTemplateList(SalsaRelationshipType.CONNECTTO.getRelationshipTypeString(), st);
             EngineLogger.logger.debug("Number of HostOn relationships: " + relas_hoston.size());
             for (TNodeTemplate node : nodes) {
+                /**
+                 * TRANSLATE BASIC INFORMATION
+                 */
                 ServiceUnit nodeData = new ServiceUnit(node.getId(), node.getType().getLocalPart());
                 nodeData.setState(SalsaEntityState.UNDEPLOYED);
                 nodeData.setName(node.getName());
                 nodeData.setMin(node.getMinInstances());
                 nodeData.setReference(node.getReference());
-                // add capability list
+
+                /**
+                 * TRANSLATE CAPABILITIES FIELD
+                 */
                 if (node.getCapabilities() != null && node.getCapabilities().getCapability() != null) {
                     for (TCapability capa : node.getCapabilities().getCapability()) {
                         if (!capa.getId().trim().isEmpty()) {
@@ -160,9 +170,10 @@ public class InfoManagement {
                 } else {
                     nodeData.setMax(Integer.parseInt(node.getMaxInstances()));
                 }
-                // Get the action property if there is. Just support command pattern
-                // TODO: Support complex action.
-                boolean needDeployAction = true;
+
+                /**
+                 * TRANSLATE ACTION MAPPING PROPERTIES
+                 */                
                 if (node.getProperties() != null) {
                     if (node.getProperties().getAny() != null) {
                         SalsaMappingProperties props = (SalsaMappingProperties) node.getProperties().getAny();
@@ -175,6 +186,9 @@ public class InfoManagement {
                     }
                 }
 
+                /**
+                 * TRANSLATE THE HOSTED ON RELATIONSHIP
+                 */
                 EngineLogger.logger.debug("debugggg Sep 8.1 - 1");
                 // find what is the host of this node, add to hostId
                 for (TRelationshipTemplate rela : relas_hoston) { // search on all relationship, find the host of this "node"
@@ -197,8 +211,10 @@ public class InfoManagement {
                     }
                 }
                 EngineLogger.logger.debug("debugggg Sep 8.1 - 2");
+                /**
+                 * TRANSLATE CONNECT-TO RELATIONSHIPS
+                 */
                 // find the connect to node, add it to connecttoId, this node will be the requirement, connect to capability (reverse with the Tosca)
-
                 for (TRelationshipTemplate rela : relas_connectto) {
                     EngineLogger.logger.debug("buildRuntimeDataFromTosca. Let's see relationship connectto: " + rela.getId());
 
@@ -225,7 +241,9 @@ public class InfoManagement {
                 }
                 EngineLogger.logger.debug("debugggg Sep 8.1 - 3");
 
-                // add artifact for nodeData
+                /**
+                 * TRANSLATE DEPLOYMENT ARTIFACT FIELDS
+                 */
                 if (node.getDeploymentArtifacts() != null && node.getDeploymentArtifacts().getDeploymentArtifact() != null) {
                     for (TDeploymentArtifact art : node.getDeploymentArtifacts().getDeploymentArtifact()) {
                         TArtifactTemplate artTemp = ToscaStructureQuery.getArtifactTemplateById(art.getArtifactRef().getLocalPart(), def);
@@ -244,6 +262,23 @@ public class InfoManagement {
                     }
                 }
 
+                /**
+                 * ADD MAPPING PROPERTIES BASED ON ENTITY TYPE FOR SERVICE UNIT
+                 */
+                if (node.getProperties() != null) {
+                    SalsaMappingProperties mapProp = (SalsaMappingProperties) node.getProperties().getAny();
+                    ServiceUnit.Properties props = new ServiceUnit.Properties();
+                    if (node.getType().getLocalPart().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
+                        SalsaInstanceDescription_VM instanceDesc = new SalsaInstanceDescription_VM();
+                        instanceDesc.updateFromMappingProperties(mapProp);                        
+                        props.setAny(instanceDesc);                        
+                    } else if (node.getType().getLocalPart().equals(SalsaEntityType.SERVICE.getEntityTypeString())) {
+                        SalsaInstanceDescription_SystemProcess instanceDesc = new SalsaInstanceDescription_SystemProcess();
+                        instanceDesc.updateFromMappingProperties(mapProp);
+                        props.setAny(instanceDesc);
+                    }
+                    nodeData.setProperties(props);
+                }
                 topo.addComponent(nodeData);
             }
             EngineLogger.logger.debug("debugggg Sep 8.1 - last");
@@ -257,7 +292,6 @@ public class InfoManagement {
             case ARTIFACT:
             case SOFTWARE:
             case EXECUTABLE:
-            case PROGRAM:
                 return ServiceCategory.ExecutableApp;
             case DOCKER:
                 return ServiceCategory.AppContainer;

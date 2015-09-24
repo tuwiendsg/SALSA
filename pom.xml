@@ -13,7 +13,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.5</slf4j.version>
-        <yworks.uml.path>${basedir}/scripts/yworks-uml-doclet-3.0_02-jdk1.5</yworks.uml.path>
+        <yworks.uml.path>${basedir}/scripts/yworks-uml-doclet-3.0_02-jdk1.5</yworks.uml.path>        
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 	
     <modules>
@@ -21,6 +23,7 @@
         <module>salsa-core-pom</module>
         <module>standalone</module>
         <module>elise-pom</module>
+        <module>salsa-client</module>
     </modules>
     
     <dependencyManagement>
@@ -74,13 +77,22 @@
                 <version>1.9.13</version>       
             </dependency> 
             
-            
-            
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+            </dependency>
             
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.12</version>			                
+            </dependency>
+            
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>2.0.1</version>        
             </dependency>
 
         </dependencies>
@@ -129,6 +141,16 @@
                     <doclet>ydoc.doclets.YStandard</doclet>
                     <docletPath>${yworks.uml.path}/lib/ydoc.jar:${yworks.uml.path}/resources</docletPath>
                     <additionalparam>-umlautogen</additionalparam>
+                    <!--                    <docletArtifact>
+                        <groupId>com.yworks</groupId>
+                        <artifactId>umldoclet</artifactId>
+                        <version>3.0.02</version>
+                    </docletArtifact>
+                    <additionalparam>
+                        -umlautogen
+                        -resourcepath ${yworks.uml.path}/resources
+                    </additionalparam>-->
+                    
                     
                     <!-- Apple's JVM sometimes requires more memory -->
                     <additionalJOption>-J-Xmx1024m</additionalJOption>

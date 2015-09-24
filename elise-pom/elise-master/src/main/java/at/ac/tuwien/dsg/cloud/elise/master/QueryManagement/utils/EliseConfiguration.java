@@ -63,7 +63,7 @@ public class EliseConfiguration {
             prop.setProperty("ELISE_IP", getSALSA_CENTER_IP());
             prop.setProperty("BROKER", getBroker());
             prop.setProperty("BROKER_TYPE", getBrokerType());
-            prop.store(output, null);
+            prop.store(output, null);            
         } catch (IOException io) {
             io.printStackTrace();
         } finally {
@@ -118,7 +118,7 @@ public class EliseConfiguration {
         }
         return ELISE_ID;
     }
-    
+
     private static String getSALSA_CENTER_IP() {
         return getGenericParameter("SALSA_CENTER_IP", getEth0IPAddress());
     }
@@ -148,13 +148,13 @@ public class EliseConfiguration {
         // copy the getEth0IPv4 to /tmp and execute it, return the value        
         URL inputUrl = EliseConfiguration.class.getResource("/scripts/getEth0IPv4.sh");
         logger.debug("Search script: " + inputUrl);
-        File dest = new File("/tmp/getEth0IPv4.sh");
+        File dest = new File(CURRENT_DIR + "/scripts/getEth0IPv4.sh");
         try {
             FileUtils.copyURLToFile(inputUrl, dest);
         } catch (IOException ex) {
             logger.error("Cannot create template script file from: " + inputUrl + " to: " + dest.getPath());
         }
-        return executeCommand("/bin/bash /tmp/getEth0IPv4.sh", "/tmp");
+        return executeCommand("/bin/bash " + CURRENT_DIR + "/scripts/getEth0IPv4.sh", CURRENT_DIR);
     }
 
     /**
@@ -193,7 +193,7 @@ public class EliseConfiguration {
                 logger.debug(line);
             }
             p.waitFor();
-            System.out.println("Execute Commang output: " + output.toString().trim());
+            System.out.println("Execute Command output: " + output.toString().trim());
 
             if (p.exitValue() == 0) {
                 logger.debug("Command exit 0, result: " + output.toString().trim());

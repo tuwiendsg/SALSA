@@ -25,10 +25,13 @@ import javax.xml.bind.annotation.XmlType;
 public enum SalsaEntityType {
 	OPERATING_SYSTEM("os"),	
 	DOCKER("docker"),
+        // software is very generic, is used for long time, has no additional information. Should not use
 	SOFTWARE("software"),
+        // give information about the system service name to manage the app
 	SERVICE("service"),
-	PROGRAM("program"),
+        // generic file to copy
 	ARTIFACT("artifact"),
+        // run the script and wait for it to stop
 	EXECUTABLE("executable"),
 	WAR("war"),
 	TOMCAT("tomcat");

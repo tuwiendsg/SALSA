@@ -21,7 +21,7 @@ import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfigurat
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceDAO;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.WholeAppCapabilityInterface;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.WholeAppEnrichedTosca;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.WholeAppEnrichedTosca;
 import generated.oasis.tosca.TDefinitions;

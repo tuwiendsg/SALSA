@@ -24,10 +24,10 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
-import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineConnectionException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.VMProvisionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
@@ -82,21 +82,23 @@ public class GenericUnitCapability implements UnitCapabilityInterface {
             }
         } else {
             centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId, repData);
+
+            // app based: now select different kind of app
             AppCapabilityBase appCapa = new AppCapabilityBase();
             appCapa.deploy(serviceId, nodeId, instanceId);
             EngineLogger.logger.info("Generic unit deployment for artifact node: {}/{}/{} is done", serviceId, nodeId, instanceId);
             return new ServiceInstance(instanceId);
         }
-        
+
     }
 
     @Override
     public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {
-        EngineLogger.logger.info("Start remove generic node: {}/{}/{}", serviceId, nodeId, instanceId);        
+        EngineLogger.logger.info("Start remove generic node: {}/{}/{}", serviceId, nodeId, instanceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         ServiceUnit node = service.getComponentById(nodeId);
         ServiceInstance instance = node.getInstanceById(instanceId);
-        
+
         List<ServiceUnit> listUnit = service.getAllComponent();
 
         // undeploy dependency chain first. It is recursive.
@@ -168,8 +170,7 @@ public class GenericUnitCapability implements UnitCapabilityInterface {
             EngineLogger.logger.info("Removed generic node: {}/{}/{} with warning", serviceId, nodeId, instanceId);
             return;
         }
-        
-        
+
         // Call appropriate catapbility based on type
         if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
             VMCapabilityBase vmCapability = new VMCapabilityBase();
@@ -179,13 +180,13 @@ public class GenericUnitCapability implements UnitCapabilityInterface {
             appCapa.remove(serviceId, nodeId, instanceId);
         }
         EngineLogger.logger.info("Removed generic node: {}/{}/{}", serviceId, nodeId, instanceId);
-        
+
         // unregister pioneer
         String pioneerID = PioneerManager.getPioneerID(SalsaConfiguration.getUserName(), serviceId, nodeId, instanceId);
-        if (pioneerID != null){
+        if (pioneerID != null) {
             PioneerManager.removePioneer(pioneerID);
             EngineLogger.logger.debug("Also unregistered pioneer ID: {}", pioneerID);
-        } 
+        }
     }
-    
+
 }

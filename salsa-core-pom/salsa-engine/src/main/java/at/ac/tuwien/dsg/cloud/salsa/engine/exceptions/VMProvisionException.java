@@ -17,8 +17,6 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.engine.exceptions;
 
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
-
 /**
  *
  * @author Duc-Hung Le

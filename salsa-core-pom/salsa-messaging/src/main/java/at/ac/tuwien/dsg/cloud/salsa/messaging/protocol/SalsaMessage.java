@@ -19,8 +19,6 @@ package at.ac.tuwien.dsg.cloud.salsa.messaging.protocol;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Set;
-import java.util.UUID;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
@@ -55,12 +53,12 @@ public class SalsaMessage {
 
     public enum MESSAGE_TYPE {
 
-        discover, // collect SALSA pioneer, elise collector, elise 
+        discover, // collect SALSA pioneer, elise collector, elise        
 
         // for SALSA core
         salsa_deploy, // first time deployment
-        salsa_reconfigure, // call an action        
-        salsa_configurationStateUpdate, // state update, error report
+        salsa_reconfigure, // call a lifecycle action        
+        salsa_configurationStateUpdate, // update configuration stats, report error
         salsa_messageReceived, // simple notify that a message is received
         salsa_pioneerActivated, // a pioneer register itself
         salsa_log, // for sending log
@@ -71,7 +69,8 @@ public class SalsaMessage {
         elise_queryProcessNotification,
         elise_instanceInfoUpdate,
         elise_providerInfoUpdate,
-        elise_conductorActivated
+        elise_conductorActivated,
+        elise_addCollector
     }
 
     public String toJson() {

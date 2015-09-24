@@ -64,25 +64,23 @@ public class DockerInfo extends VirtualMachineInfo {
         return "SalsaInstanceDescription_Docker{" + "dockername=" + dockername + ", portmap=" + portmap + '}';
     }    
     
-    @Override
-    public Map<String, String> exportToMap() {
-        Map<String, String> resMap = new HashMap<>();
-        Map<String, String> map = new HashMap<>();
-        map.put("provider", this.provider);
-        map.put("baseImage", this.baseImage);
-        map.put("instanceType", this.instanceType);
-        map.put("instanceId", this.instanceId);
-        map.put("publicIp", this.publicIp);
-        map.put("privateIp", this.privateIp);
-        map.put("publicDNS", this.publicDNS);
-        map.put("dockername", this.dockername);
-        map.put("portmap", this.portmap);
-        for (Map.Entry<String, String> mapEntry : map.entrySet()) {
-            if (mapEntry.getValue() != null) {
-                resMap.put(mapEntry.getKey(), mapEntry.getValue());
-            }
-        }
-
-        return resMap;
-    }
+//    @Override
+//    public Map<String, String> exportToMap() {
+//        Map<String, String> resMap = new HashMap<>();
+//        Map<String, String> map = new HashMap<>();
+//        map.put("provider", this.provider);
+//        map.put("baseImageID", this.baseImageID);        
+//        map.put("instanceId", this.instanceId);
+//        map.put("publicIp", this.publicIp);
+//        map.put("privateIp", this.privateIp);
+//        map.put("dockername", this.dockername);
+//        map.put("portmap", this.portmap);
+//        for (Map.Entry<String, String> mapEntry : map.entrySet()) {
+//            if (mapEntry.getValue() != null) {
+//                resMap.put(mapEntry.getKey(), mapEntry.getValue());
+//            }
+//        }
+//
+//        return resMap;
+//    }
 }

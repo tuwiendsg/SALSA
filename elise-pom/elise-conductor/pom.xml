@@ -7,11 +7,7 @@
         <version>2.0</version>
     </parent>
     <artifactId>elise-conductor</artifactId>
-    <packaging>jar</packaging>
-    <properties>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-    </properties>
+    <packaging>jar</packaging>    
     <dependencies>
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
@@ -30,10 +26,10 @@
             <version>2.0</version>
         </dependency>
         
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxrs</artifactId>  
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>   
@@ -42,10 +38,10 @@
             <groupId>org.apache.cxf</groupId> 
             <artifactId>cxf-rt-rs-client</artifactId>      
         </dependency> 
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http-hc</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-jaxrs</artifactId>   
@@ -54,10 +50,10 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>            
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-xc</artifactId>            
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>

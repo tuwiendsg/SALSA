@@ -43,9 +43,9 @@ public class BashInstrument implements ArtifactConfigurationInterface {
         int returnCode = SystemFunctions.executeCommandGetReturnCode(cmd, workingDir, configInfo.getActionID());
         logger.debug("Command is done, return code is : " + returnCode);
         if (returnCode == 0){
-            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.SUCCESSFUL, returnCode, "Configure script DONE: " + configInfo.getRunByMe());
+            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.SUCCESSFUL, returnCode,  "Configure script DONE: " + configInfo.getRunByMe());
         } else {
-            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR, returnCode, "Configure script FAILED: " + configInfo.getRunByMe());
+            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR, returnCode,  "Configure script FAILED: " + configInfo.getRunByMe());
         }
     }
 

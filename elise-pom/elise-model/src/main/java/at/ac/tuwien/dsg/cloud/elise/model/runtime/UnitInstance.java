@@ -54,9 +54,8 @@ public class UnitInstance extends ServiceUnit {
     public UnitInstance() {
     }
 
-    public UnitInstance(String name, ServiceCategory category, State state) {
+    public UnitInstance(String name, ServiceCategory category) {
         super(name, category);
-        this.state = state;
     }
     
     public void hostedOnInstance(UnitInstance hostedInst){

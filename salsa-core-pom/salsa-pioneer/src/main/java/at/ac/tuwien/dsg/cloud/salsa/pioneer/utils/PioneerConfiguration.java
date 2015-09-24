@@ -78,6 +78,13 @@ public class PioneerConfiguration {
         return getWorkingDir() + "/" + nodeID + "." + instanceID;
     }
     
+    public static String getEliseConductorURL(){
+        return getGenericParameter("ELISE_CONDUCTOR_URL", null);
+    }
+    
+    public static String getConductorFilePath(){
+        return getWorkingDir()+"/conductor.jar";
+    }
     
 
     public static PioneerInfo getPioneerInfo() {
@@ -85,7 +92,7 @@ public class PioneerConfiguration {
                 PIONEER_ID, SystemFunctions.getEth0IPAddress(),
                 getGenericParameter("SALSA_SERVICE_ID", null),
                 getGenericParameter("SALSA_TOPOLOGY_ID", null),
-                getGenericParameter("SALSA_NODE_ID", null),
+                getGenericParameter("SALSA_NODE_ID", null),                
                 Integer.parseInt(getGenericParameter("SALSA_REPLICA", null)));
     }
     

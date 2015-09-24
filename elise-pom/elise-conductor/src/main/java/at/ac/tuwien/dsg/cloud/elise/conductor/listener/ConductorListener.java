@@ -17,13 +17,14 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFact
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.CollectorDescription;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.ConductorDescription;
+import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.CollectorDescription;
+import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.ConductorDescription;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.EliseQueueTopic;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,6 +35,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import org.apache.commons.io.FileUtils;
 
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
@@ -59,7 +62,14 @@ public class ConductorListener {
         // registerConductor();
 
         // loading all the collectors
+        logger.debug("Loading all the jar...");
         instanceCollectorClasses = loadAllJar();
+        if (instanceCollectorClasses.isEmpty()) {
+            logger.debug("No collector class is load at the begining !");
+        }
+        for (Class<? extends UnitInstanceCollector> c : instanceCollectorClasses) {
+            logger.debug("Collector class found: {}", c.getName());
+        }
 
         // Listening to the query
         logger.debug("Subscribing to the control topic : {}", EliseQueueTopic.QUERY_TOPIC);
@@ -94,14 +104,11 @@ public class ConductorListener {
                                 UnitInstanceCollector u = (UnitInstanceCollector) urlClassLoader.loadClass(c.getName()).newInstance();
 
                                 logger.debug("  --- Trying to create instance DONE");
-                                String allConfigStr = u.readAllAdaptorConfig();
-                                logger.debug("All config string: {}", allConfigStr);
-                                String[] allConfig = u.readAllAdaptorConfig().split("\\r?\\n");
-                                for (String s : allConfig) {
+                                for (String s : u.readAllAdaptorConfig()) {
                                     logger.debug("   ALL-CONFIG-ARRAY: {}", s);
                                 }
                                 logger.debug("  --- Trying to create instance and get all config DONE");
-                                conductDesp.hasCollector(new CollectorDescription(u.getName(), allConfig));
+                                conductDesp.hasCollector(new CollectorDescription(u.getName(), ConductorConfiguration.getConductorID(), "N/A", u.readAllAdaptorConfigOneString()));
                                 logger.debug("When creating conductor description, we have collector: {}", u.getName());
                             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
                                 logger.error("Cannot create instance of class: {}", c.toString(), ex);
@@ -129,6 +136,24 @@ public class ConductorListener {
                         break;
                     case elise_instanceInfoUpdate:
                         return;
+                    case elise_addCollector:
+                        resMsg = null;
+                        CollectorDescription collector = CollectorDescription.fromJson(message.getPayload());
+                        if (collector.getAssignedConductorID().equals(ConductorConfiguration.getConductorID())) {
+                            try {
+                                URL url = new URL(collector.getArtifactURL());
+                                File folder = new File(ConductorConfiguration.getCollectorFolder(collector.getName()));
+                                folder.mkdirs();
+                                File file = new File(ConductorConfiguration.getCollectorFolder(collector.getName()) +"/" + url.getFile());
+                                logger.debug("Ok, now downloading artifact of collector {}, from: {}, save to: {}", collector.getName(), url.toString(), file.getAbsolutePath());
+                                FileUtils.copyURLToFile(url, file);
+                            } catch (MalformedURLException ex) {
+                                ex.printStackTrace();
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        break;
                     default:
                         response = "{\"error\":\"Unknown Elise command !\"}";
                         break;
@@ -142,18 +167,13 @@ public class ConductorListener {
                 }
             }
         });
-
         subscriber.subscribe(EliseQueueTopic.QUERY_TOPIC);
-
         logger.info("Conductor initiation is done !");
-
     }
 
     private static void registerConductor() {
         logger.info("Registering the collector: " + ConductorConfiguration.getConductorID());
-        
-        
-        
+
         MessagePublishInterface publish = factory.getMessagePublisher();
         // TODO: Later, publish more detail about the conductor, e.g. list of collector
         SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.discover, ConductorConfiguration.getConductorID(), EliseQueueTopic.NOTIFICATION_TOPIC, "", "");
@@ -215,7 +235,7 @@ public class ConductorListener {
         logger.debug("Inside the sending data method ...");
 
         UnitInstanceWrapper wrapper = new UnitInstanceWrapper();
-        UnitInstance instance = aCollector.collectInstanceByID(category, domainID);
+        UnitInstance instance = aCollector.collectInstanceByID(domainID);
         LocalIdentification si = aCollector.identify(instance);
         GlobalIdentification gi = new GlobalIdentification(si.getCategory());   // the instance contain a globalID, but null uuid and has 1 localID
         gi.addLocalIdentification(si);
