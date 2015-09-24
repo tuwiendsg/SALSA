@@ -36,7 +36,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -50,7 +49,7 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
 
     static Logger logger = PioneerConfiguration.logger;
     static String portPrefix = "498";
-    static String SALSA_DOCKER_PULL = "leduchung/ubuntu:14.04-jre7";
+    static String SALSA_DOCKER_PULL = "leduchung/ubuntu:14.04-jre8";
     static boolean inited = false;
 
     // This assume that a docker container will always created at least 2 seconds after previous one, on a same VM
