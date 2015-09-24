@@ -39,11 +39,11 @@
             <artifactId>jackson-core-asl</artifactId>
             <version>1.9.13</version>
         </dependency>-->
-<!--        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-xc</artifactId>                     
-        </dependency> 
--->
+        <!--        <dependency>
+                    <groupId>org.codehaus.jackson</groupId>
+                    <artifactId>jackson-xc</artifactId>                     
+                </dependency> 
+        -->
         
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
@@ -57,6 +57,11 @@
         <repository>
             <id>Eclipse Paho Repo</id>
             <url>https://repo.eclipse.org/content/repositories/paho-releases/</url>
+        </repository>
+        <repository>
+            <id>infosys-maven</id>
+            <name>infosys-maven-releases</name>
+            <url>http://repo.infosys.tuwien.ac.at/artifactory/dev</url>
         </repository>
     </repositories>
 </project>
