@@ -17,7 +17,6 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa;
 
-import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +30,10 @@ public class SalsaMsgConfigureState {
 
     String actionID;
     CONFIGURATION_STATE state;
-    int returnCode; // if available    
-    String info;
+    int returnCode; // if available
+    String domainID;
+    String extra; // extra message in plain text to show to user
+    String domainModel; // custom configuration property in what ever model which is marshalled in json
     Map<String, String> capabilities;
 
     public enum CONFIGURATION_STATE {
@@ -45,15 +46,38 @@ public class SalsaMsgConfigureState {
     public SalsaMsgConfigureState() {
     }
 
-    public SalsaMsgConfigureState(String actionID, CONFIGURATION_STATE state, int returnCode, String info) {
+    public SalsaMsgConfigureState(String actionID, CONFIGURATION_STATE state, int returnCode, String extra) {
         this.actionID = actionID;
         this.state = state;
         this.returnCode = returnCode;
-        this.info = info;
+        this.extra = extra;
     }
 
     public String getActionID() {
         return actionID;
+    }
+
+    public String getExtra() {
+        return extra;
+    }
+
+    public SalsaMsgConfigureState hasExtra(String extra) {
+        this.extra = extra;
+        return this;
+    }
+
+    public SalsaMsgConfigureState hasDomainID(String domainID) {
+        this.domainID = domainID;
+        return this;
+    }
+    
+    public SalsaMsgConfigureState hasDomainInfo(String domainModel) {
+        this.domainModel = domainModel;
+        return this;
+    }
+
+    public String getDomainModel() {
+        return domainModel;
     }
 
     public CONFIGURATION_STATE getState() {
@@ -64,8 +88,8 @@ public class SalsaMsgConfigureState {
         return returnCode;
     }
 
-    public String getInfo() {
-        return info;
+    public String getDomainID() {
+        return domainID;
     }
 
     public String toJson() {
@@ -91,9 +115,9 @@ public class SalsaMsgConfigureState {
     public Map<String, String> getCapabilities() {
         return capabilities;
     }
-    
-    public void addCapability(String key, String value){
-        if (this.capabilities==null){
+
+    public void addCapability(String key, String value) {
+        if (this.capabilities == null) {
             this.capabilities = new HashMap<>();
         }
         this.capabilities.put(key, value);

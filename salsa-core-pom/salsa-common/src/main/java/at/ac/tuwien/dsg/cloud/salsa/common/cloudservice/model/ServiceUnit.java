@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -74,6 +75,27 @@ public class ServiceUnit extends SalsaEntity {
 
     @XmlAttribute(name = "reference")
     String reference;
+    
+    @XmlElement(name = "properties")
+    protected ServiceUnit.Properties properties;
+    
+    
+    
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "", propOrder = {"any"})
+    public static class Properties {
+
+        @XmlAnyElement(lax = true)
+        protected Object any;
+
+        public Object getAny() {
+            return any;
+        }
+
+        public void setAny(Object value) {
+            this.any = value;
+        }
+    }
 
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "DeploymentArtifact")
@@ -108,6 +130,15 @@ public class ServiceUnit extends SalsaEntity {
         }
     }
 
+    public ServiceUnit.Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(ServiceUnit.Properties properties) {
+        this.properties = properties;
+    }
+    
+    
     public void addInstance(ServiceInstance instance) {
         repLst.add(instance);
     }

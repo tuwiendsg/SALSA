@@ -108,4 +108,17 @@ public class PioneerManager {
         }
         return pioneers;
     }
+    
+    public static Map<String, String> describeShort() {        
+        Map<String, String> map = new HashMap<>();
+        for (Map.Entry<String, PioneerInfo> entry : pioneerMap.entrySet()) {
+            PioneerInfo ai = entry.getValue();         
+            map.put(ai.getId(), ai.getIp()+","+ai.getService() + "/" + ai.getUnit() + "/" + ai.getInstance());            
+        }
+        return map;
+    }
+    
+    public static int count(){
+        return pioneerMap.size();
+    }
 }

@@ -17,6 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.master.RESTImp;
 
+import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.CollectorDescription;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseManager;
 import at.ac.tuwien.dsg.cloud.elise.master.Communication.QueryManager;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.OfferedServiceRepository;
@@ -24,12 +25,21 @@ import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfigurat
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.IdentificationManager;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.ConductorDescription;
+import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.ConductorDescription;
+import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.CollectorArtifactManager;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryProcessNotification;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.EliseQueueTopic;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +51,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class EliseManagerImp implements EliseManager {
 
     Logger logger = EliseConfiguration.logger;
+    MessageClientFactory factory = MessageClientFactory.getFactory(EliseConfiguration.getBroker(), EliseConfiguration.getBrokerType());
 
-    // FOR MANAGING COLLECTORS
+    // FOR MANAGING COLLECTORS LOCALLY
     List<ConductorDescription> conductors = new ArrayList<>();
 
     @Override
-    public String registerConductor(ConductorDescription collector) {        
+    public String registerConductor(ConductorDescription collector) {
         if (this.conductors == null) {
             this.conductors = new ArrayList<>();
         }
@@ -66,6 +77,7 @@ public class EliseManagerImp implements EliseManager {
 
     @Override
     public ConductorDescription getConductor(String collectorID) {
+        logger.debug("Getting conductor list: {} found", this.conductors.size());
         for (ConductorDescription desp : this.conductors) {
             if (desp.getId().equals(collectorID)) {
                 return desp;
@@ -86,8 +98,51 @@ public class EliseManagerImp implements EliseManager {
     }
 
     @Override
-    public List<ConductorDescription> getCollectorList() {
+    public List<ConductorDescription> getConductorList() {
         return this.conductors;
+    }
+
+    /**
+     * Elise master publish a message to inform a conductor to download and inject collectors The name of the collector will be used as the parameter to
+     * download the artifact
+     *
+     * @param configuration the collector configuration, e.g. endpoint=http://example.com; user=test; password=test
+     * @param conductorID the ID of conductor to push
+     * @param collectorName the name of the collector
+     */
+    @Override
+    public void pushCollectorToConductor(String configuration, String conductorID, String collectorName) {
+        MessagePublishInterface publish = factory.getMessagePublisher();
+        String artURL = EliseConfiguration.getRESTEndpoint()+"/manager/collector/"+collectorName;
+        CollectorDescription collector = new CollectorDescription(collectorName, conductorID, artURL, configuration);        
+        // message: send to NOTIFICATION
+        SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_addCollector, EliseConfiguration.getEliseID(), EliseQueueTopic.QUERY_TOPIC, null, collector.toJson());
+        publish.pushMessage(msg);
+    }
+
+    @Override
+    public Response getCollectorArtifact(@PathParam("collectorName") String collectorName) {
+        logger.debug("Getting collector artifact and return: {}", collectorName);
+        String localArtifactFile = CollectorArtifactManager.getCollector().get(collectorName);
+        if (localArtifactFile == null) {
+            logger.debug("Local artifact file is not found: {}", localArtifactFile);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        logger.debug("Found local artifact file: {}", localArtifactFile);
+
+        File file = new File(localArtifactFile);
+        String fileName = file.getName();
+        return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
+                .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
+                .build();
+    }
+
+    /**
+     * Publish a message to ask conductors to register themselves.
+     */
+    @Override
+    public void ResynConductors() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     // FOR GENERAL TASKS

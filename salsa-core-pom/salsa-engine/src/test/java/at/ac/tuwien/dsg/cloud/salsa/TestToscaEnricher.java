@@ -17,7 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa;
 
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TEntityTemplate.Properties;
 import generated.oasis.tosca.TNodeTemplate;
@@ -26,7 +26,7 @@ import generated.oasis.tosca.TTopologyTemplate;
 import at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.SALSA.ToscaEnricherSALSA;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaXmlProcess;
 import javax.xml.bind.JAXBException;
 
 public class TestToscaEnricher {

@@ -25,7 +25,7 @@ import at.ac.tuwien.dsg.cloud.elise.model.wrapper.UnitInstanceWrapper;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.ConductorDescription;
+import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.ConductorDescription;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.EliseQueueTopic;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import java.io.IOException;

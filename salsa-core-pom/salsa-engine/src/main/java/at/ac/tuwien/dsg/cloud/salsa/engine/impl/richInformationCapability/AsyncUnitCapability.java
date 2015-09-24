@@ -18,7 +18,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.GenericUnitCapability;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;

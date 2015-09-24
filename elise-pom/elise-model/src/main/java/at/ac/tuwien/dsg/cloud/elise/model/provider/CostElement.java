@@ -30,7 +30,7 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
-@NodeEntity
+//@NodeEntity
 public class CostElement {
 
     protected String costType;

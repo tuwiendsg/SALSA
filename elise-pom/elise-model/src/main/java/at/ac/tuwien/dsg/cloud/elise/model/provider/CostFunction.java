@@ -31,7 +31,7 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
-@NodeEntity
+//@NodeEntity
 public class CostFunction  {
 
     protected Set<OfferedServiceUnit> appliedInConjunctionWith;

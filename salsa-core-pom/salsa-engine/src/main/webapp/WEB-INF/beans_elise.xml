@@ -33,7 +33,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
     <bean id="EliseManagerImp" class="at.ac.tuwien.dsg.cloud.elise.master.RESTImp.EliseManagerImp" />  
     <bean id="ProviderDAOImp" class="at.ac.tuwien.dsg.cloud.elise.master.RESTImp.ProviderDAOImp" />  
     <bean id="UnitInstanceDAOImp" class="at.ac.tuwien.dsg.cloud.elise.master.RESTImp.UnitInstanceDAOImp" />
-    <bean id="EliseCommunicationService" class="at.ac.tuwien.dsg.cloud.elise.master.Communication.EliseCommunicationService" />
+    <bean id="EliseCommunicationService" class="at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseCommunicationService" />
     <bean id="EliseListenerForQueries" class="at.ac.tuwien.dsg.cloud.elise.master.Communication.EliseListener" />
     
 <!--    <bean id="neo4jBean" class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.AppContext" />-->

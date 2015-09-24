@@ -51,6 +51,7 @@ public class DomainEntity {
     protected String name;
     protected ServiceCategory category;
     protected Set<String> states;
+    protected String currentState;
 
     public DomainEntity() {
     }
@@ -61,6 +62,7 @@ public class DomainEntity {
         this.name = name;
         // default states
         this.states = new HashSet<>();
+        // add if the domain does not include this
         hasState("undeployed");
         hasState("error");
         
@@ -107,6 +109,14 @@ public class DomainEntity {
         this.category = category;
     }
 
+    public String getCurrentState() {
+        return currentState;
+    }
+
+    public void setCurrentState(String currentState) {
+        this.currentState = currentState;
+    }
+    
     public String toJson() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);

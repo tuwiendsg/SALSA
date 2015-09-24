@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tosca:Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:elasticity="http://www.example.org/NewXMLSchema" 
+	xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12"
+	xmlns:salsa="http://example.com"
+	xsi:schemaLocation="http://docs.oasis-open.org/tosca/ns/2011/12 TOSCA-v1.0.xsd"
+	targetNamespace="http://tempuri.org"
+	id="SalsaExample">
+	
+	<tosca:ServiceTemplate id="SampleService">
+		<tosca:TopologyTemplate>
+			<tosca:NodeTemplate id="helloWorld"	name="Hello World" type="service" minInstances="1" maxInstances="50">
+			 <tosca:Properties>
+           <MappingProperties>
+              <MappingProperty type="service">
+                <property name="name">apache2</property>
+              </MappingProperty>
+              <MappingProperty type="action">
+                  <property name="deploy">apt-get -y install apache2</property>
+                  <property name="start">service apache2 start</property>
+                  <property name="stop">service apache2 stop</property>
+               </MappingProperty>
+					</MappingProperties>
+        </tosca:Properties>
+			</tosca:NodeTemplate>
+			
+			<tosca:NodeTemplate type="os" id="SimpleOS" minInstances="1" maxInstances="1">
+				 <tosca:Properties>
+           <MappingProperties>						
+						<MappingProperty type="os">
+							<property name="instanceType">000001920</property>
+							<property name="provider">dsg@openstack</property> 
+							<property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+							<property name="packages">openjdk-7-jre</property>
+						</MappingProperty>
+					</MappingProperties>
+                </tosca:Properties>
+			</tosca:NodeTemplate> 
+			<tosca:RelationshipTemplate type="HOSTON" id="app_on_os">
+				<tosca:SourceElement ref="helloWorld"/>
+				<tosca:TargetElement ref="SimpleOS"/>
+			</tosca:RelationshipTemplate>
+		</tosca:TopologyTemplate>	
+		
+	</tosca:ServiceTemplate>
+
+</tosca:Definitions>

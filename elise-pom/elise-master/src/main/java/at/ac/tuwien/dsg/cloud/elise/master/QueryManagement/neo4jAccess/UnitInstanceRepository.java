@@ -19,7 +19,6 @@ package at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess;
 
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import java.util.Set;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.repository.query.Param;

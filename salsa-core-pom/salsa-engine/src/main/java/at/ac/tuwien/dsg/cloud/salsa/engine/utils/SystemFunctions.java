@@ -17,7 +17,6 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.engine.utils;
 
-import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
 
 
 import java.io.File;
@@ -34,7 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;

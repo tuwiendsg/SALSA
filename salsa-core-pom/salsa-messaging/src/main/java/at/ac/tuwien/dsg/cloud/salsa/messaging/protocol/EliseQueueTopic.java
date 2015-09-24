@@ -12,9 +12,9 @@ package at.ac.tuwien.dsg.cloud.salsa.messaging.protocol;
 public class EliseQueueTopic {
 
     private static final String prefix = "at.ac.tuwien.dsg.cloud.elise";
-    // topic for broadcasting the ELISE query
+    // topic for broadcasting the ELISE query and management from Master to Conductor
     public static final String QUERY_TOPIC = prefix + ".query";
-    // Topic for data transfer back
+    // Topic for data transfer back, this is genereted
     public static final String FEEDBACK_TOPIC = prefix + ".feedback.";
     // EliseMaster listens to: conductor registering, query process notification
     public static final String NOTIFICATION_TOPIC = prefix + ".notification";

@@ -28,16 +28,25 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
 public enum State {
-
-	INIT,
-	PASSIVE,
-	DEPLOYING,
-	RUNNING,
-	ELASTIC_CHANGE,
-	MAINTENANCE,
-	UNDEPLOYING,
-	FINAL,
-	ERROR;
+    UNDEPLOYED,
+    ALLOCATING,
+    CONFIGURING,
+    DEPLOYED,
+    RUNNING,
+    ERROR,
+    UNKNOWN;
+//    
+//    
+//
+//	INIT,
+//	PASSIVE,
+//	DEPLOYING,
+//	RUNNING,
+//	ELASTIC_CHANGE,
+//	MAINTENANCE,
+//	UNDEPLOYING,
+//	FINAL,
+//	ERROR;
 
 	static public boolean isMember(String aName) {
 		State[] states = State.values();

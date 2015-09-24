@@ -46,7 +46,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
-import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaXmlDataProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataForceDirect;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataTree;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataTreeSimple;
@@ -58,6 +58,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
@@ -216,13 +217,19 @@ public class ViewGenerator {
 				ServiceJsonDataTreeSimple newTopo = createServiceJsonNode(topo.getId(), "SERVICE_TOPOLOGY"); // service topology
 				//newTopo.getChildren().add(createServiceJsonNode("State[" + topo.getState() + "]", "metric"));
 				jsonObject.getChildren().add(newTopo);
-				for (ServiceUnit unit : topo.getComponentsByType(SalsaEntityType.SOFTWARE)) {
+                                
+                                List<ServiceUnit> allSoftwareUnits = new ArrayList<>();
+                                allSoftwareUnits.addAll(topo.getComponentsByType(SalsaEntityType.SOFTWARE));
+                                allSoftwareUnits.addAll(topo.getComponentsByType(SalsaEntityType.SERVICE));
+                                
+				for (ServiceUnit unit : allSoftwareUnits) {
 					for (ServiceInstance instance : unit.getInstancesList()) {
 						ServiceJsonDataTreeSimple newInstance = createServiceJsonNode(unit.getId() + "-" + instance.getInstanceId(), "SERVICE_INSTANCE");
 						//newInstance.getChildren().add(createServiceJsonNode("State[" + instance.getState() + "]", "metric"));
 						// get VM host the components
 						ServiceUnit hostedUnit = topo.getComponentById(unit.getHostedId());
 						ServiceInstance hostedInstance = hostedUnit.getInstanceById(instance.getHostedId_Integer());
+                                                
 						// in the case we have more than one software stack
 						while (!hostedUnit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
 							hostedUnit = topo.getComponentById(hostedUnit.getHostedId());
@@ -387,7 +394,7 @@ public class ViewGenerator {
 		for (ServiceTopology topo : service.getComponentTopologyList()) {
 			for (ServiceUnit unit : topo.getComponentsByType(SalsaEntityType.OPERATING_SYSTEM)) {
 				for (ServiceInstance instance : unit.getInstancesList()) {
-					SalsaMonitoringInfo moni = new SalsaMonitoringInfo();
+					InfoManagement moni = new InfoManagement();
 					SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) instance.getProperties().getAny();
 					String gangliaXML = moni.getVMInformation(vm);
 
@@ -408,7 +415,7 @@ public class ViewGenerator {
 
 		for (ServiceInstance osNode : service.getAllReplicaByType(SalsaEntityType.OPERATING_SYSTEM)) {
 			// get the ganglia info
-			SalsaMonitoringInfo moni = new SalsaMonitoringInfo();
+			InfoManagement moni = new InfoManagement();
 
 			// moni.getMonitorOfInstance(service.getId(), service.get, nodeId, instanceId)
 			// String str = SalsaEngineInternal.

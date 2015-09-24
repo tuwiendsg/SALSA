@@ -8,9 +8,7 @@
     </parent>
     <artifactId>domainmodels</artifactId>
     <packaging>jar</packaging>
-    <properties>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+    <properties>        
         <yworks.uml.path>${basedir}/../../scripts/yworks-uml-doclet-3.0_02-jdk1.5</yworks.uml.path>
     </properties>
     

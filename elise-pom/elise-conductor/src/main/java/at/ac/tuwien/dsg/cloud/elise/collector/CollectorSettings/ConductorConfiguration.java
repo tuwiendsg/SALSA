@@ -13,13 +13,12 @@ import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class ConductorConfiguration {
 
     public static Logger logger = LoggerFactory.getLogger(ConductorConfiguration.class);
     public static final String CURRENT_DIR = System.getProperty("user.dir");
     public static final String COLLECTOR_ADAPTOR_CONFIG_FILE = CURRENT_DIR + "/adaptor.conf";
-    public static final String ELISE_CONFIGURATION_FILE = CURRENT_DIR + "/elise.conf";
+    public static final String ELISE_CONFIGURATION_FILE = CURRENT_DIR + "/elise.conf";    
     private static String conductorID = null;
 
     public static String getJarDir() {
@@ -32,7 +31,17 @@ public class ConductorConfiguration {
             return null;
         }
     }
+    
+    public static String getExtensionFolder() {
+        return getJarDir()+"/extensions";
+    }
+    
+    public static String getCollectorFolder(String collectorName){
+        return getExtensionFolder() +"/" + collectorName;
+    }
 
+    /*** GET parameters in the configuration file ***/
+    
     public static String getName() {
         return getGenericParameter("name", "unknown");
     }
@@ -45,10 +54,19 @@ public class ConductorConfiguration {
         return getGenericParameter("ELISE_PORT", "8080");
     }
 
+    public static String getBroker() {
+        return getGenericParameter("BROKER", "tcp://iot.eclipse.org:1883");
+    }
+
+    public static String getBrokerType() {
+        return getGenericParameter("BROKER_TYPE", "mqtt");
+    }
+
+    /*** GET parameters that combine of different ones ***/
+    
     public static String getConductorID() {
         if (conductorID == null) {
-            // save the last generated ID if no ID specified
-            getGenericParameter("conductorID", UUID.randomUUID().toString());
+            conductorID = UUID.randomUUID().toString();
         }
         return conductorID;
     }
@@ -59,14 +77,6 @@ public class ConductorConfiguration {
 
     public static String getELISE_REST_ENDPOINT_LOCAL() {
         return "http://localhost:" + getELISE_port() + "/elise-service/rest";
-    }
-
-    public static String getBroker() {
-        return getGenericParameter("BROKER", "tcp://iot.eclipse.org:1883");
-    }
-
-    public static String getBrokerType() {
-        return getGenericParameter("BROKER_TYPE", "mqtt");
     }
 
     public static String getGenericParameter(String key, String theDefault) {

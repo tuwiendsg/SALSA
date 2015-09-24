@@ -17,8 +17,8 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.main;
 
-import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaStructureQuery;
-import at.ac.tuwien.dsg.cloud.salsa.tosca.processing.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaXmlProcess;
 import at.ac.tuwien.dsg.quelle.cloudServicesModel.requirements.MultiLevelRequirements;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TNodeTemplate;

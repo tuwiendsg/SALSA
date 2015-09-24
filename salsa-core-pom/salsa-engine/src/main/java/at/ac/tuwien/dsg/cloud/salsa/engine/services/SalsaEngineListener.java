@@ -20,9 +20,11 @@ package at.ac.tuwien.dsg.cloud.salsa.engine.services;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
-import at.ac.tuwien.dsg.cloud.salsa.common.processing.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.EngineConnectionException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.DockerInfo;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.ActionIDManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
@@ -36,8 +38,11 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureState;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.spi.LoggingEvent;
@@ -47,13 +52,13 @@ import org.apache.log4j.spi.LoggingEvent;
  * @author Duc-Hung Le
  */
 public class SalsaEngineListener {
+
     MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBroker(), SalsaConfiguration.getBrokerType());
 
     @PostConstruct
     public void init() {
-        EngineLogger.logger.debug("Subscribing to the control topic : " + SalsaMessageTopic.PIONEER_REGISTER + " and " + SalsaMessageTopic.PIONEER_UPDATE_STATE);
-        
-        
+        EngineLogger.logger.debug("Subscribing to the control topic : " + SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT + " and " + SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE);
+
         MessageSubscribeInterface subscriber1 = factory.getMessageSubscriber(new SalsaMessageHandling() {
 
             @Override
@@ -67,17 +72,17 @@ public class SalsaEngineListener {
                 }
                 SalsaMsgConfigureArtifact fullID = ActionIDManager.getInstanceFullID(state.getActionID());
 
-                EngineLogger.logger.debug("Current actions is pending: ");
-                EngineLogger.logger.debug(ActionIDManager.describe());
+                EngineLogger.logger.debug("Current actions is pending: " + ActionIDManager.describe());
                 if (fullID == null) {
                     EngineLogger.logger.error("Action is not found. ID: " + state.getActionID());
                     return;
                 }
 
                 SalsaEntityState salsaState = SalsaEntityState.UNDEPLOYED;
+
                 switch (state.getState()) {
                     case ERROR: {
-                        EngineLogger.logger.error("Artifact configuration failed. Instance: {},{},{}. Details: {}",fullID.getService(),fullID.getUnit(),fullID.getInstance(), state.getInfo());
+                        EngineLogger.logger.error("Artifact configuration failed. Instance: {},{},{}. Details: {}", fullID.getService(), fullID.getUnit(), fullID.getInstance(), state.getDomainID());
                         salsaState = SalsaEntityState.ERROR;
                         break;
                     }
@@ -88,13 +93,39 @@ public class SalsaEngineListener {
                                 updateInstanceCapability(fullID, state);
                                 ActionIDManager.removeAction(state.getActionID());
                             } catch (SalsaException ex) {
-                                EngineLogger.logger.error("Deployment action failed. ActionID: {}",fullID.getActionID(), ex);
+                                EngineLogger.logger.error("Deployment action failed. ActionID: {}", fullID.getActionID(), ex);
                             }
                         }
                         salsaState = SalsaEntityState.DEPLOYED;
                         break;
                     }
                     case PROCESSING: {
+                        try {
+                            centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
+                            switch (fullID.getUnitType()) {
+                                case AppContainer: {
+                                    String dockerPropString = state.getDomainModel();
+                                    if (fullID.getActionName().equals("deploy") && dockerPropString != null) {                                        
+                                        EngineLogger.logger.debug("Receive docker info:" + dockerPropString);
+                                        DockerInfo dockerInfo = (DockerInfo) DomainEntity.fromJson(dockerPropString);
+                                        if (dockerInfo == null) {
+                                            EngineLogger.logger.error("May get wrong DockerInfo");
+                                        } else {
+                                            EngineLogger.logger.error("Parsing DockerInfo");
+                                            SalsaInstanceDescription_Docker dockersalsainfo = new SalsaInstanceDescription_Docker(dockerInfo.getProvider(), dockerInfo.getInstanceId(), dockerInfo.getName());
+                                            dockersalsainfo.setPrivateIp(dockerInfo.getPrivateIp());
+                                            dockersalsainfo.setPublicIp(dockerInfo.getPublicIp());
+                                            dockersalsainfo.setBaseImage(dockerInfo.getBaseImageID());
+                                            dockersalsainfo.setPortmap(dockerInfo.getPortmap());
+                                            dockersalsainfo.setState(dockerInfo.getStatus());
+                                            centerCon.updateInstanceUnitProperty(fullID.getService(), fullID.getTopology(), fullID.getUnit(), fullID.getInstance(), dockersalsainfo);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (SalsaException ex) {
+                            EngineLogger.logger.error("Update node state fail: {}", ex.getMessage(), ex);
+                        }
                         salsaState = SalsaEntityState.CONFIGURING;
                         break;
                     }
@@ -105,15 +136,16 @@ public class SalsaEngineListener {
                 }
                 if (centerCon != null) {
                     try {
-                        centerCon.updateNodeState(fullID.getService(), fullID.getTopology(), fullID.getUnit(), fullID.getInstance(), salsaState, state.getInfo());
+                        centerCon.updateNodeState(fullID.getService(), fullID.getTopology(), fullID.getUnit(), fullID.getInstance(), salsaState, state.getExtra());
                     } catch (SalsaException ex) {
                         EngineLogger.logger.error("An error when trying update node state", ex);
                     }
                 }
             }
-        });
-       
-        subscriber1.subscribe(SalsaMessageTopic.PIONEER_UPDATE_STATE);
+        }
+        );
+
+        subscriber1.subscribe(SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE);
 
         MessageSubscribeInterface subscriber2 = factory.getMessageSubscriber(new SalsaMessageHandling() {
 
@@ -126,15 +158,15 @@ public class SalsaEngineListener {
                     try {
                         centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
                         centerCon.updateNodeState(piInfo.getService(), piInfo.getTopology(), piInfo.getUnit(), piInfo.getInstance(), SalsaEntityState.DEPLOYED, "Pioneer is deployed");
-                    } catch (SalsaException ex) {                        
+                    } catch (SalsaException ex) {
                         EngineLogger.logger.error("Cannot connect to SALSA service in localhost: " + SalsaConfiguration.getSalsaCenterEndpointLocalhost() + ". This is a fatal error !", ex);
-                    } 
+                    }
                 }
             }
-        });      
-        subscriber2.subscribe(SalsaMessageTopic.PIONEER_REGISTER);
-        
-        
+        });
+
+        subscriber2.subscribe(SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT);
+
         MessageSubscribeInterface subscribe3 = factory.getMessageSubscriber(new SalsaMessageHandling() {
 
             @Override
@@ -149,6 +181,7 @@ public class SalsaEngineListener {
                 }
             }
         });
+
         subscribe3.subscribe(SalsaMessageTopic.PIONEER_LOG);
 
     }

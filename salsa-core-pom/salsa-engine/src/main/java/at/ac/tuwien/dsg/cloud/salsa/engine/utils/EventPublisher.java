@@ -19,21 +19,29 @@ package at.ac.tuwien.dsg.cloud.salsa.engine.utils;
 
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 
 /**
  *
  * @author Duc-Hung LE
  */
 public class EventPublisher {
-    boolean isPublishing;
-    String broker;
-    String brokerType;
-    
-    public EventPublisher(String broker, String brokerType){
-        MessagePublishInterface publisher = MessageClientFactory.getFactory(broker, brokerType).getMessagePublisher();
+
+    static final MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBrokerExport(), SalsaConfiguration.getBrokerTypeExport());
+    static final MessagePublishInterface publish = factory.getMessagePublisher();
+
+    public static void publishINFO(String msg) {
+        msg = "[INFO] " + msg;
+        SalsaMessage ssmsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_log, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.SALSA_PUBLISH_EVENT, "", msg);
+        EngineLogger.logger.info(msg);
+        publish.pushMessage(ssmsg);
     }
-    
-    public static void publishMessage(String msg){
-        
+
+    public static void publishERROR(String msg) {
+        msg = "[ERROR] " + msg;
+        SalsaMessage ssmsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_log, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.SALSA_PUBLISH_EVENT, "", msg);
+        EngineLogger.logger.info(msg);
+        publish.pushMessage(ssmsg);
     }
 }

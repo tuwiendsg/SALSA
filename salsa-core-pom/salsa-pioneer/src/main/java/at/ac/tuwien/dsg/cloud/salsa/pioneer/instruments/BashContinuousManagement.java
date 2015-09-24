@@ -32,7 +32,7 @@ public class BashContinuousManagement {
         processMapping.put(actionID, p);
         cleanProcessMapping();
     }
-
+    
     static public boolean killProcessInstance(String actionID) {
         logger.debug("Attempt to stop action with ID: " + actionID);
         Process p = processMapping.get(actionID);

@@ -17,7 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.engine.services;
 
-import at.ac.tuwien.dsg.cloud.salsa.engine.exception.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;

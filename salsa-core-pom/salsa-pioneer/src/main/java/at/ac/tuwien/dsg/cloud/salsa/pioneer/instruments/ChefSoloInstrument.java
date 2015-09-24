@@ -43,9 +43,9 @@ public class ChefSoloInstrument implements ArtifactConfigurationInterface {
         }
         int returnCode = SystemFunctions.executeCommandGetReturnCode("/bin/bash ./chef_solo_install.sh " + configInfo.getRunByMe(), PioneerConfiguration.getWorkingDirOfInstance(configInfo.getUnit(), configInfo.getInstance()), configInfo.getActionID());
          if (returnCode == 0){
-            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.SUCCESSFUL, returnCode, "Configure by ChefSolo is DONE: " + configInfo.getRunByMe());
+            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.SUCCESSFUL, returnCode,  "Configure by ChefSolo is DONE: " + configInfo.getRunByMe());
         } else {
-            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR, returnCode, "Configure by ChefSolo is FAILED: " + configInfo.getRunByMe());
+            return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR, returnCode,  "Configure by ChefSolo is FAILED: " + configInfo.getRunByMe());
         }   
     }
 

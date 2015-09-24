@@ -14,11 +14,6 @@
     <name>salsa-core-pom</name>
     <url>http://maven.apache.org</url>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>        
-    </properties>
-
     <modules>
         <module>salsa-common</module>
         <module>salsa-engine</module>
@@ -28,5 +23,4 @@
         <module>domainmodels</module>
     </modules>
   
-
 </project>
