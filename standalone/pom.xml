@@ -33,6 +33,12 @@
         </dependency>
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+            <artifactId>salsa-client</artifactId>
+            <version>2.0</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
             <artifactId>elise-conductor</artifactId>
             <version>2.0</version>
         </dependency>
@@ -45,7 +51,26 @@
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
             <artifactId>elise-model</artifactId>
             <version>2.0</version>
-        </dependency>           
+        </dependency>
+        
+        <!-- pack also some default collector -->
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>                                    
+            <version>2.0</version>                                    
+            <artifactId>openstack-collector</artifactId>                                    
+        </dependency>
+                                
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>                                    
+            <version>2.0</version>
+            <artifactId>SystemServiceCollector</artifactId>                                    
+        </dependency>
+                                
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>                                    
+            <version>2.0</version>    
+            <artifactId>operating-system-collector</artifactId>                            
+        </dependency>
     </dependencies>
     
     
@@ -139,7 +164,7 @@
                 </executions>
             </plugin>
 
-<!--
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
