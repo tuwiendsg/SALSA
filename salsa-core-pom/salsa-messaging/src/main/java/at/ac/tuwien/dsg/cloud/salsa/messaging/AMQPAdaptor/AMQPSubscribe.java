@@ -25,8 +25,6 @@ import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
@@ -100,5 +98,7 @@ public class AMQPSubscribe extends AMQPConnector implements MessageSubscribeInte
         }
 
     }
+    
+   
 
 }

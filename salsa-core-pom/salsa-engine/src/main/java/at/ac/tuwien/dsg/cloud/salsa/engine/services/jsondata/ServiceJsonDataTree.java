@@ -315,7 +315,7 @@ public class ServiceJsonDataTree {
         if (this.children == null) {
             return;
         }
-        if (this.children.size() < 6) {
+        if (this.children.size() < 10) {
             for (ServiceJsonDataTree child : children) {
                 child.reduceLargeNumberOfInstances();
             }

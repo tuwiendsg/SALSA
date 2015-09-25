@@ -45,6 +45,7 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFact
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaXmlProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TRelationshipTemplate;
 import java.util.List;
@@ -199,7 +200,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
                         break;
                     }
                     if (!masterNode.getInstancesList().get(0).getState().equals(SalsaEntityState.DEPLOYED)) {
-                        EngineLogger.logger.debug("Node: " + unit.getId() + "/" + instanceId + " is waiting for connectto node: " + masterNode.getId() + " but the state is not DEPLOYED, it is: " + masterNode.getInstancesList().get(0).getState());
+                        //EngineLogger.logger.debug("Node: " + unit.getId() + "/" + instanceId + " is waiting for connectto node: " + masterNode.getId() + " but the state is not DEPLOYED, it is: " + masterNode.getInstancesList().get(0).getState());
                         fullfilled = false;
                         if (masterNode.getInstancesList().get(0).getState().equals(SalsaEntityState.ERROR)) {
                             centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.ERROR, "Error due to a configuration failed from node: " + masterNode.getId() + "/" + masterNode.getInstancesList().get(0).getInstanceId());
@@ -258,7 +259,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
             // if the deploy action is explicit define, RUN IT
             if (unit.getPrimitiveByName("deploy") != null) {
                 // TODO: consider to expand this part, this supports only SCRIPT type now
-                runByMe = unit.getPrimitiveByName("deploy").getExecutionREF();                
+                runByMe = unit.getPrimitiveByName("deploy").getExecutionREF();
             } // otherwise SALSA tries to detect via Artifact type
             else {
                 for (ServiceUnit.Artifacts art : unit.getArtifacts()) {
@@ -271,10 +272,22 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
                 }
             }
             command.setRunByMe(runByMe);
-            // find the actual script/ artifact to run, that is the runByMe field
+
+            // here with the docker, add preRunByMe to install need packages
+            if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString()) && unit.getProperties() != null) {
+                SalsaInstanceDescription_Docker dockerProp = (SalsaInstanceDescription_Docker) unit.getProperties().getAny();
+                if (dockerProp != null && dockerProp.getPackagesDependenciesList() != null && !dockerProp.getPackagesDependenciesList().getPackageDependency().isEmpty()) {
+                    String preRunByMe = "apt-get install -y ";
+                    for (String p : dockerProp.getPackagesDependenciesList().getPackageDependency()) {
+                        preRunByMe += p + " ";
+                    }
+                    command.setPreRunByMe(preRunByMe);
+                }
+            }
+
             // add an action
             ActionIDManager.addAction(actionID, command);
-            SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_deploy, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.CENTER_REQUEST_PIONEER, null, command.toJson());
+            SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_deploy, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.getPioneerTopicByID(pioneerID), null, command.toJson());
 
             MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBroker(), SalsaConfiguration.getBrokerType());
             MessagePublishInterface publish = factory.getMessagePublisher();

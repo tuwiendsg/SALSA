@@ -234,7 +234,6 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
                     userDataBuffer.append("apt-get -q -y install ").append(pkg).append(" \n");
                 }
             }
-
         }
 		// install ganglia client for monitoring this VM
         // userDataBuffer.append("apt-get -y install ganglia-monitor gmetad \n");
@@ -243,7 +242,7 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
         userDataBuffer.append("echo Current dir `pwd` \n");
 //        userDataBuffer.append("java -jar ").append(fileLst.get(0)).append(" setnodestate ").append(node.getId()).append(" ready \n");
 //        userDataBuffer.append("curl -sL ").append(SalsaConfiguration.getPioneerBootstrapScript()).append(" | sudo bash - \n");
-        userDataBuffer.append("java -jar salsa-pioneer.jar").append(" startserver \n");
+        userDataBuffer.append("java -Xmx1024M -Xms512M -XX:MaxPermSize=256m -Xss4m -jar salsa-pioneer.jar").append(" startserver > /tmp/salsa.pioneer.log.stdout \n");
 
         return userDataBuffer.toString();
     }

@@ -32,6 +32,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
  * @author Duc-Hung Le
  */
 public class MQTTSubscribe extends MQTTConnector implements MessageSubscribeInterface {
+
     SalsaMessageHandling handler;
 
     public MQTTSubscribe(String broker, SalsaMessageHandling handling) {
@@ -42,22 +43,23 @@ public class MQTTSubscribe extends MQTTConnector implements MessageSubscribeInte
     @Override
     public void subscribe(final String topic) {
         MqttCallback callBack = new MqttCallback() {
-            
+
             @Override
             public void connectionLost(Throwable thrwbl) {
-                logger.debug("MQTT is disconnected from topic: {}. Message: {}. Cause: {}", topic ,thrwbl.getMessage(), thrwbl.getCause().getMessage());
+                logger.debug("MQTT is disconnected from topic: {}. Message: {}. Cause: {}", topic, thrwbl.getMessage(), thrwbl.getCause().getMessage());
                 thrwbl.printStackTrace();
             }
 
             @Override
-            public void messageArrived(String topic, MqttMessage mm) throws Exception {                
+            public void messageArrived(String topic, MqttMessage mm) throws Exception {
                 ObjectMapper mapper = new ObjectMapper();
-                SalsaMessage em = (SalsaMessage) mapper.readValue(mm.getPayload(), SalsaMessage.class);                
-                
+                SalsaMessage em = (SalsaMessage) mapper.readValue(mm.getPayload(), SalsaMessage.class);
+
                 if (!topic.equals(SalsaMessageTopic.PIONEER_LOG)) {
-                    logger.debug("A message arrived. From: " + em.getFromSalsa() + ". MsgType: " + em.getMsgType() + ". Payload: " + em.getPayload());                    
+                    logger.debug("A message arrived. From: " + em.getFromSalsa() + ". MsgType: " + em.getMsgType() + ". Payload: " + em.getPayload());
                 }
                 handler.handleMessage(em);
+                //new Thread(new AsynHandleMessages(em)).start();
             }
 
             @Override
@@ -66,19 +68,34 @@ public class MQTTSubscribe extends MQTTConnector implements MessageSubscribeInte
                 logger.debug("Deliver complete to topic: " + topic);
             }
         };
-        
-        if (this.queueClient == null) {
+
+        if (queueClient == null) {
             connect();
         }
-        this.queueClient.setCallback(callBack);
-        try {            
-            this.queueClient.subscribe(topic);
+        queueClient.setCallback(callBack);
+        try {
+            queueClient.subscribe(topic);
             logger.info("Subscribed the topic: " + topic);
         } catch (MqttException ex) {
             logger.error("Failed to subscribed to the topic: " + topic);
             ex.printStackTrace();
-        } 
+        }
     }
 
-    
+    private class AsynHandleMessages implements Runnable {        
+        SalsaMessage em;
+
+        AsynHandleMessages(SalsaMessage em) {
+            logger.debug("Spawning a new thead to handle message {}", em.getPayload());            
+            this.em = em;
+        }
+
+        @Override
+        public void run() {
+            logger.debug("Pioneer is handingling message in an asyn thread: " + em.getPayload());
+            handler.handleMessage(em);
+        }
+
+    }
+
 }

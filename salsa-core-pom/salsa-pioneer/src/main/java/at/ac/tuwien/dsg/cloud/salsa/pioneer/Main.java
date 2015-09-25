@@ -32,7 +32,6 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandl
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureState;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
-import static at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage.MESSAGE_TYPE.discover;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.elise.EliseConductorManager;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.AptGetInstrument;
@@ -49,6 +48,9 @@ import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SystemFunctions;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -61,6 +63,8 @@ import org.slf4j.Logger;
 public class Main {
 
     static Logger logger = PioneerConfiguration.logger;
+    static Queue<SalsaMsgConfigureArtifact> taskQueue = new LinkedList<>();
+    static final MessageClientFactory factory = new MessageClientFactory(PioneerConfiguration.getBroker(), PioneerConfiguration.getBrokerType());
 
     public static void main(String[] args) {
 
@@ -70,63 +74,17 @@ public class Main {
             command = args[0];
         }
 
-        final MessageClientFactory factory = new MessageClientFactory(PioneerConfiguration.getBroker(), PioneerConfiguration.getBrokerType());
-
         MessageSubscribeInterface subscribeSalsaEngineRequests = factory.getMessageSubscriber(new SalsaMessageHandling() {
             @Override
             public void handleMessage(SalsaMessage msg) {
                 switch (msg.getMsgType()) {
-                    case discover: {
-                        break;
-                    }
                     case salsa_deploy: {
                         SalsaMsgConfigureArtifact confInfo = SalsaMsgConfigureArtifact.fromJson(msg.getPayload());
                         if (!confInfo.getPioneerID().equals(PioneerConfiguration.getPioneerID())) {
                             break;
                         }
-                        logger.debug("Received message for DEPLOYMENT: " + msg.toJson());
-                        // feedback that Pioneer is PROCESSING the request
-                        SalsaMsgConfigureState confState = new SalsaMsgConfigureState(confInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.PROCESSING, 0, "Pioneer received the request and is processing. Action ID: " + confInfo.getActionID());
-                        SalsaMessage notifyMsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_messageReceived, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE, "", confState.toJson());
-                        MessagePublishInterface publish_deploy = factory.getMessagePublisher();
-                        publish_deploy.pushMessage(notifyMsg);
-
-                        logger.debug("The command is attracted: Target to pioneer {}, and mine is {}!", confInfo.getPioneerID(), PioneerConfiguration.getPioneerID());
-                        if (confInfo.getPioneerID().equals(PioneerConfiguration.getPioneerID())) {
-                            SystemFunctions.writeSystemVariable(confInfo.getEnvironment());
-                            logger.debug("Executing the first deployment ! ConfInfo: " + confInfo.toJson());
-
-                            if (confInfo.getActionName().equals(CommonLifecycle.DEPLOY)) {
-                                logger.debug("Yes, the action name is: deploy");
-                                SalsaMsgConfigureState downloadResult = downloadArtifact(confInfo);
-                                if (downloadResult.getState().equals(SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR)) {
-                                    MessagePublishInterface publish_conf = factory.getMessagePublisher();
-                                    SalsaMessage reply = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_configurationStateUpdate, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE, null, downloadResult.toJson());
-                                    publish_conf.pushMessage(reply);
-                                    logger.error("Artifact download failed for unit: {}/{}/{}. The result is sent back to center." + confInfo.getService(), confInfo.getUnit(), confInfo.getInstance());
-                                } else {
-                                    logger.debug("Finished download artifacts !");
-                                    ArtifactConfigurationInterface confModule = selectConfigurationModule(confInfo);
-                                    logger.debug("Select module done !");
-                                    if (confModule != null) {
-                                        SalsaMsgConfigureState confResult = confModule.configureArtifact(confInfo);
-                                        logger.debug("Configuration done ! Result: " + confResult.getState() + ", Info: " + confResult.getDomainID());
-
-                                        MessagePublishInterface publish_conf = factory.getMessagePublisher();
-                                        SalsaMessage reply = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_configurationStateUpdate, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE, null, confResult.toJson());
-                                        publish_conf.pushMessage(reply);
-                                        logger.debug("Result is published !");
-                                    } else {
-                                        SalsaMsgConfigureState confResult = new SalsaMsgConfigureState(confInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR, 101, "Cannot find configuration module to execute action!");
-                                        MessagePublishInterface publish_conf = factory.getMessagePublisher();
-                                        SalsaMessage reply = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_configurationStateUpdate, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE, null, confResult.toJson());
-                                        publish_conf.pushMessage(reply);
-                                        logger.debug("Result is published !");
-                                    }
-                                }
-
-                            }
-                        }
+                        taskQueue.offer(confInfo);
+                        logger.debug("Received message for DEPLOYMENT: " + msg.toJson() + ", put in queue. QueueSize: " + taskQueue.size());
                         break;
                     }
                     case salsa_reconfigure: {
@@ -169,14 +127,85 @@ public class Main {
             logger.error("Cannot subscribe to the message queue: {}, type: {}. Pioneer QUIT !", PioneerConfiguration.getBroker(), PioneerConfiguration.getBrokerType());
             return;
         }
-        subscribeSalsaEngineRequests.subscribe(SalsaMessageTopic.CENTER_REQUEST_PIONEER);
+        subscribeSalsaEngineRequests.subscribe(SalsaMessageTopic.getPioneerTopicByID(PioneerConfiguration.getPioneerID()));
 
         // send information of this pioneer
         MessagePublishInterface publish = factory.getMessagePublisher();
         publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_pioneerActivated, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT, null, PioneerConfiguration.getPioneerInfo().toJson()));
 
+        new Thread(new TaskHandleThread()).start();
         // also start an elise conductor
         //new Thread(new EliseConductorThread()).start();
+    }
+
+    private static class TaskHandleThread implements Runnable {
+
+        @Override
+        public void run() {
+            int count = 0;
+            while (true) {
+                SalsaMsgConfigureArtifact confInfo = taskQueue.poll();
+                if (confInfo != null) {
+                    logger.debug("FULLED A TASK FROM TASKQUEUE. The queue how have: " + taskQueue.size());
+                    handleConfigurationTask(confInfo);
+                    count =0;
+                } else {
+                    try {
+                        if (count <= 2) {
+                            count +=1;
+                            logger.debug("TASKQUEUE is empty (show {}/3).", count);                            
+                        }
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private static void handleConfigurationTask(SalsaMsgConfigureArtifact confInfo) {
+        // feedback that Pioneer is PROCESSING the request
+        SalsaMsgConfigureState confState = new SalsaMsgConfigureState(confInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.PROCESSING, 0, "Pioneer received the request and is processing. Action ID: " + confInfo.getActionID());
+        SalsaMessage notifyMsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_messageReceived, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE, "", confState.toJson());
+        MessagePublishInterface publish_deploy = factory.getMessagePublisher();
+        publish_deploy.pushMessage(notifyMsg);
+
+        logger.debug("The command is attracted: Target to pioneer {}, and mine is {}!", confInfo.getPioneerID(), PioneerConfiguration.getPioneerID());
+        if (confInfo.getPioneerID().equals(PioneerConfiguration.getPioneerID())) {
+            SystemFunctions.writeSystemVariable(confInfo.getEnvironment());
+            logger.debug("Executing the first deployment ! ConfInfo: " + confInfo.toJson());
+
+            if (confInfo.getActionName().equals(CommonLifecycle.DEPLOY)) {
+                logger.debug("Yes, the action name is: deploy");
+                SalsaMsgConfigureState downloadResult = downloadArtifact(confInfo);
+                if (downloadResult.getState().equals(SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR)) {
+                    MessagePublishInterface publish_conf = factory.getMessagePublisher();
+                    SalsaMessage reply = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_configurationStateUpdate, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE, null, downloadResult.toJson());
+                    publish_conf.pushMessage(reply);
+                    logger.error("Artifact download failed for unit: {}/{}/{}. The result is sent back to center." + confInfo.getService(), confInfo.getUnit(), confInfo.getInstance());
+                } else {
+                    logger.debug("Finished download artifacts !");
+                    ArtifactConfigurationInterface confModule = selectConfigurationModule(confInfo);
+                    logger.debug("Select module done !");
+                    if (confModule != null) {
+                        SalsaMsgConfigureState confResult = confModule.configureArtifact(confInfo);
+                        logger.debug("Configuration done ! Result: " + confResult.getState() + ", Info: " + confResult.getDomainID());
+
+                        MessagePublishInterface publish_conf = factory.getMessagePublisher();
+                        SalsaMessage reply = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_configurationStateUpdate, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE, null, confResult.toJson());
+                        publish_conf.pushMessage(reply);
+                        logger.debug("Result is published !");
+                    } else {
+                        SalsaMsgConfigureState confResult = new SalsaMsgConfigureState(confInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR, 101, "Cannot find configuration module to execute action!");
+                        MessagePublishInterface publish_conf = factory.getMessagePublisher();
+                        SalsaMessage reply = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_configurationStateUpdate, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE, null, confResult.toJson());
+                        publish_conf.pushMessage(reply);
+                        logger.debug("Result is published !");
+                    }
+                }
+            }
+        }
     }
 
     private static class EliseConductorThread implements Runnable {
@@ -192,7 +221,7 @@ public class Main {
         logger.debug("Preparing artifact for node: " + confInfo.getUnit());
         if (confInfo.getArtifacts() == null) {
             new File(PioneerConfiguration.getWorkingDirOfInstance(confInfo.getUnit(), confInfo.getInstance())).mkdirs();
-            return new SalsaMsgConfigureState(confInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.SUCCESSFUL, 0, "No need to download artifact");            
+            return new SalsaMsgConfigureState(confInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.SUCCESSFUL, 0, "No need to download artifact");
         }
         logger.debug("Number of artifact: " + confInfo.getArtifacts().size());
         for (SalsaMsgConfigureArtifact.DeploymentArtifact art : confInfo.getArtifacts()) {

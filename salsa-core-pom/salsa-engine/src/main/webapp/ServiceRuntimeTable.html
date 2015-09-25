@@ -282,7 +282,7 @@ function deployMoreInstance(serviceId, topologyId, nodeId, inputboxQuantityId){
 	toastr.info("Requesting to deploy "+quantity+" instance(s) of node "+nodeId+" !");
 	
 	$.ajax({
-	    url: salsaCenterRestEndpoint + "/services/" + serviceId +"/topologies/"+ topologyId + "/nodes/"+ nodeId +"/instance-count/" + quantity,
+	    url: salsaCenterRestEndpoint + "/services/" + serviceId  + "/nodes/"+ nodeId +"/instance-count/" + quantity,
 	    type: 'POST',
 	    async: false,
 	    cache: false,
@@ -319,7 +319,8 @@ function undeployAllInstance(serviceId, topologyId, nodeId){
 
 
 function undeployInstance(serviceId, topologyId, nodeId, instanceId){	
-	toastr.info("Requesting to undeploy "+ serviceId +"/" + topologyId+"/" + nodeId+"/"+instanceId);
+    
+	toastr.info("Requesting to undeploy "+ serviceId +"/" + nodeId+"/"+instanceId);
 // 	alert("Undeploying instance: " + serviceId +"/" + topologyId+"/" + nodeId+"/"+instanceId);
 // 	return;
 	$.ajax({

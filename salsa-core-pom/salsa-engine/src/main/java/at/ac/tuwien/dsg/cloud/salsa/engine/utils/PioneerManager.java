@@ -38,30 +38,36 @@ public class PioneerManager {
 
     public static void addPioneer(String pioneerID, PioneerInfo fullInstanceID) {
         EngineLogger.logger.debug("Adding an pioneer: " + fullInstanceID.getId() + ", IP:" + fullInstanceID.getIp() + ", META:" + fullInstanceID.getService() + "/" + fullInstanceID.getTopology() + "/" + fullInstanceID.getUnit() + "/" + fullInstanceID.getInstance());
+        // remove duplicated pioneer
+        for (Map.Entry<String, PioneerInfo> entry : pioneerMap.entrySet()) {
+            System.out.println(entry.getKey() + "/" + entry.getValue());
+            if (entry.getValue().equals(fullInstanceID)){
+                pioneerMap.remove(entry.getKey());
+            }
+        }
         pioneerMap.put(pioneerID, fullInstanceID);
     }
 
     public static void removePioneer(String pioneerID) {
         PioneerInfo p = pioneerMap.remove(pioneerID);
-        if (p!=null){
+        if (p != null) {
             EngineLogger.logger.debug("Removed pioneer: " + p.toString());
         } else {
             EngineLogger.logger.debug("Pioneer ID: {} is not registered to be removed.", pioneerID);
         }
-        
     }
-    
-    public static void removePioneerOfWholeService(String userName, String serviceName){
+
+    public static void removePioneerOfWholeService(String userName, String serviceName) {
         EngineLogger.logger.debug("Searching for pioneerID to remove. Current pioneers: ", describe());
         List<String> removing = new ArrayList<>();
         for (Map.Entry<String, PioneerInfo> entry : pioneerMap.entrySet()) {
             PioneerInfo ai = entry.getValue();
-            EngineLogger.logger.debug("Checking pioneer: {}/{}/{}/{} if it is in the service: {} ", ai.getUserName(), ai.getService(), ai.getUnit(), ai.getInstance(), serviceName);            
+            EngineLogger.logger.debug("Checking pioneer: {}/{}/{}/{} if it is in the service: {} ", ai.getUserName(), ai.getService(), ai.getUnit(), ai.getInstance(), serviceName);
             if (ai.getUserName().equals(userName) && ai.getService().equals(serviceName)) {
                 removing.add(ai.getId());
             }
         }
-        for(String r: removing){
+        for (String r : removing) {
             pioneerMap.remove(r);
         }
     }
@@ -108,17 +114,17 @@ public class PioneerManager {
         }
         return pioneers;
     }
-    
-    public static Map<String, String> describeShort() {        
+
+    public static Map<String, String> describeShort() {
         Map<String, String> map = new HashMap<>();
         for (Map.Entry<String, PioneerInfo> entry : pioneerMap.entrySet()) {
-            PioneerInfo ai = entry.getValue();         
-            map.put(ai.getId(), ai.getIp()+","+ai.getService() + "/" + ai.getUnit() + "/" + ai.getInstance());            
+            PioneerInfo ai = entry.getValue();
+            map.put(ai.getId(), ai.getIp() + "," + ai.getService() + "/" + ai.getUnit() + "/" + ai.getInstance());
         }
         return map;
     }
-    
-    public static int count(){
+
+    public static int count() {
         return pioneerMap.size();
     }
 }

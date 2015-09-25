@@ -35,7 +35,7 @@ public class SalsaMessageTopic {
     // From Center to External: publish event to external queue
     public static final String SALSA_PUBLISH_EVENT = PREFIX + "event";
 
-    public String getPioneerTopicByID(String pioneerID) {
+    public static String getPioneerTopicByID(String pioneerID) {
         return CENTER_REQUEST_PIONEER + "." + pioneerID;
     }
 

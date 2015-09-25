@@ -117,6 +117,12 @@ public interface SalsaEngineServiceIntenal {
     public Response destroyInstance(@PathParam("serviceId") String serviceId,            
             @PathParam("nodeId") String nodeId,
             @PathParam("instanceId") int instanceId) throws SalsaException;
+    
+    @GET
+    @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}")
+    public Response getInstanceStatus(@PathParam("serviceId") String serviceId, @PathParam("nodeId") String nodeId,
+            @PathParam("instanceId") int instanceId) throws SalsaException;
+    
 
     @DELETE
     @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/metadata")
