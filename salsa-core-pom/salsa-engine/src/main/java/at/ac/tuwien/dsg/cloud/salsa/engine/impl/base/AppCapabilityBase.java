@@ -275,6 +275,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
 
             // here with the docker, add preRunByMe to install need packages
             if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString()) && unit.getProperties() != null) {
+                EngineLogger.logger.debug("Docker unit have property");
                 SalsaInstanceDescription_Docker dockerProp = (SalsaInstanceDescription_Docker) unit.getProperties().getAny();
                 if (dockerProp != null && dockerProp.getPackagesDependenciesList() != null && !dockerProp.getPackagesDependenciesList().getPackageDependency().isEmpty()) {
                     String preRunByMe = "apt-get install -y ";
