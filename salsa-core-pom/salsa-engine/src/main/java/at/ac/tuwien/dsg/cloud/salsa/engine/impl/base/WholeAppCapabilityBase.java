@@ -34,7 +34,6 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.InfoManagement
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.PioneerInfo;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaXmlProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
 import generated.oasis.tosca.TDefinitions;

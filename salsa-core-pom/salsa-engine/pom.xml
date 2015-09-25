@@ -107,12 +107,6 @@
             <artifactId>salsa-messaging</artifactId>
             <version>2.0</version>
         </dependency>
-        
-        <dependency>
-            <groupId>at.ac.tuwien.dsg.comot</groupId>
-            <artifactId>comot-messaging</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
 		
         <dependency>
             <groupId>com.google.code.gson</groupId>

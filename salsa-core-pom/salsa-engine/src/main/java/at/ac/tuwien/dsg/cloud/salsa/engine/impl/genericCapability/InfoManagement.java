@@ -36,6 +36,7 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaMappingProperties;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaStructureQuery;
+import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_SystemProcess;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import generated.oasis.tosca.TArtifactTemplate;
@@ -276,6 +277,10 @@ public class InfoManagement {
                         SalsaInstanceDescription_SystemProcess instanceDesc = new SalsaInstanceDescription_SystemProcess();
                         instanceDesc.updateFromMappingProperties(mapProp);
                         props.setAny(instanceDesc);
+                    } else if (node.getType().getLocalPart().equals(SalsaEntityType.DOCKER.getEntityTypeString())){
+                        SalsaInstanceDescription_Docker dockerDesc = new SalsaInstanceDescription_Docker();
+                        dockerDesc.updateFromMappingProperties(mapProp);
+                        props.setAny(dockerDesc);
                     }
                     nodeData.setProperties(props);
                 }
