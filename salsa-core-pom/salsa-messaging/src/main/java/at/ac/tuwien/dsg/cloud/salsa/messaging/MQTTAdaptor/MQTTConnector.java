@@ -53,12 +53,12 @@ public class MQTTConnector {
         
     public boolean connect() {
         try {
-            this.queueClient = new MqttClient(this.broker, this.clientId, this.persistence);
+            queueClient = new MqttClient(this.broker, this.clientId, this.persistence);            
             MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setCleanSession(true);            
-            this.queueClient.connect(connOpts);            
-            if (this.queueClient.isConnected()) {
-                this.logger.debug("Connected to the MQTT broker: " + this.broker);
+            connOpts.setCleanSession(false);                     
+            queueClient.connect(connOpts);            
+            if (queueClient.isConnected()) {
+                logger.debug("Connected to the MQTT broker: " + this.broker);
                 return true;
             } else {
                 this.logger.error("Failed to connect to the broker: " + this.broker);
@@ -72,9 +72,9 @@ public class MQTTConnector {
     }
 
     public void disconnect() {
-        if ((this.queueClient != null) && (this.queueClient.isConnected())) {
+        if ((queueClient != null) && (queueClient.isConnected())) {
             try {
-                this.queueClient.disconnect();
+                queueClient.disconnect();
             } catch (MqttException ex) {
                 this.logger.debug(ex.toString());
                 ex.printStackTrace();

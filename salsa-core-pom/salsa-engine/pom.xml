@@ -13,6 +13,11 @@
 
     <name>salsa-engine</name>
     <url>http://maven.apache.org</url>
+    
+    <properties>
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+    </properties>
         
     <dependencies>
         <dependency>
@@ -152,6 +157,12 @@
 
     <build>
         <finalName>salsa-engine</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

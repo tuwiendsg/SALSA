@@ -5,13 +5,15 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight;
 
+import at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor.MQTTConnector;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.comot.messaging.api.Consumer;
 import at.ac.tuwien.dsg.comot.messaging.api.Message;
-import at.ac.tuwien.dsg.comot.messaging.api.MessageReceivedListener;
 import at.ac.tuwien.dsg.comot.messaging.lightweight.ComotMessagingFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,6 +21,7 @@ import at.ac.tuwien.dsg.comot.messaging.lightweight.ComotMessagingFactory;
  */
 public class DSGQueueSubscribeLightweight extends DSGQueueConnector implements MessageSubscribeInterface {
 
+    Logger logger = LoggerFactory.getLogger(MQTTConnector.class);
     SalsaMessageHandling handler;
 
     public DSGQueueSubscribeLightweight(String broker, SalsaMessageHandling handling) {
@@ -30,7 +33,8 @@ public class DSGQueueSubscribeLightweight extends DSGQueueConnector implements M
     public void subscribe(String topic) {
         Consumer consumer = ComotMessagingFactory.getRabbitMqConsumer().withLightweigthDiscovery(config);
         consumer.addMessageReceivedListener((Message message) -> {
-            handler.handleMessage(SalsaMessage.fromJson(message.getMessage()));
+            //handler.handleMessage(SalsaMessage.fromJson(message.getMessage()));
+            new Thread(new AsynHandleMessages(SalsaMessage.fromJson(message.getMessage()))).start();
         });
     }
 
@@ -39,4 +43,20 @@ public class DSGQueueSubscribeLightweight extends DSGQueueConnector implements M
         System.out.println("Tend to disconnect DSG queue, but not neccessary !");
     }
 
+    private class AsynHandleMessages implements Runnable {
+
+        SalsaMessage em;
+
+        AsynHandleMessages(SalsaMessage em) {
+            logger.debug("Spawning a new thead to handle message {}", em.getPayload());
+            this.em = em;
+        }
+
+        @Override
+        public void run() {
+            logger.debug("Pioneer is handingling message in an asyn thread: " + em.getPayload());
+            handler.handleMessage(em);
+        }
+
+    }
 }

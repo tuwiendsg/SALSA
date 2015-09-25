@@ -44,7 +44,7 @@ import org.slf4j.Logger;
 
 public class DockerConfigurator implements ArtifactConfigurationInterface {
 
-    static final long cooldown = 2000;
+    static final long cooldown = 5000;
     static long lastDeploymentTime = (new java.util.Date()).getTime();
 
     static Logger logger = PioneerConfiguration.logger;
@@ -58,8 +58,8 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         long between = currentTime - lastDeploymentTime;
         if (between < cooldown) {
             try {
-                logger.debug("Waiting a "+(cooldown-between)+" miliseconds to reduce the cloud failure when create many docker at a time");
-                Thread.sleep(cooldown-between);
+                logger.debug("Waiting a " + (cooldown - between) + " miliseconds to reduce the cloud failure when create many docker at a time");
+                Thread.sleep(cooldown - between);
             } catch (InterruptedException ex) {
                 lastDeploymentTime = currentTime;
             }
@@ -83,16 +83,16 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
 
         //wait for the cooldown        
         String containerID;
-        // extract artifact, if there are dockerfile type
+        // extract artifact, if there are dockerfile type       
         if (!dockerFileName.isEmpty()) {
             initDocker(false);
             waitForCooledDown();
-            containerID = installDockerNodeWithDockerFile(configInfo.getUnit(), configInfo.getInstance(), dockerFileName);
+            containerID = installDockerNodeWithDockerFile(configInfo.getUnit(), configInfo.getInstance(), dockerFileName, configInfo.getPreRunByMe());
         } else {
             initDocker(true);
             waitForCooledDown();
-            containerID = installDockerNodeWithSALSA(configInfo.getUnit(), configInfo.getInstance());
-        }
+            containerID = installDockerNodeWithSALSA(configInfo.getUnit(), configInfo.getInstance(), configInfo.getPreRunByMe());
+        }        
         if (containerID == null || containerID.isEmpty()) {
             return new SalsaMsgConfigureState(configInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR, 0, "Docker container is failed to created").hasDomainID(containerID);
         } else {
@@ -112,10 +112,10 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
             logger.error("Cannot get Docker information. Container ID is null or empty !");
             return null;
         }
-        String ip = SystemFunctions.executeCommandGetOutput("docker inspect --format='{{.NetworkSettings.IPAddress}}' " + containerID, null, null);
-        String isRunning = SystemFunctions.executeCommandGetOutput("docker inspect --format='{{.State.Running}}' " + containerID, null, null);
-        String name = SystemFunctions.executeCommandGetOutput("docker inspect --format='{{.Name}}' " + containerID, null, null);
-        String dockerPortInfo = SystemFunctions.executeCommandGetOutput("docker inspect --format='{{.HostConfig.PortBindings}}' " + containerID, null, null);
+        String ip = SystemFunctions.executeCommandGetFirstLineOutput("docker inspect --format='{{.NetworkSettings.IPAddress}}' " + containerID, null, null);
+        String isRunning = SystemFunctions.executeCommandGetFirstLineOutput("docker inspect --format='{{.State.Running}}' " + containerID, null, null);
+        String name = SystemFunctions.executeCommandGetFirstLineOutput("docker inspect --format='{{.Name}}' " + containerID, null, null);
+        String dockerPortInfo = SystemFunctions.executeCommandGetFirstLineOutput("docker inspect --format='{{.HostConfig.PortBindings}}' " + containerID, null, null);
         logger.debug("Adding docker info: ip=" + ip + ", isRunning=" + isRunning + ", portinfo: " + dockerPortInfo);
         String portmap = formatPortMap(dockerPortInfo.trim());
         logger.debug("portmap string after formating: " + portmap);
@@ -166,15 +166,20 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
     }
 
     // this method does not install salsa pioneer
-    public String installDockerNodeWithDockerFile(String nodeId, int instanceId, String dockerFile) {
+    public String installDockerNodeWithDockerFile(String nodeId, int instanceId, String dockerFile, String preRunByMe) {
         String newDockerImage = UUID.randomUUID().toString().substring(0, 5);
         String newSalsaWorkingDirInsideDocker = PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId);
 
         if (!dockerFile.equals("Dockerfile")) {
-            int code = SystemFunctions.executeCommandGetReturnCode("mv " + dockerFile + " Dockerfile", PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), "");
-            if (code != 0) {
+            try {
+                FileUtils.moveFile(new File(newSalsaWorkingDirInsideDocker+"/"+dockerFile), new File(newSalsaWorkingDirInsideDocker + "/Dockerfile"));
+            } catch (IOException ex) {
                 logger.error("Do not found the Dockerfile, maybe it is not downloaded properly or on the wrong working folder !");
             }
+//            int code = SystemFunctions.executeCommandGetReturnCode("mv " + dockerFile + " Dockerfile", newSalsaWorkingDirInsideDocker, "");
+//            if (code != 0) {
+//                logger.error("Do not found the Dockerfile, maybe it is not downloaded properly or on the wrong working folder !");
+//            }
         }
 
         // copy the pioneer_install.sh to /tmp/, so the image will be build with it
@@ -188,7 +193,16 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
 
         // add salsa-pioneer deployment. The COPY command in the Dockerfile get only current folder file, cannot use absolute path on HOST
         StringBuilder sb = new StringBuilder();
-        SystemFunctions.executeCommandGetReturnCode("cp " + PioneerConfiguration.getWorkingDir() + "/salsa.variables " + newSalsaWorkingDirInsideDocker, PioneerConfiguration.getWorkingDir(), dockerFile);
+        try {
+            FileUtils.copyFile(new File(PioneerConfiguration.getWorkingDir() + "/salsa.variables"), new File(newSalsaWorkingDirInsideDocker+"/salsa.variables"));
+        } catch (IOException ex) {
+            logger.error("Cannot copy salsa.variables file !: " + ex.getMessage(), ex);
+            ex.printStackTrace();
+        }
+        //SystemFunctions.executeCommandGetReturnCode("cp " + PioneerConfiguration.getWorkingDir() + "/salsa.variables " + newSalsaWorkingDirInsideDocker, newSalsaWorkingDirInsideDocker, dockerFile);
+        if (preRunByMe != null && !preRunByMe.trim().isEmpty()) {
+            sb.append("\nRUN " + preRunByMe + " \n");
+        }
         sb.append("\nCOPY ./salsa.variables /etc/salsa.variables \n");
         sb.append("RUN mkdir -p " + newSalsaWorkingDirInsideDocker + "\n");
         sb.append("COPY ./pioneer_install.sh " + newSalsaWorkingDirInsideDocker + "/pioneer_install.sh \n");
@@ -230,7 +244,7 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
             logger.error("Cannot read the Docker file: " + dockerFile);
         }
 
-        String returnValue = SystemFunctions.executeCommandGetOutput("sudo docker run -d --name " + nodeId + "_" + instanceId + portMap + exportToDocker + " -t " + newDockerImage, PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), "");
+        String returnValue = SystemFunctions.executeCommandGetFirstLineOutput("sudo docker run -d --name " + nodeId + "_" + instanceId + portMap + exportToDocker + " -t " + newDockerImage, PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), "");
         logger.debug("installDockerNodeWithDockerFile. Return value: " + returnValue);
 
         // run a pioneer on the container if previous done
@@ -238,21 +252,29 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
             logger.debug("Container spawn done, now trying to push Pioneer inside the container..");
 
             // and execute it
-            String pushingResult = SystemFunctions.executeCommandGetOutput("sudo docker exec -d " + returnValue + " " + PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId) + "/pioneer_install.sh " + nodeId + " " + instanceId + " \n", PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), "");
+            String pushingResult = SystemFunctions.executeCommandGetFirstLineOutput("sudo docker exec -d " + returnValue + " " + PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId) + "/pioneer_install.sh " + nodeId + " " + instanceId + " \n", PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), "");
             logger.debug("Pushing result: " + pushingResult);
+        } else {
+            logger.error("Container is failed to created. No pioneer is pushed.");
+            return null;
         }
         // return container ID
         return returnValue;
     }
 
-    private String installDockerNodeWithSALSA(String nodeId, int instanceId) {
+    private String installDockerNodeWithSALSA(String nodeId, int instanceId, String preRunByMe) {
+        String newSalsaWorkingDirInsideDocker = PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId);
         // build new image with correct salsa.variable file
         StringBuilder sb = new StringBuilder();
         sb.append("FROM " + SALSA_DOCKER_PULL + " \n");
+        if (!preRunByMe.trim().isEmpty()) {
+            sb.append("\nRUN " + preRunByMe + " \n");
+        }
+        SystemFunctions.executeCommandGetReturnCode("cp " + PioneerConfiguration.getWorkingDir() + "/salsa.variables " + newSalsaWorkingDirInsideDocker, newSalsaWorkingDirInsideDocker, "");
         sb.append("COPY ./salsa.variables /etc/salsa.variables \n");
         try {
             InputStream is = DockerConfigurator.class.getResourceAsStream("/scripts/pioneer_install.sh");
-            OutputStream os = new FileOutputStream(new File("./pioneer_install.sh"));
+            OutputStream os = new FileOutputStream(new File(newSalsaWorkingDirInsideDocker + "/pioneer_install.sh"));
             IOUtils.copy(is, os);
             logger.debug("Getting pioneer installtion script done !");
         } catch (FileNotFoundException e) {
@@ -263,7 +285,7 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         }
         sb.append("COPY ./pioneer_install.sh ./pioneer_install.sh \n");
         sb.append("EXPOSE 9000 \n");
-        String pFilename = "./Dockerfile";
+        String pFilename = newSalsaWorkingDirInsideDocker + "/Dockerfile";
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(pFilename));
             out.write(sb.toString());
@@ -275,7 +297,22 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         }
         String dockerInstanceId = String.format("%02d", instanceId);
         String newDockerImage = UUID.randomUUID().toString().substring(0, 5);
-        SystemFunctions.executeCommandGetReturnCode("sudo docker build -t " + newDockerImage + " . ", "./", null);
+        
+        int buildResult = 1;
+        int tryTime = 0;
+        //retry one more time if the first build is fail
+        while (buildResult != 0 && tryTime < 3) {            
+            buildResult = SystemFunctions.executeCommandGetReturnCode("sudo docker build -t " + newDockerImage + " . ", newSalsaWorkingDirInsideDocker, null);            
+            tryTime += 1;
+            if (buildResult != 0) {
+                logger.debug("DockerFailed: Fail to build image, retry time:" + tryTime);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
 
         // install pioneer on docker and send request
         String portMap = portPrefix + dockerInstanceId;
@@ -283,7 +320,7 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         //return executeCommand("sudo docker run -p " + portMap + ":9000 " + "-d -t " + newDockerImage +" " + cmd +" ");
 
         // get the port map
-        return SystemFunctions.executeCommandGetOutput("sudo docker run -d --name " + nodeId + "_" + instanceId + " -t " + newDockerImage + " " + cmd + " ", null, null);
+        return SystemFunctions.executeCommandGetFirstLineOutput("sudo docker run -d --name " + nodeId + "_" + instanceId + " -t " + newDockerImage + " " + cmd + " ", null, null);
     }
 
     /**

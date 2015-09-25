@@ -45,6 +45,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance.Ca
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnitRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaInstanceState;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.SalsaEngineServiceIntenal;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
@@ -126,6 +127,11 @@ public class SalsaCenterConnector {
     public String removeInstanceMetadata(String serviceId, String nodeId, int instanceId) throws SalsaException {
         Response res = engineInternal.removeInstanceMetadata(serviceId, nodeId, instanceId);
         return res.getEntity().toString();
+    }
+    
+    public SalsaInstanceState getInstanceStatus(String serviceId, String nodeId, int instanceId) throws SalsaException {
+        Response res = engineInternal.getInstanceStatus(serviceId, nodeId, instanceId);
+        return SalsaInstanceState.fromString(res.getEntity().toString());
     }
 
 //	public String updateInstanceState(String serviceId, String topologyId, String nodeId, int instanceId, SalsaEntityState state) {

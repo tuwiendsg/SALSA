@@ -119,8 +119,12 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         ServiceUnit unit = service.getComponentById(nodeId);
         ServiceInstance instance = unit.getInstanceById(instanceId);
 
-        unitInstanceDAO.deleteUnitInstanceByID(instance.getUuid().toString());
-        lowerCapa.remove(serviceId, nodeId, instanceId);
+        if (instance != null) {
+            if (unitInstanceDAO != null) {
+                unitInstanceDAO.deleteUnitInstanceByID(instance.getUuid().toString());
+            }
+            lowerCapa.remove(serviceId, nodeId, instanceId);
+        }
     }
 
     private UnitInstance makeUnitInstance(CloudService service, ServiceUnit unit, ServiceInstance ins) {

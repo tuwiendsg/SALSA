@@ -80,7 +80,7 @@ public class SalsaConfiguration {
     public static String getPioneerRun() {
         return "salsa-pioneer.jar";
     }
-    
+
     public static String getSSHKeyForCenter() {
         return SalsaConfiguration.class.getResource("id_rsa").getFile();
     }
@@ -88,11 +88,11 @@ public class SalsaConfiguration {
     public static String getPioneerArtifact() {
         return getSalsaCenterEndpoint() + "/rest/manager/artifacts/pioneer";
     }
-    
+
     public static String getConductorWeb() {
         return getSalsaCenterEndpoint() + "/rest/manager/artifacts/conductor";
     }
-    
+
     public static String getPioneerBootstrapScript() {
         return getSalsaCenterEndpoint() + "/rest/manager/artifacts/";
     }
@@ -100,12 +100,12 @@ public class SalsaConfiguration {
     public static String getPioneerLocalFile() {
         return CURRENT_DIR + "/" + getPioneerRun();
     }
-    
-    public static String getConductorLocalFile(){
+
+    public static String getConductorLocalFile() {
         return CURRENT_DIR + "/conductor.jar";
     }
-    
-    public static String getPioneerBootstrapScriptLocalFile(){
+
+    public static String getPioneerBootstrapScriptLocalFile() {
         return SalsaConfiguration.class.getResource("/scripts/java1.8_update.sh").getFile();
     }
 
@@ -143,6 +143,16 @@ public class SalsaConfiguration {
         return createFolderIfNotExisted(CURRENT_DIR + "/cloudDescriptions");
     }
 
+    public static String getSalsaVersion() {
+        String[] versionFile = {SalsaConfiguration.class.getResource("/version.txt").getFile()};
+        return getGenericParameterFromFile(versionFile, "version", "unknown");
+    }
+
+    public static String getBuildTime() {
+        String[] versionFile = {SalsaConfiguration.class.getResource("/version.txt").getFile()};
+        return getGenericParameterFromFile(versionFile, "build.date", "unknown") + " UTC";
+    }
+
     public static File getCloudUserParametersFile() {
         String fileNames[] = {CURRENT_DIR + "/cloudUserParameters.ini", "/etc/cloudUserParameters.ini"};
         String f = null;
@@ -178,6 +188,10 @@ public class SalsaConfiguration {
 
     public static String getGenericParameter(String key, String theDefault) {
         String fileNames[] = {CURRENT_DIR + "/salsa.engine.properties", "/etc/salsa.engine.properties"};
+        return getGenericParameterFromFile(fileNames, key, theDefault);
+    }
+
+    public static String getGenericParameterFromFile(String[] fileNames, String key, String theDefault) {
         Properties prop = new Properties();
         for (String file : fileNames) {
             File f = new File(file);

@@ -50,9 +50,30 @@ public class GenericUnitCapability implements UnitCapabilityInterface {
             EngineLogger.logger.error("Cannot connect to SALSA service in localhost: " + SalsaConfiguration.getSalsaCenterEndpointLocalhost() + ". This is a fatal error !");
         }
     }
+    
+    static final long cooldown = 2000;
+    static long lastDeploymentTime = (new java.util.Date()).getTime();
+    
+    // This assume that a docker container will always created at least 2 seconds after previous one, on a same VM
+    private void waitForCooledDown() {
+        long currentTime = (new java.util.Date()).getTime();
+        long between = currentTime - lastDeploymentTime;
+        if (between < cooldown) {
+            EngineLogger.logger.debug("Waiting a "+(cooldown-between)+" miliseconds to reduce the cloud failure when create many VM at a time");
+            try {
+                Thread.sleep(cooldown-between);
+            } catch (InterruptedException ex) {
+                lastDeploymentTime = currentTime;
+            }
+        }
+        lastDeploymentTime = currentTime;
+    }
+    
+    
 
     @Override
     public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {
+        waitForCooledDown();
         EngineLogger.logger.info("Start generic unit deployment for node: {}/{}/{}", serviceId, nodeId, instanceId);
         CloudService newservice = centerCon.getUpdateCloudServiceRuntime(serviceId);
         String topologyId = newservice.getTopologyOfNode(nodeId).getId();

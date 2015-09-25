@@ -82,6 +82,8 @@ public class InfoManagement {
     public String getMetadata() {
         Map<String, Object> map = new HashMap<>();
         map.put("endpoint", SalsaConfiguration.getSalsaCenterEndpoint());
+        map.put("version", SalsaConfiguration.getSalsaVersion());
+        map.put("build_time", SalsaConfiguration.getBuildTime());
         map.put("broker", SalsaConfiguration.getBroker());
         map.put("broker_type", SalsaConfiguration.getBrokerType());
         map.put("user", SalsaConfiguration.getUserName());

@@ -38,7 +38,7 @@ public class MQTTPublish extends MQTTConnector implements MessagePublishInterfac
     @Override
     public void pushMessage(SalsaMessage content) {
         try {
-            if (this.queueClient == null) {
+            if (queueClient == null) {
                 connect();
             }
             System.out.println("Publishing message: " + content.getMsgType() + ", " + content.getTopic());
@@ -47,7 +47,7 @@ public class MQTTPublish extends MQTTConnector implements MessagePublishInterfac
             }
             MqttMessage message = new MqttMessage(content.toJson().getBytes());            
             message.setQos(this.qos);
-            this.queueClient.publish(content.getTopic(), message);
+            queueClient.publish(content.getTopic(), message);
             System.out.println("Message published");
         } catch (MqttException me) {
             System.out.println("reason " + me.getReasonCode());
@@ -61,13 +61,13 @@ public class MQTTPublish extends MQTTConnector implements MessagePublishInterfac
 
     public void pushCustomData(String content, String topic) {
         try {
-            if (this.queueClient == null) {
+            if (queueClient == null) {
                 connect();
             }
             System.out.println("Publishing custom data: " + content);
             MqttMessage message = new MqttMessage(content.getBytes());
             message.setQos(this.qos);
-            this.queueClient.publish(topic, message);
+            queueClient.publish(topic, message);
             System.out.println("Message published");
         } catch (MqttException me) {
             System.out.println("reason " + me.getReasonCode());

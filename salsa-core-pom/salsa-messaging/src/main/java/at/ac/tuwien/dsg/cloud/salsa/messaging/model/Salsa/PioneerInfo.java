@@ -18,6 +18,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa;
 
 import java.io.IOException;
+import java.util.Objects;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
@@ -100,6 +101,49 @@ public class PioneerInfo {
     public String toString() {
         return "PioneerInfo{" + "id=" + id + ", ip=" + ip + ", instance=" + service+"/"+topology+"/"+unit+"/"+instance + '}';
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 23 * hash + Objects.hashCode(this.userName);
+        hash = 23 * hash + Objects.hashCode(this.ip);
+        hash = 23 * hash + Objects.hashCode(this.service);
+        hash = 23 * hash + Objects.hashCode(this.topology);
+        hash = 23 * hash + Objects.hashCode(this.unit);
+        hash = 23 * hash + this.instance;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PioneerInfo other = (PioneerInfo) obj;
+        if (!Objects.equals(this.userName, other.userName)) {
+            return false;
+        }
+        if (!Objects.equals(this.ip, other.ip)) {
+            return false;
+        }
+        if (!Objects.equals(this.service, other.service)) {
+            return false;
+        }
+        if (!Objects.equals(this.topology, other.topology)) {
+            return false;
+        }
+        if (!Objects.equals(this.unit, other.unit)) {
+            return false;
+        }
+        if (this.instance != other.instance) {
+            return false;
+        }
+        return true;
+    }
+    
     
     
 
