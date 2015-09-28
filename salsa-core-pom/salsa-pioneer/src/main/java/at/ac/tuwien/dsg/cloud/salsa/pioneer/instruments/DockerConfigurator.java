@@ -56,14 +56,15 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
     private void waitForCooledDown() {
         long currentTime = (new java.util.Date()).getTime();
         long between = currentTime - lastDeploymentTime;
-        if (between < cooldown) {
-            try {
-                logger.debug("Waiting a " + (cooldown - between) + " miliseconds to reduce the cloud failure when create many docker at a time");
-                Thread.sleep(cooldown - between);
-            } catch (InterruptedException ex) {
-                lastDeploymentTime = currentTime;
-            }
-        }
+//        if (between < cooldown) {
+//            try {
+//                logger.debug("Waiting a " + (cooldown - between) + " miliseconds to reduce the cloud failure when create many docker at a time");
+//                Thread.sleep(cooldown - between);
+//            } catch (InterruptedException ex) {
+//                lastDeploymentTime = currentTime;
+//            }
+//        }
+        logger.debug("No cool down ! ");
         lastDeploymentTime = currentTime;
     }
 
@@ -146,7 +147,10 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         try {
             InputStream is = DockerConfigurator.class.getResourceAsStream("/scripts/docker_install.sh");
             OutputStream os = new FileOutputStream(new File("/tmp/docker_install.sh"));
-            IOUtils.copy(is, os);
+            IOUtils.copy(is, os);            
+            os.flush();
+            os.close();
+            is.close();
             logger.debug("Getting docker installtion script done !");
         } catch (FileNotFoundException e) {
             logger.error("Cannot write docker installation script out");
@@ -155,8 +159,9 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
             ex.printStackTrace();
         }
         SystemFunctions.executeCommandGetReturnCode("/bin/bash /tmp/docker_install.sh", "/tmp", "initDocker");
+        //SystemFunctions.executeCommandGetReturnCode("/tmp/docker_install.sh", "/tmp", "initDocker");
         if (pullSalsaImage) {
-            SystemFunctions.executeCommandGetReturnCode("sudo docker pull " + SALSA_DOCKER_PULL, null, "initDocker");
+            SystemFunctions.executeCommandGetReturnCode("/usr/bin/docker pull " + SALSA_DOCKER_PULL, null, "initDocker");
         }
         inited = true;
     }
@@ -186,7 +191,7 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         URL inputUrl = getClass().getResource("/scripts/pioneer_install.sh");
         File dest = new File(newSalsaWorkingDirInsideDocker + "/pioneer_install.sh");
         try {
-            FileUtils.copyURLToFile(inputUrl, dest);
+            FileUtils.copyURLToFile(inputUrl, dest);            
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -270,12 +275,15 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         if (!preRunByMe.trim().isEmpty()) {
             sb.append("\nRUN " + preRunByMe + " \n");
         }
-        SystemFunctions.executeCommandGetReturnCode("cp " + PioneerConfiguration.getWorkingDir() + "/salsa.variables " + newSalsaWorkingDirInsideDocker, newSalsaWorkingDirInsideDocker, "");
+        SystemFunctions.executeCommandGetReturnCode("/bin/cp " + PioneerConfiguration.getWorkingDir() + "/salsa.variables " + newSalsaWorkingDirInsideDocker, newSalsaWorkingDirInsideDocker, "");
         sb.append("COPY ./salsa.variables /etc/salsa.variables \n");
         try {
             InputStream is = DockerConfigurator.class.getResourceAsStream("/scripts/pioneer_install.sh");
             OutputStream os = new FileOutputStream(new File(newSalsaWorkingDirInsideDocker + "/pioneer_install.sh"));
             IOUtils.copy(is, os);
+            os.flush();            
+            os.close();
+            is.close();
             logger.debug("Getting pioneer installtion script done !");
         } catch (FileNotFoundException e) {
             logger.error("Cannot write pioneer installation script out in /tmp");
@@ -302,7 +310,7 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         int tryTime = 0;
         //retry one more time if the first build is fail
         while (buildResult != 0 && tryTime < 3) {            
-            buildResult = SystemFunctions.executeCommandGetReturnCode("sudo docker build -t " + newDockerImage + " . ", newSalsaWorkingDirInsideDocker, null);            
+            buildResult = SystemFunctions.executeCommandGetReturnCode("/usr/bin/docker build -t " + newDockerImage + " . ", newSalsaWorkingDirInsideDocker, null);            
             tryTime += 1;
             if (buildResult != 0) {
                 logger.debug("DockerFailed: Fail to build image, retry time:" + tryTime);
@@ -317,6 +325,7 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         // install pioneer on docker and send request
         String portMap = portPrefix + dockerInstanceId;
         String cmd = "/bin/bash pioneer_install.sh " + nodeId + " " + instanceId;
+        //String cmd = "pioneer_install.sh " + nodeId + " " + instanceId;
         //return executeCommand("sudo docker run -p " + portMap + ":9000 " + "-d -t " + newDockerImage +" " + cmd +" ");
 
         // get the port map
@@ -357,8 +366,8 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
 //        System.out.println(docker.formatPortMap(s));
 //    }
     public String removeDockerContainer(String containerID) {
-        SystemFunctions.executeCommandGetReturnCode("sudo docker kill " + containerID, null, null);
-        SystemFunctions.executeCommandGetReturnCode("sudo docker rm -f " + containerID, null, null);
+        SystemFunctions.executeCommandGetReturnCode("/usr/bin/docker kill " + containerID, null, null);
+        SystemFunctions.executeCommandGetReturnCode("/usr/bin/docker rm -f " + containerID, null, null);
         return containerID;
     }
 

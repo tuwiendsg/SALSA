@@ -51,12 +51,16 @@ public class MQTTConnector {
     MqttClient queueClient = null;
 
         
-    public boolean connect() {
+    public boolean connect() {  
+        if (queueClient!= null && queueClient.isConnected()){
+            logger.debug("Already connected to MQTT broker: " + this.broker);
+            return true;
+        }
         try {
             queueClient = new MqttClient(this.broker, this.clientId, this.persistence);            
             MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setCleanSession(false);                     
-            queueClient.connect(connOpts);            
+            connOpts.setCleanSession(true);             
+            queueClient.connect(connOpts);
             if (queueClient.isConnected()) {
                 logger.debug("Connected to the MQTT broker: " + this.broker);
                 return true;

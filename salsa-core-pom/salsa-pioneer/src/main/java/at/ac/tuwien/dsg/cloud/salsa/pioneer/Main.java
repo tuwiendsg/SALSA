@@ -96,7 +96,8 @@ public class Main {
                         MessagePublishInterface publish = factory.getMessagePublisher();
                         publish.pushMessage(notifyMsg);
                         // now reconfigure: only support script now
-                        int returnCode = SystemFunctions.executeCommandGetReturnCode(cmd.getRunByMe(), PioneerConfiguration.getWorkingDirOfInstance(cmd.getUnit(), cmd.getInstance()), PioneerConfiguration.getPioneerID());
+                        //int returnCode = SystemFunctions.executeCommandGetReturnCode(cmd.getRunByMe(), PioneerConfiguration.getWorkingDirOfInstance(cmd.getUnit(), cmd.getInstance()), PioneerConfiguration.getPioneerID());
+                        int returnCode = executeLifecycleAction(cmd);
                         // And update the configuration result
                         SalsaMsgConfigureState confResult;
                         if (returnCode == 0) {
@@ -289,7 +290,7 @@ public class Main {
         }
     }
 
-    public int executeLifecycleAction(SalsaMsgConfigureArtifact cmd) {
+    public static int executeLifecycleAction(SalsaMsgConfigureArtifact cmd) {
         logger.debug("Recieve command to executing action: " + cmd.getUnit() + "/" + cmd.getInstance() + "/" + cmd.getActionName());
         String actionName = cmd.getActionName();
         logger.debug("Found a custom action: " + actionName);
