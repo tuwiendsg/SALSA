@@ -215,23 +215,26 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
     @Override
     public Response undeployService(String serviceId) throws SalsaException {
         LOGGER.debug("DELETING SERVICE: " + serviceId);
-        if (wholeAppCapability.cleanService(serviceId)) {// deregister service here
-            String fileName = SalsaConfiguration.getServiceStorageDir() + "/" + serviceId;
-            File file = new File(fileName);
-            File datafile = new File(fileName.concat(this.dataFileExtension));
-            File originalFile = new File(fileName.concat(".original"));
-            if (originalFile.delete() && file.delete() && datafile.delete()) {
+        boolean cleaned = wholeAppCapability.cleanService(serviceId);
+
+        String fileName = SalsaConfiguration.getServiceStorageDir() + "/" + serviceId;
+        File file = new File(fileName);
+        File datafile = new File(fileName.concat(this.dataFileExtension));
+        File originalFile = new File(fileName.concat(".original"));
+        if (originalFile.delete() && file.delete() && datafile.delete()) {
+            if (cleaned) {// deregister service here
                 LOGGER.debug("Deregister service done: " + serviceId);
                 return Response.status(200).entity("Deregistered service: " + serviceId).build();
             } else {
-                LOGGER.debug("Could not found service to deregister: " + serviceId);
-                return Response.status(500).entity("Service not found to deregister: " + serviceId).build();
+                // return 404: not found the service to be undeployed
+                LOGGER.error("Could not found service to deregister: " + serviceId);
+                return Response.status(404).entity("An error occurs when cleaning service: " + serviceId).build();
             }
         } else {
-            // return 404: not found the service to be undeployed
-            LOGGER.error("Could not found service to deregister: " + serviceId);
-            return Response.status(404).entity("Error: Fail to clean service: " + serviceId).build();
+            LOGGER.debug("Could not found service to deregister: " + serviceId);
+            return Response.status(500).entity("Service not found to deregister: " + serviceId).build();
         }
+
     }
 
     /* (non-Javadoc)
@@ -384,7 +387,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             int instanceId) throws SalsaException {
         LOGGER.debug("Removing service instance: " + serviceId + "/" + nodeId + "/" + instanceId);
         unitCapability.remove(serviceId, nodeId, instanceId);
-        LOGGER.debug("Removing service instance: " + serviceId + "/" + nodeId + "/" + instanceId +" - DONE!");
+        LOGGER.debug("Removing service instance: " + serviceId + "/" + nodeId + "/" + instanceId + " - DONE!");
         return Response.status(200).entity("Undeployed instance: " + serviceId + "/" + nodeId + "/" + instanceId).build();
     }
 
