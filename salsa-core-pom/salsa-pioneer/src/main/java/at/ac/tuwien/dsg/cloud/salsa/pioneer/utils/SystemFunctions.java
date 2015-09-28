@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -84,17 +86,17 @@ public class SystemFunctions {
         if (workingDir == null) {
             workingDir = "/tmp";
         }
-        try {
-            String[] splitStr = cmd.split("\\s+");
-            ProcessBuilder pb = new ProcessBuilder(splitStr);
-            pb.directory(new File(workingDir));
-            pb = pb.redirectErrorStream(true);  // this is important to redirect the error stream to output stream, prevent blocking with long output
-            Map<String, String> env = pb.environment();
-            String path = env.get("PATH");
-            path = path + File.pathSeparator + "/usr/bin:/usr/sbin";
-            logger.debug("PATH to execute command: " + pb.environment().get("PATH"));
-            env.put("PATH", path);
 
+        String[] splitStr = cmd.split("\\s+");
+        ProcessBuilder pb = new ProcessBuilder(splitStr);
+        pb.directory(new File(workingDir));
+        pb = pb.redirectErrorStream(true);  // this is important to redirect the error stream to output stream, prevent blocking with long output
+        Map<String, String> env = pb.environment();
+        String path = env.get("PATH");
+        path = path + File.pathSeparator + "/usr/bin:/usr/sbin";
+        logger.debug("PATH to execute command: " + pb.environment().get("PATH"));
+        env.put("PATH", path);
+        try {
             Process p = pb.start();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -112,6 +114,8 @@ public class SystemFunctions {
 
             logger.debug("Execute Command output: " + output.trim());
 
+            p.getInputStream().close();
+
             if (p.exitValue() == 0) {
                 logger.debug("Command exit 0, result: " + output.trim());
                 return output.trim();
@@ -121,12 +125,42 @@ public class SystemFunctions {
             }
         } catch (InterruptedException | IOException e1) {
             logger.error("Error when execute command. Error: " + e1);
+            e1.printStackTrace();
         }
         return null;
     }
 
     public static int executeCommandGetReturnCode(String cmd, String workingDir, String executeFrom) {
+//        try {            
+//            String[] splitStr = cmd.split("\\s+");
+//            ManagedProcessBuilder builder = new ManagedProcessBuilder(new File(splitStr[0]));
+//            if (splitStr.length>1){
+//                for(String s: splitStr){
+//                    builder.addArgument(s);
+//                }
+//            }         
+////            ManagedProcessBuilder builder = new ManagedProcessBuilder(cmd);
+//            builder.setWorkingDirectory(new File(workingDir));  
+//            
+//            String path =  builder.getEnvironment().get("PATH");
+//            if (path == null){
+//                path="/usr/bin:/usr/sbin";
+//            } else {
+//                path = path + File.pathSeparator + "/usr/bin:/usr/sbin";
+//            }
+//            builder.getEnvironment().put("PATH", path);
+//            ManagedProcess p = builder.build();
+//            
+//            p.start();
+//            p.waitForExit();
+//            return p.exitValue();
         return executeCommandGetReturnCode(cmd, workingDir, executeFrom, 0);
+//        } catch (ManagedProcessException ex) {
+//            logger.error("error when execute command: {}, error: {}, cause: {}", cmd, ex.getMessage(), ex.getCause());
+//            
+//            ex.printStackTrace();
+//            return 1;
+//        }
     }
 
     public static int executeCommandGetReturnCode(String cmd, String workingDir, String executeFrom, long timeout) {
@@ -139,6 +173,7 @@ public class SystemFunctions {
             ProcessBuilder pb = new ProcessBuilder(splitStr);
             pb.directory(new File(workingDir));
             pb = pb.redirectErrorStream(true);  // this is important to redirect the error stream to output stream, prevent blocking with long output
+
             Map<String, String> env = pb.environment();
             String path = env.get("PATH");
             path = path + File.pathSeparator + "/usr/bin:/usr/sbin";
@@ -148,12 +183,22 @@ public class SystemFunctions {
             Process p = pb.start();
             logger.debug("Process started: " + cmd);
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                logger.debug(line);
+            InputStream is = p.getInputStream();
+            int c;
+            while ((c = is.read()) != -1) {
+                System.out.print((char) c);
             }
 
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+//            String line;
+//            while ((line = reader.readLine()) != null) {
+//                logger.debug(line);
+//            }
+//            StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), System.out);
+//            StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream(), System.out);
+//
+//            errorGobbler.start();
+//            outputGobbler.start();
             int returnCode = -1;
             if (timeout == 0) {
                 p.waitFor();
@@ -167,18 +212,47 @@ public class SystemFunctions {
                 }
             }
 
-            while ((line = reader.readLine()) != null) {
-                logger.debug(line + "[buffered]" );
-            }
+//            while ((line = reader.readLine()) != null) {
+//                logger.debug(line + "[buffered]");
+//            }
+            
+            
+//            errorGobbler.join();   // Handle condition where the
+//            outputGobbler.join();  // process ends before the threads finish
 
             logger.debug("Execute command done: " + cmd + ". Get return code: " + returnCode);
             return returnCode;
         } catch (InterruptedException | IOException e1) {
             logger.error("Error when execute command. Error: " + e1);
+            e1.printStackTrace();
         } catch (Exception e) {
             logger.error("Unknown error when execute command: " + e.getMessage());
+            e.printStackTrace();
         }
         return -1;
+    }
+
+    static class StreamGobbler extends Thread {
+
+        InputStream is;
+        PrintStream os;
+
+        StreamGobbler(InputStream is, PrintStream os) {
+            this.is = is;
+            this.os = os;
+        }
+
+        @Override
+        public void run() {
+            try {
+                int c;
+                while ((c = is.read()) != -1) {
+                    os.print((char) c);
+                }
+            } catch (IOException x) {
+                x.printStackTrace();
+            }
+        }
     }
 
 }
