@@ -58,8 +58,12 @@ public class AMQPConnector {
             logger.debug("Trying to connect to AMQP broker: {}", broker);
             ConnectionFactory factory = new ConnectionFactory();
             factory.setUri(broker);
-            connecion = factory.newConnection();
-            amqpChannel = connecion.createChannel();
+            if (!connecion.isOpen()) {
+                connecion = factory.newConnection();
+            }
+            if (!amqpChannel.isOpen()) {
+                amqpChannel = connecion.createChannel();
+            }
             if (connecion != null && amqpChannel != null) {
                 logger.debug("AMQP connected. Connection: ---, Channel: {}", amqpChannel.getChannelNumber());
             } else {

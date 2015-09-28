@@ -183,17 +183,17 @@ public class SystemFunctions {
             Process p = pb.start();
             logger.debug("Process started: " + cmd);
 
-            InputStream is = p.getInputStream();
-            int c;
-            while ((c = is.read()) != -1) {
-                System.out.print((char) c);
-            }
-
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                logger.debug(line);
+//            InputStream is = p.getInputStream();
+//            int c;
+//            while ((c = is.read()) != -1) {
+//                System.out.print((char) c);
 //            }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                logger.debug(line);
+            }
 //            StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), System.out);
 //            StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream(), System.out);
 //
@@ -212,9 +212,9 @@ public class SystemFunctions {
                 }
             }
 
-//            while ((line = reader.readLine()) != null) {
-//                logger.debug(line + "[buffered]");
-//            }
+            while ((line = reader.readLine()) != null) {
+                logger.debug(line + "[buffered]");
+            }
             
             
 //            errorGobbler.join();   // Handle condition where the
