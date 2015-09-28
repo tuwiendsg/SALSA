@@ -17,17 +17,11 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability;
 
-import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
-import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceDAO;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.WholeAppCapabilityInterface;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.WholeAppEnrichedTosca;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.WholeAppEnrichedTosca;
 import generated.oasis.tosca.TDefinitions;
-import java.util.Collections;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
 /**
  * This capability is enhance with interact with ELISE service to store information and assign UUID
