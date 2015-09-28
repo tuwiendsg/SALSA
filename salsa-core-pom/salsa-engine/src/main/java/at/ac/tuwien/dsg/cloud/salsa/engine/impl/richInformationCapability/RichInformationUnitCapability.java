@@ -112,6 +112,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
 
     @Override
     public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {
+        logger.debug("Trying to remove information of {}/{}/{} from ELISE database...", serviceId, nodeId, instanceId);
         UnitInstanceDAO unitInstanceDAO = (UnitInstanceDAO) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceDAO.class, Collections.singletonList(new JacksonJsonProvider()));
         SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
 
@@ -121,9 +122,18 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
 
         if (instance != null) {
             if (unitInstanceDAO != null) {
-                unitInstanceDAO.deleteUnitInstanceByID(instance.getUuid().toString());
+                logger.debug("Trying to delete unit with UUID: {}" + instance.getUuid());
+                try {
+                    unitInstanceDAO.deleteUnitInstanceByID(instance.getUuid().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                logger.error("Cannot connect to the database to delete instance" + instance.getUuid());
             }
             lowerCapa.remove(serviceId, nodeId, instanceId);
+        } else {
+            logger.error("Do not found the instance to delete: {}/{}/{}", serviceId, nodeId, instanceId);
         }
     }
 

@@ -107,7 +107,7 @@ public class SystemFunctions {
             p.waitFor();
 
             while ((line = reader.readLine()) != null) {
-                logger.debug(line);
+                logger.debug(line + "[buffered]");
             }
 
             logger.debug("Execute Command output: " + output.trim());
@@ -168,7 +168,7 @@ public class SystemFunctions {
             }
 
             while ((line = reader.readLine()) != null) {
-                logger.debug(line);
+                logger.debug(line + "[buffered]" );
             }
 
             logger.debug("Execute command done: " + cmd + ". Get return code: " + returnCode);

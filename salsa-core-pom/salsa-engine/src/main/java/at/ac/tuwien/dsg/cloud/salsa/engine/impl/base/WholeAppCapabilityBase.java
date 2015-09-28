@@ -164,7 +164,7 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
             if (refUnit == null && unit.getMin() > 0) {		// not a reference and min > 0
                 EngineLogger.logger.debug("Orchestating: Creating top node: " + unit.getId());
                 // try to create minimum instance of software
-                for (int i = 1; i <= unit.getMin(); i++) {
+                for (int i = 0; i < unit.getMin(); i++) {
                     AsyncUnitCapability asynCapa = new AsyncUnitCapability();
                     asynCapa.deploy(serviceData.getId(), unit.getId(), i);
                     try {

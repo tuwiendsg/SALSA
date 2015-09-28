@@ -37,12 +37,12 @@
             });
 
             window.onerror = function (msg, url, linenumber) {
-                alert('Error message: ' + msg + '\nURL: ' + url + '\nLine Number: ' + linenumber)
-                return true
-            }
+                alert('Error message: ' + msg + '\nURL: ' + url + '\nLine Number: ' + linenumber);
+                return true;
+            };
 
             function getURLParameter(name) {
-                return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null
+                return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
             }
 
             var salsaCenterRestEndpoint = "/salsa-engine/rest";	// must add while loading in iframe
@@ -118,7 +118,7 @@
                             var arrayLength = d1.connectto.length;
                             for (var i = 0; i < arrayLength; i++) {
                                 if (d2.id == d1.connectto[i]) {
-                                    //console.log("Connect the " + d1.id + " and " + d2.id);
+                                    console.log("Connect the " + d1.id + " and " + d2.id);
                                     links.push({"source": d1, "target": d2, "connectto": true});
                                 }
                             } // end for
@@ -170,10 +170,10 @@
                 nodeEnter.append("text")	// show the id as the TITLE of the block
                         .attr("dx", 0)
                         .attr("dy", (-1) * rect_height / 2 + 15)
-                        .attr("text-anchor", "middle")                       
+                        .attr("text-anchor", "middle")
                         .style("font-weight", "bold")
-                        .style("font-size","11px")
-                        .text(function (d) {                            
+                        .style("font-size", "11px")
+                        .text(function (d) {
                             return d.id;
                         });
 
@@ -242,7 +242,7 @@
                         str += "<br/>state : <b>" + d.state + "</b>";
                         for (var prop in d.properties) {
                             str += "<br/>" + prop + " : <b>" + d.properties[prop] + "</b>";
-                        }                        
+                        }
                         return str;
                     }
                 });
@@ -255,7 +255,7 @@
                         str += "<br/>state : <b>" + d.state + "</b>";
                         for (var prop in d.properties) {
                             str += "<br/>" + prop + " : <b>" + d.properties[prop] + "</b>";
-                        }                        
+                        }
                         return str;
                     }
                 });
@@ -300,24 +300,25 @@
                 var pi = Math.PI;
                 var arc = d3.svg.arc()
                         .innerRadius(function (d) {
+                            console.log("Drawing interRadius");
                             if (d.source.x > d.target.x) {
-                                return (d.source.x - d.target.x) * 0.53 -10;
+                                return (d.source.x - d.target.x) * 0.53 - 10;
                             } else {
-                                return (d.target.x - d.source.x) * 0.53 -10;
+                                return (d.target.x - d.source.x) * 0.53 - 10;
                             }
                         })
                         .outerRadius(function (d) {
                             if (d.source.x > d.target.x) {
                                 return (d.source.x - d.target.x) * 0.53 - 10;
                             } else {
-                                return (d.target.x - d.source.x) * 0.53 - 10;                            
+                                return (d.target.x - d.source.x) * 0.53 - 10;
                             }
                         })
                         //   	.startAngle(0 * (pi/180))
                         //   	.endAngle(180 * (pi/180));
                         .startAngle(function (d) {
                             if (d.source.x > d.target.x) {
-                                return 0 ;
+                                return 0;
                             } else {
                                 return 180 * (pi / 180);
                             }
@@ -326,7 +327,7 @@
                             if (d.source.x > d.target.x) {
                                 return 180 * (pi / 180);
                             } else {
-                                return 0 ;
+                                return 0;
                             }
                         });
 
@@ -350,16 +351,18 @@
                             }
                         })
                         .attr("stroke", function (d) {
-                            if (d.connectto == true) {
-                                return "blue";
-                            } else {
-                                return "black";
-                            }
+                            return "black";
+//                            if (d.connectto == true) {
+//                                return "blue";
+//                            } else {
+//                                return "black";
+//                            }
                         })
                         .attr("d", function (d) {
                             var o = {x: source.x0, y: source.y0};
                             if (d.connectto == true) {
                                 //console.log("Draw arc !" + d.source.x + "-" + d.source.y + "--" + d.target.x + "-" + d.target.y);
+                                console.log("draw arc !");
                                 return arc(d);
                             } else {
                                 return diagonal({source: o, target: o, connectto: false});

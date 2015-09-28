@@ -227,8 +227,8 @@ function CreateTableViewSalsaReplicaNodeTable(data, nodeId) {   // data is Compo
 
         str+='<td>';
          for (var k = 0; k < primities.length; k++) {
-             console.log("primities["+k+"]: " + primities[k]);
-             console.log("List one action: " + primities[k].getAttribute('name'));
+//             console.log("primities["+k+"]: " + primities[k]);
+//             console.log("List one action: " + primities[k].getAttribute('name'));
              var pname = primities[k].getAttribute('name');
              str+='<button type="button" onclick="customAction(\''+serviceId_general+ '\' , \''+ nodeId +'\',\''+ x[i].getAttribute('replica') +'\',\''+ pname + '\')">'+pname+'</button>';             
          }
