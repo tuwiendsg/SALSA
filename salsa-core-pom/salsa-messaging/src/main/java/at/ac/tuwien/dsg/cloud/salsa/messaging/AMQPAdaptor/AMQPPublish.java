@@ -55,6 +55,7 @@ public class AMQPPublish extends AMQPConnector implements MessagePublishInterfac
             me.printStackTrace();
         }
         System.out.println("Message published");
+        disconnect();
 
     }
 
