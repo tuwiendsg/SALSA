@@ -49,7 +49,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaInstanc
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.SalsaEngineServiceIntenal;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.ServicedataProcessingException;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
@@ -97,7 +97,7 @@ public class SalsaCenterConnector {
      *
      * @param serviceId
      * @return 
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     public String deregisterService(String serviceId) throws SalsaException {
         //String url = centerRestfulEndpoint + "/services/" + serviceId;
@@ -117,7 +117,7 @@ public class SalsaCenterConnector {
      * @param extra
      * @param state The state
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     public String updateNodeState(String serviceId, String topologyId, String nodeId, int instanceId, SalsaEntityState state, String extra) throws SalsaException {
         Response res = engineInternal.updateNodeState(serviceId, topologyId, nodeId, instanceId, state.getNodeStateString(), extra);
@@ -224,7 +224,7 @@ public class SalsaCenterConnector {
      *
      * @param serviceId
      * @return the CloudService instance.
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     public CloudService getUpdateCloudServiceRuntime(String serviceId) throws SalsaException {
         // some time it's false to get the Cloud Service because of error, retry 10 time:
@@ -267,7 +267,7 @@ public class SalsaCenterConnector {
      *
      * @param serviceId
      * @return XML String of the object.
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     public String getUpdateCloudServiceRuntimeXML(String serviceId) throws SalsaException {
         Response res = engineInternal.getService(serviceId);

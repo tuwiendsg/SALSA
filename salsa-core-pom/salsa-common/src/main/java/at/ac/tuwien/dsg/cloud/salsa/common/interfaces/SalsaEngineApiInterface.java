@@ -15,13 +15,13 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface;
+package at.ac.tuwien.dsg.cloud.salsa.common.interfaces;
 
 import java.io.InputStream;
 
 import javax.ws.rs.core.Response;
 
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+
 
 public interface SalsaEngineApiInterface {
 

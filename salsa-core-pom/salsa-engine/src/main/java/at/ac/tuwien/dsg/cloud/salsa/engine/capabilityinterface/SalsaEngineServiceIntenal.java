@@ -36,7 +36,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnitRelationship;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import javax.ws.rs.QueryParam;
 
@@ -51,7 +51,7 @@ public interface SalsaEngineServiceIntenal {
      * @param uploadedInputStream The file contents
      * @param serviceName The ServiceName. This must be unique in whole system.
      * @return The information
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @PUT
     @Path("/services/{serviceName}")
@@ -64,7 +64,7 @@ public interface SalsaEngineServiceIntenal {
      *
      * @param uploadedInputStream
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @PUT
     @Path("/services/xml")
@@ -80,7 +80,7 @@ public interface SalsaEngineServiceIntenal {
      *
      * @param serviceId
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @DELETE
     @Path("/services/{serviceId}")
@@ -94,7 +94,7 @@ public interface SalsaEngineServiceIntenal {
      * @param nodeId
      * @param quantity
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @POST
     @Path("/services/{serviceId}/nodes/{nodeId}/instance-count/{quantity}")
@@ -110,7 +110,7 @@ public interface SalsaEngineServiceIntenal {
      * @param nodeId
      * @param instanceId
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */    
     @DELETE
     @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}")
@@ -136,7 +136,7 @@ public interface SalsaEngineServiceIntenal {
      *
      * @param serviceDeployId
      * @return XML document of service
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @GET
     @Path("/services/{serviceId}")
@@ -148,7 +148,7 @@ public interface SalsaEngineServiceIntenal {
      *
      * @param serviceDeployId
      * @return XML document of service
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @GET
     @Path("/services/tosca/{serviceId}")
@@ -204,7 +204,7 @@ public interface SalsaEngineServiceIntenal {
      * @param serviceId
      * @param nodeId
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @POST
     @Path("/services/{serviceId}/nodes/{nodeId}/scaleout")
@@ -217,7 +217,7 @@ public interface SalsaEngineServiceIntenal {
      * @param serviceId
      * @param nodeId
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @POST
     @Path("/services/{serviceId}/nodes/{nodeId}/scalein")
@@ -230,7 +230,7 @@ public interface SalsaEngineServiceIntenal {
      * @param serviceId
      * @param vmIp
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @POST
     @Path("/services/{serviceId}/vmnodes/{ip}/scalein")
@@ -305,7 +305,7 @@ public interface SalsaEngineServiceIntenal {
      * @param nodeId Id of node to be deployed more
      * @param instanceId The defined ID of the instance. if the instanceID existed, update and redeploy instance (not implemented)
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      *
      */
     @PUT
@@ -322,7 +322,7 @@ public interface SalsaEngineServiceIntenal {
      * @param serviceId
      * @param topologyId
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @POST
     @Path("/services/{serviceId}/topologies/{topologyId}/relationship")
@@ -356,7 +356,7 @@ public interface SalsaEngineServiceIntenal {
      * @param topologyId Not require at this time, but need to be presented
      * @param nodeId Id of node to be deployed more
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      *
      */
     @POST
@@ -376,7 +376,7 @@ public interface SalsaEngineServiceIntenal {
      * @param nodeId
      * @param instanceId
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @POST
     @Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/capability")
@@ -397,7 +397,7 @@ public interface SalsaEngineServiceIntenal {
      * @param nodeId
      * @param instanceId
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @POST
     @Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/properties")
@@ -420,7 +420,7 @@ public interface SalsaEngineServiceIntenal {
      * @param value
      * @param extra
      * @return
-     * @throws at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException
+     * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
     @POST
     @Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/instances/{instanceId}/state/{value}")

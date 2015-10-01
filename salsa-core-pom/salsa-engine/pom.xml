@@ -42,6 +42,10 @@
 
         <!-- Apache CXF dependencies -->
         <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>            
+        </dependency>
+        <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxrs</artifactId>
         </dependency>
@@ -49,10 +53,11 @@
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
         </dependency>
+        
         <dependency> 
             <groupId>org.apache.cxf</groupId> 
             <artifactId>cxf-rt-rs-client</artifactId> 
-        </dependency> 
+        </dependency>         
 
         <!--Spring Framework dependencies--> 
         <dependency>
@@ -72,6 +77,10 @@
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-jaxrs</artifactId>            
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>            
         </dependency>
 
 	                              	

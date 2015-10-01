@@ -15,6 +15,7 @@ import at.ac.tuwien.dsg.comot.messaging.lightweight.ComotMessagingFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  *
  * @author Duc-Hung LE
@@ -31,7 +32,7 @@ public class DSGQueueSubscribeLightweight extends DSGQueueConnector implements M
 
     @Override
     public void subscribe(String topic) {
-        Consumer consumer = ComotMessagingFactory.getRabbitMqConsumer().withLightweigthDiscovery(config);
+        Consumer consumer = ComotMessagingFactory.getRabbitMqConsumer().withLightweigthSalsaDiscovery(config);
         consumer.addMessageReceivedListener((Message message) -> {
             //handler.handleMessage(SalsaMessage.fromJson(message.getMessage()));
             new Thread(new AsynHandleMessages(SalsaMessage.fromJson(message.getMessage()))).start();

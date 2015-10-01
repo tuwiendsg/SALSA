@@ -25,7 +25,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.VMProvisionException;
@@ -42,6 +42,8 @@ import java.util.List;
 public class GenericUnitCapability implements UnitCapabilityInterface {
 
     SalsaCenterConnector centerCon;
+    UnitCapabilityInterface lowerCapaApp = new AppCapabilityBase();
+    UnitCapabilityInterface lowerCapaVM = new VMCapabilityBase();
 
     {
         try {
@@ -93,9 +95,8 @@ public class GenericUnitCapability implements UnitCapabilityInterface {
                 // out of quota
                 throw new VMProvisionException(VMProvisionException.VMProvisionError.QUOTA_LIMITED, "Not enough quota as described to deploy the node: " + serviceId + nodeId + instanceId + ". This node can have maxinum " + node.getMax() + " instances");
             } else {
-                centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId, repData);
-                VMCapabilityBase vmCap = new VMCapabilityBase();
-                vmCap.deploy(serviceId, nodeId, instanceId);
+                centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId, repData);                
+                lowerCapaVM.deploy(serviceId, nodeId, instanceId);
                 centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.CONFIGURING, "Pioneer is configuring artifacts");
                 EngineLogger.logger.debug("Updated VM state for node: " + nodeId + " to CONFIGURING !");
                 EngineLogger.logger.info("Generic unit deployment for VM node: {}/{}/{} is done", serviceId, nodeId, instanceId);
@@ -104,9 +105,8 @@ public class GenericUnitCapability implements UnitCapabilityInterface {
         } else {
             centerCon.addInstanceUnitMetaData(serviceId, topologyId, nodeId, repData);
 
-            // app based: now select different kind of app
-            AppCapabilityBase appCapa = new AppCapabilityBase();
-            appCapa.deploy(serviceId, nodeId, instanceId);
+            // app based: now select different kind of app            
+            lowerCapaApp.deploy(serviceId, nodeId, instanceId);
             EngineLogger.logger.info("Generic unit deployment for artifact node: {}/{}/{} is done", serviceId, nodeId, instanceId);
             return new ServiceInstance(instanceId);
         }

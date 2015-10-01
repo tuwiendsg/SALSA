@@ -35,7 +35,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityS
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector.HttpVerb;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import java.util.logging.Level;
 import java.util.logging.Logger;

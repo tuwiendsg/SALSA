@@ -18,7 +18,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 
@@ -31,8 +31,8 @@ public class AsyncUnitCapability implements UnitCapabilityInterface {
 
     @Override
     public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {
-        new Thread(new asynSpawnInstances(serviceId, nodeId, instanceId)).start();
-        EngineLogger.logger.debug("This message to annonce that a problem may occur after this point, because the Thread.run cannot return the ServiceInstance object, then this method just return a null.");
+        EngineLogger.logger.debug("Spawn a thread to deploy: {}/{}/{}", serviceId, nodeId, instanceId);
+        new Thread(new asynSpawnInstances(serviceId, nodeId, instanceId)).start();        
         return null;
     }
 
@@ -54,7 +54,8 @@ public class AsyncUnitCapability implements UnitCapabilityInterface {
 
         @Override
         public void run() {
-            try {                
+            try {
+                EngineLogger.logger.debug("Thread is spawned for {}/{}/{} new... prepare to run the lower capability.", serviceId, nodeId, instanceId);
                 lowerCapa.deploy(serviceId, nodeId, instanceId);
             } catch (SalsaException e) {
                 EngineLogger.logger.error(e.getMessage());
