@@ -53,14 +53,15 @@ public class SalsaMessage {
 
     public enum MESSAGE_TYPE {
 
-        discover, // collect SALSA pioneer, elise collector, elise        
+        // both discover and syn message should be in the same queue, e.g. MessageType.PIONEER_REGISTER_AND_HEARBEAT
+        discover, // collect SALSA pioneer, elise collector, elise: salsa-engine publish        
+        salsa_pioneerActivated, // a pioneer register itself
 
         // for SALSA core
         salsa_deploy, // first time deployment
         salsa_reconfigure, // call a lifecycle action        
         salsa_configurationStateUpdate, // update configuration stats, report error
-        salsa_messageReceived, // simple notify that a message is received
-        salsa_pioneerActivated, // a pioneer register itself
+        salsa_messageReceived, // simple notify that a message is received        
         salsa_log, // for sending log
 
         // for ELISE service        

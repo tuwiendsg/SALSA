@@ -5,6 +5,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp;
 
+import at.ac.tuwien.dsg.cloud.salsa.client.CommandHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.RestHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.Main;
 import org.kohsuke.args4j.Argument;
@@ -16,10 +17,10 @@ import org.kohsuke.args4j.Argument;
 public class UnitDeploy implements CommandHandler {
 
     // the id must be serviceID/unitID
-    @Argument(index = 0, usage = "The id of the unit to be deployed", required = true)
+    @Argument(index = 0, metaVar = "unitID", usage = "The id of the unit to be deployed, should be serviceID/unitID.", required = true)
     String unitID;
 
-    @Argument(index = 1, usage = "The number of node", required = false)
+    @Argument(index = 1, metaVar = "number_of_instance", usage = "The number of instance will be create.", required = false)
     int number = 1;
 
     @Override
@@ -33,7 +34,7 @@ public class UnitDeploy implements CommandHandler {
 
     @Override
     public String getCommandDescription() {
-        return "Deploy one or more instances of a service unit";
+        return "Deploy one or more instances of a service unit.";
     }
 
 }

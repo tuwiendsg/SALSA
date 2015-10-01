@@ -15,15 +15,13 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package at.ac.tuwien.dsg.cloud.salsa.engine.exceptions;
+package at.ac.tuwien.dsg.cloud.salsa.common.interfaces;
 
-import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
 import java.io.Serializable;
 
 public abstract class SalsaException extends Exception implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
     
     public static class ErrorType{
         public static final int ENGINE_INTERNAL=500;
@@ -33,27 +31,24 @@ public abstract class SalsaException extends Exception implements Serializable {
 
     public SalsaException() {
         super();
-        System.out.println("SalsaException: An unknown error occur !");
-        EventPublisher.publishERROR("SalsaException: An unknown error occur !");
+        System.out.println("SalsaException: An unknown error occur !");       
     }
 
     public SalsaException(String msg) {
         super(msg);
-        System.out.println("SalsaException: " + msg);        
-        EventPublisher.publishERROR(msg);
+        System.out.println("SalsaException: " + msg);       
+        
     }
 
     public SalsaException(String msg, Exception e) {        
         super(msg, e);
-        System.out.println("SalsaException: " + msg);
-        EventPublisher.publishERROR(msg);
+        System.out.println("SalsaException: " + msg);        
         e.printStackTrace();
     }
 
     public SalsaException(Exception e) {
         super(e);
-        System.out.println("SalsaException: " + e.getMessage());
-        EventPublisher.publishERROR(e.getMessage());
+        System.out.println("SalsaException: " + e.getMessage());        
         e.printStackTrace();
     }
 

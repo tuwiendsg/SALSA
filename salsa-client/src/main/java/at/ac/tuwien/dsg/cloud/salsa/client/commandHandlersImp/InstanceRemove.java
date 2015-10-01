@@ -5,6 +5,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp;
 
+import at.ac.tuwien.dsg.cloud.salsa.client.CommandHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.RestHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.Main;
 import org.kohsuke.args4j.Argument;
@@ -16,7 +17,7 @@ import org.kohsuke.args4j.Argument;
 public class InstanceRemove implements CommandHandler{
 
     // instance ID: serviceID/nodeID/instanceID
-    @Argument(index = 0, usage = "The id of the instance to be removed", metaVar = "<instanceID>", required = true)            
+    @Argument(index = 0, usage = "The full id of the instance to be removed, should be: serviceID/unitID/isntanceID", metaVar = "instanceID", required = true)            
     String instanceID;
     
     @Override
@@ -33,7 +34,7 @@ public class InstanceRemove implements CommandHandler{
 
     @Override
     public String getCommandDescription() {
-        return "Remove an running instance";
+        return "Remove an running instance.";
     }
 
 }

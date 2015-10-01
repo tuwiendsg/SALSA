@@ -5,6 +5,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp;
 
+import at.ac.tuwien.dsg.cloud.salsa.client.CommandHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.Main;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
@@ -12,9 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.spi.SubCommand;
@@ -43,9 +41,13 @@ public class PrintHelp implements CommandHandler {
                     System.out.println("Error. Command is not available: " + command);
                 } else {
                     CommandHandler cmd = OPTIONS.get(command).newInstance();
-                    System.out.println("The command " + command + " got following arguments:");
+                    System.out.println(cmd.getCommandDescription());                    
                     CmdLineParser parser = new CmdLineParser(cmd);
+                    System.out.print("Usage: " + Main.getCOMMAND_NAME() + " " + command);
+                    parser.printSingleLineUsage(System.out);
+                    System.out.println("");
                     parser.printUsage(System.out);
+                    
                 }
             } catch (InstantiationException ex) {
                 System.out.println("Error. Command is not available: " + command);
@@ -62,7 +64,7 @@ public class PrintHelp implements CommandHandler {
             for (SubCommand sub : subCommands.value()) {
                 if (CommandHandler.class.isAssignableFrom(sub.impl())) {
                     Class<CommandHandler> clazz = (Class<CommandHandler>) sub.impl();
-                    OPTIONS.put(sub.name(), clazz);
+                    OPTIONS.put(sub.name(), clazz);                    
                 }
             }
         } catch (Exception e) {

@@ -55,6 +55,7 @@ public class MQTTSubscribe extends MQTTConnector implements MessageSubscribeInte
                 ObjectMapper mapper = new ObjectMapper();
                 SalsaMessage em = (SalsaMessage) mapper.readValue(mm.getPayload(), SalsaMessage.class);
 
+                
                 if (!topic.equals(SalsaMessageTopic.PIONEER_LOG)) {
                     logger.debug("A message arrived. From: " + em.getFromSalsa() + ". MsgType: " + em.getMsgType() + ". Payload: " + em.getPayload());
                 }

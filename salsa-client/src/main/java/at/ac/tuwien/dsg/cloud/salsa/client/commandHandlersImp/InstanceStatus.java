@@ -5,6 +5,8 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp;
 
+import at.ac.tuwien.dsg.cloud.salsa.client.CommandHandler;
+
 /**
  *
  * @author Duc-Hung LE
@@ -13,12 +15,12 @@ public class InstanceStatus implements CommandHandler {
 
     @Override
     public void execute() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("This function is not implemented yet");
     }
 
     @Override
     public String getCommandDescription() {
-        return "Get running status of an instance";
+        return "Get running status of an instance. This function is not implemented yet";
     }
     
 }

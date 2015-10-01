@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp;
+package at.ac.tuwien.dsg.cloud.salsa.client;
 
 /**
  *
@@ -13,4 +13,5 @@ public interface CommandHandler {
     public void execute();
     
     public String getCommandDescription();
+    
 }

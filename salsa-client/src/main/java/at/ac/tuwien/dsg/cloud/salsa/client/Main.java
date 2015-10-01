@@ -5,7 +5,8 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.client;
 
-import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.CommandHandler;
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.InstanceList;
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.InstanceQuery;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.InstanceRemove;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.InstanceStatus;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.Meta;
@@ -35,7 +36,7 @@ import org.kohsuke.args4j.spi.SubCommands;
  * @author Duc-Hung LE ref: http://fahdshariff.blogspot.co.at/2011/12/args4j-vs-jcommander-for-parsing.html
  */
 public class Main {
-    
+
     public static final String COMMAND_NAME = System.getProperty("app.name", "java -jar salsa-client.jar");
     public static final String COMMAND_DESCRIPTION = "SALSA Java command-line client";
 
@@ -62,7 +63,9 @@ public class Main {
         @SubCommand(name = "unit-deploy", impl = UnitDeploy.class),
 
         @SubCommand(name = "instance-status", impl = InstanceStatus.class),
-        @SubCommand(name = "instance-remove", impl = InstanceRemove.class),})
+        @SubCommand(name = "instance-remove", impl = InstanceRemove.class),
+        @SubCommand(name = "instance-list", impl = InstanceList.class),
+        @SubCommand(name = "instance-query", impl = InstanceQuery.class),})
     CommandHandler command;
 
     static CmdLineParser parserOpt;
@@ -132,7 +135,5 @@ public class Main {
     public static String getCOMMAND_DESCRIPTION() {
         return COMMAND_DESCRIPTION;
     }
-    
-    
-    
+
 }

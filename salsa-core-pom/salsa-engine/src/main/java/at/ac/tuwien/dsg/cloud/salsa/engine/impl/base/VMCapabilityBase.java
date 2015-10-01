@@ -31,7 +31,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.IllegalConfigurationAPICallException;

@@ -25,7 +25,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityS
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.SalsaEngineServiceIntenal;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.DependencyConfigurationException;
@@ -71,7 +71,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
 
     @Override
     public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {
-        EventPublisher.publishINFO("Start the deployment of software stacks. Node: " + serviceId + "/" + nodeId + "/" + instanceId);
+        EventPublisher.publishINFO("Start the based deployment of software stacks. Node: " + serviceId + "/" + nodeId + "/" + instanceId);
         setLock(nodeId + "/" + instanceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         // find the hosted node of this node              

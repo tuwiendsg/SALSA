@@ -5,6 +5,10 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp;
 
+import at.ac.tuwien.dsg.cloud.salsa.client.CommandHandler;
+import at.ac.tuwien.dsg.cloud.salsa.client.Main;
+import at.ac.tuwien.dsg.cloud.salsa.client.RestHandler;
+
 /**
  *
  * @author Duc-Hung LE
@@ -13,12 +17,12 @@ public class Syn implements CommandHandler {
 
     @Override
     public void execute() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        RestHandler.callRest(Main.getSalsaAPI("/manager/syn"), RestHandler.HttpVerb.GET, null, null, null);
     }
 
     @Override
     public String getCommandDescription() {
-        return "Send message the synchronize pioneers (not implemented yet)";
+        return "Send message the synchronize pioneers.";
     }
     
 }

@@ -5,6 +5,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp;
 
+import at.ac.tuwien.dsg.cloud.salsa.client.CommandHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.RestHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.Main;
 import java.io.File;
@@ -19,14 +20,14 @@ import org.kohsuke.args4j.Argument;
  */
 public class ServiceSubmit implements CommandHandler {
 
-    @Argument(index = 0, required = true, usage = "Tosca file")
+    @Argument(index = 0, required = true, metaVar = "toscaFile", usage = "Path to the local Tosca file to be submitted.")
     File toscaFile;
     
     @Override
     public void execute() {        
         try {
             String xml = FileUtils.readFileToString(toscaFile);
-            System.out.print("Submiting tosca file ... ");
+            System.out.println("Submiting tosca file: " + toscaFile);            
             RestHandler.callRest(Main.getSalsaAPI("/services/xml"), RestHandler.HttpVerb.PUT, xml, MediaType.APPLICATION_XML, null);            
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -36,7 +37,7 @@ public class ServiceSubmit implements CommandHandler {
 
     @Override
     public String getCommandDescription() {
-        return "Submit a TOSCA to start a deployment";
+        return "Submit a TOSCA to start a deployment.";
     }
     
 }
