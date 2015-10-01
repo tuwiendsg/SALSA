@@ -5,6 +5,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp;
 
+import at.ac.tuwien.dsg.cloud.salsa.client.CommandHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.RestHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.Main;
 import org.kohsuke.args4j.Argument;
@@ -15,7 +16,7 @@ import org.kohsuke.args4j.Argument;
  */
 public class ServiceRemove implements CommandHandler {
 
-    @Argument(index = 0, usage = "ID for the deleted service")
+    @Argument(index = 0, required = true, metaVar = "serviceID", usage = "ID for the deleted service")
     String serviceID;
 
     @Override
@@ -26,7 +27,7 @@ public class ServiceRemove implements CommandHandler {
 
     @Override
     public String getCommandDescription() {
-        return "Undeploy all components and remove the cloud services";
+        return "Undeploy all components and remove the cloud services.";
     }
 
 }

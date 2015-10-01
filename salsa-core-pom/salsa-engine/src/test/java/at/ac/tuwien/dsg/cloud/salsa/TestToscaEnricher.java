@@ -17,7 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa;
 
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TEntityTemplate.Properties;
 import generated.oasis.tosca.TNodeTemplate;

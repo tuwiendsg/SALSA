@@ -104,5 +104,14 @@ public class ServiceJsonList {
 	public List<ServiceInfo> getServicesList() {
 		return services;
 	}
+        
+        public boolean isExisted(String serviceID){
+            for (ServiceInfo s: this.services){
+                if (s.getServiceId().equals(serviceID)){
+                    return true;
+                }
+            }
+            return false;
+        }
 	
 }

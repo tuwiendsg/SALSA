@@ -5,6 +5,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp;
 
+import at.ac.tuwien.dsg.cloud.salsa.client.CommandHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.RestHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.Main;
 
@@ -21,7 +22,7 @@ public class Meta implements CommandHandler {
 
     @Override
     public String getCommandDescription() {
-        return "Get metadata of the SALSA which is connected";
+        return "Get metadata of the SALSA which is connected.";
     }
     
 }

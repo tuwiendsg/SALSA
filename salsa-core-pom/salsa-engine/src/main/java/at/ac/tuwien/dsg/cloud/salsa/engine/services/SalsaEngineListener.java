@@ -24,7 +24,8 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.DockerInfo;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.ActionIDManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
@@ -105,7 +106,7 @@ public class SalsaEngineListener {
                             switch (fullID.getUnitType()) {
                                 case AppContainer: {
                                     String dockerPropString = state.getDomainModel();
-                                    if (fullID.getActionName().equals("deploy") && dockerPropString != null) {                                        
+                                    if (fullID.getActionName().equals("deploy") && dockerPropString != null) {
                                         EngineLogger.logger.debug("Receive docker info:" + dockerPropString);
                                         DockerInfo dockerInfo = (DockerInfo) DomainEntity.fromJson(dockerPropString);
                                         if (dockerInfo == null) {
@@ -151,15 +152,17 @@ public class SalsaEngineListener {
 
             @Override
             public void handleMessage(SalsaMessage msg) {
-                PioneerInfo piInfo = PioneerInfo.fromJson(msg.getPayload());
-                if (piInfo.getUserName().equals(SalsaConfiguration.getUserName())) {
-                    PioneerManager.addPioneer(piInfo.getId(), piInfo);
-                    SalsaCenterConnector centerCon;
-                    try {
-                        centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
-                        centerCon.updateNodeState(piInfo.getService(), piInfo.getTopology(), piInfo.getUnit(), piInfo.getInstance(), SalsaEntityState.DEPLOYED, "Pioneer is deployed");
-                    } catch (SalsaException ex) {
-                        EngineLogger.logger.error("Cannot connect to SALSA service in localhost: " + SalsaConfiguration.getSalsaCenterEndpointLocalhost() + ". This is a fatal error !", ex);
+                if (msg.getMsgType().equals(SalsaMessage.MESSAGE_TYPE.salsa_pioneerActivated)) {
+                    PioneerInfo piInfo = PioneerInfo.fromJson(msg.getPayload());
+                    if (piInfo.getUserName().equals(SalsaConfiguration.getUserName())) {
+                        PioneerManager.addPioneer(piInfo.getId(), piInfo);
+                        SalsaCenterConnector centerCon;
+                        try {
+                            centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
+                            centerCon.updateNodeState(piInfo.getService(), piInfo.getTopology(), piInfo.getUnit(), piInfo.getInstance(), SalsaEntityState.DEPLOYED, "Pioneer is deployed");
+                        } catch (SalsaException ex) {
+                            EngineLogger.logger.error("Cannot connect to SALSA service in localhost: " + SalsaConfiguration.getSalsaCenterEndpointLocalhost() + ". This is a fatal error !", ex);
+                        }
                     }
                 }
             }

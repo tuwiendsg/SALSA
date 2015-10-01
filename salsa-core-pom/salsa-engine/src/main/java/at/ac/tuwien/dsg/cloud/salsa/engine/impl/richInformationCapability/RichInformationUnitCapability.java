@@ -18,18 +18,17 @@
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability;
 
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
+import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseManager;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceDAO;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
-import at.ac.tuwien.dsg.cloud.elise.model.runtime.State;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.DockerInfo;
@@ -37,7 +36,7 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.VirtualMachineInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.application.SystemServiceInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.GenericUnitCapability;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
@@ -63,11 +62,12 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
 
     @Override
     public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {
+        logger.debug("Deploy instance {}/{}/{} before saving information to DB", serviceId, nodeId, instanceId);
         lowerCapa.deploy(serviceId, nodeId, instanceId);
 
+        logger.debug("Saving information into elise DB: {}/{}/{}",serviceId, nodeId, instanceId);
         // save unit to ELISE        
         SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
-        UnitInstanceDAO unitInstanceDAO = (UnitInstanceDAO) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceDAO.class, Collections.singletonList(new JacksonJsonProvider()));
 
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         ServiceUnit unit = service.getComponentById(nodeId);
@@ -75,6 +75,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         ServiceInstance instance = unit.getInstanceById(instanceId);
 
         // create unit instance and add several simple domainInfo getting from SALSA
+        logger.debug("Creating unit instance");
         UnitInstance unitInst = makeUnitInstance(service, unit, instance);
         // find the hostedOn instance
         if (!unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
@@ -102,10 +103,27 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         globalID.addLocalIdentification(id);
         logger.debug("adding localIdentification for node: {}/{} with id: {}", nodeId, instanceId, globalID.toJson());
         unitInst.setIdentification(globalID.toJson());
-
+        logger.debug("Prepare to connect to EliseManager service");
         // TODO: add more local identification here to adapt with other management tool: SYBL, rtGovOps?
         // save the UnitInstance into the graph DB
-        unitInstanceDAO.addUnitInstance(unitInst);
+        EliseManager eliseManager = (EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider()));
+        logger.debug("It may be connectted or not ! Now cheking...");
+        
+        if (eliseManager != null){
+            logger.debug("eliseManager is not null");
+            eliseManager.health();
+            logger.debug("Yes, we can check the health");
+            logger.debug("Checking ELISE connectivity: [" + eliseManager.health() +"]");
+        } else {
+            logger.error("Cannot contact to ELISE");
+        }
+        UnitInstanceDAO unitInstanceDAO = (UnitInstanceDAO) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceDAO.class, Collections.singletonList(new JacksonJsonProvider()));        
+        if (unitInstanceDAO != null) {
+            logger.debug("unitInstanceDao is not null, prepare to add");
+            unitInstanceDAO.addUnitInstance(unitInst);
+        } else {
+            logger.error("Cannot connect to the elise DB");
+        }
 
         return instance;
     }
@@ -138,6 +156,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
     }
 
     private UnitInstance makeUnitInstance(CloudService service, ServiceUnit unit, ServiceInstance ins) {
+        logger.debug("Making unit instance: {}/{}/{}", service.getId(), unit.getId(), ins.getInstanceId());
         UnitInstance unitInst = new UnitInstance(unit.getId(), null);
         ServiceTopology topo = service.getTopologyOfNode(unit.getId());
         unitInst.hasExtra("salsaID", service.getId() + "/" + topo.getId() + "/" + unit.getId() + "/" + ins.getInstanceId());
@@ -148,6 +167,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
          * MAKE INITIAL DOMAIN INFO
          */
         if (unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
+            logger.debug("Making VM domain info: {}/{}/{}", service.getId(), unit.getId(), ins.getInstanceId());
             unitInst.setCategory(ServiceCategory.VirtualMachine);
             // get basic VM information
             SalsaInstanceDescription_VM vmDescription = getVMOfUnit(service, topo, unit, ins);
@@ -159,6 +179,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             }
             unitInst.setDomainInfo(VMInfo.toJson());
         } else if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
+            logger.debug("Making App container domain info: {}/{}/{}", service.getId(), unit.getId(), ins.getInstanceId());
             unitInst.setCategory(ServiceCategory.AppContainer);
             // get basic docker info
             SalsaInstanceDescription_Docker dockerDescription = getDockerUnit(service, topo, unit, ins);
@@ -175,6 +196,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         } else if (unit.getType().equals(SalsaEntityType.SERVICE.getEntityTypeString())) {
             // get basic information of system service
             unitInst.setCategory(ServiceCategory.SystemService);
+            logger.debug("Making SystemService domain info: {}/{}/{}", service.getId(), unit.getId(), ins.getInstanceId());
             if (ins.getProperties() != null) {
                 SalsaInstanceDescription_SystemProcess sysProcess = (SalsaInstanceDescription_SystemProcess) ins.getProperties().getAny();
                 SystemServiceInfo systemServiceInfo = new SystemServiceInfo(sysProcess.getName(), sysProcess.getName());
@@ -210,7 +232,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             String deploymore = this.salsaEndpoint + "/services/" + service.getId() + "/topologies/" + topo.getId() + "/nodes/" + unit.getId() + "/instance-count/{quantity}";
             unitInst.hasCapability(new Capability("deploy", Capability.ExecutionMethod.REST, new RestExecution(deploymore, RestExecution.RestMethod.POST, "")).hasParameters("quantity", "1").executedBy("SALSA"));
         }
-
+        logger.debug("Creating domain info done: {}/{}/{}", service.getId(), unit.getId(), ins.getInstanceId());
         return unitInst;
     }
 

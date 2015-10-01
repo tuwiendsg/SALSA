@@ -17,14 +17,13 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.engine.utils;
 
-
-
 import java.io.File;
 import java.io.IOException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -45,10 +44,16 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
 public class SystemFunctions {
-    private final static File envFileGlobal = new File("/etc/environment");
-    private static Logger logger = EngineLogger.logger;
 
-    public static String getEth0IPAddress() {
+    private final static File envFileGlobal = new File("/etc/environment");
+    private static final Logger logger = EngineLogger.logger;
+    static private String localIP = null;
+
+    public static String getEth0IPAddress() {        
+        if (localIP != null) {
+            logger.debug("Return local IP address:" + localIP);
+            return localIP;
+        }
         // copy the getEth0IPv4 to /tmp and execute it, return the value        
         URL inputUrl = SystemFunctions.class.getResource("/scripts/getEth0IPv4.sh");
         EngineLogger.logger.debug("Search script: " + inputUrl);
@@ -58,27 +63,49 @@ public class SystemFunctions {
         } catch (IOException ex) {
             EngineLogger.logger.error("Cannot create template script file from: " + inputUrl + " to: " + dest.getPath());
         }
-        return executeCommandGetOutput("/bin/bash /tmp/getEth0IPv4.sh", "/tmp", null);
+        localIP = executeCommandGetOutput("/bin/bash /tmp/getEth0IPv4.sh", "/tmp", null);
+        localIP = localIP.trim();
+        if (isIPv4Address(localIP)){
+            logger.debug("The {} is IPv4 !", localIP);
+            return localIP;
+        } else {
+            logger.debug("Cannot get IPv4, the command return: {}",localIP);
+            localIP = null;
+            return "localhost";
+        }        
     }
     
-    public static void executeCommandSimple(String cmd, String workingDir){
+    public static boolean isIPv4Address(String address) {
+    if (address.isEmpty()) {
+        return false;
+    }
+    try {
+        Object res = InetAddress.getByName(address);
+        return (res.getClass().equals(Inet4Address.class));
+    } catch (final UnknownHostException ex) {
+        logger.error("Cannot get the host IP address. The captured address is: {}. Error: {}", address, ex.getMessage());
+        return false;
+    }
+}
+
+    public static void executeCommandSimple(String cmd, String workingDir) {
         logger.debug("Running command: {} in folder: {}", cmd, workingDir);
-         Process p;
+        Process p;
         try {
             String newCmd = "cd " + workingDir + " && " + cmd;
             logger.debug("The whole command to execute: {}", newCmd);
             p = Runtime.getRuntime().exec(newCmd);
             p.waitFor();
         } catch (IOException | InterruptedException ex) {
-            logger.error("Error when run command: {}", cmd , ex);
+            logger.error("Error when run command: {}", cmd, ex);
         }
     }
 
-    public static int executeCommandGetReturnCode(String cmd, String workingDir, String executeFrom) {        
+    public static int executeCommandGetReturnCode(String cmd, String workingDir, String executeFrom) {
         if (workingDir == null) {
             workingDir = "/tmp";
         }
-        logger.debug("Execute command: " + cmd +". Working dir: " + workingDir);
+        logger.debug("Execute command: " + cmd + ". Working dir: " + workingDir);
         try {
             String[] splitStr = cmd.split("\\s+");
             ProcessBuilder pb = new ProcessBuilder(splitStr);
@@ -94,20 +121,19 @@ public class SystemFunctions {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;
-            while ((line = reader.readLine()) != null) {               
+            while ((line = reader.readLine()) != null) {
                 logger.debug(line);
             }
             p.waitFor();
             int returnCode = p.exitValue();
-            logger.debug("Execute command done: " + cmd +". Get return code: " + returnCode);
+            logger.debug("Execute command done: " + cmd + ". Get return code: " + returnCode);
             return returnCode;
         } catch (InterruptedException | IOException e1) {
             logger.error("Error when execute command. Error: " + e1);
         }
         return -1;
     }
-    
-    
+
     /**
      * Run a command and wait
      *
@@ -145,7 +171,7 @@ public class SystemFunctions {
                 lineCount += 1;
                 logger.debug(line);
             }
-            if (lineCount>=10){
+            if (lineCount >= 10) {
                 logger.debug("... there are alot of more output here which is not shown ! ...");
             }
             p.waitFor();
@@ -187,8 +213,7 @@ public class SystemFunctions {
     }
 
     /**
-     * This command try to get Port which the service is listening to. 
-     * The port should be in the parameter -httpPort when running, or Tomcat port
+     * This command try to get Port which the service is listening to. The port should be in the parameter -httpPort when running, or Tomcat port
      *
      * @return
      */
@@ -202,7 +227,7 @@ public class SystemFunctions {
                 return port;
             }
         } catch (MalformedObjectNameException e) {
-            EngineLogger.logger.error("Cannot get listening port of salsa-engine service. return 8080 as default. Error: " + e.toString());            
+            EngineLogger.logger.error("Cannot get listening port of salsa-engine service. return 8080 as default. Error: " + e.toString());
         }
         EngineLogger.logger.error("Cannot find listening port of salsa-engine service. return 8080 as default");
         return "8080";
