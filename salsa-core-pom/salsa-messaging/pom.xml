@@ -65,9 +65,14 @@
             <url>https://repo.eclipse.org/content/repositories/paho-releases/</url>
         </repository>
         <repository>
-            <id>infosys-maven</id>
+            <id>infosys-maven-dev</id>
             <name>infosys-maven-releases</name>
             <url>http://repo.infosys.tuwien.ac.at/artifactory/dev</url>
+        </repository>
+        <repository>
+            <id>infosys-maven-comot</id>
+            <name>infosys-maven-releases</name>
+            <url>http://repo.infosys.tuwien.ac.at/artifactory/comot</url>
         </repository>
     </repositories>
 </project>
