@@ -10,9 +10,9 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor.MQTTConnector;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
-import at.ac.tuwien.dsg.comot.messaging.api.Consumer;
-import at.ac.tuwien.dsg.comot.messaging.api.Message;
-import at.ac.tuwien.dsg.comot.messaging.lightweight.ComotMessagingFactory;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.api.Consumer;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.api.Message;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.ComotMessagingFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

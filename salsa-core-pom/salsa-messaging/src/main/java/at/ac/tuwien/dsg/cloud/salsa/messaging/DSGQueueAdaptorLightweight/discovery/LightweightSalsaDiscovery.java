@@ -7,9 +7,9 @@ package at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.discov
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.rSYBL.deploymentDescription.DeploymentDescription;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.rSYBL.deploymentDescription.DeploymentUnit;
-import at.ac.tuwien.dsg.comot.messaging.api.Discovery;
-import at.ac.tuwien.dsg.comot.messaging.lightweight.rabbitMq.discovery.ADiscovery;
-import at.ac.tuwien.dsg.comot.messaging.lightweight.util.Config;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.api.Discovery;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.rabbitMq.discovery.ADiscovery;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.Config;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
