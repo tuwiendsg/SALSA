@@ -6,7 +6,7 @@
 package at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight;
 
 import at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.discovery.LightweightSalsaDiscovery;
-import at.ac.tuwien.dsg.comot.messaging.lightweight.util.Config;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.Config;
 
 
 
