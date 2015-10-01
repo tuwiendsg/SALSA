@@ -29,6 +29,12 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.comot</groupId>
+            <artifactId>messaging-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        
         <!--        <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-jaxrs</artifactId>

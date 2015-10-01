@@ -26,17 +26,19 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
  *
  * @author Duc-Hung LE
  */
-public class EventPublisher {
+public class EventPublisher  {
 
     static final MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBrokerExport(), SalsaConfiguration.getBrokerTypeExport());
     static final MessagePublishInterface publish = factory.getMessagePublisher();
-
+    static EventPublisher publisher = new EventPublisher();
+  
     public static void publishINFO(String msg) {
         msg = "[INFO] " + msg;
         SalsaMessage ssmsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_log, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.SALSA_PUBLISH_EVENT, "", msg);
         EngineLogger.logger.info(msg);
         publish.pushMessage(ssmsg);
     }
+
 
     public static void publishERROR(String msg) {
         msg = "[ERROR] " + msg;

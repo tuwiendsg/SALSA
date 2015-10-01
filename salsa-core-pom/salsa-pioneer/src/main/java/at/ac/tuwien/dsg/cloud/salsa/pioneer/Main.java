@@ -84,7 +84,7 @@ public class Main {
                             logger.debug("Received a message but not for me, it is for pioneer: " + confInfo.getPioneerID());
                             break;
                         }
-                        taskQueue.add(confInfo);                        
+                        taskQueue.add(confInfo);
                         logger.debug("Received message for DEPLOYMENT: " + msg.toJson() + ", put in queue. QueueSize: " + taskQueue.size());
                         break;
                     }
@@ -108,7 +108,7 @@ public class Main {
                         }
                         MessagePublishInterface publish_conf = factory.getMessagePublisher();
                         SalsaMessage reply = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_configurationStateUpdate, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE, null, confResult.toJson());
-                        publish_conf.pushMessage(reply);                        
+                        publish_conf.pushMessage(reply);
                         logger.debug("Result is published !");
                         break;
                     }
@@ -131,6 +131,18 @@ public class Main {
         }
         subscribeSalsaEngineRequests.subscribe(SalsaMessageTopic.getPioneerTopicByID(PioneerConfiguration.getPioneerID()));
 
+        MessageSubscribeInterface subscribeSynChannel = factory.getMessageSubscriber(new SalsaMessageHandling() {
+            @Override
+            public void handleMessage(SalsaMessage salsaMessage) {
+                // send information of this pioneer when get Discover command
+                if (salsaMessage.getMsgType().equals(SalsaMessage.MESSAGE_TYPE.discover)) {
+                    MessagePublishInterface publish = factory.getMessagePublisher();
+                    publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_pioneerActivated, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT, null, PioneerConfiguration.getPioneerInfo().toJson()));
+                }                
+            }
+        });
+        subscribeSynChannel.subscribe(SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT);
+
         // send information of this pioneer
         MessagePublishInterface publish = factory.getMessagePublisher();
         publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_pioneerActivated, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT, null, PioneerConfiguration.getPioneerInfo().toJson()));
@@ -150,12 +162,12 @@ public class Main {
                 if (confInfo != null) {
                     logger.debug("FULLED A TASK FROM TASKQUEUE. The queue how have: " + taskQueue.size());
                     handleConfigurationTask(confInfo);
-                    count =0;
+                    count = 0;
                 } else {
                     try {
                         if (count <= 2) {
-                            count +=1;
-                            logger.debug("TASKQUEUE is empty (show {}/3).", count);                            
+                            count += 1;
+                            logger.debug("TASKQUEUE is empty (show {}/3).", count);
                         }
                         Thread.sleep(2000);
                     } catch (InterruptedException ex) {
@@ -169,7 +181,7 @@ public class Main {
 
     private static void handleConfigurationTask(SalsaMsgConfigureArtifact confInfo) {
         // feedback that Pioneer is PROCESSING the request
-        logger.debug("Start to handle the task: {} of {}/{}",confInfo.getActionName(), confInfo.getUnit(), confInfo.getInstance());
+        logger.debug("Start to handle the task: {} of {}/{}", confInfo.getActionName(), confInfo.getUnit(), confInfo.getInstance());
         SalsaMsgConfigureState confState = new SalsaMsgConfigureState(confInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.PROCESSING, 0, "Pioneer received the request and is processing. Action ID: " + confInfo.getActionID());
         SalsaMessage notifyMsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_messageReceived, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE, "", confState.toJson());
         logger.debug("Start to publish notification message ...");

@@ -5,10 +5,12 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp;
 
+import at.ac.tuwien.dsg.cloud.salsa.client.CommandHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.RestHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.Main;
 import javax.ws.rs.core.MediaType;
 import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.Option;
 
 /**
  *
@@ -16,18 +18,19 @@ import org.kohsuke.args4j.Argument;
  */
 public class ServiceStatus implements CommandHandler{
 
-    @Argument(index = 0, usage = "ID for the service to check")
+    @Argument(index = 0, required = true, metaVar = "serviceID", usage = "ID for the service to check")
     String serviceID;
     
     @Override
     public void execute() {
-        String path = "/services/" + serviceID;        
+        //String path = "/services/" + serviceID;  
+        String path = "/viewgenerator/cloudservice/json/compact/" + serviceID;
         RestHandler.callRest(Main.getSalsaAPI(path), RestHandler.HttpVerb.GET, null, null, MediaType.TEXT_XML);
     }
 
     @Override
     public String getCommandDescription() {
-        return "Get the configuration status of the cloud service";
+        return "Get the configuration status of the cloud service.";
     }
     
 }

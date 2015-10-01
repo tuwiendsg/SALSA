@@ -19,7 +19,7 @@ package at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.WholeAppCapabilityInterface;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.WholeAppEnrichedTosca;
 import generated.oasis.tosca.TDefinitions;
 

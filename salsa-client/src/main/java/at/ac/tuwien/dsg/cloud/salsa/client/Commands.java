@@ -21,5 +21,6 @@ public class Commands {
     
     public final static String InstanceStatus = "instance-status";
     public final static String InstanceRemove = "instance-remove";
-    public final static String InstanceList = "instance-list";
+    public final static String InstanceList = "instance-list";    
+    public final static String QueryInstance = "instance-query";
 }

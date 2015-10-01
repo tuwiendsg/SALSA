@@ -40,13 +40,16 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineMisconfiguredException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList.ServiceInfo;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.ActionIDManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import java.io.File;
 import java.util.Collections;
@@ -122,18 +125,26 @@ public class InfoManagement {
         }
     }
 
+    @GET
+    @Path("/syn")
+    public String synPioneer() throws SalsaException {
+        SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.discover, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT, "", "toDiscoverPioneer");
+        MessagePublishInterface publish = SalsaConfiguration.getMessageClientFactory().getMessagePublisher();
+        publish.pushMessage(msg);
+        return "Syn message published to the queue.";
+    }
+
     /**
-     * @return
-     * @throws SalsaException
+     * @return @throws SalsaException
      */
     @GET
     @Path("/artifacts/pioneer")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response getPioneerArtifact() throws SalsaException {
         LOGGER.debug("Getting pioneer artifact and return: " + SalsaConfiguration.getPioneerLocalFile());
-        File file = new File(SalsaConfiguration.getPioneerLocalFile());        
+        File file = new File(SalsaConfiguration.getPioneerLocalFile());
         String fileName = file.getName();
-        if (file.exists()) {            
+        if (file.exists()) {
             return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
                     .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
                     .build();
@@ -143,16 +154,15 @@ public class InfoManagement {
 
     /**
      *
-     * @return
-     * @throws SalsaException
+     * @return @throws SalsaException
      */
     @GET
     @Path("/artifacts/conductor")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response getConductorArtifact() throws SalsaException {
         LOGGER.debug("Getting conductor artifact and return: " + SalsaConfiguration.getConductorLocalFile());
-        File file = new File(SalsaConfiguration.getConductorLocalFile());        
-        String fileName = file.getName();        
+        File file = new File(SalsaConfiguration.getConductorLocalFile());
+        String fileName = file.getName();
         if (file.exists()) {
             return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
                     .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
@@ -160,7 +170,7 @@ public class InfoManagement {
         }
         throw new EngineMisconfiguredException(fileName, "Not found the conductor.jar artifact at: " + SalsaConfiguration.getConductorLocalFile());
     }
-    
+
     @GET
     @Path("/artifacts/pioneerbootstrap")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)

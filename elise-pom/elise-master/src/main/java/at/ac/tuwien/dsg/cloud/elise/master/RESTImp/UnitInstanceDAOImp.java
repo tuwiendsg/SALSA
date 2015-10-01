@@ -17,7 +17,6 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.master.RESTImp;
 
-
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.UnitInstanceRepository;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
@@ -46,30 +45,53 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Duc-Hung Le
  */
-public class UnitInstanceDAOImp  implements UnitInstanceDAO {
+public class UnitInstanceDAOImp implements UnitInstanceDAO {
+
     Logger logger = EliseConfiguration.logger;
 
     @Autowired
     UnitInstanceRepository repo;
 
     @Override
-    public Set<UnitInstance> getUnitInstanceList() {        
-        return repo.listUnitInstance();
+    public Set<UnitInstance> getUnitInstanceList() {
+        Set<UnitInstance> theSet = repo.listUnitInstance();
+        if (theSet != null) {
+            logger.debug("Getting list of the instance, size: {}", theSet.size());
+        } else {
+            logger.error("Getting list of the instance: FAILED.");
+        }
+        return theSet;
     }
-    
+
     @Override
     public UnitInstance getUnitInstanceByID(String uniqueID) {        
-        return repo.findByUniqueID(uniqueID);
+        UnitInstance instance =  repo.findByUniqueID(uniqueID);
+        if (instance!=null){
+            logger.debug("Get unit instance in elise DB, found name={},category={}", instance.getName(), instance.getCategory());
+        } else {
+            logger.error("Cannot get instance with id: {}", uniqueID);
+        }
+        return instance;
     }
-    
-     @Override
+
+    @Override
     public UnitInstance getUnitInstanceByIDFullStack(String uniqueID) {
+        logger.debug("Getting full stack information of instance id: {}", uniqueID);
         UnitInstance theInstance = repo.findByUniqueID(uniqueID);
-        Set<UnitInstance> instances = repo.findByHostOn(uniqueID);
+        if (theInstance == null){
+            return null;
+        }
+        Set<UnitInstance> hostedInstances = repo.findByHostOn(uniqueID);
         DomainEntityFullStack full = new DomainEntityFullStack();
-        for (UnitInstance i: instances){
+        for (UnitInstance i : hostedInstances) {
+            logger.debug("Aggregrate hosted instance information: name={}, category={}", i.getName(), i.getCategory());
             DomainEntity entity = DomainEntity.fromJson(i.getDomainInfo());
-            full.hasDomainEntity(entity);
+            if (entity != null){
+                logger.debug("Found and adding domainEntity of unit instance name={}, category={}", i.getName(), i.getCategory());
+                full.hasDomainEntity(entity);
+            } else {
+                logger.debug("Do not found domainEntity of unit instance name={}, category={}", i.getName(), i.getCategory());
+            }
         }
         theInstance.setDomainInfo(full.toJson());
         return theInstance;
@@ -77,25 +99,24 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
 
     @Override
     public UnitInstance getUnitInstanceFirstByName(String unitName) {
+        logger.debug("Getting unit instance by name: {}", unitName);
         return repo.findByName(unitName);
     }
 
     @Override
     public UnitInstance getUnitInstanceFirstByNameFullStack(String name) {
+        logger.debug("Getting unit instance full stack by name: {}", name);
         UnitInstance theInstance = repo.findByName(name);
         Set<UnitInstance> instances = repo.findByHostOn(theInstance.getId());
         DomainEntityFullStack full = new DomainEntityFullStack();
-        for (UnitInstance i: instances){
+        for (UnitInstance i : instances) {
+            logger.debug("Found and adding domainEntity of instance name={}, category={}", i.getName(), i.getCategory());
             DomainEntity entity = DomainEntity.fromJson(i.getDomainInfo());
             full.hasDomainEntity(entity);
         }
         theInstance.setDomainInfo(full.toJson());
         return theInstance;
     }
-    
-    
-    
-    
 
     @Override
     public String addUnitInstance(UnitInstance unitInstance) {
@@ -105,7 +126,7 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
         logger.debug("The service is assign UUID: " + uuid);
 
         UnitInstance existedInstance = this.repo.findByUniqueID(unitInstance.getId());
-        
+
         logger.debug("SHOULD PASS THIS LINE 1");
         // if unit is in data base, merge and save new one 
         // TODO: check Neo4j for better query to update node
@@ -117,13 +138,11 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
 //            this.repo.deleteUnitByID(existedInstance.getId());
             logger.debug("Deleting done...");
         }
-        
+
         logger.debug("Start saving. Json: " + unitInstance.toJson());
-        
-        
 
         UnitInstance u = repo.save(unitInstance);
-        
+
         logger.debug("Saved ...");
         if (u != null) {
             logger.debug("Saved unit instance:" + u.getId() + ", name: " + u.getName());
@@ -133,18 +152,16 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
             return null;
         }
     }
-    
-    @Override    
+
+    @Override
     public Set<UnitInstance> queryUnitInstance(EliseQuery query) {
-        logger.debug("Find instance by category: " + query.getCategory());        
-        
+        logger.debug("Find instance by category: " + query.getCategory());
+
         Set<UnitInstance> instances = repo.findByCategory(query.getCategory().toString());
         Set<UnitInstance> result = filterInstance(instances, query);
         logger.debug("Found " + result.size() + " of the query: " + query.toJson());
         return result;
     }
-
-    
 
     @Override
     public Set<String> getUnitCategory() {
@@ -158,18 +175,18 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
     private String updateComposedIdentification(UnitInstance instance) {
         EliseManager collectorService = ((EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider())));
         //LocalIdentification si = LocalIdentification.fromJson(instance.getIdentification());
-        
+
         // unit instance carry the global iden of other elise, should be mix here
         GlobalIdentification gi = GlobalIdentification.fromJson(instance.getIdentification());
         // TODO: may scan all the local iden. Here just consider the first local iden.
-        if (gi.getLocalIDs().isEmpty()){
-            this.logger.error("The unit instance "+instance.getName()+" contains no identification attribute ! It cannot be add into database.");
+        if (gi.getLocalIDs().isEmpty()) {
+            this.logger.error("The unit instance " + instance.getName() + " contains no identification attribute ! It cannot be add into database.");
             return null;
-        }        
+        }
         LocalIdentification li = gi.getLocalIDs().get(0);
         logger.debug("Updating identification for instance: " + instance.getName());
         logger.debug("Local ID extracted: " + li.toJson());
-        
+
         GlobalIdentification global = collectorService.updateComposedIdentification(li);
         logger.debug("Global ID after query: " + global.toJson());
         if (global == null) {
@@ -180,8 +197,8 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
         instance.setIdentification(global.toJson());
         return global.getUuid();
     }
-    
-     private Set<UnitInstance> filterInstance(Set<UnitInstance> instances, EliseQuery query) {
+
+    private Set<UnitInstance> filterInstance(Set<UnitInstance> instances, EliseQuery query) {
         Set<UnitInstance> filtered = new HashSet<>();
 
         logger.debug("Filter " + instances.size() + " of the category: " + query.getCategory().toString());
@@ -219,7 +236,7 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
     @Override
     public void deleteUnitInstanceByID(String uniqueID) {
         UnitInstance existedInstance = this.repo.findByUniqueID(uniqueID);
-        if (existedInstance != null){
+        if (existedInstance != null) {
             logger.debug("Deleting unit instance ID {}", uniqueID);
             repo.delete(existedInstance);
         } else {
@@ -227,12 +244,4 @@ public class UnitInstanceDAOImp  implements UnitInstanceDAO {
         }
     }
 
-   
-    
-    
-    
-    
-    
-    
-    
 }
