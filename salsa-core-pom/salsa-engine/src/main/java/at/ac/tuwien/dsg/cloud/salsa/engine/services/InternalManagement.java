@@ -47,6 +47,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.ActionIDManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SystemFunctions;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
@@ -309,6 +310,7 @@ public class InternalManagement {
         File runFile = new File(workingFolderName+fileName);
         try {
             FileUtils.copyFile(localfile, runFile);
+            // TODO
         } catch (IOException ex) {
             LOGGER.error("Error when starting conductor: {}", ex.getMessage(), ex);            
             return false;
