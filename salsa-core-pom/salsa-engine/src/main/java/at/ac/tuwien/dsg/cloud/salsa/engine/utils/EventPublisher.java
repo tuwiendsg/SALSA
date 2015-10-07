@@ -29,13 +29,12 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 public class EventPublisher  {
 
     static final MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBrokerExport(), SalsaConfiguration.getBrokerTypeExport());
-    static final MessagePublishInterface publish = factory.getMessagePublisher();
-    static EventPublisher publisher = new EventPublisher();
+    static final MessagePublishInterface publish = factory.getMessagePublisher();    
   
     public static void publishINFO(String msg) {
         msg = "[INFO] " + msg;
         SalsaMessage ssmsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_log, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.SALSA_PUBLISH_EVENT, "", msg);
-        EngineLogger.logger.info(msg);
+        EngineLogger.logger.info(msg);        
         publish.pushMessage(ssmsg);
     }
 

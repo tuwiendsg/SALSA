@@ -54,11 +54,11 @@ import java.util.List;
  *
  * @author Duc-Hung Le
  */
-public class InfoManagement {
+public class InfoParser {
 
     static SalsaCenterConnector centerCon;
 
-    {
+    static {
         try {
             centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         } catch (EngineConnectionException ex) {
@@ -70,11 +70,11 @@ public class InfoManagement {
         List<ServiceUnit> units = service.getAllComponent();
         // clone data of all reference node
         for (ServiceUnit unit : units) {
-            ServiceUnit refUnit = InfoManagement.getReferenceServiceUnit(unit);
+            ServiceUnit refUnit = InfoParser.getReferenceServiceUnit(unit);
             if (refUnit != null) {
                 EngineLogger.logger.debug("orchestrateNewService-Clone ref data for node: " + unit.getId());
                 String topoID = service.getTopologyOfNode(refUnit.getId()).getId();
-                InfoManagement.updateInstancesForReferenceNode(refUnit, service.getId(), topoID, unit.getId());
+                InfoParser.updateInstancesForReferenceNode(refUnit, service.getId(), topoID, unit.getId());
             }
         }
     }

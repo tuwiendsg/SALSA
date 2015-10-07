@@ -56,6 +56,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import org.apache.commons.io.FileUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -63,10 +65,14 @@ import org.slf4j.Logger;
 
 @Service
 @Path("/manager")
-public class InfoManagement {
+public class InternalManagement {
 
     Logger LOGGER = EngineLogger.logger;
 
+    /**
+     * Get the list of all pioneers which are engaged with this salsa-engine
+     * @return The human-readable text of pioneers
+     */
     @GET
     @Path("/pioneers/cache")
     public String getPioneers() {
@@ -74,12 +80,20 @@ public class InfoManagement {
         return PioneerManager.describe();
     }
 
+    /**
+     * Get the list of pending actions 
+     * @return 
+     */
     @GET
     @Path("/actions/cache")
     public String getActions() {
         return ActionIDManager.describe();
     }
 
+    /**
+     * Get meta information of salsa
+     * @return 
+     */
     @GET
     @Path("/meta")
     public String getMetadata() {
@@ -171,6 +185,11 @@ public class InfoManagement {
         throw new EngineMisconfiguredException(fileName, "Not found the conductor.jar artifact at: " + SalsaConfiguration.getConductorLocalFile());
     }
 
+    /**
+     * This return the bootstrap script for the piooner. The script usually contains environment preparation, e.g. install suitable JRE
+     * @return The content of the script file
+     * @throws SalsaException 
+     */
     @GET
     @Path("/artifacts/pioneerbootstrap")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -268,5 +287,35 @@ public class InfoManagement {
             return "Error when execute command to query monitoring information !";
         }
     }
+    
+    
+    
+    //run and manage a single conductor on the main service
+    static Process myConductor;
+    
+    /**
+     * Run a conductor. By default just copy all to /tmp and run
+     * @return 
+     */
+    @GET
+    @Path("/conductor/start")
+    public boolean startConductor() {
+        String fileName = "conductor.jar";
+        String workingFolderName = "/tmp/conductor/";
+        String extentionsFolderName = workingFolderName + "extentions/";
+        
+        (new File(extentionsFolderName)).mkdirs();
+        File localfile = new File(SalsaConfiguration.getConductorLocalFile());
+        File runFile = new File(workingFolderName+fileName);
+        try {
+            FileUtils.copyFile(localfile, runFile);
+        } catch (IOException ex) {
+            LOGGER.error("Error when starting conductor: {}", ex.getMessage(), ex);            
+            return false;
+        }
+        return true;
+    }
+    
+    
 
 }

@@ -25,7 +25,7 @@ public class ServiceStatus implements CommandHandler{
     public void execute() {
         //String path = "/services/" + serviceID;  
         String path = "/viewgenerator/cloudservice/json/compact/" + serviceID;
-        RestHandler.callRest(Main.getSalsaAPI(path), RestHandler.HttpVerb.GET, null, null, MediaType.TEXT_XML);
+        RestHandler.callRest(Main.getSalsaAPI(path), RestHandler.HttpVerb.GET, null, MediaType.APPLICATION_JSON, null);
     }
 
     @Override

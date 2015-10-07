@@ -43,6 +43,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 public class ServiceJsonDataTree {
 
     String id;
+    String uuid;
     SalsaEntityState state;
     Map<String, String> properties;
     Object monitoring;
@@ -58,6 +59,7 @@ public class ServiceJsonDataTree {
     List<ServiceJsonDataTree> children;
     boolean isAbstract = true;	// true: tosca node, false: instance node
     String nodeType;
+    String artifactType;
     List<String> connectto = new ArrayList<>();
 
     static Logger logger;
@@ -134,6 +136,16 @@ public class ServiceJsonDataTree {
         this.state = state;
     }
 
+    public String getArtifactType() {
+        return artifactType;
+    }
+
+    public void setArtifactType(String artifactType) {
+        this.artifactType = artifactType;
+    }
+    
+    
+
     public void addChild(ServiceJsonDataTree child) {
         if (children == null) {
             children = new ArrayList<>();
@@ -163,11 +175,12 @@ public class ServiceJsonDataTree {
     // convert ServiceUnit and all it stack
     public void loadData(ServiceUnit data, int hostOnId, ServiceTopology topo) {
         //logger.debug("Starting loading abstract node: " + data.getId());
-        this.id = data.getId();
+        this.id = data.getId();        
         this.setState(data.getState());
         this.isAbstract = true;
         this.setNodeType(data.getType());
         this.connectto = data.getConnecttoId();
+        this.uuid = data.getUuid().toString();
 
         List<ServiceInstance> instances;
         if (hostOnId < 0) {
@@ -208,6 +221,7 @@ public class ServiceJsonDataTree {
     public void loadDataInstance(ServiceInstance instance, List<ServiceUnit> hostOnCompos, ServiceUnit abstractNode, ServiceTopology topo) {
         //logger.debug("Adding instance node id: " + instance.getInstanceId());
         this.id = abstractNode.getId() + "_" + Integer.toString(instance.getInstanceId());
+        this.uuid = instance.getUuid().toString();
         this.setState(instance.getState());
         this.isAbstract = false;
         this.setMonitoring(instance.getMonitoring());
@@ -231,11 +245,13 @@ public class ServiceJsonDataTree {
 
         // set connectto links
         // if nodeType=SOFTWARE, change it into artifactType. so if it is os, leave there
-        if (abstractNode.getArtifactType() != null) {
-            if (!this.nodeType.equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
-                this.nodeType = abstractNode.getArtifactType();
-            }
-        }
+//        if (abstractNode.getArtifactType() != null) {
+//            if (!this.nodeType.equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
+//                this.nodeType = abstractNode.getArtifactType();
+//            }
+//        }
+        this.nodeType = abstractNode.getType();
+        this.artifactType = abstractNode.getArtifactType();
 
         //logger.debug("abstractNode.getType(): " + abstractNode.getType());
         SalsaEntityType type = SalsaEntityType.fromString(abstractNode.getType());

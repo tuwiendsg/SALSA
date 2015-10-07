@@ -80,7 +80,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.ServicedataProcessingException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.IllegalConfigurationAPICallException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability.AsyncUnitCapability;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.InfoManagement;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.InfoParser;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.ActionIDManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
@@ -1019,14 +1019,14 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String preRunByMe;
 
             String newActionID = UUID.randomUUID().toString();
-            ServiceCategory theCategory = InfoManagement.mapOldAndNewCategory(SalsaEntityType.fromString(nodeData.getType()));
+            ServiceCategory theCategory = InfoParser.mapOldAndNewCategory(SalsaEntityType.fromString(nodeData.getType()));
             // if the action name is undeploy, so undeploy. Only support artifact type of script. E.g., do not support stop docker
             if (actionName.equals("undeploy")) {
                 PrimitiveOperation stopAction = nodeData.getPrimitiveByName("stop");
                 if (stopAction != null) {  // there is a stop action, add it before the runByMe
                     LOGGER.debug("Found a stop action to  run before undeploy action");
                     preRunByMe = stopAction.getExecutionREF();
-                    LOGGER.debug("The command will be sent is: " + preRunByMe + " and undeploy following: " + runByMe + ". Undeploy apply for node type: " + InfoManagement.mapOldAndNewCategory(SalsaEntityType.fromString(nodeData.getType())));
+                    LOGGER.debug("The command will be sent is: " + preRunByMe + " and undeploy following: " + runByMe + ". Undeploy apply for node type: " + InfoParser.mapOldAndNewCategory(SalsaEntityType.fromString(nodeData.getType())));
                 }
                 // to undeploy Docker, we send the DockerID into runByMe
                 if (theCategory == ServiceCategory.AppContainer) {

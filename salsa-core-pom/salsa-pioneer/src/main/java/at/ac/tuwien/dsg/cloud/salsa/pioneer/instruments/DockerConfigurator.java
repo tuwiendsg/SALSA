@@ -205,9 +205,15 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
             ex.printStackTrace();
         }
         //SystemFunctions.executeCommandGetReturnCode("cp " + PioneerConfiguration.getWorkingDir() + "/salsa.variables " + newSalsaWorkingDirInsideDocker, newSalsaWorkingDirInsideDocker, dockerFile);
-        if (preRunByMe != null && !preRunByMe.trim().isEmpty()) {
-            sb.append("\nRUN " + preRunByMe + " \n");
-        }
+        if (preRunByMe != null){
+            sb.append("\nRUN apt-get update \n");
+            String[] runThese = preRunByMe.split(";");
+            for (String c: runThese){
+                if (!c.trim().isEmpty()){
+                    sb.append("\nRUN " + c + " \n");
+                }
+            }
+        }      
         sb.append("\nCOPY ./salsa.variables /etc/salsa.variables \n");
         sb.append("RUN mkdir -p " + newSalsaWorkingDirInsideDocker + "\n");
         sb.append("COPY ./pioneer_install.sh " + newSalsaWorkingDirInsideDocker + "/pioneer_install.sh \n");
@@ -273,6 +279,7 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
         StringBuilder sb = new StringBuilder();
         sb.append("FROM " + SALSA_DOCKER_PULL + " \n");
         if (!preRunByMe.trim().isEmpty()) {
+            sb.append("\nRUN apt-get update \n");
             sb.append("\nRUN " + preRunByMe + " \n");
         }
         SystemFunctions.executeCommandGetReturnCode("/bin/cp " + PioneerConfiguration.getWorkingDir() + "/salsa.variables " + newSalsaWorkingDirInsideDocker, newSalsaWorkingDirInsideDocker, "");

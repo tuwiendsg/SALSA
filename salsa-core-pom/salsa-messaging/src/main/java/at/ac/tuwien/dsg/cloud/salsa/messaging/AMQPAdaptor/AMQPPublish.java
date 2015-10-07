@@ -36,17 +36,16 @@ public class AMQPPublish extends AMQPConnector implements MessagePublishInterfac
 
     @Override
     public void pushMessage(SalsaMessage content) {
-
-        if (amqpChannel == null) {
-            connect();
-        }
+        connect();
+        
         System.out.println("Publishing message: " + content.getMsgType() + ", " + content.getTopic());
         if (content.getPayload() != null && content.getPayload().length() < 2048) {
             logger.debug("Content: " + content);
         }
-        try {
+        try {            
             String EXCHANGE_NAME = content.getTopic();
-            amqpChannel.exchangeDeclare(EXCHANGE_NAME, "fanout");            
+            logger.debug("EXCHANGE_NAME: " + EXCHANGE_NAME);
+            amqpChannel.exchangeDeclare(EXCHANGE_NAME, "fanout");
             amqpChannel.basicPublish(EXCHANGE_NAME, "", null, content.toJson().getBytes());
         } catch (IOException me) {
             System.out.println("msg " + me.getMessage());

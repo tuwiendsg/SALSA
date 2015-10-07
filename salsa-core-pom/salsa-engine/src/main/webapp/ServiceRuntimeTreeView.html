@@ -189,20 +189,22 @@
                                     return "type: Virtual machine";
                                 }
                             }
-                            if (d.nodeType == "chef" && d.isAbstract == false) {
-                                return "type: chef client";
-                            }
-                            if (d.nodeType == "sh" && d.isAbstract == false) {
-                                return "type: script";
-                            }
-                            if (d.nodeType == "shcont" && d.isAbstract == false) {
-                                return "type: running script";
-                            }
-                            if (d.nodeType == "software" && d.isAbstract == false) {
-                                return "type: external service";
-                            }
-
-                            return "type: " + d.nodeType.toLowerCase();
+                            return "type: " + d.nodeType +"/" +d.artifactType;
+                            
+//                            if (d.nodeType == "chef" && d.isAbstract == false) {
+//                                return "type: chef client";
+//                            }
+//                            if (d.nodeType == "sh" && d.isAbstract == false) {
+//                                return "type: script";
+//                            }
+//                            if (d.nodeType == "shcont" && d.isAbstract == false) {
+//                                return "type: running script";
+//                            }
+//                            if (d.nodeType == "software" && d.isAbstract == false) {
+//                                return "type: external service";
+//                            }
+//
+//                            return "type: " + d.nodeType.toLowerCase();
                         });
 
 

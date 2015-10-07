@@ -394,7 +394,7 @@ public class ViewGenerator {
 		for (ServiceTopology topo : service.getComponentTopologyList()) {
 			for (ServiceUnit unit : topo.getComponentsByType(SalsaEntityType.OPERATING_SYSTEM)) {
 				for (ServiceInstance instance : unit.getInstancesList()) {
-					InfoManagement moni = new InfoManagement();
+					InternalManagement moni = new InternalManagement();
 					SalsaInstanceDescription_VM vm = (SalsaInstanceDescription_VM) instance.getProperties().getAny();
 					String gangliaXML = moni.getVMInformation(vm);
 
@@ -415,7 +415,7 @@ public class ViewGenerator {
 
 		for (ServiceInstance osNode : service.getAllReplicaByType(SalsaEntityType.OPERATING_SYSTEM)) {
 			// get the ganglia info
-			InfoManagement moni = new InfoManagement();
+			InternalManagement moni = new InternalManagement();
 
 			// moni.getMonitorOfInstance(service.getId(), service.get, nodeId, instanceId)
 			// String str = SalsaEngineInternal.

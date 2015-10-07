@@ -32,6 +32,7 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInt
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryProcessNotification;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.EliseQueueTopic;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,14 +58,14 @@ public class EliseManagerImp implements EliseManager {
     List<ConductorDescription> conductors = new ArrayList<>();
 
     @Override
-    public String registerConductor(ConductorDescription collector) {
+    public String registerConductor(ConductorDescription conductor) {
         if (this.conductors == null) {
             this.conductors = new ArrayList<>();
         }
-        logger.debug("Registering a collector. Info: {}", collector.toJson());
-        this.conductors.add(collector);
-        logger.debug("Registered a collector: " + collector.getId());
-        return "ELISE registered a new collector: " + collector.getId();
+        logger.debug("Registering a collector. Info: {}", conductor.toJson());
+        this.conductors.add(conductor);
+        logger.debug("Registered a collector: " + conductor.getId());
+        return "ELISE registered a new collector: " + conductor.getId();
     }
 
     @Override
@@ -102,6 +103,16 @@ public class EliseManagerImp implements EliseManager {
         return this.conductors;
     }
 
+    @Override
+    public void runConductorViaSalsa(String pioneerID) {
+        if (pioneerID.equals("salsa")) {
+            // call SALSA rest to run conductor
+        } else {
+            SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_addConductor, EliseConfiguration.getEliseID(), SalsaMessageTopic.getPioneerTopicByID(pioneerID), "", "");
+            factory.getMessagePublisher().pushMessage(msg);
+        }
+    }
+    
     /**
      * Elise master publish a message to inform a conductor to download and inject collectors The name of the collector will be used as the parameter to
      * download the artifact
@@ -113,8 +124,8 @@ public class EliseManagerImp implements EliseManager {
     @Override
     public void pushCollectorToConductor(String configuration, String conductorID, String collectorName) {
         MessagePublishInterface publish = factory.getMessagePublisher();
-        String artURL = EliseConfiguration.getRESTEndpoint()+"/manager/collector/"+collectorName;
-        CollectorDescription collector = new CollectorDescription(collectorName, conductorID, artURL, configuration);        
+        String artURL = EliseConfiguration.getRESTEndpoint() + "/manager/collector/" + collectorName;
+        CollectorDescription collector = new CollectorDescription(collectorName, conductorID, artURL, configuration);
         // message: send to NOTIFICATION
         SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_addCollector, EliseConfiguration.getEliseID(), EliseQueueTopic.QUERY_TOPIC, null, collector.toJson());
         publish.pushMessage(msg);
@@ -163,9 +174,9 @@ public class EliseManagerImp implements EliseManager {
 
     // FOR IDENTIFICATION
     @Override
-    public GlobalIdentification updateComposedIdentification(LocalIdentification si) {
+    public GlobalIdentification updateComposedIdentification(LocalIdentification si, String possibleGlobalID) {
         IdentificationManager im = new IdentificationManager();
-        return im.searchAndUpdate(si);
+        return im.searchAndUpdate(si, possibleGlobalID);
     }
 
     @Override

@@ -71,6 +71,7 @@ public class SalsaMessage {
         elise_instanceInfoUpdate,
         elise_providerInfoUpdate,
         elise_conductorActivated,
+        elise_addConductor,
         elise_addCollector
     }
 

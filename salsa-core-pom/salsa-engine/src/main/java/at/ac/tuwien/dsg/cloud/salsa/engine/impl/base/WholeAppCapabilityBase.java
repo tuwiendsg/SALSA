@@ -30,7 +30,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.ServicedataProcessingException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.AppDescriptionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability.AsyncUnitCapability;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.InfoManagement;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.InfoParser;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
@@ -96,7 +96,7 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
         EngineLogger.logger.debug("debugggg Sep 8 - 2");
         CloudService serviceData = null;
         try {
-            serviceData = InfoManagement.buildRuntimeDataFromTosca(def);
+            serviceData = InfoParser.buildRuntimeDataFromTosca(def);
         } catch (Exception e) {
             throw new AppDescriptionException("TOSCA description", "Cannot build the cloud service model from input TOSCA. Please check: ID consistency, relationship orders.", e);
         }
@@ -139,7 +139,12 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
 
     private CloudService actualCreateNewService(CloudService serviceData) throws SalsaException {
         // here find all the TOP node
+        if (serviceData == null){
+            throw new ServicedataProcessingException("a new service");
+        }
+        EngineLogger.logger.debug("Start to process deployment with service data, id= {}", serviceData.getId());
         List<ServiceUnit> nodes = serviceData.getAllComponent();
+         EngineLogger.logger.debug("Total number of nodes: {}", nodes.size());
         List<ServiceUnit> topNodes = new ArrayList<>();
         for (ServiceUnit node : nodes) {
             boolean getIt = true;
@@ -156,11 +161,11 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
             }
         }
 
-        InfoManagement.cloneDataForReferenceNodes(serviceData);
+        InfoParser.cloneDataForReferenceNodes(serviceData);
 
         // deploy new node by generate deployment threads for each service        
         for (ServiceUnit unit : topNodes) {
-            ServiceUnit refUnit = InfoManagement.getReferenceServiceUnit(unit);
+            ServiceUnit refUnit = InfoParser.getReferenceServiceUnit(unit);
             if (refUnit == null && unit.getMin() > 0) {		// not a reference and min > 0
                 EngineLogger.logger.debug("Orchestating: Creating top node: " + unit.getId());
                 // try to create minimum instance of software

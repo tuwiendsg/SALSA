@@ -64,7 +64,16 @@ public interface EliseManager {
     @GET
     @Path("/conductor")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ConductorDescription> getConductorList();
+    public List<ConductorDescription> getConductorList();    
+        
+    /**
+     * To request the pioneer to run a conductor.
+     * If the pioneerID=salsa, this will run conductor directly by ELISE here
+     * @param pioneerID 
+     */
+    @POST
+    @Path("/conductor/salsa/{pioneerID}")
+    public void runConductorViaSalsa(@PathParam("conductorID") String pioneerID);    
     
     @POST
     @Path("/conductor/{conductorID}/collector/{collectorName}")
@@ -84,12 +93,18 @@ public interface EliseManager {
     public void ResynConductors();
     
 
-    // for identification management
+    /**
+     * Update a identification to the identification database
+     * As the global ID is assign by SALSA, the possibleGlobalID is for the creation of new GlobalID
+     * @param si
+     * @param possibleGlobalID
+     * @return 
+     */    
     @POST
-    @Path("/identification")
+    @Path("/identification/{possibleGlobalID}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public GlobalIdentification updateComposedIdentification(LocalIdentification si);
+    public GlobalIdentification updateComposedIdentification(LocalIdentification si, @PathParam("possibleGlobalID") String possibleGlobalID);
 
     @GET
     @Path("/query/{queryUUID}")

@@ -45,42 +45,42 @@ public class EliseConfiguration {
     public final static String CURRENT_DIR = System.getProperty("user.dir");
     public final static String DATA_BASE_STORAGE = CURRENT_DIR + "/comotElise.db";
     public final static String SALSA_CONFIGURATION_FILE = CURRENT_DIR + "/salsa.engine.properties";
-    public final static String ELISE_CONFIGURATION_FILE = CURRENT_DIR + "/elise.conf";
+    //public final static String ELISE_CONFIGURATION_FILE = CURRENT_DIR + "/elise.conf";
     public final static String IDENTIFICATION_MAPPING_FILE = CURRENT_DIR + "/identification.json";
     // in the case of using separate DB
 //    public final static String DATA_BASE_REMOTE_ENDPOINT = "http://localhost:7474/db/data";       
     public static Logger logger = LoggerFactory.getLogger("Elise");
     public static String ELISE_ID = null;
 
-    static {
-        Properties prop = new Properties();
-        OutputStream output = null;
-
-        try {
-            // WRITE NEEDED INFO INTO ELISE CONFIGURATION FILE
-            output = new FileOutputStream(ELISE_CONFIGURATION_FILE);
-            prop.setProperty("ELISE_PORT", getPort());
-            prop.setProperty("ELISE_IP", getSALSA_CENTER_IP());
-            prop.setProperty("BROKER", getBroker());
-            prop.setProperty("BROKER_TYPE", getBrokerType());
-            prop.store(output, null);            
-        } catch (IOException io) {
-            io.printStackTrace();
-        } finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
-
-    }
+//    static {
+//        Properties prop = new Properties();
+//        OutputStream output = null;
+//
+//        try {
+//            // WRITE NEEDED INFO INTO ELISE CONFIGURATION FILE
+//            output = new FileOutputStream(ELISE_CONFIGURATION_FILE);
+//            prop.setProperty("ELISE_PORT", getSALSA_CENTER_PORT());
+//            prop.setProperty("ELISE_IP", getSALSA_CENTER_IP());
+//            prop.setProperty("BROKER", getBroker());
+//            prop.setProperty("BROKER_TYPE", getBrokerType());
+//            prop.store(output, null);
+//        } catch (IOException io) {
+//            io.printStackTrace();
+//        } finally {
+//            if (output != null) {
+//                try {
+//                    output.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//        }
+//
+//    }
 
     // NOTE: THIS GET PARAMETER IN SALSA CONFIGURATION FILE
-    public static String getGenericParameter(String key, String theDefault) {
+    public static String getSalsaGenericParameter(String key, String theDefault) {
         Properties prop = new Properties();
         InputStream input;
         File myFile = new File(SALSA_CONFIGURATION_FILE);
@@ -109,18 +109,22 @@ public class EliseConfiguration {
     }
 
     public static String getRESTEndpointLocal() {
-        return "http://localhost:" + getPort() + "/salsa-engine/rest/elise";
+        return "http://localhost:" + getSALSA_CENTER_PORT()+ "/salsa-engine/rest/elise";
     }
 
     public static String getEliseID() {
         if (ELISE_ID == null) {
-            ELISE_ID = getEth0IPAddress() + ":" + getPort();
+            ELISE_ID = getEth0IPAddress() + ":" + getSALSA_CENTER_PORT();
         }
         return ELISE_ID;
     }
 
     private static String getSALSA_CENTER_IP() {
-        return getGenericParameter("SALSA_CENTER_IP", getEth0IPAddress());
+        return getSalsaGenericParameter("SALSA_CENTER_IP", getEth0IPAddress());
+    }
+    
+    private static String getSALSA_CENTER_PORT() {
+        return getSalsaGenericParameter("SALSA_CENTER_PORT", "8080");
     }
 
     /**
@@ -128,13 +132,15 @@ public class EliseConfiguration {
      *
      * @return
      */
-    public static String getPort() {
+    @Deprecated
+    private static String getPort() {
         try {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             Set<ObjectName> objs = mbs.queryNames(new ObjectName("*:type=Connector,*"),
                     Query.match(Query.attr("protocol"), Query.value("HTTP/1.1")));
             for (ObjectName obj : objs) {
                 String port = obj.getKeyProperty("port");
+                logger.debug("Getting port: {}", port);
                 return port;
             }
         } catch (MalformedObjectNameException e) {
@@ -209,10 +215,10 @@ public class EliseConfiguration {
     }
 
     public static String getBroker() {
-        return getGenericParameter("BROKER", "tcp://iot.eclipse.org:1883");
+        return getSalsaGenericParameter("BROKER", "tcp://iot.eclipse.org:1883");
     }
 
     public static String getBrokerType() {
-        return getGenericParameter("BROKER_TYPE", "mqtt");
+        return getSalsaGenericParameter("BROKER_TYPE", "mqtt");
     }
 }

@@ -13,6 +13,8 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
  * @author Duc-Hung LE
  */
 public class GatewayInfo extends DomainEntity {
+    String location;    
+    String ip;
 
     public GatewayInfo() {
     }
@@ -26,4 +28,23 @@ public class GatewayInfo extends DomainEntity {
         updateStateList(States.values());
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+    
+    
+
+    
 }

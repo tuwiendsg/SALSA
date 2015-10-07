@@ -30,7 +30,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInt
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.DependencyConfigurationException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.PioneerManagementException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.InfoManagement;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.genericCapability.InfoParser;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineImplAll;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.ActionIDManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
@@ -253,7 +253,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
                 throw new PioneerManagementException(PioneerManagementException.Reason.PIONEER_NOT_REGISTERED, "The pioneer on node " + SalsaConfiguration.getUserName() + "/" + serviceId + "/" + nodeId + "/" + instanceId + " is not registered to SalsaEngine, deployment aborted !");
             }
 
-            SalsaMsgConfigureArtifact command = new SalsaMsgConfigureArtifact(actionID, "deploy", pioneerID, SalsaConfiguration.getUserName(), serviceId, topologyId, nodeId, instanceId, InfoManagement.mapOldAndNewCategory(SalsaEntityType.fromString(unit.getType())), "", "", SalsaArtifactType.fromString(unit.getArtifactType()), environment);
+            SalsaMsgConfigureArtifact command = new SalsaMsgConfigureArtifact(actionID, "deploy", pioneerID, SalsaConfiguration.getUserName(), serviceId, topologyId, nodeId, instanceId, InfoParser.mapOldAndNewCategory(SalsaEntityType.fromString(unit.getType())), "", "", SalsaArtifactType.fromString(unit.getArtifactType()), environment);
             String runByMe = "";
             // if the deploy action is explicit define, RUN IT
             if (unit.getPrimitiveByName("deploy") != null) {

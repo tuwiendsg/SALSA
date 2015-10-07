@@ -5,7 +5,9 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.client;
 
-import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.InstanceList;
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.ConductorPushCollector;
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.ConductorStart;
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.InstanceList;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.InstanceQuery;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.InstanceRemove;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.InstanceStatus;
@@ -21,7 +23,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ConnectException;
 import java.util.Properties;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -53,6 +54,8 @@ public class Main {
     @SubCommands({
         @SubCommand(name = "meta", impl = Meta.class),
         @SubCommand(name = "syn", impl = Syn.class),
+        @SubCommand(name = "conductor-start", impl = ConductorStart.class),
+        @SubCommand(name = "conductor-push-collector", impl = ConductorPushCollector.class),
         @SubCommand(name = "help", impl = PrintHelp.class),
 
         @SubCommand(name = "service-submit", impl = ServiceSubmit.class),
@@ -65,7 +68,11 @@ public class Main {
         @SubCommand(name = "instance-status", impl = InstanceStatus.class),
         @SubCommand(name = "instance-remove", impl = InstanceRemove.class),
         @SubCommand(name = "instance-list", impl = InstanceList.class),
-        @SubCommand(name = "instance-query", impl = InstanceQuery.class),})
+        @SubCommand(name = "instance-query", impl = InstanceQuery.class),
+    
+        
+    
+    })
     CommandHandler command;
 
     static CmdLineParser parserOpt;

@@ -31,10 +31,12 @@ public class PrintHelp implements CommandHandler {
 
     @Override
     public void execute() {
-        if (command == null) {
-            // generic help
+        System.out.println("Printing help");
+        if (command == null || command.equals("")) {
+            // generic help            
             printHelp();
-        } else {
+            printGuide();
+        } else {            
             try {
                 // subcommand help
                 if (OPTIONS.get(command) == null) {
@@ -46,8 +48,7 @@ public class PrintHelp implements CommandHandler {
                     System.out.print("Usage: " + Main.getCOMMAND_NAME() + " " + command);
                     parser.printSingleLineUsage(System.out);
                     System.out.println("");
-                    parser.printUsage(System.out);
-                    
+                    parser.printUsage(System.out);                    
                 }
             } catch (InstantiationException ex) {
                 System.out.println("Error. Command is not available: " + command);
@@ -71,8 +72,15 @@ public class PrintHelp implements CommandHandler {
             throw new RuntimeException(e);
         }
     }
+    
+    public static void printGuide() {        
+        System.out.println("\nThe common steps to use this client are:");
+        System.out.println(" 1. Use 'service-submit' to submit a TOSCA and get back an serviceId.");
+        System.out.println(" 2. Use 'instance-list <serviceId>' to list all instances and their states.");
+        System.out.println(" 3. Use 'instance-query <instanceId>' to get the properties and capabilities.");
+    }
 
-    public static void printHelp() {        
+    public static void printHelp() {       
         PrintWriter out = new PrintWriter(System.out);
         System.out.println("Usage: " + Main.getCOMMAND_NAME());
         //Main.getParserOpt().printSingleLineUsage(out, null);                
@@ -92,7 +100,7 @@ public class PrintHelp implements CommandHandler {
         List<String> myList = new ArrayList(OPTIONS.keySet());
         myList.remove("help");
         Collections.sort(myList);
-
+        
         for (String cmd : myList) {
             try {
                 System.out.printf("  %-20s: %s \n", cmd , OPTIONS.get(cmd).newInstance().getCommandDescription());
@@ -101,8 +109,8 @@ public class PrintHelp implements CommandHandler {
             } catch (IllegalAccessException ex) {
                 ex.printStackTrace();
             }
-        }        
-        out.close();
+        }                
+        out.flush();        
     }
 
     @Override

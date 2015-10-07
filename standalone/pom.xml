@@ -154,6 +154,15 @@
                                     <destFileName>operating-system-collector.jar</destFileName>
                                 </artifactItem>
                                 
+                                 <artifactItem>
+                                    <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>                                    
+                                    <version>2.0</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/extensions</outputDirectory>
+                                    <artifactId>govops-collector</artifactId>
+                                    <destFileName>govops-collector.jar</destFileName>
+                                </artifactItem>
+                                
                             </artifactItems>
 
                             <outputDirectory>${project.build.directory}</outputDirectory>

@@ -21,7 +21,6 @@ import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 
@@ -52,7 +51,7 @@ public class IdentificationManager {
         return new IdentificationDB();
     }
 
-    public GlobalIdentification searchAndUpdate(LocalIdentification entityComposedID) {
+    public GlobalIdentification searchAndUpdate(LocalIdentification entityComposedID, String possibleGlobalID) {
         // search if there is an exist service identification that "equals" the the provided. Node: equals function is defined
         IdentificationDB currentDB = load();
         GlobalIdentification existGlobal = null;
@@ -64,10 +63,9 @@ public class IdentificationManager {
 
         // update        
         if (existGlobal == null) {  // if there is no existSI in the DB, create one
-            System.out.println("There is no exist SI match with Identification, generating one...:" + entityComposedID);
-            String uuid = UUID.randomUUID().toString();
+            System.out.println("There is no exist SI match with Identification, generating one...:" + entityComposedID);            
             existGlobal = new GlobalIdentification(entityComposedID.getCategory());
-            existGlobal.setUuid(uuid);
+            existGlobal.setUuid(possibleGlobalID);
             existGlobal.addLocalIdentification(entityComposedID); // add again
             currentDB.hasIdentification(existGlobal);
         }        

@@ -14,5 +14,6 @@
         <module>openstack-collector</module>
         <module>SystemServiceCollector</module>
         <module>operating-system-collector</module>
+        <module>govops-collector</module>
     </modules>
 </project>

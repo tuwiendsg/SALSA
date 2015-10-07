@@ -18,8 +18,11 @@
 package at.ac.tuwien.dsg.cloud.salsa.common.interfaces;
 
 import java.io.Serializable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class SalsaException extends Exception implements Serializable {
+    static Logger logger = LoggerFactory.getLogger(SalsaException.class);
 
     private static final long serialVersionUID = 1L;
     
@@ -30,25 +33,25 @@ public abstract class SalsaException extends Exception implements Serializable {
     }
 
     public SalsaException() {
-        super();
-        System.out.println("SalsaException: An unknown error occur !");       
+        super();        
+        logger.error("SalsaException: An unknown error occur !");
     }
 
     public SalsaException(String msg) {
         super(msg);
-        System.out.println("SalsaException: " + msg);       
+        logger.error("SalsaException: " + msg);       
         
     }
 
     public SalsaException(String msg, Exception e) {        
         super(msg, e);
-        System.out.println("SalsaException: " + msg);        
+        logger.error("SalsaException: " + msg);        
         e.printStackTrace();
     }
 
     public SalsaException(Exception e) {
         super(e);
-        System.out.println("SalsaException: " + e.getMessage());        
+        logger.error("SalsaException: " + e.getMessage());        
         e.printStackTrace();
     }
 

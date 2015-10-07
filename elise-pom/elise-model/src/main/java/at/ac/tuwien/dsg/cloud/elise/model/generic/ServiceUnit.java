@@ -70,6 +70,9 @@ public class ServiceUnit implements HasUniqueId {
     protected String name;
 
     protected ServiceCategory category;
+    
+    // the concrete unit types to match with SALSA Instance type, e.g. os, software, tomcat, dockker
+    protected String unitType;
 
     /**
      * Blind properties, just let it be custom
@@ -115,6 +118,14 @@ public class ServiceUnit implements HasUniqueId {
         return this;
     }
 
+    public String getUnitType() {
+        return unitType;
+    }
+
+    public void setUnitType(String unitType) {
+        this.unitType = unitType;
+    }
+    
     @Override
     public String getId() {
         return id;

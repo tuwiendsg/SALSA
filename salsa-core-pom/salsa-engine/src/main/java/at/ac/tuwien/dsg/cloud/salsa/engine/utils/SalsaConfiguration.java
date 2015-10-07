@@ -50,11 +50,11 @@ public class SalsaConfiguration {
     }
 
     public static String getBrokerExport() {
-        return getGenericParameter("EXPORT_BROKER", "tcp://iot.eclipse.org:1883");
+        return getGenericParameter("EXPORT_BROKER", getBroker());
     }
 
     public static String getBrokerTypeExport() {
-        return getGenericParameter("EXPORT_BROKER_TYPE", "mqtt");
+        return getGenericParameter("EXPORT_BROKER_TYPE", getBrokerType());
     }
 
     private static String getSALSA_CENTER_IP() {

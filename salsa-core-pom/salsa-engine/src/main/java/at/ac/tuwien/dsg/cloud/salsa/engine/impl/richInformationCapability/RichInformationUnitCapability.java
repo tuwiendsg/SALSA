@@ -65,7 +65,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         logger.debug("Deploy instance {}/{}/{} before saving information to DB", serviceId, nodeId, instanceId);
         lowerCapa.deploy(serviceId, nodeId, instanceId);
 
-        logger.debug("Saving information into elise DB: {}/{}/{}",serviceId, nodeId, instanceId);
+        logger.debug("Saving information into elise DB: {}/{}/{}", serviceId, nodeId, instanceId);
         // save unit to ELISE        
         SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
 
@@ -98,26 +98,32 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         unitInst.hasExtra("salsaID", service.getId() + "/" + topo.getId() + "/" + unit.getId() + "/" + instance.getInstanceId());
 
         GlobalIdentification globalID = new GlobalIdentification(unitInst.getCategory());
+        globalID.setUuid(instance.getUuid().toString());
         LocalIdentification id = new LocalIdentification(unitInst.getCategory(), "SALSA");
         id.hasIdentification("id", unitInst.getExtra().get("salsaID"));
         globalID.addLocalIdentification(id);
         logger.debug("adding localIdentification for node: {}/{} with id: {}", nodeId, instanceId, globalID.toJson());
         unitInst.setIdentification(globalID.toJson());
-        logger.debug("Prepare to connect to EliseManager service");
+        logger.debug("Prepare to connect to EliseManager service: {}", EliseConfiguration.getRESTEndpointLocal());
         // TODO: add more local identification here to adapt with other management tool: SYBL, rtGovOps?
         // save the UnitInstance into the graph DB
         EliseManager eliseManager = (EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider()));
         logger.debug("It may be connectted or not ! Now cheking...");
-        
-        if (eliseManager != null){
+
+        if (eliseManager != null) {
             logger.debug("eliseManager is not null");
-            eliseManager.health();
+            try {
+                eliseManager.health();
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+                e.printStackTrace();
+            }
             logger.debug("Yes, we can check the health");
-            logger.debug("Checking ELISE connectivity: [" + eliseManager.health() +"]");
+            logger.debug("Checking ELISE connectivity: [" + eliseManager.health() + "]");
         } else {
             logger.error("Cannot contact to ELISE");
         }
-        UnitInstanceDAO unitInstanceDAO = (UnitInstanceDAO) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceDAO.class, Collections.singletonList(new JacksonJsonProvider()));        
+        UnitInstanceDAO unitInstanceDAO = (UnitInstanceDAO) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceDAO.class, Collections.singletonList(new JacksonJsonProvider()));
         if (unitInstanceDAO != null) {
             logger.debug("unitInstanceDao is not null, prepare to add");
             unitInstanceDAO.addUnitInstance(unitInst);
@@ -205,6 +211,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         } else {
             unitInst.setCategory(ServiceCategory.ExecutableApp);
         }
+        unitInst.setUnitType(unit.getType());
 
         List<at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.PrimitiveOperation> pos = ins.getPrimitive();
         boolean existedDeploy = false;

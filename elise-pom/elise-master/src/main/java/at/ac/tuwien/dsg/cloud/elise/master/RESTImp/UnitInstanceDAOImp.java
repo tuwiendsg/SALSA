@@ -64,9 +64,9 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
     }
 
     @Override
-    public UnitInstance getUnitInstanceByID(String uniqueID) {        
-        UnitInstance instance =  repo.findByUniqueID(uniqueID);
-        if (instance!=null){
+    public UnitInstance getUnitInstanceByID(String uniqueID) {
+        UnitInstance instance = repo.findByUniqueID(uniqueID);
+        if (instance != null) {
             logger.debug("Get unit instance in elise DB, found name={},category={}", instance.getName(), instance.getCategory());
         } else {
             logger.error("Cannot get instance with id: {}", uniqueID);
@@ -78,7 +78,7 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
     public UnitInstance getUnitInstanceByIDFullStack(String uniqueID) {
         logger.debug("Getting full stack information of instance id: {}", uniqueID);
         UnitInstance theInstance = repo.findByUniqueID(uniqueID);
-        if (theInstance == null){
+        if (theInstance == null) {
             return null;
         }
         Set<UnitInstance> hostedInstances = repo.findByHostOn(uniqueID);
@@ -86,7 +86,7 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
         for (UnitInstance i : hostedInstances) {
             logger.debug("Aggregrate hosted instance information: name={}, category={}", i.getName(), i.getCategory());
             DomainEntity entity = DomainEntity.fromJson(i.getDomainInfo());
-            if (entity != null){
+            if (entity != null) {
                 logger.debug("Found and adding domainEntity of unit instance name={}, category={}", i.getName(), i.getCategory());
                 full.hasDomainEntity(entity);
             } else {
@@ -122,8 +122,10 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
     public String addUnitInstance(UnitInstance unitInstance) {
         logger.debug("Save UnitInstance: " + unitInstance.getName());
 
-        String uuid = updateComposedIdentification(unitInstance);
-        logger.debug("The service is assign UUID: " + uuid);
+        if (unitInstance.getId() == null || unitInstance.getId().isEmpty()) {
+            String uuid = updateComposedIdentification(unitInstance);
+            logger.debug("The service is assign UUID: " + uuid);
+        }
 
         UnitInstance existedInstance = this.repo.findByUniqueID(unitInstance.getId());
 
@@ -187,7 +189,8 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
         logger.debug("Updating identification for instance: " + instance.getName());
         logger.debug("Local ID extracted: " + li.toJson());
 
-        GlobalIdentification global = collectorService.updateComposedIdentification(li);
+        // if there is no global ID exist, the instance.getId() will be the new ID
+        GlobalIdentification global = collectorService.updateComposedIdentification(li, instance.getId());
         logger.debug("Global ID after query: " + global.toJson());
         if (global == null) {
             this.logger.error("Cannot get the UUID of the composed-identification. That is impossible to happen !");

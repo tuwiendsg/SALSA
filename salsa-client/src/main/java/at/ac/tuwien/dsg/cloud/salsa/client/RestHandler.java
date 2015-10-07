@@ -34,11 +34,15 @@ public class RestHandler {
     }
 
     public static String callRest(String input_url, HttpVerb method, String data, String type, String accept) {
+        return callRest(input_url, method, data, type, accept, false);
+    }
+
+    public static String callRest(String input_url, HttpVerb method, String data, String type, String accept, boolean quiet) {
         try {
             URL url = new URL(input_url);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method.toString());
-            
+
             if (accept == null || accept.equals("")) {
                 conn.setRequestProperty("Accept", MediaType.TEXT_PLAIN);
             } else {
@@ -65,7 +69,9 @@ public class RestHandler {
             String result = "";
 
             while ((output = br.readLine()) != null) {
-                System.out.println(output);
+                if (!quiet) {
+                    System.out.println(output);
+                }
                 result += output;
             }
             conn.disconnect();

@@ -171,15 +171,15 @@ public class ConductorListener {
         logger.info("Conductor initiation is done !");
     }
 
-    private static void registerConductor() {
-        logger.info("Registering the collector: " + ConductorConfiguration.getConductorID());
-
-        MessagePublishInterface publish = factory.getMessagePublisher();
-        // TODO: Later, publish more detail about the conductor, e.g. list of collector
-        SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.discover, ConductorConfiguration.getConductorID(), EliseQueueTopic.NOTIFICATION_TOPIC, "", "");
-        publish.pushMessage(msg);
-        logger.info("Registering message is published, not sure an ELISE can received it ! Note: we need to unicast, or ID checking.");
-    }
+//    private static void registerConductor() {
+//        logger.info("Registering the collector: " + ConductorConfiguration.getConductorID());
+//
+//        MessagePublishInterface publish = factory.getMessagePublisher();
+//        // TODO: Later, publish more detail about the conductor, e.g. list of collector
+//        SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.discover, ConductorConfiguration.getConductorID(), EliseQueueTopic.NOTIFICATION_TOPIC, "", "");
+//        publish.pushMessage(msg);
+//        logger.info("Registering message is published, not sure an ELISE can received it ! Note: we need to unicast, or ID checking.");
+//    }
 
     // query all instance
     private static Set<UnitInstance> runAllUnitInstanceCollector(String query) {

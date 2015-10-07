@@ -5,6 +5,7 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.conductor.listener;
 
+import at.ac.tuwien.dsg.cloud.elise.collector.CollectorSettings.ConductorConfiguration;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -21,7 +22,7 @@ import org.slf4j.Logger;
 public class RunCollector {
 
     private static final Logger logger = ConductorConfiguration.logger;
-    private static final String mainFolder = ConductorConfiguration.ELISE_HOME + "/extensions";
+    private static final String mainFolder = ConductorConfiguration.getExtensionFolder();
     private static final String FILE_JAR_EXT = ".jar";
 
     public static void RunAllCollector() {

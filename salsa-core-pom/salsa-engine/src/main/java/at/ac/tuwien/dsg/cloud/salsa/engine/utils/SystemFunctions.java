@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -49,7 +50,7 @@ public class SystemFunctions {
     private static final Logger logger = EngineLogger.logger;
     static private String localIP = null;
 
-    public static String getEth0IPAddress() {        
+    public static String getEth0IPAddress() {
         if (localIP != null) {
             logger.debug("Return local IP address:" + localIP);
             return localIP;
@@ -65,28 +66,28 @@ public class SystemFunctions {
         }
         localIP = executeCommandGetOutput("/bin/bash /tmp/getEth0IPv4.sh", "/tmp", null);
         localIP = localIP.trim();
-        if (isIPv4Address(localIP)){
+        if (isIPv4Address(localIP)) {
             logger.debug("The {} is IPv4 !", localIP);
             return localIP;
         } else {
-            logger.debug("Cannot get IPv4, the command return: {}",localIP);
+            logger.debug("Cannot get IPv4, the command return: {}", localIP);
             localIP = null;
             return "localhost";
-        }        
+        }
     }
-    
+
     public static boolean isIPv4Address(String address) {
-    if (address.isEmpty()) {
-        return false;
+        if (address.isEmpty()) {
+            return false;
+        }
+        try {
+            Object res = InetAddress.getByName(address);
+            return (res.getClass().equals(Inet4Address.class));
+        } catch (final UnknownHostException ex) {
+            logger.error("Cannot get the host IP address. The captured address is: {}. Error: {}", address, ex.getMessage());
+            return false;
+        }
     }
-    try {
-        Object res = InetAddress.getByName(address);
-        return (res.getClass().equals(Inet4Address.class));
-    } catch (final UnknownHostException ex) {
-        logger.error("Cannot get the host IP address. The captured address is: {}. Error: {}", address, ex.getMessage());
-        return false;
-    }
-}
 
     public static void executeCommandSimple(String cmd, String workingDir) {
         logger.debug("Running command: {} in folder: {}", cmd, workingDir);
@@ -188,6 +189,41 @@ public class SystemFunctions {
             logger.error("Error when execute command. Error: " + e1);
         }
         return null;
+    }
+
+    /**
+     * Run a command and wait
+     *
+     * @param cmd The command to run
+     * @param workingDir The folder where the command is run
+     * @param executeFrom For logging message to the center of where to execute the command.
+     * @return
+     */
+    public static Process executeCommandAndForget(String cmd, String workingDir, String executeFrom) {
+        logger.debug("Execute command: " + cmd);
+        if (workingDir == null) {
+            workingDir = "/tmp";
+        }
+
+        String[] splitStr = cmd.split("\\s+");
+        ProcessBuilder pb = new ProcessBuilder(splitStr);
+        pb.directory(new File(workingDir));
+        pb = pb.redirectErrorStream(true);  // this is important to redirect the error stream to output stream, prevent blocking with long output
+        pb.redirectOutput(new File("/tmp/salsa.conductor.log"));
+        Map<String, String> env = pb.environment();
+        String path = env.get("PATH");
+        path = path + File.pathSeparator + "/usr/bin:/usr/sbin";
+        logger.debug("PATH to execute command: " + pb.environment().get("PATH"));
+        env.put("PATH", path);
+        Process p;
+        try {
+            p = pb.start();
+            return p;
+        } catch (IOException ex) {
+            logger.debug("Cannot run the command: " + cmd);
+            return null;
+        }
+
     }
 
     public static List<String> getEndPoints() throws MalformedObjectNameException,
