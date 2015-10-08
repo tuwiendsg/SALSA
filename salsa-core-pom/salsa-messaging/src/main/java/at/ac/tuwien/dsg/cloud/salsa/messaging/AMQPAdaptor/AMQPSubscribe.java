@@ -53,7 +53,28 @@ public class AMQPSubscribe extends AMQPConnector implements MessageSubscribeInte
             QueueingConsumer consumer = new QueueingConsumer(amqpChannel);
             amqpChannel.basicConsume(queueName, true, consumer);
             System.out.println("AMQP Subscribed. Exchange name: " + topic + ", queue name: " + queueName);
-            
+            new Thread(new ThreadQueueSubscribe(consumer, handler)).start();
+        } catch (IOException ex) {
+            logger.error("Cannot subscribe to topic: {}", topic, ex);
+        } catch (ShutdownSignalException | ConsumerCancelledException ex) {
+            logger.error("Interrupt during the subscribing to topic: {}", topic, ex);
+        }
+    }
+
+    private class ThreadQueueSubscribe implements Runnable {
+
+        SalsaMessageHandling handler;
+        QueueingConsumer consumer;
+        String topic;
+
+        ThreadQueueSubscribe(QueueingConsumer consumer, SalsaMessageHandling handler) {
+            this.handler = handler;
+            this.consumer = consumer;;
+        }
+
+        @Override
+        public void run() {
+            logger.debug("Inside the queue subscribing thread, process is continueing...");
             try {
                 while (true) {
                     logger.debug("Looping and waiting for the message ");
@@ -62,39 +83,36 @@ public class AMQPSubscribe extends AMQPConnector implements MessageSubscribeInte
                     String mm = new String(delivery.getBody());
                     logger.debug(mm);
                     ObjectMapper mapper = new ObjectMapper();
-                    SalsaMessage em = (SalsaMessage) mapper.readValue(mm, SalsaMessage.class); 
-                    new Thread(new HandlingThread(handler, em)).start();
-                    
+                    SalsaMessage em = (SalsaMessage) mapper.readValue(mm, SalsaMessage.class);
+                    this.topic = em.getTopic();
                     if (!topic.equals(SalsaMessageTopic.PIONEER_LOG)) {
                         logger.debug("A message arrived. From: " + em.getFromSalsa() + ". MsgType: " + em.getMsgType() + ". Payload: " + em.getPayload());
-                    }                    
+                    }
+                    new Thread(new HandlingThread(handler, em)).start();
                 }
             } catch (IOException ex) {
                 logger.error("Cannot subscribe to topic: {}", topic, ex);
             } catch (InterruptedException | ShutdownSignalException | ConsumerCancelledException ex) {
                 logger.error("Interrupt during the subscribing to topic: {}", topic, ex);
             }
-            
-            
-        } catch (IOException ex) {
-            logger.error("Cannot subscribe to topic: {}", topic, ex);
-        } catch (ShutdownSignalException | ConsumerCancelledException ex) {
-            logger.error("Interrupt during the subscribing to topic: {}", topic, ex);
         }
+
     }
-
+    
+    
+    
     private class HandlingThread implements Runnable {
-        SalsaMessageHandling handler;        
-        SalsaMessage em;        
+        SalsaMessageHandling handler;
+        SalsaMessage em;
 
-        HandlingThread(SalsaMessageHandling handler, SalsaMessage em) {
-            this.handler = handler;           
+        HandlingThread( SalsaMessageHandling handler, SalsaMessage em) {
+            this.handler = handler;
             this.em = em;
         }
 
         @Override
         public void run() {
-            logger.debug("Inside the queue subscribing thread, process is continueing...");
+            logger.debug("Inside the handling thread, process is continueing...");
             this.handler.handleMessage(em);
         }
 

@@ -71,6 +71,12 @@
             <version>2.0</version>    
             <artifactId>operating-system-collector</artifactId>                            
         </dependency>
+        
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>                                    
+            <version>2.0</version>    
+            <artifactId>govops-collector</artifactId>                            
+        </dependency>
     </dependencies>
     
     
@@ -127,7 +133,7 @@
                                 </artifactItem>
                                 
                                 <!-- Collectors -->
-<!--
+
                                 <artifactItem>
                                     <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>                                    
                                     <version>2.0</version>
@@ -163,7 +169,7 @@
                                     <artifactId>govops-collector</artifactId>
                                     <destFileName>govops-collector.jar</destFileName>
                                 </artifactItem>
-                                -->
+                                
                             </artifactItems>
 
                             <outputDirectory>${project.build.directory}</outputDirectory>
