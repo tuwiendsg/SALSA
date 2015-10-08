@@ -102,6 +102,7 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaXmlProcess;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -215,10 +216,14 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         LOGGER.debug("DELETING SERVICE: " + serviceId);
         boolean cleaned = wholeAppCapability.cleanService(serviceId);
 
+        EngineLogger.logger.debug("The lower capability return: {}", cleaned);
+        // wait and check if it is really cleaned
+
         String fileName = SalsaConfiguration.getServiceStorageDir() + "/" + serviceId;
         File file = new File(fileName);
         File datafile = new File(fileName.concat(this.dataFileExtension));
         File originalFile = new File(fileName.concat(".original"));
+
         if (originalFile.delete() && file.delete() && datafile.delete()) {
             if (cleaned) {// deregister service here
                 LOGGER.debug("Deregister service done: " + serviceId);
@@ -383,6 +388,18 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             String serviceId,
             String nodeId,
             int instanceId) throws SalsaException {
+        String salsaFile = SalsaConfiguration.getServiceStorageDir() + File.separator + serviceId + this.dataFileExtension;
+        CloudService service;
+        try {
+            service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+            ServiceUnit unit = service.getComponentById(nodeId);
+            if (unit.getReference() == null || unit.getReference().isEmpty()) {
+                return Response.status(200).entity("Do not destroy reference instance: " + serviceId + "/" + nodeId + "/" + instanceId).build();
+            }
+        } catch (JAXBException | IOException ex) {
+            return Response.status(500).entity("Cannot get instance information: " + serviceId + "/" + nodeId + "/" + instanceId).build();
+        }
+
         LOGGER.debug("Removing service instance: " + serviceId + "/" + nodeId + "/" + instanceId);
         unitCapability.remove(serviceId, nodeId, instanceId);
         LOGGER.debug("Removing service instance: " + serviceId + "/" + nodeId + "/" + instanceId + " - DONE!");
@@ -1011,15 +1028,23 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             ServiceInstance instance = nodeData.getInstanceById(instanceId);
             instance.queueAction(actionName);
             instance.setState(SalsaEntityState.STAGING_ACTION);
+            
+            // update to data file
+            SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
+            MutualFileAccessControl.releaseFile();
 
             String runByMe = "";
             if (nodeData.getPrimitiveByName(actionName) != null) {
                 runByMe = nodeData.getPrimitiveByName(actionName).getExecutionREF();
+            } else {
+                EngineLogger.logger.debug("There is no description for action: " + actionName + ". Pioneer will use its default operation.");
             }
             String preRunByMe;
 
             String newActionID = UUID.randomUUID().toString();
+            EngineLogger.logger.debug("Converting SALSA node type to category. nodetype: {}", nodeData.getType());
             ServiceCategory theCategory = InfoParser.mapOldAndNewCategory(SalsaEntityType.fromString(nodeData.getType()));
+            EngineLogger.logger.debug("Converted  SALSA node type to category. nodetype: {} == {}", nodeData.getType(), theCategory);
             // if the action name is undeploy, so undeploy. Only support artifact type of script. E.g., do not support stop docker
             if (actionName.equals("undeploy")) {
                 PrimitiveOperation stopAction = nodeData.getPrimitiveByName("stop");
@@ -1030,9 +1055,15 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
                 }
                 // to undeploy Docker, we send the DockerID into runByMe
                 if (theCategory == ServiceCategory.AppContainer) {
-                    SalsaInstanceDescription_Docker vm = (SalsaInstanceDescription_Docker) instance.getProperties().getAny();
-                    if (vm != null) {
-                        runByMe = vm.getInstanceId();
+                    EngineLogger.logger.debug("The instance {}/{}/{} is Docker, checking docker property", serviceId, nodeId, instanceId);
+                    if (instance.getProperties() != null) {
+                        SalsaInstanceDescription_Docker vm = (SalsaInstanceDescription_Docker) instance.getProperties().getAny();
+                        if (vm != null && vm.getInstanceId() != null) {
+                            runByMe = vm.getInstanceId();
+                            EngineLogger.logger.debug("The instance {}/{}/{} is Docker, send runByMe as docker id: {}", serviceId, nodeId, instanceId, runByMe);
+                        }
+                    } else {
+                        EngineLogger.logger.error("Cannot get the property of docker node: {}/{}/{}", serviceId, nodeId, instanceId);
                     }
                 }
                 // TODO: maybe support more things
@@ -1050,14 +1081,15 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
                 EngineLogger.logger.error("The pioneer on node {}/{}/{}/{} is not registered to SalsaEngine, deployment aborted !", SalsaConfiguration.getUserName(), serviceId, nodeId, instanceId);
                 return null;
             }
+            EngineLogger.logger.debug("Found a pioneer to execute this action: {}", pioneerID);
             SalsaMsgConfigureArtifact configCommand = new SalsaMsgConfigureArtifact(newActionID, actionName, pioneerID, SalsaConfiguration.getUserName(), serviceId, topoID, nodeId, instanceId, theCategory, "", runByMe, artifactTypeOfDeployment, "");
             ActionIDManager.addAction(newActionID, configCommand);
             SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_reconfigure, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.getPioneerTopicByID(pioneerID), "", configCommand.toJson());
             MessagePublishInterface publish = SalsaConfiguration.getMessageClientFactory().getMessagePublisher();
-            publish.pushMessage(msg);
-
-            SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
+            publish.pushMessage(msg);            
         } catch (JAXBException | IOException ex) {
+            EngineLogger.logger.error("Unable to queue action. " + ex.getMessage());
+            ex.printStackTrace();
             throw new ServicedataProcessingException(serviceId, ex);
         } finally {
             MutualFileAccessControl.releaseFile();

@@ -75,6 +75,10 @@ public class PioneerManager {
     public static PioneerInfo getPioneerInformation(String pioneerID) {
         return pioneerMap.get(pioneerID);
     }
+    
+    public static void removeAllPioneerInfo(){
+        pioneerMap.clear();
+    }
 
     // can return null
     public static String getPioneerID(String user, String service, String unit, int instance) {

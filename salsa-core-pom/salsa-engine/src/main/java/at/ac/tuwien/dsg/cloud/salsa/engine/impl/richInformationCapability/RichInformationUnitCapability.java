@@ -141,8 +141,15 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
 
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
+        if (service == null){
+            EngineLogger.logger.error("Cannot get service to removed: {}", serviceId);
+            return;
+        }
         ServiceUnit unit = service.getComponentById(nodeId);
-        ServiceInstance instance = unit.getInstanceById(instanceId);
+        if (unit == null){
+            EngineLogger.logger.error("Try to delete instance of unit {}/{} but get NULL data.", serviceId, nodeId);
+        }
+        ServiceInstance instance = unit.getInstanceById(instanceId);        
 
         if (instance != null) {
             if (unitInstanceDAO != null) {

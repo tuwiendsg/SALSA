@@ -78,7 +78,8 @@ public class SalsaXmlDataProcess {
                                                 SalsaInstanceDescription_Docker.class,
                                                 SalsaInstanceDescription_SystemProcess.class,
 						SalsaCapaReqString.class,
-						ServiceUnitRelationship.class);	// capability
+						ServiceUnitRelationship.class,
+                                                PrimitiveOperation.class);	// capability
 						
 		Unmarshaller um = context.createUnmarshaller();
 		CloudService serviceData = (CloudService) um.unmarshal(new FileReader(fileName));
@@ -94,7 +95,10 @@ public class SalsaXmlDataProcess {
 						ServiceInstance.class,
 						SalsaInstanceDescription_VM.class,
                                                 SalsaInstanceDescription_Docker.class,
-                                                SalsaInstanceDescription_SystemProcess.class);
+                                                SalsaInstanceDescription_SystemProcess.class,
+                                                SalsaCapaReqString.class,
+						ServiceUnitRelationship.class,
+                                                PrimitiveOperation.class);
 						
 		Unmarshaller um = context.createUnmarshaller();
 		StringReader reader = new StringReader(xml);

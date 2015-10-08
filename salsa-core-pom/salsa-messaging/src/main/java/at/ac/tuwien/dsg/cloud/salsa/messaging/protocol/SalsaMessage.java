@@ -59,9 +59,10 @@ public class SalsaMessage {
 
         // for SALSA core
         salsa_deploy, // first time deployment
-        salsa_reconfigure, // call a lifecycle action        
+        salsa_reconfigure, // call a lifecycle action                
         salsa_configurationStateUpdate, // update configuration stats, report error
         salsa_messageReceived, // simple notify that a message is received        
+        salsa_shutdownPioneer,
         salsa_log, // for sending log
 
         // for ELISE service        

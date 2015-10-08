@@ -6,6 +6,8 @@
 package at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI;
 
 import at.ac.tuwien.dsg.cloud.salsa.client.CommandHandler;
+import at.ac.tuwien.dsg.cloud.salsa.client.Main;
+import at.ac.tuwien.dsg.cloud.salsa.client.RestHandler;
 import org.kohsuke.args4j.Argument;
 
 /**
@@ -19,7 +21,11 @@ public class ConductorStart implements CommandHandler {
 
     @Override
     public void execute() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (pioneerID == null || pioneerID.equals("")){
+            RestHandler.callRest(Main.getSalsaAPI("/manager/conductor/start"), RestHandler.HttpVerb.GET, null, null, null);
+        } else {
+            // call rest
+        }
     }
 
     @Override

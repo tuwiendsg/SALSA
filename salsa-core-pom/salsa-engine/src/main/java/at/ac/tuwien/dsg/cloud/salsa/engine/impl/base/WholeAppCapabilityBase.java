@@ -19,6 +19,7 @@ package at.ac.tuwien.dsg.cloud.salsa.engine.impl.base;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
@@ -27,6 +28,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.WholeAppCapabilit
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineMisconfiguredException;
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.capabilityinterface.UnitCapabilityInterface;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.ServicedataProcessingException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.AppDescriptionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability.AsyncUnitCapability;
@@ -41,6 +43,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 
 /**
@@ -50,6 +54,7 @@ import javax.xml.bind.JAXBException;
 public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
 
     SalsaCenterConnector centerCon;
+    UnitCapabilityInterface asynCapa = new AsyncUnitCapability();
 
     {
         try {
@@ -113,24 +118,56 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
     @Override
     public boolean cleanService(String serviceId) throws SalsaException {        
         EventPublisher.publishINFO("Start to clean service ID " + serviceId);
+        centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         if (service == null) {
+            EngineLogger.logger.error("Cannot get the service information to delete its instances: {}", serviceId);
             throw new ServicedataProcessingException(serviceId);
         }
 
         List<ServiceUnit> suList = service.getAllComponentByType(SalsaEntityType.OPERATING_SYSTEM);
+        if (suList == null){
+            EngineLogger.logger.error("Cannot get the list ofthe VMs for service: {}", serviceId);
+            return false;
+        }
+        EngineLogger.logger.debug("Trying to clean {} machine", suList.size());
         for (ServiceUnit su : suList) {
-            if (su.getReference() == null) {
-                List<ServiceInstance> repLst = su.getInstancesList();
-                //List<ServiceInstance> repLst = service.getAllReplicaByType(SalsaEntityType.OPERATING_SYSTEM);
-                for (ServiceInstance rep : repLst) {
-                    if (rep.getProperties() != null) {
-                        VMCapabilityBase vmCapa = new VMCapabilityBase();
-                        vmCapa.remove(serviceId, su.getId(), rep.getInstanceId());
-                    }
+            EngineLogger.logger.debug("Checking to undeploy all instance of service unit: {}", su.getId());
+            if (su.getReference() == null || su.getReference().isEmpty()) {
+                List<ServiceInstance> repLst = su.getInstancesList();                
+                EngineLogger.logger.debug("The service unit {} has {} instances", su.getId(), repLst.size());
+                // Note: we must use this to ensure the dependency, so the higer stack will be removed before the VMs are removed
+                for(ServiceInstance i: repLst){                    
+                    EngineLogger.logger.debug("Calling API to remove instance: {}", i.getInstanceId());
+                    asynCapa.remove(serviceId, su.getId(), i.getInstanceId());
+//                    centerCon.removeOneInstance(serviceId, su.getId(), i.getInstanceId());
                 }
+            } else {
+                EngineLogger.logger.debug("Node {} is a reference, to overpass it.", su.getId());
             }
         }
+        
+        // wait until return true
+        int count = 30;
+        while (true){            
+            service = centerCon.getUpdateCloudServiceRuntime(serviceId);            
+            if (service == null){
+                break;
+            }
+            List<ServiceInstance> instances = service.getAllReplicaByType(SalsaEntityType.OPERATING_SYSTEM);
+            EngineLogger.logger.debug("Checking if all the instances of service {} are removed. There are {} left. Timeout in: {} times", serviceId, instances.size(), count);
+            if (instances.isEmpty() || count<1){
+                break;
+            }
+            try {                
+                // recheck every 3 second
+                count = count - 1;
+                Thread.sleep(3000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(WholeAppCapabilityBase.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         // unregister pioneers
         PioneerManager.removePioneerOfWholeService(SalsaConfiguration.getUserName(), serviceId);        
         EventPublisher.publishINFO("Clean service done: " + serviceId);
@@ -169,8 +206,7 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
             if (refUnit == null && unit.getMin() > 0) {		// not a reference and min > 0
                 EngineLogger.logger.debug("Orchestating: Creating top node: " + unit.getId());
                 // try to create minimum instance of software
-                for (int i = 0; i < unit.getMin(); i++) {
-                    AsyncUnitCapability asynCapa = new AsyncUnitCapability();
+                for (int i = 0; i < unit.getMin(); i++) {                    
                     asynCapa.deploy(serviceData.getId(), unit.getId(), i);
                     try {
                         Thread.sleep(100);

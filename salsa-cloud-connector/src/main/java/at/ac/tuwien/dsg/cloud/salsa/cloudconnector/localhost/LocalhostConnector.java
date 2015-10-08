@@ -85,25 +85,28 @@ public class LocalhostConnector implements CloudInterface {
 		} catch (FileNotFoundException e) {
 			logger.debug("Error when configuring pioneer on localhost");
 		}
-		return "localhost";
+                String id = "localhost-" + UUID.randomUUID().toString();
+		return id;
 	}
 
 	@Override
 	public void removeInstance(String instanceToTerminateID) throws ServiceDeployerException {
+            logger.debug("Localhost is unregister. Do nothing be cause the higher stack already handled.");
+            
 		// we do not remove the localhost but clean all pioneer on it, also remove all the docker
-		logger.debug("Killing all salsa-pioneer instances !");
-		runLocalhostCommandNoWaitingFor("pkill -f salsa-pioneer");
+		//logger.debug("Killing all salsa-pioneer instances !");
+		//runLocalhostCommandNoWaitingFor("pkill -f salsa-pioneer");
 		
-		String listOfContainer = runLocalhostCommand("sudo docker ps -a -q");
-		logger.debug("List of docker container: \n" + listOfContainer);
-		
-		Scanner scanner = new Scanner(listOfContainer);
-		while (scanner.hasNextLine()) {
-		  String line = scanner.nextLine();
-		  logger.debug("Removing docker container: " + line);
-		  runLocalhostCommandNoWaitingFor("sudo docker rm -f " + line);
-		}
-		scanner.close();				
+//		String listOfContainer = runLocalhostCommand("sudo docker ps -a -q");
+//		logger.debug("List of docker container: \n" + listOfContainer);
+//		
+//		Scanner scanner = new Scanner(listOfContainer);
+//		while (scanner.hasNextLine()) {
+//		  String line = scanner.nextLine();
+//		  logger.debug("Removing docker container: " + line);
+//		  runLocalhostCommandNoWaitingFor("sudo docker rm -f " + line);
+//		}
+//		scanner.close();				
 	}
 	
 	

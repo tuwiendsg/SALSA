@@ -91,13 +91,16 @@ public class SalsaEngineListener {
                         if (fullID.getActionName().equals("deploy")) {
                             try {
                                 EngineLogger.logger.debug("The deploy action for unit {}/{}/{}/{} is successful", fullID.getUser(), fullID.getService(), fullID.getUnit(), fullID.getInstance());
-                                updateInstanceCapability(fullID, state);
-                                ActionIDManager.removeAction(state.getActionID());
+                                updateInstanceCapability(fullID, state);                                
                             } catch (SalsaException ex) {
                                 EngineLogger.logger.error("Deployment action failed. ActionID: {}", fullID.getActionID(), ex);
                             }
+                            salsaState = SalsaEntityState.DEPLOYED;
+                        } else if (fullID.getActionName().equals("undeploy")){
+                            EngineLogger.logger.debug("The undeploy action for unit {}/{}/{}/{} is successful", fullID.getUser(), fullID.getService(), fullID.getUnit(), fullID.getInstance());
+                            salsaState = SalsaEntityState.UNDEPLOYED;
                         }
-                        salsaState = SalsaEntityState.DEPLOYED;
+                        ActionIDManager.removeAction(state.getActionID());
                         break;
                     }
                     case PROCESSING: {
@@ -186,7 +189,15 @@ public class SalsaEngineListener {
         });
 
         subscribe3.subscribe(SalsaMessageTopic.PIONEER_LOG);
-
+        
+//        try {
+//            // SYN pioneers
+//            EngineLogger.logger.debug("Syn pioneers ...");
+//            (new InternalManagement()).synPioneer();
+//        } catch (SalsaException ex) {
+//            EngineLogger.logger.debug("Cannot syn pioneers ... !");
+//        }
+//        EngineLogger.logger.info("SalsaEngine started!");
     }
 
     private void updateInstanceCapability(SalsaMsgConfigureArtifact confRequest, SalsaMsgConfigureState confState) throws SalsaException {

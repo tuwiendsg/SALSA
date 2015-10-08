@@ -111,6 +111,10 @@ public class Main {
                         publish_conf.pushMessage(reply);
                         logger.debug("Result is published !");
                         break;
+                    }                    
+                    case salsa_shutdownPioneer:{
+                        logger.debug("Received a message to shutdown this pioneer. Bye!");
+                        System.exit(0);
                     }
                     case salsa_configurationStateUpdate: {
                         break;
@@ -138,7 +142,7 @@ public class Main {
                 if (salsaMessage.getMsgType().equals(SalsaMessage.MESSAGE_TYPE.discover)) {
                     MessagePublishInterface publish = factory.getMessagePublisher();
                     publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_pioneerActivated, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT, null, PioneerConfiguration.getPioneerInfo().toJson()));
-                }                
+                }
             }
         });
         subscribeSynChannel.subscribe(SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT);
@@ -324,6 +328,7 @@ public class Main {
 
             // TODO: more detail model for specific DOCKER. Here we assume that AppContainer is DOCKER
             if (cmd.getUnitType() == ServiceCategory.AppContainer) {
+                logger.debug("This node is a docker container, start to remove it !");
                 DockerConfigurator docker = new DockerConfigurator();
                 docker.removeDockerContainer(cmd.getRunByMe().trim());
             } else {

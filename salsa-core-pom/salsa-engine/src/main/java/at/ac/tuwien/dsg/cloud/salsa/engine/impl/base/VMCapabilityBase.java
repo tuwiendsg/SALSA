@@ -17,7 +17,6 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.engine.impl.base;
 
-
 import java.io.File;
 import java.util.List;
 
@@ -28,6 +27,7 @@ import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.MultiCloudConnect
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
@@ -37,10 +37,16 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.IllegalConfigurationAPICallException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.VMProvisionException;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.VMRemoveException;
+import at.ac.tuwien.dsg.cloud.salsa.engine.services.InternalManagement;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SystemFunctions;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import java.io.IOException;
 import java.util.Scanner;
@@ -67,19 +73,18 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
     public VMCapabilityBase() {
         this.configFile = SalsaConfiguration.getCloudUserParametersFile();
     }
-    
-    
+
     static final long cooldown = 2000;
     static long lastDeploymentTime = (new java.util.Date()).getTime();
-    
+
     // This assume that a docker container will always created at least 2 seconds after previous one, on a same VM
     private void waitForCooledDown() {
         long currentTime = (new java.util.Date()).getTime();
         long between = currentTime - lastDeploymentTime;
         if (between < cooldown) {
-            EngineLogger.logger.debug("Waiting a "+(cooldown-between)+" miliseconds to reduce the cloud failure when create many VM at a time");
+            EngineLogger.logger.debug("Waiting a " + (cooldown - between) + " miliseconds to reduce the cloud failure when create many VM at a time");
             try {
-                Thread.sleep(cooldown-between);
+                Thread.sleep(cooldown - between);
             } catch (InterruptedException ex) {
                 lastDeploymentTime = currentTime;
             }
@@ -221,7 +226,7 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
         userDataBuffer.append("echo 'ELISE_CONDUCTOR_URL=").append(SalsaConfiguration.getConductorWeb()).append("' >> ").append(specificVariableFile).append(" \n");
 
         // download salsa-pioneer.jar
-        userDataBuffer.append("wget -qN --content-disposition ").append(SalsaConfiguration.getPioneerArtifact()).append(" \n");        
+        userDataBuffer.append("wget -qN --content-disposition ").append(SalsaConfiguration.getPioneerArtifact()).append(" \n");
 
         // install all package dependencies and ganglia
         SalsaInstanceDescription_VM tprop = instanceDesc;
@@ -250,19 +255,36 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
 
     @Override
     public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {
+        EngineLogger.logger.debug("Removing VM: {}/{}/{}....", serviceId, nodeId, instanceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
+        EngineLogger.logger.debug("Get Service info when undeploying: {}/{}/{}....", serviceId, nodeId, instanceId);
         ServiceUnit node = service.getComponentById(nodeId);
-
+    EngineLogger.logger.debug("Get node info when undeploying: {}/{}/{}....", serviceId, nodeId, instanceId);
+        
+        
         if (!node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
+            EngineLogger.logger.error("Remove VM on a non VM node: " + serviceId + "/" + nodeId + "/" + instanceId);
             throw new IllegalConfigurationAPICallException("Remove VM on a non VM node: " + serviceId + "/" + nodeId + "/" + instanceId);
         }
 
         ServiceInstance vm = node.getInstanceById(instanceId);
+        if (vm.getProperties()==null){
+            EngineLogger.logger.error("VM properties is null: " + serviceId + "/" + nodeId + "/" + instanceId);
+            throw new VMRemoveException(VMRemoveException.Cause.VM_DATA_NOT_FOUND);
+        }
         SalsaInstanceDescription_VM vmProps = (SalsaInstanceDescription_VM) vm.getProperties().getAny();
         if (vmProps == null) {
+            EngineLogger.logger.error("VM properties is null: " + serviceId + "/" + nodeId + "/" + instanceId);
             throw new VMRemoveException(VMRemoveException.Cause.VM_DATA_NOT_FOUND);
         }
 
+        EngineLogger.logger.debug("Sending request to shutdown the pioneer");
+        // send message to shutdown pioneer
+        String pioneerID = PioneerManager.getPioneerID(SalsaConfiguration.getUserName(), serviceId, nodeId, instanceId);
+        EngineLogger.logger.debug("Pioneer ID is: " + pioneerID);
+        (new InternalManagement()).shutdownPioneer(pioneerID);
+        
+        // maybe the pioneer is not shutdown yet, but it is not the problem :)
         MultiCloudConnector cloudCon = new MultiCloudConnector(EngineLogger.logger, configFile);
         String providerName = vmProps.getProvider();
         String cloudInstanceId = vmProps.getInstanceId();

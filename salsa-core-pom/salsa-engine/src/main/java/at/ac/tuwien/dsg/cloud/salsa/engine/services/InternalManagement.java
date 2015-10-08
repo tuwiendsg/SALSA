@@ -48,6 +48,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SystemFunctions;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
@@ -72,6 +73,7 @@ public class InternalManagement {
 
     /**
      * Get the list of all pioneers which are engaged with this salsa-engine
+     *
      * @return The human-readable text of pioneers
      */
     @GET
@@ -81,9 +83,20 @@ public class InternalManagement {
         return PioneerManager.describe();
     }
 
+    @GET
+    @Path("/pioneer/shutdown/{pioneerID}")
+    public String shutdownPioneer(@PathParam("pioneerID") String pioneerID) {
+        SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_shutdownPioneer, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.getPioneerTopicByID(pioneerID), "", "");
+        MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBroker(), SalsaConfiguration.getBrokerType());
+        MessagePublishInterface publish = factory.getMessagePublisher();
+        publish.pushMessage(msg);
+        return "Sent shutdown message to pioneer: " + pioneerID;
+    }
+
     /**
-     * Get the list of pending actions 
-     * @return 
+     * Get the list of pending actions
+     *
+     * @return
      */
     @GET
     @Path("/actions/cache")
@@ -93,7 +106,8 @@ public class InternalManagement {
 
     /**
      * Get meta information of salsa
-     * @return 
+     *
+     * @return
      */
     @GET
     @Path("/meta")
@@ -143,6 +157,7 @@ public class InternalManagement {
     @GET
     @Path("/syn")
     public String synPioneer() throws SalsaException {
+        PioneerManager.removeAllPioneerInfo();
         SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.discover, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT, "", "toDiscoverPioneer");
         MessagePublishInterface publish = SalsaConfiguration.getMessageClientFactory().getMessagePublisher();
         publish.pushMessage(msg);
@@ -188,8 +203,9 @@ public class InternalManagement {
 
     /**
      * This return the bootstrap script for the piooner. The script usually contains environment preparation, e.g. install suitable JRE
+     *
      * @return The content of the script file
-     * @throws SalsaException 
+     * @throws SalsaException
      */
     @GET
     @Path("/artifacts/pioneerbootstrap")
@@ -288,36 +304,38 @@ public class InternalManagement {
             return "Error when execute command to query monitoring information !";
         }
     }
-    
-    
-    
+
     //run and manage a single conductor on the main service
     static Process myConductor;
-    
+
     /**
      * Run a conductor. By default just copy all to /tmp and run
-     * @return 
+     *
+     * @return
      */
     @GET
     @Path("/conductor/start")
     public boolean startConductor() {
+        if (myConductor != null && myConductor.isAlive()) {
+            EngineLogger.logger.debug("Tend to start a conductor, but it is already running... Salsa will do nothing!");
+            return true;
+        }
         String fileName = "conductor.jar";
         String workingFolderName = "/tmp/conductor/";
         String extentionsFolderName = workingFolderName + "extentions/";
-        
+
         (new File(extentionsFolderName)).mkdirs();
         File localfile = new File(SalsaConfiguration.getConductorLocalFile());
-        File runFile = new File(workingFolderName+fileName);
+        File runFile = new File(workingFolderName + fileName);
         try {
             FileUtils.copyFile(localfile, runFile);
-            // TODO
+            EngineLogger.logger.debug("Starting a conductor ...");
+            myConductor = SystemFunctions.executeCommandAndForget("java -jar " + fileName, workingFolderName, SalsaConfiguration.getSalsaCenterEndpoint());
         } catch (IOException ex) {
-            LOGGER.error("Error when starting conductor: {}", ex.getMessage(), ex);            
+            LOGGER.error("Error when starting conductor: {}", ex.getMessage(), ex);
             return false;
         }
         return true;
     }
-    
-    
 
 }

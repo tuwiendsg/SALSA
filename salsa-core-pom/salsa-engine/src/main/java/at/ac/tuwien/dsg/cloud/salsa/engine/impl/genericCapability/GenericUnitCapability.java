@@ -184,19 +184,21 @@ public class GenericUnitCapability implements UnitCapabilityInterface {
 
         EngineLogger.logger.debug("It is TRUE, the dependency is now cleaned for the node: " + nodeId + "/" + instanceId);
 
-        // if the state is ALLOCATING, just remove the metadata
-        if (instance.getState().equals(SalsaEntityState.ALLOCATING)) {
-            EngineLogger.logger.warn("Removing metadata for node {},{},{}. However, the state is ALLOCATING, maybe the actual instance is created but will not be removed.", serviceId, nodeId, instanceId);
+        // if the state is not DEPLOYED, just remove the metadata
+        if (!instance.getState().equals(SalsaEntityState.DEPLOYED)) {
+            EngineLogger.logger.warn("Removing metadata for node {},{},{}. However, the state is {}, maybe the actual instance is created but will not be removed.", serviceId, nodeId, instanceId, instance.getState());
             centerCon.removeInstanceMetadata(serviceId, nodeId, instanceId);
             EngineLogger.logger.info("Removed generic node: {}/{}/{} with warning", serviceId, nodeId, instanceId);
             return;
         }
 
         // Call appropriate catapbility based on type
-        if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
+        if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {      
+            EngineLogger.logger.info("Node {}/{}/{} is an VM, calling VMCacapabilityBase...", serviceId, nodeId, instanceId);
             VMCapabilityBase vmCapability = new VMCapabilityBase();
             vmCapability.remove(serviceId, nodeId, instanceId);
         } else {
+            EngineLogger.logger.info("Node {}/{}/{} is an app, calling AppCapabilityBase...", serviceId, nodeId, instanceId);
             AppCapabilityBase appCapa = new AppCapabilityBase();
             appCapa.remove(serviceId, nodeId, instanceId);
         }

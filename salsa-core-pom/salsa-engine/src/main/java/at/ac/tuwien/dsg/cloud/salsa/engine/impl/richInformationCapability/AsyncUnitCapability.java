@@ -38,7 +38,8 @@ public class AsyncUnitCapability implements UnitCapabilityInterface {
 
     @Override
     public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {        
-        lowerCapa.remove(serviceId, nodeId, instanceId);
+        EngineLogger.logger.debug("Spawn a thread to remove: {}/{}/{}", serviceId, nodeId, instanceId);
+        new Thread(new asynRemoveInstances(serviceId, nodeId, instanceId)).start();        
     }
 
     private class asynSpawnInstances implements Runnable {
@@ -57,6 +58,31 @@ public class AsyncUnitCapability implements UnitCapabilityInterface {
             try {
                 EngineLogger.logger.debug("Thread is spawned for {}/{}/{} new... prepare to run the lower capability.", serviceId, nodeId, instanceId);
                 lowerCapa.deploy(serviceId, nodeId, instanceId);
+            } catch (SalsaException e) {
+                EngineLogger.logger.error(e.getMessage());
+            }
+        }
+
+    }
+    
+    
+    
+    private class asynRemoveInstances implements Runnable {
+
+        String serviceId, topoId, nodeId;
+        int instanceId;
+
+        asynRemoveInstances(String serviceId, String nodeId, int instanceId) {
+            this.serviceId = serviceId;
+            this.nodeId = nodeId;
+            this.instanceId = instanceId;
+        }
+
+        @Override
+        public void run() {
+            try {
+                EngineLogger.logger.debug("Thread is spawned for removing {}/{}/{}", serviceId, nodeId, instanceId);
+                lowerCapa.remove(serviceId, nodeId, instanceId);
             } catch (SalsaException e) {
                 EngineLogger.logger.error(e.getMessage());
             }
