@@ -194,13 +194,11 @@ public class GenericUnitCapability implements UnitCapabilityInterface {
 
         // Call appropriate catapbility based on type
         if (node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {      
-            EngineLogger.logger.info("Node {}/{}/{} is an VM, calling VMCacapabilityBase...", serviceId, nodeId, instanceId);
-            VMCapabilityBase vmCapability = new VMCapabilityBase();
-            vmCapability.remove(serviceId, nodeId, instanceId);
+            EngineLogger.logger.info("Node {}/{}/{} is an VM, calling VMCacapabilityBase...", serviceId, nodeId, instanceId);            
+            lowerCapaVM.remove(serviceId, nodeId, instanceId);
         } else {
-            EngineLogger.logger.info("Node {}/{}/{} is an app, calling AppCapabilityBase...", serviceId, nodeId, instanceId);
-            AppCapabilityBase appCapa = new AppCapabilityBase();
-            appCapa.remove(serviceId, nodeId, instanceId);
+            EngineLogger.logger.info("Node {}/{}/{} is an app, calling AppCapabilityBase...", serviceId, nodeId, instanceId);            
+            lowerCapaApp.remove(serviceId, nodeId, instanceId);
         }
         EngineLogger.logger.info("Removed generic node: {}/{}/{}", serviceId, nodeId, instanceId);
 

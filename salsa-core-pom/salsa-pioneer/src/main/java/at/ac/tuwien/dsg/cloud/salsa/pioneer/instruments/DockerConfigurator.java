@@ -263,8 +263,8 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
             logger.debug("Container spawn done, now trying to push Pioneer inside the container..");
 
             // and execute it
-            String pushingResult = SystemFunctions.executeCommandGetFirstLineOutput("sudo docker exec -d " + returnValue + " " + PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId) + "/pioneer_install.sh " + nodeId + " " + instanceId + " \n", PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), "");
-            logger.debug("Pushing result: " + pushingResult);
+            int returnCode = SystemFunctions.executeCommandGetReturnCode("sudo docker exec -d " + returnValue + " " + PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId) + "/pioneer_install.sh " + nodeId + " " + instanceId + " \n", PioneerConfiguration.getWorkingDirOfInstance(nodeId, instanceId), "");
+            logger.debug("Pushing pioneer command return code: " + returnCode);
         } else {
             logger.error("Container is failed to created. No pioneer is pushed.");
             return null;

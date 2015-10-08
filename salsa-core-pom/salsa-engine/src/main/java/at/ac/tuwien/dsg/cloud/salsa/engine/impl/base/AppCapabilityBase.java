@@ -309,28 +309,6 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
         centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.STAGING_ACTION, "Undeployment action is queued");
         centerCon.queueActions(serviceId, nodeId, instanceId, SalsaEntityActions.UNDEPLOY.getActionString());
         
-        // send message to pioneer to undeploy the software instance
-//        String pioneerID = PioneerManager.getPioneerIDForNode(SalsaConfiguration.getUserName(), serviceId, nodeId, instanceId, service);
-//        String undeployActionID = UUID.randomUUID().toString();        
-//        SalsaEntityType salsaType = SalsaEntityType.fromString(unit.getType());
-//        ServiceCategory category = ServiceCategory.ExecutableApp;        
-//        String runByMe="";
-//        switch (salsaType){
-//            case DOCKER: {
-//                category = ServiceCategory.AppContainer;                
-//                runByMe = instance.getDomainID();
-//                break;
-//            }  
-//            case OPERATING_SYSTEM: category = ServiceCategory.VirtualMachine;  break;
-//            default : category = ServiceCategory.SystemService;
-//        }
-//        SalsaMsgConfigureArtifact configCommand = new SalsaMsgConfigureArtifact(undeployActionID, "undeploy", pioneerID, SalsaConfiguration.getUserName(), serviceId, topologyId, nodeId, instanceId, category, pioneerID, runByMe, SalsaArtifactType.fromString(unit.getArtifactType()), "");
-//        ActionIDManager.addAction(undeployActionID, configCommand);
-//        SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_reconfigure, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.getPioneerTopicByID(pioneerID), "", "");
-//        MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBroker(), SalsaConfiguration.getBrokerType());
-//        MessagePublishInterface publish = factory.getMessagePublisher();
-//        publish.pushMessage(msg);
-        
         SalsaEntityState state = SalsaEntityState.STAGING_ACTION;
         int count = 0;
         while (state != SalsaEntityState.UNDEPLOYED && count < 100) {	// wait until pioneer finish its job and inform undeployed or just wait 5 mins
