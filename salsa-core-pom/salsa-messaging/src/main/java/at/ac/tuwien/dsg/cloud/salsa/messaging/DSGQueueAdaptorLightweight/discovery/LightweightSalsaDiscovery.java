@@ -8,7 +8,7 @@ package at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.discov
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.rSYBL.deploymentDescription.DeploymentDescription;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.rSYBL.deploymentDescription.DeploymentUnit;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.api.Discovery;
-import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.rabbitMq.discovery.ADiscovery;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.discovery.ADiscovery;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.Config;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,8 +39,13 @@ public class LightweightSalsaDiscovery extends ADiscovery implements Discovery {
 
 	@Override
 	public String discoverHost() {
+		return super.discoverHost(this.discoverHost(this.config.getServiceName()));
+	}
+
+	@Override
+	public String discoverHost(String serviceName) {
 		try {
-			URI statusUri = UriBuilder.fromPath(restCommand).build(this.config.getServiceName());
+			URI statusUri = UriBuilder.fromPath(restCommand).build(serviceName);
 			HttpGet method = new HttpGet(statusUri);
 			HttpHost host = new HttpHost(this.config.getSalsaIp(), this.config.getSalsaPort());
 			HttpClient client = new DefaultHttpClient();
@@ -60,7 +65,7 @@ public class LightweightSalsaDiscovery extends ADiscovery implements Discovery {
 						
 						for(DeploymentUnit unit: deploymentInfo.getDeployments()) {
 							if(unit.getServiceUnitID().contains("RabbitServer")) {
-								return super.discoverHost(unit.getAssociatedVM().get(0).getIp());
+								return unit.getAssociatedVM().get(0).getIp();
 							}
 						}
 					}
@@ -72,7 +77,7 @@ public class LightweightSalsaDiscovery extends ADiscovery implements Discovery {
 			//todo: log
 		}
 		
-		return super.discoverHost(null);
+		return null;
 	}
 
 }

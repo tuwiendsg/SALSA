@@ -24,6 +24,7 @@
         <module>standalone</module>
         <module>elise-pom</module>
         <module>salsa-client</module>
+        <module>salsa-discovery-service</module>
     </modules>
     
     <dependencyManagement>
