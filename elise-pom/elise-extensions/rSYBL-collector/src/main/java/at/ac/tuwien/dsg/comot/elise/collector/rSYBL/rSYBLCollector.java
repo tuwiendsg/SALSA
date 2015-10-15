@@ -9,6 +9,8 @@ import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.UnitInstanceCollector;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.comot.elise.collector.rSYBL.data.CloudService;
+import at.ac.tuwien.dsg.comot.elise.collector.rSYBL.data.ServiceTopology;
+import at.ac.tuwien.dsg.comot.elise.collector.rSYBL.data.ServiceUnit;
 import java.io.File;
 import java.util.Set;
 import java.util.logging.Level;
@@ -45,18 +47,27 @@ public class rSYBLCollector extends UnitInstanceCollector {
         String[] arrayOfServices = listOfServices.split(",");
         for (String s : arrayOfServices) {
             if (!s.trim().isEmpty()) {
-                String serviceDescString = RestHandler.callRest(endpoint + "/" + s+"/description", RestHandler.HttpVerb.GET, null, null, MediaType.APPLICATION_XML);
+                String serviceDescString = RestHandler.callRest(endpoint + "/" + s + "/description", RestHandler.HttpVerb.GET, null, null, MediaType.APPLICATION_XML);
                 File file = new File("C:\\file.xml");
-		JAXBContext jaxbContext;
+                JAXBContext jaxbContext;
                 try {
                     jaxbContext = JAXBContext.newInstance(CloudService.class);
+                    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+                    CloudService cloudService = (CloudService) jaxbUnmarshaller.unmarshal(file);
+                    if (cloudService==null){
+                        System.out.println("CloudService description is failed to marshall");
+                        continue;
+                    }
+                    for(ServiceTopology topo: cloudService.getTopology()){
+                        for(ServiceUnit unit:topo.getServiceunits()){
+                            if (unit.getDirective()!=null){
+                                // create unit instance here
+                            }
+                        }
+                    }
                 } catch (JAXBException ex) {
                     Logger.getLogger(rSYBLCollector.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		CloudService cloudService = (CloudService) jaxbUnmarshaller.unmarshal(file);
-		
             }
         }
         return null;
