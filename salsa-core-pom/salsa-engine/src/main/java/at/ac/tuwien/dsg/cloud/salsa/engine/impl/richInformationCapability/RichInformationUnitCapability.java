@@ -24,6 +24,7 @@ import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.IDType;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
@@ -95,12 +96,45 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             }
         }
 
-        unitInst.hasExtra("salsaID", service.getId() + "/" + topo.getId() + "/" + unit.getId() + "/" + instance.getInstanceId());
+        unitInst.hasExtra("salsaID", service.getId() + "/" + unit.getId() + "/" + instance.getInstanceId());
 
         GlobalIdentification globalID = new GlobalIdentification(unitInst.getCategory());
         globalID.setUuid(instance.getUuid().toString());
         LocalIdentification id = new LocalIdentification(unitInst.getCategory(), "SALSA");
-        id.hasIdentification("id", unitInst.getExtra().get("salsaID"));
+        logger.debug("Setting identification with salsaID=" + unitInst.getExtra().get("salsaID"));        
+        id.hasIdentification(IDType.SALSA_SERVICE.toString(), serviceId);
+        id.hasIdentification(IDType.SALSA_TOPOLOGY.toString(), serviceId+"/"+topo.getId());
+        id.hasIdentification(IDType.SALSA_UNIT.toString(), serviceId+"/"+nodeId);
+        id.hasIdentification(IDType.SALSA_INSTANCE.toString(), serviceId+"/"+nodeId+"/"+instanceId);
+        
+
+        // in the case it is a sensor (name started with sensor ??) and hosted on docker ==> we may have GovOps        
+        if (unit.getId().toLowerCase().startsWith("sensor") && !unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
+            logger.debug("Instance {} is a sensor, checking IP_PORT identification", unitInst.getExtra().get("salsaID"));
+            ServiceUnit hostedUnit = service.getComponentById(unit.getHostedId());
+            // get port map of Docker
+            if (hostedUnit != null && hostedUnit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
+                logger.debug("The sensor is hosted on node {}", hostedUnit.getId());
+                ServiceInstance hostedInstance = hostedUnit.getInstanceById(instance.getHostedId_Integer());
+                if (hostedInstance != null && hostedInstance.getProperties() != null) {
+                    logger.debug("debug1: marshalling docker description ........");
+                    SalsaInstanceDescription_Docker dockerDesp = (SalsaInstanceDescription_Docker) hostedInstance.getProperties().getAny();                    
+                    logger.debug("debug1: marshalling docker description ........ DONE !");
+                    // portmap should be 2102:10.99.0.21:2102   80:10.99.0.21:9080   4567:10.99.0.21:4567
+                    String portmap = dockerDesp.getPortmap() + " ";  
+                    logger.debug("Get port map: " + portmap);
+                    String portmap80 = portmap.substring(portmap.indexOf("80:") + 3, portmap.indexOf(" ", portmap.indexOf("80:")));
+                    logger.debug("{} will be {}", IDType.IP_PORT.toString(), portmap80);
+                    id.hasIdentification(IDType.IP_PORT.toString(), portmap80.trim());
+                } else {
+                    logger.debug("Do not find the instance or the instance properties of node {} that hosted node {}/{}", hostedUnit.getId(), unit.getId(), instance.getInstanceId());
+                }
+                 
+            } else {
+                logger.debug("The hostedUnit of the sensor {} is null or not a docker", unit.getId());
+            }
+        }
+
         globalID.addLocalIdentification(id);
         logger.debug("adding localIdentification for node: {}/{} with id: {}", nodeId, instanceId, globalID.toJson());
         unitInst.setIdentification(globalID.toJson());
@@ -141,15 +175,15 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
 
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
-        if (service == null){
+        if (service == null) {
             EngineLogger.logger.error("Cannot get service to removed: {}", serviceId);
             return;
         }
         ServiceUnit unit = service.getComponentById(nodeId);
-        if (unit == null){
+        if (unit == null) {
             EngineLogger.logger.error("Try to delete instance of unit {}/{} but get NULL data.", serviceId, nodeId);
         }
-        ServiceInstance instance = unit.getInstanceById(instanceId);        
+        ServiceInstance instance = unit.getInstanceById(instanceId);
 
         if (instance != null) {
             if (unitInstanceDAO != null) {

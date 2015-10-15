@@ -15,5 +15,7 @@
         <module>SystemServiceCollector</module>
         <module>operating-system-collector</module>
         <module>govops-collector</module>
+        <module>rSYBL-collector</module>
+        <module>MELA-collector</module>
     </modules>
 </project>

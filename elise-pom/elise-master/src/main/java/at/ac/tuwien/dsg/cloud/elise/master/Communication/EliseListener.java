@@ -65,16 +65,18 @@ public class EliseListener {
                         } else {
                             logger.debug("Created a client to elise service !!!");
                         }
-                        ConductorDescription des;
-                        try {
-                            des = ConductorDescription.fromJson(message.getPayload());
+
+                        ConductorDescription des = ConductorDescription.fromJson(message.getPayload());
+                        if (des != null) {
                             eliseService.registerConductor(des);
-                        } catch (IOException ex) {
-                            logger.error("Cannot parse ConductorDescription sent from ELISE: {}", conductorID, ex);
+                        } else {
+                            logger.error("Cannot parse ConductorDescription sent from ELISE: {}", conductorID);
                         }
+                        break;
                     }
                     case elise_queryProcessNotification: {
                         QueryManager.updateQueryStatus(message.getPayload());
+                        break;
                     }
                     default: {
                         logger.error("Do not know the notification message type: " + message.getMsgType());

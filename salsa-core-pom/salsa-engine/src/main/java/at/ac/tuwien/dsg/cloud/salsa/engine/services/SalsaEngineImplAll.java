@@ -260,7 +260,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         // update first the number + quantity		
         centerCon.updateNodeIdCounter(serviceId, correctTopologyID, nodeId, node.getIdCounter() + quantity);
         String returnVal = "";
-        for (int i = node.getIdCounter(); i < node.getIdCounter() + quantity; i++) {
+        for (int i = node.getIdCounter() + 1; i < node.getIdCounter() + quantity + 1; i++) {
             unitCapability.deploy(serviceId, nodeId, i);
             returnVal += i + " ";
         }
@@ -294,7 +294,6 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             service = centerCon.getUpdateCloudServiceRuntime(serviceId);
             unit = service.getComponentById(nodeId);
             instance = unit.getInstanceById(Integer.parseInt(instanceId));
-
         }
 
         ServiceUnit hostedUnit = service.getComponentById(unit.getHostedId());
@@ -393,7 +392,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         try {
             service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
             ServiceUnit unit = service.getComponentById(nodeId);
-            if (unit.getReference() == null || unit.getReference().isEmpty()) {
+            if (unit.getReference() != null && !unit.getReference().isEmpty()) {
                 return Response.status(200).entity("Do not destroy reference instance: " + serviceId + "/" + nodeId + "/" + instanceId).build();
             }
         } catch (JAXBException | IOException ex) {

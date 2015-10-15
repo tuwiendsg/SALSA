@@ -22,7 +22,7 @@ public class CollectorArtifactManager {
     static final String collectorsDir = EliseConfiguration.CURRENT_DIR + "/extensions/";
     static Logger logger = EliseConfiguration.logger;
 
-    public static Map<String, String> getCollector() {
+    public static Map<String, String> getCollectors() {
         final Properties properties = new Properties();
         try {
             File file = new File(EliseConfiguration.CURRENT_DIR + "/collectorList.properties");

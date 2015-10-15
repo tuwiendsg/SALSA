@@ -191,6 +191,10 @@ public class SalsaConfiguration {
         return getGenericParameterFromFile(fileNames, key, theDefault);
     }
 
+    public static String getConfigurationFile() {
+        return CURRENT_DIR + "/salsa.engine.properties";
+    }
+
     public static String getGenericParameterFromFile(String[] fileNames, String key, String theDefault) {
         Properties prop = new Properties();
         for (String file : fileNames) {

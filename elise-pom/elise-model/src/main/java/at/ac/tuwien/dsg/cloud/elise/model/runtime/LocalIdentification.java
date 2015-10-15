@@ -100,10 +100,10 @@ public class LocalIdentification {
         final LocalIdentification other = (LocalIdentification) obj;
 
         // if category are different, they are different !
-        if (this.category != other.category) {
-            System.out.println("Comparing localIDs: fail as categories are different");
-            return false;
-        }
+//        if (this.category != other.category) {
+//            System.out.println("Comparing localIDs: fail as categories are different");
+//            return false;
+//        }
 
         if (this.assignedBy.equals(other.assignedBy)) {
             System.out.println("Comparing localIDs: assigned by the same, compare the whole 2 maps");

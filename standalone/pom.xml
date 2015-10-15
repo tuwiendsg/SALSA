@@ -77,6 +77,17 @@
             <version>2.0</version>    
             <artifactId>govops-collector</artifactId>                            
         </dependency>
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>                                    
+            <version>2.0</version>    
+            <artifactId>rSYBL-collector</artifactId>                            
+        </dependency>
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>                                    
+            <version>2.0</version>    
+            <artifactId>MELA-collector</artifactId>                            
+        </dependency>
+        
     </dependencies>
     
     
@@ -168,6 +179,24 @@
                                     <outputDirectory>${project.build.directory}/extensions</outputDirectory>
                                     <artifactId>govops-collector</artifactId>
                                     <destFileName>govops-collector.jar</destFileName>
+                                </artifactItem>
+                                
+                                 <artifactItem>
+                                    <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>                                    
+                                    <version>2.0</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/extensions</outputDirectory>
+                                    <artifactId>rSYBL-collector</artifactId>
+                                    <destFileName>rSYBL-collector.jar</destFileName>
+                                </artifactItem>
+                                
+                                 <artifactItem>
+                                    <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>                                    
+                                    <version>2.0</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/extensions</outputDirectory>
+                                    <artifactId>MELA-collector</artifactId>
+                                    <destFileName>MELA-collector.jar</destFileName>
                                 </artifactItem>
                                 
                             </artifactItems>

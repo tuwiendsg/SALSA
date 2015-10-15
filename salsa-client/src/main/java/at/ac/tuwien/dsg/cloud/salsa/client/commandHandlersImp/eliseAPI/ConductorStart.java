@@ -24,13 +24,13 @@ public class ConductorStart implements CommandHandler {
         if (pioneerID == null || pioneerID.equals("")){
             RestHandler.callRest(Main.getSalsaAPI("/manager/conductor/start"), RestHandler.HttpVerb.GET, null, null, null);
         } else {
-            // call rest
+            System.out.println("Starting conductor via pioneer is not implemented yet !");
         }
     }
 
     @Override
     public String getCommandDescription() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "Start a conductor to collect the information";
     }
     
 }

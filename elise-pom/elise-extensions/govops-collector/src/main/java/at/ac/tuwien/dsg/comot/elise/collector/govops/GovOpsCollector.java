@@ -8,21 +8,21 @@ package at.ac.tuwien.dsg.comot.elise.collector.govops;
 import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.UnitInstanceCollector;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.IDType;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IoT.GatewayInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
+import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
@@ -34,6 +34,13 @@ public class GovOpsCollector extends UnitInstanceCollector {
     String govoptREST = "http://128.130.172.199:8080/APIManager";
 
     public GovOpsCollector() {
+        System.out.println("Start GovOps collector");
+        Date date = new Date();
+        try {
+            FileUtils.writeStringToFile(new File("/tmp/govopsRunCheck.txt"), "GovOps run at:" + date.toString());
+        } catch (IOException ex) {
+            Logger.getLogger(GovOpsCollector.class.getName()).log(Level.SEVERE, null, ex);
+        }
         this.govoptREST = readAdaptorConfig("endpoint");
     }
 
@@ -45,7 +52,7 @@ public class GovOpsCollector extends UnitInstanceCollector {
             for (UnitInstance ins : allInstances) {
                 System.out.println("Checking instance:" + ins.toJson());
                 DomainEntity entity = DomainEntity.fromJson(ins.getDomainInfo());
-                if (entity.getDomainID().equals(domainID)){
+                if (entity.getDomainID().equals(domainID)) {
                     System.out.println("Found instance: " + ins.getId());
                     return ins;
                 }
@@ -57,12 +64,14 @@ public class GovOpsCollector extends UnitInstanceCollector {
 
     @Override
     public Set<UnitInstance> collectAllInstance() {
-        Client orderClient = ClientBuilder.newClient();
-        WebTarget target = orderClient.target(this.govoptREST + "/governanceScope/globalScope");
-        GenericType<String> genericType = new GenericType<String>() {
-        };
-        String devicesJson = (String) target.request(new String[]{"application/json"}).get(genericType);
+//        Client orderClient = ClientBuilder.newClient();
+//        WebTarget target = orderClient.target(this.govoptREST + "/governanceScope/globalScope");
+//        GenericType<String> genericType = new GenericType<String>() {
+//        };
+//        String devicesJson = (String) target.request(new String[]{"application/json"}).get(genericType);
 
+        String devicesJson = RestHandler.callRest(this.govoptREST + "/governanceScope/globalScope", RestHandler.HttpVerb.GET, null, null, "application/json");
+        
         System.out.println("Get data from GovOps in Json: " + devicesJson);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -74,25 +83,29 @@ public class GovOpsCollector extends UnitInstanceCollector {
             return null;
         }
         Set<UnitInstance> units = new HashSet<>();
-        GatewayInfo gatewayInfo = new GatewayInfo();
 
         for (DeviceDTO d : devices) {
             UnitInstance u = new UnitInstance(d.getName(), ServiceCategory.Gateway);
+            GatewayInfo gatewayInfo = new GatewayInfo();
             gatewayInfo.setIp(d.getIpAddress());
             gatewayInfo.setDomainID(d.getId());
             if (d.getMeta().get("location") != null) {
                 gatewayInfo.setLocation(d.getMeta().get("location"));
             }
-            u.hasExtra("GovOptID", d.getId());            
+            u.hasExtra("GovOptID", d.getId());
 
             String idParam = d.getId().replace(".", "_");
             System.out.println("Query to: " + this.govoptREST + "/mapper/capabilities/list/" + idParam);
-            target = orderClient.target(this.govoptREST + "/mapper/capabilities/list/" + idParam);
-            Invocation.Builder builder = target.request(new String[]{"application/json"});
-
-            Response res = target.request(new String[]{"application/json"}).get();
-            if (res.getStatus() < 400) {
-                String capasStr = "{" + ((String) res.readEntity(String.class)).replace("}, ]", "} ]") + "}";
+//            target = orderClient.target(this.govoptREST + "/mapper/capabilities/list/" + idParam);
+//            
+//            Invocation.Builder builder = target.request(new String[]{"application/json"});
+//
+//            Response res = target.request(new String[]{"application/json"}).get();
+            
+            String allCapaResponse = RestHandler.callRest(this.govoptREST + "/mapper/capabilities/list/" + idParam, RestHandler.HttpVerb.GET, null, null, "application/json");
+            
+            if (allCapaResponse!=null && !allCapaResponse.isEmpty()) {
+                String capasStr = "{" + allCapaResponse.replace("}, ]", "} ]") + "}";
                 System.out.println("Parsing capabilities json: " + capasStr);
                 try {
                     DeviceCapabilities capas = (DeviceCapabilities) mapper.readValue(capasStr, DeviceCapabilities.class);
@@ -108,6 +121,7 @@ public class GovOpsCollector extends UnitInstanceCollector {
                     ex.printStackTrace();
                 }
             }
+            u.setDomainInfo(gatewayInfo.toJson());
             units.add(u);
         }
         return units;
@@ -116,12 +130,14 @@ public class GovOpsCollector extends UnitInstanceCollector {
     @Override
     public LocalIdentification identify(UnitInstance instance) {
         DomainEntity entity = DomainEntity.fromJson(instance.getDomainInfo());
-        String unitID = entity.getDomainID();        
+        String unitID = entity.getDomainID();
+        System.out.println("Get govops ID: " + unitID);
 //        String unitID = instance.findFeatureByName("govops-device").getMetricValueByName("id").getValue().toString();
         String ip = unitID.split(":")[0].trim();
         String port = unitID.split(":")[1].trim();
+        System.out.println("IP: "+ip+", PORT: " + port);
         LocalIdentification id = new LocalIdentification(ServiceCategory.Gateway, "rtGovOps");
-        id.hasIdentification("rtGovOpsID", unitID);
+        id.hasIdentification(IDType.IP_PORT.toString(), unitID);
 //        id.hasIdentification("rtGovOpsID", ip+":"+port);
 //        id.hasIdentification("ip", ip);
 //        id.hasIdentification("port", port);

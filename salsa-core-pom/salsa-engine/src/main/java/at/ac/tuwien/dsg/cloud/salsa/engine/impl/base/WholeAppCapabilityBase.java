@@ -131,6 +131,9 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
             return false;
         }
         EngineLogger.logger.debug("Trying to clean {} machine", suList.size());
+        
+        int numberOfReferenceNodes = 0;
+        
         for (ServiceUnit su : suList) {
             EngineLogger.logger.debug("Checking to undeploy all instance of service unit: {}", su.getId());
             if (su.getReference() == null || su.getReference().isEmpty()) {
@@ -144,6 +147,7 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
                 }
             } else {
                 EngineLogger.logger.debug("Node {} is a reference, to overpass it.", su.getId());
+                numberOfReferenceNodes += su.getInstancesList().size();
             }
         }
         
@@ -155,8 +159,8 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
                 break;
             }
             List<ServiceInstance> instances = service.getAllReplicaByType(SalsaEntityType.OPERATING_SYSTEM);
-            EngineLogger.logger.debug("Checking if all the instances of service {} are removed. There are {} left. Timeout in: {} times", serviceId, instances.size(), count);
-            if (instances.isEmpty() || count<1){
+            EngineLogger.logger.debug("Checking if all the instances of service {} are removed. There are {} left. Timeout in: {} times", serviceId, (instances.size() - numberOfReferenceNodes), count);
+            if (instances.isEmpty() || count<1 || (instances.size() - numberOfReferenceNodes <=0)){
                 break;
             }
             try {                

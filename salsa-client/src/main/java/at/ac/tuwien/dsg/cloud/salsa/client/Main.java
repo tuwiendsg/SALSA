@@ -5,12 +5,10 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.client;
 
-import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.ConductorPushCollector;
-import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.ConductorStart;
-import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.InstanceList;
-import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.InstanceQuery;
+
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.ConductorStop;
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.InstanceDeploy;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.InstanceRemove;
-import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.InstanceStatus;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.Meta;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.PrintHelp;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.ServiceList;
@@ -18,7 +16,11 @@ import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.ServiceRemove;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.ServiceStatus;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.ServiceSubmit;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.Syn;
-import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.UnitDeploy;
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.ConductorListCollector;
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.ConductorPushCollector;
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.ConductorStart;
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.InstanceInfoCollect;
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.InstanceQuery;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -55,7 +57,9 @@ public class Main {
         @SubCommand(name = "meta", impl = Meta.class),
         @SubCommand(name = "syn", impl = Syn.class),
         @SubCommand(name = "conductor-start", impl = ConductorStart.class),
+        @SubCommand(name = "conductor-stop", impl = ConductorStop.class),
         @SubCommand(name = "conductor-push-collector", impl = ConductorPushCollector.class),
+        @SubCommand(name = "conductor-list-collector", impl = ConductorListCollector.class),        
         @SubCommand(name = "help", impl = PrintHelp.class),
 
         @SubCommand(name = "service-submit", impl = ServiceSubmit.class),
@@ -63,16 +67,11 @@ public class Main {
         @SubCommand(name = "service-status", impl = ServiceStatus.class),
         @SubCommand(name = "service-remove", impl = ServiceRemove.class),
 
-        @SubCommand(name = "unit-deploy", impl = UnitDeploy.class),
-
-        @SubCommand(name = "instance-status", impl = InstanceStatus.class),
+        @SubCommand(name = "instance-deploy", impl = InstanceDeploy.class),
         @SubCommand(name = "instance-remove", impl = InstanceRemove.class),
-        @SubCommand(name = "instance-list", impl = InstanceList.class),
-        @SubCommand(name = "instance-query", impl = InstanceQuery.class),
-    
         
-    
-    })
+        @SubCommand(name = "instance-info-collect", impl = InstanceInfoCollect.class),
+        @SubCommand(name = "instance-query", impl = InstanceQuery.class),})
     CommandHandler command;
 
     static CmdLineParser parserOpt;
@@ -80,11 +79,17 @@ public class Main {
     public static void main(String[] args) throws CmdLineException {
 //        final String[] testArgs = {"-a", "128.130.172.215", "-p", "8888", "service-remove","test"};        
 //        final String[] testArgs = {"-a", "128.130.172.215", "-p", "8888", "service-submit", "/home/hungld/test/wordpress-tosca/workpress.tosca.xml"};
+        
+        if (args.length>0 && args[0].equals("list-commands")){
+            System.out.println(PrintHelp.getCommandList());
+            return;
+        }
+        
+        
         Main opts = new Main();
-        opts.loadConfig();
-        parserOpt = new CmdLineParser(opts);
+        opts.loadConfig();        
         try {
-            CmdLineParser parserOpt = new CmdLineParser(opts);
+            parserOpt = new CmdLineParser(opts);
             parserOpt.parseArgument(args);
             if (opts.command == null) {
                 System.out.println("Empty parameters !");

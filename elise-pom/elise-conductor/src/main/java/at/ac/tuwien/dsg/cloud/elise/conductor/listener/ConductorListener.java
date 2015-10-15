@@ -21,6 +21,7 @@ import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.CollectorDescript
 import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.ConductorDescription;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.EliseQueueTopic;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -60,15 +61,15 @@ public class ConductorListener {
         logger.info("Conductor is starting. Generated ID: " + ConductorConfiguration.getConductorID());
         // register conductor
         // registerConductor();
-
         // loading all the collectors
         logger.debug("Loading all the jar...");
         instanceCollectorClasses = loadAllJar();
-        if (instanceCollectorClasses.isEmpty()) {
+        if (instanceCollectorClasses == null || instanceCollectorClasses.isEmpty()) {
             logger.debug("No collector class is load at the begining !");
-        }
-        for (Class<? extends UnitInstanceCollector> c : instanceCollectorClasses) {
-            logger.debug("Collector class found: {}", c.getName());
+        } else {
+            for (Class<? extends UnitInstanceCollector> c : instanceCollectorClasses) {
+                logger.debug("Collector class found: {}", c.getName());
+            }
         }
 
         // Listening to the query
@@ -82,11 +83,13 @@ public class ConductorListener {
                 String fromElise = message.getFromSalsa();
                 String feedbackTopic = message.getFeedbackTopic();
                 logger.debug("Retrieve the request from ELISE: " + fromElise + ", feedback topic: " + feedbackTopic);
-                if (feedbackTopic.equals(this.answeredElises.get(fromElise))) {
-                    logger.debug("Neglect duplicated subscribing message from ELISE: " + fromElise + ", topic: " + feedbackTopic);
-                    return;
+                if (feedbackTopic != null) {
+                    if (feedbackTopic.equals(this.answeredElises.get(fromElise))) {
+                        logger.debug("Neglect duplicated subscribing message from ELISE: " + fromElise + ", topic: " + feedbackTopic);
+                        return;
+                    }
+                    this.answeredElises.put(fromElise, feedbackTopic);
                 }
-                this.answeredElises.put(fromElise, feedbackTopic);
 
                 logger.debug("Listenner got a control message from ELISE of type: " + message.getMsgType());
 
@@ -94,43 +97,33 @@ public class ConductorListener {
                 SalsaMessage resMsg = null;
                 switch (message.getMsgType()) {
                     case discover:
-                        logger.debug("  --- Basic conductDesp start");
-                        ConductorDescription conductDesp = new ConductorDescription(ConductorConfiguration.getConductorID(), ConductorConfiguration.getELISE_IP());
-                        logger.debug("  --- Basic conductDesp done");
-                        for (Class<? extends UnitInstanceCollector> c : instanceCollectorClasses) {
-                            try {
-                                logger.debug("  --- Trying to create instance");
-
-                                UnitInstanceCollector u = (UnitInstanceCollector) urlClassLoader.loadClass(c.getName()).newInstance();
-
-                                logger.debug("  --- Trying to create instance DONE");
-                                for (String s : u.readAllAdaptorConfig()) {
-                                    logger.debug("   ALL-CONFIG-ARRAY: {}", s);
-                                }
-                                logger.debug("  --- Trying to create instance and get all config DONE");
-                                conductDesp.hasCollector(new CollectorDescription(u.getName(), ConductorConfiguration.getConductorID(), "N/A", u.readAllAdaptorConfigOneString()));
-                                logger.debug("When creating conductor description, we have collector: {}", u.getName());
-                            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
-                                logger.error("Cannot create instance of class: {}", c.toString(), ex);
-                            }
-                        }
-                        response = conductDesp.toJson();
-                        logger.debug("Sending back the conductor description: {}", response);
-                        resMsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.discover, ConductorConfiguration.getConductorID(), feedbackTopic, null, response);
-                        break;
-                    case elise_queryInstance:
+                        register();
+                    case elise_queryManyInstances:
+                    case elise_querySingleInstance: {
                         // first send a notification to say that this ELISE is processing the info
                         MessagePublishInterface publish = factory.getMessagePublisher();
                         String queryUUID = message.getFeedbackTopic().substring(message.getFeedbackTopic().lastIndexOf(".") + 1);
                         publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_queryProcessNotification, ConductorConfiguration.getConductorID(), EliseQueueTopic.NOTIFICATION_TOPIC, null,
                                 new EliseQueryProcessNotification(queryUUID, message.getFromSalsa(), ConductorConfiguration.getConductorID(), EliseQueryProcessNotification.QueryProcessStatus.PROCESSING).toJson()));
-
-                        Set<UnitInstance> instances = runAllUnitInstanceCollector(message.getPayload());
+                        Set<UnitInstance> instances = null;
+                        if (message.getMsgType().equals(SalsaMessage.MESSAGE_TYPE.elise_queryManyInstances)) {
+                            logger.debug("Start to run all collector to collect instances with query string: {}", message.getPayload());
+                            instances = runAllUnitInstanceCollector(message.getPayload(), false);
+                        } else if (message.getMsgType().equals(SalsaMessage.MESSAGE_TYPE.elise_querySingleInstance)) {
+                            logger.debug("Start to run all collector to collect instance with id: {}", message.getPayload());
+                            instances = runAllUnitInstanceCollector(message.getPayload(), true);
+                        }
+                        if (instances == null) {
+                            logger.error("Error happens when run all collector !");
+                            break;
+                        }
                         UnitInstanceWrapper wrapper = new UnitInstanceWrapper(instances);
                         response = wrapper.toJson();
+                        logger.debug("This conductor got {} instances, wrapped !", instances.size());
 
                         resMsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_instanceInfoUpdate, ConductorConfiguration.getConductorID(), feedbackTopic, null, response);
                         break;
+                    }
                     case elise_queryProvider:
                         response = "{\"message\":\"Not support query provider yet\"}";
                         break;
@@ -144,15 +137,42 @@ public class ConductorListener {
                                 URL url = new URL(collector.getArtifactURL());
                                 File folder = new File(ConductorConfiguration.getCollectorFolder(collector.getName()));
                                 folder.mkdirs();
-                                File file = new File(ConductorConfiguration.getCollectorFolder(collector.getName()) +"/" + url.getFile());
+                                File file = new File(ConductorConfiguration.getCollectorFolder(collector.getName()) + "/" + collector.getName() + "-collector.jar");
                                 logger.debug("Ok, now downloading artifact of collector {}, from: {}, save to: {}", collector.getName(), url.toString(), file.getAbsolutePath());
                                 FileUtils.copyURLToFile(url, file);
+
+                                // create configuration file
+                                if (collector.getConfigurations() != null && !collector.getConfigurations().isEmpty()) {
+                                    StringBuilder sb = new StringBuilder();
+                                    for (String s : collector.getConfigurations()) {
+                                        logger.debug("Found a configuration: {}", s);
+                                        sb.append(s).append("\n");
+                                    }
+                                    File adaptorConf = new File(ConductorConfiguration.getCollectorFolder(collector.getName()) + "/adaptor.conf");
+                                    FileUtils.writeStringToFile(adaptorConf, sb.toString());
+                                }
                             } catch (MalformedURLException ex) {
+                                logger.error("The URL to download collector artifact is incorrect");
                                 ex.printStackTrace();
+                                break;
                             } catch (IOException ex) {
+                                logger.error("Cannot download artifact, or cannot copy to {}", ConductorConfiguration.getCollectorFolder(collector.getName()));
                                 ex.printStackTrace();
+                                break;
                             }
                         }
+                        // try to load all Jar again
+                        logger.debug("Trying to reload all collector ...");
+                        instanceCollectorClasses = loadAllJar();
+                        if (instanceCollectorClasses == null || instanceCollectorClasses.isEmpty()) {
+                            logger.debug("No collector class is load at the begining !");
+                        } else {
+                            logger.debug("All collector load done !");
+                            for (Class<? extends UnitInstanceCollector> c : instanceCollectorClasses) {
+                                logger.debug("  --> Collector class found: {}", c.getName());
+                            }
+                        }
+
                         break;
                     default:
                         response = "{\"error\":\"Unknown Elise command !\"}";
@@ -168,7 +188,43 @@ public class ConductorListener {
             }
         });
         subscriber.subscribe(EliseQueueTopic.QUERY_TOPIC);
-        logger.info("Conductor initiation is done !");
+
+        logger.debug("Registering with salsa-engine...");
+        register();
+
+        logger.info("Conductor initiation is done. ID: {}", ConductorConfiguration.getConductorID());
+    }
+
+    private static void register() {
+        logger.debug("  --- Basic conductDesp start");
+        String response;
+        SalsaMessage resMsg = null;
+        ConductorDescription conductDesp = new ConductorDescription(ConductorConfiguration.getConductorID(), ConductorConfiguration.getELISE_IP());
+        logger.debug("  --- Basic conductDesp done");
+        if (instanceCollectorClasses != null) {
+            for (Class<? extends UnitInstanceCollector> c : instanceCollectorClasses) {
+                try {
+                    logger.debug("  --- Trying to create instance");
+                    UnitInstanceCollector u = (UnitInstanceCollector) urlClassLoader.loadClass(c.getName()).newInstance();
+                    logger.debug("  --- Trying to create instance DONE");
+                    for (String s : u.readAllAdaptorConfig()) {
+                        logger.debug("   ALL-CONFIG-ARRAY: {}", s);
+                    }
+                    logger.debug("  --- Trying to create instance and get all config DONE");
+                    conductDesp.hasCollector(new CollectorDescription(u.getName(), ConductorConfiguration.getConductorID(), "N/A", u.readAllAdaptorConfigOneString()));
+                    logger.debug("When creating conductor description, we have collector: {}", u.getName());
+                } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
+                    logger.error("Cannot create instance of class: {}", c.toString(), ex);
+                }
+            }
+        }
+        response = conductDesp.toJson();
+        logger.debug("Sending back the conductor description: {}", response);
+        resMsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_conductorActivated, ConductorConfiguration.getConductorID(), SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT, "", response);
+        logger.debug("Sending message: " + resMsg.toJson());
+        MessagePublishInterface publisher = factory.getMessagePublisher();
+        logger.debug("Pushing registration data for conductor...");
+        publisher.pushMessage(resMsg);
     }
 
 //    private static void registerConductor() {
@@ -180,16 +236,42 @@ public class ConductorListener {
 //        publish.pushMessage(msg);
 //        logger.info("Registering message is published, not sure an ELISE can received it ! Note: we need to unicast, or ID checking.");
 //    }
-
     // query all instance
-    private static Set<UnitInstance> runAllUnitInstanceCollector(String query) {
+    private static Set<UnitInstance> runAllUnitInstanceCollector(String queryOrDomainID, boolean isSingleInstanceQuery) {
         logger.debug("Execute all the collectors...");
         Set<UnitInstance> unitInstances = new HashSet<>();
 
         for (Class<? extends UnitInstanceCollector> c : instanceCollectorClasses) {
             try {
+                logger.debug("Create collector object from class: {}", c.getName());
                 UnitInstanceCollector collector = c.newInstance();
-                unitInstances.addAll(collector.collectAllInstance());
+                
+                if (collector != null) {
+                    logger.debug("Now we have the collector: {}, classname:", collector.getName(), collector.getClass().getName());
+                } else {
+                    logger.error("No no, the class {} cannot be initiated", c.getName());
+                    continue;
+                }
+                if (isSingleInstanceQuery) {
+                    logger.debug("Calling collection for single ID");
+                    unitInstances.add(collector.collectInstanceByID(queryOrDomainID));
+                } else {
+                    logger.debug("Calling collection for all instances");
+                    try {
+                        logger.debug("debug call 1");
+                        Set<UnitInstance> tmpVar = collector.collectAllInstance();
+                        logger.debug("debug call 2");
+                        unitInstances.addAll(tmpVar);
+                        logger.debug("debug call 3");
+                    } catch (Exception e) {
+                        logger.debug("Error !");
+                        logger.error(e.getMessage(), e);
+                        logger.debug("End Error Message!");
+                        e.printStackTrace();
+                    }
+
+                }
+                logger.debug("All the collection has done !");
                 for (UnitInstance i : unitInstances) {
                     System.out.println("Adding unit instance: " + i.getName() + "/" + i.getId());
                     LocalIdentification si = collector.identify(i);
@@ -255,6 +337,10 @@ public class ConductorListener {
         logger.debug("Running all collector ...");
 
         String[] folders = listSubFolder(mainFolder);
+        if (folders == null) {
+            logger.debug("There is no collector module loaded...");
+            return null;
+        }
         logger.debug("Number of child folders: " + folders.length);
         List<URL> allURLs = new ArrayList<>();
 

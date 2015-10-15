@@ -58,6 +58,7 @@ public class IdentificationManager {
         for (GlobalIdentification ite : currentDB.getIdentifications()) {
             if (ite.addLocalIdentification(entityComposedID)) {
                 existGlobal = ite;
+                break;
             }
         }
 

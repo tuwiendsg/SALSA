@@ -75,6 +75,10 @@ public interface EliseManager {
     @Path("/conductor/salsa/{pioneerID}")
     public void runConductorViaSalsa(@PathParam("conductorID") String pioneerID);    
     
+    /**
+     * Send a message to inject a collector with name and configure into the conductor with ID This function publish message to all the conductor, which the
+     * conductor will filter later.
+     */
     @POST
     @Path("/conductor/{conductorID}/collector/{collectorName}")
     @Consumes(MediaType.TEXT_PLAIN)
@@ -85,6 +89,10 @@ public interface EliseManager {
     @Path("/collector/{collectorName}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response getCollectorArtifact(@PathParam("collectorName") String collectorName);
+    
+    @GET
+    @Path("/collector")    
+    public String getCollectorNameList();
     
     
     @POST

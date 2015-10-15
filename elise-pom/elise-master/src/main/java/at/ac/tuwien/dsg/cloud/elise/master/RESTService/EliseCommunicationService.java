@@ -76,6 +76,7 @@ public class EliseCommunicationService {
 
     /**
      * Get the information of all conductors
+     *
      * @return the number of conductors
      */
     @GET
@@ -89,18 +90,19 @@ public class EliseCommunicationService {
 
             @Override
             public void handleMessage(SalsaMessage salsaMessage) {
-                try {
-                    ConductorDescription conductor = ConductorDescription.fromJson(salsaMessage.getPayload());
-                    eliseCounter += 1;
-                    logger.debug("Get a response from ELISE: " + eliseCounter + "," + conductor.toJson());
-                    conductors.add(conductor);
-                } catch (IOException ex) {
-                    logger.error("Cannot unmarshall the ConductorDescription: {}", salsaMessage.getPayload(), ex);
+
+                ConductorDescription conductor = ConductorDescription.fromJson(salsaMessage.getPayload());
+                if (conductor == null) {
+                    logger.error("Cannot unmarshall the ConductorDescription: {}", salsaMessage.getPayload());
+                    return;
                 }
+                eliseCounter += 1;
+                logger.debug("Get a response from ELISE: " + eliseCounter + "," + conductor.toJson());
+                conductors.add(conductor);
             }
         });
         sub.subscribe(EliseQueueTopic.getFeedBackTopic(uuid));
-        MessagePublishInterface pub = factory.getMessagePublisher();        
+        MessagePublishInterface pub = factory.getMessagePublisher();
 
         pub.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.discover, EliseConfiguration.getEliseID(), EliseQueueTopic.QUERY_TOPIC, EliseQueueTopic.getFeedBackTopic(uuid), ""));
 
@@ -118,26 +120,6 @@ public class EliseCommunicationService {
         //sub.disconnect();
         return result;
     }
-    
-    /**
-     * Send a message to inject a collector with name and configure into the conductor with ID
-     * This function publish message to all the conductor, which the conductor will filter later.
-     * @param config the configuration of the collector (via POST data)
-     * @param conductorID the conductor ID 
-     * @param collectorName the name of the collector to add
-     */
-    @POST
-    @Path("/addCollector/{conductorID}/addcollector/{collectorName}")
-    @Consumes(MediaType.TEXT_PLAIN)
-    @Produces(MediaType.TEXT_PLAIN)
-    public void addCollector(String config, @PathParam("conductorID") String conductorID, @PathParam("conductorID") String collectorName){
-        MessagePublishInterface publish = factory.getMessagePublisher();
-        // get artifact
-        
-        
-        CollectorsForConductor cfc = new CollectorsForConductor(conductorID);
-        publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_addCollector, EliseConfiguration.getEliseID(), EliseQueueTopic.QUERY_TOPIC, "", cfc.toJson()));
-    }
 
     static long startTime;
     int count;
@@ -145,6 +127,7 @@ public class EliseCommunicationService {
 
     /**
      * Send a query to collect the information
+     *
      * @param query a query to specify which information to be collected
      * @param isUpdated the information will be update continously
      * @param isNotified the change will be notify to the topic: at.ac.tuwien.dsg.elise.notification
@@ -154,16 +137,15 @@ public class EliseCommunicationService {
     @Path("/queryUnitInstance")
     @Consumes(MediaType.APPLICATION_JSON)
     public String querySetOfInstance(EliseQuery query,
-            @DefaultValue("false") @QueryParam("isUpdated") final boolean isUpdated, 
-            @DefaultValue("false") @QueryParam("notify") final boolean isNotified) {  
+            @DefaultValue("false") @QueryParam("isUpdated") final boolean isUpdated,
+            @DefaultValue("false") @QueryParam("notify") final boolean isNotified) {
         logger.debug("Broadcast a query to gather instances... Query: " + query.toString());
         final String uuid = UUID.randomUUID().toString();
         logger.debug("UUID of the request: " + uuid);
 
         // clean local DB
-        EliseManager eliseDB = (EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider()));
-        eliseDB.cleanDB();
-
+        //EliseManager eliseDB = (EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider()));
+        //eliseDB.cleanDB();
         count = 0;
         startTime = Calendar.getInstance().getTimeInMillis();
         rtLogFile = ("log/rt_log_" + startTime + "." + uuid);
@@ -173,81 +155,116 @@ public class EliseCommunicationService {
 
             @Override
             public void handleMessage(SalsaMessage message) {
-                String fromElise = message.getFromSalsa();
-                String fromTopic = message.getTopic();
-                long originTime = message.getTimeStamp();
-
-                String jsonHeader = "Count, FromElise, responseTime, updateTime \n";
-                //increateCountAndWriteData(jsonHeader);
-
-                logger.debug("Retrieve the answer from ELISE: " + fromElise + ", topic: " + fromTopic + ", orginial timestamp: " + originTime);
-                if (message.getFromSalsa().equals(EliseConfiguration.getEliseID())) {
-                    logger.debug("Message from the same one, no need to add: " + fromElise + ", topic: " + fromTopic);
-                    this.answeredElises.put(fromElise, fromTopic);
-                    // however, still need to update query status to Done (local update)                              
-                    QueryManager.updateQueryStatus(new EliseQueryProcessNotification(uuid, EliseConfiguration.getEliseID(), fromElise, EliseQueryProcessNotification.QueryProcessStatus.DONE));
-                    return;
-                }
-
-                if (fromTopic != null) {
-                    if (fromTopic.equals(this.answeredElises.get(fromElise))) {
-                        logger.debug("Duplicate subscribing message from ELISE: " + fromElise + ", topic: " + fromTopic);
-                        return;
-                    }
-                    this.answeredElises.put(fromElise, fromTopic);
-                }
-                ObjectMapper mapper = new ObjectMapper();
-                JavaType javatype = mapper.getTypeFactory().constructCollectionType(Set.class, UnitInstance.class);
-                try {
-                    UnitInstanceWrapper wrapper = (UnitInstanceWrapper) mapper.readValue(message.getPayload(), UnitInstanceWrapper.class);
-                    Set<UnitInstance> uis = wrapper.getUnitInstances();
-                    logger.debug("Recieved " + uis.size() + " unitinstance. Saving....");
-                    UnitInstanceDAO unitInstanceDAO = (UnitInstanceDAO) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceDAO.class, Collections.singletonList(new JacksonJsonProvider()));
-                    for (UnitInstance u : uis) {
-                        unitInstanceDAO.addUnitInstance(u);
-                    }
-                    long now = Calendar.getInstance().getTimeInMillis();
-                    long responseTime = now - startTime;
-                    long updateTime = now - message.getTimeStamp();
-
-                    String jsonLine = padLeft(count + "", 3) + ","
-                            + padLeft(message.getFromSalsa(), 20) + ","
-                            + padLeft(responseTime + "", 7) + ","
-                            + updateTime + "\n";
-
-                    //String jsonLine = count + "," + message.getFromElise() + "," + responseTime + "," + updateTime + "\n";
-                    logger.debug("Adding done in: " + responseTime + " ms, for " + uis.size() + " instances");
-                    increateCountAndWriteData(jsonLine);
-                } catch (IOException ex) {
-                    java.util.logging.Logger.getLogger(EliseCommunicationService.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-                if (isNotified) {   // notify that a ELISE has answered. record the answer time
-                    MessagePublishInterface pub = factory.getMessagePublisher();
-                    // this is the response, so its "fromTopic" is the feedback topic of the query
-                    SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.discover, EliseConfiguration.getEliseID(), EliseQueueTopic.NOTIFICATION_TOPIC, "", buildNotification(fromTopic, originTime));
-                    //pub.pushCustomData(buildNotification(fromTopic, originTime), EliseQueueTopic.NOTIFICATION_TOPIC);
-
-//                    long currentTimeStamp = System.currentTimeMillis();
-//                    long derivation = currentTimeStamp - originTime;                    
-                }
-
-                // update query status to Done (local update)                              
-                QueryManager.updateQueryStatus(new EliseQueryProcessNotification(uuid, EliseConfiguration.getEliseID(), fromElise, EliseQueryProcessNotification.QueryProcessStatus.DONE));
-
+                toHandleMessageAndSaveData(message, answeredElises, isNotified, uuid);
             }
         });
 
         logger.debug("Subscribing the topic: " + EliseQueueTopic.getFeedBackTopic(uuid));
         sub.subscribe(EliseQueueTopic.getFeedBackTopic(uuid));
         logger.debug("Subscribe to feedback topic done, now push request ...");
-        MessagePublishInterface pub = factory.getMessagePublisher();        
-        
-        pub.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_queryInstance, EliseConfiguration.getEliseID(), EliseQueueTopic.QUERY_TOPIC, EliseQueueTopic.getFeedBackTopic(uuid), query.toJson()));
+        MessagePublishInterface pub = factory.getMessagePublisher();
+
+        pub.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_queryManyInstances, EliseConfiguration.getEliseID(), EliseQueueTopic.QUERY_TOPIC, EliseQueueTopic.getFeedBackTopic(uuid), query.toJson()));
         logger.debug("Push message done, just waiting for the message ...");
         //unsubscribe(sub, 120);
 
         return uuid;
+    }
+
+    // the collector module can execute with single domainID, but from this level, it is imposible?
+    // must use the querySetOfInstance.
+    @Deprecated
+    @POST
+    @Path("/queryUnitInstance/{domainID}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String querySingleInstance(@PathParam("domainID") String instanceID,
+            @DefaultValue("false") @QueryParam("isUpdated") final boolean isUpdated,
+            @DefaultValue("false") @QueryParam("notify") final boolean isNotified) {
+        String uuid = UUID.randomUUID().toString();
+        MessageSubscribeInterface sub = factory.getMessageSubscriber(new SalsaMessageHandling() {
+            Map<String, String> answeredElises = new HashMap();
+
+            @Override
+            public void handleMessage(SalsaMessage message) {
+                toHandleMessageAndSaveData(message, answeredElises, isNotified, uuid);
+            }
+        });
+
+        logger.debug("Subscribing the topic: " + EliseQueueTopic.getFeedBackTopic(uuid));
+        sub.subscribe(EliseQueueTopic.getFeedBackTopic(uuid));
+        
+        logger.debug("Subscribe to feedback topic done, now push request ...");
+        MessagePublishInterface pub = factory.getMessagePublisher();
+
+        pub.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_querySingleInstance, EliseConfiguration.getEliseID(), EliseQueueTopic.QUERY_TOPIC, EliseQueueTopic.getFeedBackTopic(uuid), instanceID));
+        logger.debug("Push message done, just waiting for the message ...");
+
+        return uuid;
+    }
+
+    private void toHandleMessageAndSaveData(SalsaMessage message, Map<String, String> answeredElises, boolean isNotified, String uuid) {
+        String fromElise = message.getFromSalsa();
+        String fromTopic = message.getTopic();
+        long originTime = message.getTimeStamp();
+
+        String jsonHeader = "Count, FromElise, responseTime, updateTime \n";
+        //increateCountAndWriteData(jsonHeader);
+
+        logger.debug("Retrieve the answer from ELISE: " + fromElise + ", topic: " + fromTopic + ", orginial timestamp: " + originTime);
+        if (message.getFromSalsa().equals(EliseConfiguration.getEliseID())) {
+            logger.debug("Message from the same one, no need to add: " + fromElise + ", topic: " + fromTopic);
+            answeredElises.put(fromElise, fromTopic);
+            // however, still need to update query status to Done (local update)                              
+            QueryManager.updateQueryStatus(new EliseQueryProcessNotification(uuid, EliseConfiguration.getEliseID(), fromElise, EliseQueryProcessNotification.QueryProcessStatus.DONE));
+            return;
+        }
+
+        if (fromTopic != null) {
+            if (fromTopic.equals(answeredElises.get(fromElise))) {
+                logger.debug("Duplicate subscribing message from ELISE: " + fromElise + ", topic: " + fromTopic);
+                return;
+            }
+            answeredElises.put(fromElise, fromTopic);
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        JavaType javatype = mapper.getTypeFactory().constructCollectionType(Set.class, UnitInstance.class);
+        try {
+            UnitInstanceWrapper wrapper = (UnitInstanceWrapper) mapper.readValue(message.getPayload(), UnitInstanceWrapper.class);
+            Set<UnitInstance> uis = wrapper.getUnitInstances();
+            logger.debug("Recieved " + uis.size() + " unitinstance. Saving....");
+            UnitInstanceDAO unitInstanceDAO = (UnitInstanceDAO) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceDAO.class, Collections.singletonList(new JacksonJsonProvider()));
+            for (UnitInstance u : uis) {
+                unitInstanceDAO.addUnitInstance(u);
+            }
+            long now = Calendar.getInstance().getTimeInMillis();
+            long responseTime = now - startTime;
+            long updateTime = now - message.getTimeStamp();
+
+            String jsonLine = padLeft(count + "", 3) + ","
+                    + padLeft(message.getFromSalsa(), 20) + ","
+                    + padLeft(responseTime + "", 7) + ","
+                    + updateTime + "\n";
+
+            //String jsonLine = count + "," + message.getFromElise() + "," + responseTime + "," + updateTime + "\n";
+            logger.debug("Adding done in: " + responseTime + " ms, for " + uis.size() + " instances");
+            increateCountAndWriteData(jsonLine);
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(EliseCommunicationService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (isNotified) {   // notify that a ELISE has answered. record the answer time
+            MessagePublishInterface pub = factory.getMessagePublisher();
+            // this is the response, so its "fromTopic" is the feedback topic of the query
+            SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.discover, EliseConfiguration.getEliseID(), EliseQueueTopic.NOTIFICATION_TOPIC, "", buildNotification(fromTopic, originTime));
+            //pub.pushCustomData(buildNotification(fromTopic, originTime), EliseQueueTopic.NOTIFICATION_TOPIC);
+
+//                    long currentTimeStamp = System.currentTimeMillis();
+//                    long derivation = currentTimeStamp - originTime;                    
+        }
+
+        // update query status to Done (local update)                              
+        QueryManager.updateQueryStatus(new EliseQueryProcessNotification(uuid, EliseConfiguration.getEliseID(), fromElise, EliseQueryProcessNotification.QueryProcessStatus.DONE));
+
     }
 
     private void unsubscribe(final MessageSubscribeInterface sub, long delayInSecond) {

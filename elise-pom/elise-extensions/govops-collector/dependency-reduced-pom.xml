@@ -23,6 +23,13 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <artifactSet>
+                <excludes>
+                  <exclude>org.springframework*:*</exclude>
+                  <exclude>org.neo4j:*</exclude>
+                  <exclude>org.aspectj:*</exclude>
+                </excludes>
+              </artifactSet>
               <transformers>
                 <transformer>
                   <mainClass>at.ac.tuwien.dsg.comot.elise.collector.govops.GovOpsCollector</mainClass>

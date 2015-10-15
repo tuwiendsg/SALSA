@@ -17,6 +17,8 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.engine.services;
 
+import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.ConductorDescription;
+import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseManager;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
@@ -42,11 +44,14 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.log4j.spi.LoggingEvent;
+import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
 /**
  *
@@ -91,12 +96,12 @@ public class SalsaEngineListener {
                         if (fullID.getActionName().equals("deploy")) {
                             try {
                                 EngineLogger.logger.debug("The deploy action for unit {}/{}/{}/{} is successful", fullID.getUser(), fullID.getService(), fullID.getUnit(), fullID.getInstance());
-                                updateInstanceCapability(fullID, state);                                
+                                updateInstanceCapability(fullID, state);
                             } catch (SalsaException ex) {
                                 EngineLogger.logger.error("Deployment action failed. ActionID: {}", fullID.getActionID(), ex);
                             }
                             salsaState = SalsaEntityState.DEPLOYED;
-                        } else if (fullID.getActionName().equals("undeploy")){
+                        } else if (fullID.getActionName().equals("undeploy")) {
                             EngineLogger.logger.debug("The undeploy action for unit {}/{}/{}/{} is successful", fullID.getUser(), fullID.getService(), fullID.getUnit(), fullID.getInstance());
                             salsaState = SalsaEntityState.UNDEPLOYED;
                         }
@@ -155,19 +160,35 @@ public class SalsaEngineListener {
 
             @Override
             public void handleMessage(SalsaMessage msg) {
-                if (msg.getMsgType().equals(SalsaMessage.MESSAGE_TYPE.salsa_pioneerActivated)) {
-                    PioneerInfo piInfo = PioneerInfo.fromJson(msg.getPayload());
-                    if (piInfo.getUserName().equals(SalsaConfiguration.getUserName())) {
-                        PioneerManager.addPioneer(piInfo.getId(), piInfo);
-                        SalsaCenterConnector centerCon;
-                        try {
-                            centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
-                            centerCon.updateNodeState(piInfo.getService(), piInfo.getTopology(), piInfo.getUnit(), piInfo.getInstance(), SalsaEntityState.DEPLOYED, "Pioneer is deployed");
-                        } catch (SalsaException ex) {
-                            EngineLogger.logger.error("Cannot connect to SALSA service in localhost: " + SalsaConfiguration.getSalsaCenterEndpointLocalhost() + ". This is a fatal error !", ex);
+                switch (msg.getMsgType()) {
+                    case salsa_pioneerActivated: {
+                        PioneerInfo piInfo = PioneerInfo.fromJson(msg.getPayload());
+                        if (piInfo.getUserName().equals(SalsaConfiguration.getUserName())) {
+                            PioneerManager.addPioneer(piInfo.getId(), piInfo);
+                            SalsaCenterConnector centerCon;
+                            try {
+                                centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
+                                centerCon.updateNodeState(piInfo.getService(), piInfo.getTopology(), piInfo.getUnit(), piInfo.getInstance(), SalsaEntityState.DEPLOYED, "Pioneer is deployed");
+                            } catch (SalsaException ex) {
+                                EngineLogger.logger.error("Cannot connect to SALSA service in localhost: " + SalsaConfiguration.getSalsaCenterEndpointLocalhost() + ". This is a fatal error !", ex);
+                            }
                         }
+                        break;
                     }
+                    case elise_conductorActivated: {
+                        ConductorDescription conInfo = ConductorDescription.fromJson(msg.getPayload());
+                        if (conInfo!=null){
+                            EngineLogger.logger.debug("Registering a conductor: ", conInfo.toJson());
+                            EliseManager eliseManager = ((EliseManager) JAXRSClientFactory.create(SalsaConfiguration.getSalsaCenterEndpointLocalhost() + "/rest/elise", EliseManager.class, Collections.singletonList(new JacksonJsonProvider())));
+                            eliseManager.registerConductor(conInfo);
+                            EngineLogger.logger.debug("Registering a conductor DONE !");
+                        }                        
+                        break;
+                    }
+                    default:
+                        break;
                 }
+                
             }
         });
 
@@ -189,7 +210,7 @@ public class SalsaEngineListener {
         });
 
         subscribe3.subscribe(SalsaMessageTopic.PIONEER_LOG);
-        
+
 //        try {
 //            // SYN pioneers
 //            EngineLogger.logger.debug("Syn pioneers ...");

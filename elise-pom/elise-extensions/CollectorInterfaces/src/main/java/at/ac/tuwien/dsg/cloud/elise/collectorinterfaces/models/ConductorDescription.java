@@ -8,6 +8,8 @@ package at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
@@ -46,9 +48,13 @@ public class ConductorDescription {
         return collectors;
     }
 
-    public static ConductorDescription fromJson(String json) throws IOException {
+    public static ConductorDescription fromJson(String json) {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(json, ConductorDescription.class);
+        try {
+            return mapper.readValue(json, ConductorDescription.class);
+        } catch (IOException ex) {
+            return null;
+        }
     }
 
     

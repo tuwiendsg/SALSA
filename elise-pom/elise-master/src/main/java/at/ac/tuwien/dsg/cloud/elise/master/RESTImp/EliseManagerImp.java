@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -62,10 +61,10 @@ public class EliseManagerImp implements EliseManager {
         if (this.conductors == null) {
             this.conductors = new ArrayList<>();
         }
-        logger.debug("Registering a collector. Info: {}", conductor.toJson());
+        logger.debug("Registering a conductor. Info: {}", conductor.toJson());
         this.conductors.add(conductor);
         logger.debug("Registered a collector: " + conductor.getId());
-        return "ELISE registered a new collector: " + conductor.getId();
+        return "ELISE registered a new conductor: " + conductor.getId();
     }
 
     @Override
@@ -90,8 +89,8 @@ public class EliseManagerImp implements EliseManager {
     @Override
     public String removeConductor(String collectorID) {
         for (ConductorDescription desp : this.conductors) {
-            if (desp.getId().equals(collectorID)) {
-                this.conductors.remove(desp);
+            if (desp.getId().equals(collectorID)) {                
+                this.conductors.remove(desp);                
                 return "ELISE removed a collector" + collectorID;
             }
         }
@@ -132,9 +131,9 @@ public class EliseManagerImp implements EliseManager {
     }
 
     @Override
-    public Response getCollectorArtifact(@PathParam("collectorName") String collectorName) {
+    public Response getCollectorArtifact(String collectorName) {
         logger.debug("Getting collector artifact and return: {}", collectorName);
-        String localArtifactFile = CollectorArtifactManager.getCollector().get(collectorName);
+        String localArtifactFile = CollectorArtifactManager.getCollectors().get(collectorName);
         if (localArtifactFile == null) {
             logger.debug("Local artifact file is not found: {}", localArtifactFile);
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -146,6 +145,18 @@ public class EliseManagerImp implements EliseManager {
         return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
                 .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
                 .build();
+    }
+    
+      
+    @Override
+    public String getCollectorNameList(){
+        Map<String, String> map = CollectorArtifactManager.getCollectors();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
+        } catch (IOException ex) {
+            return "Cannot get the collection name list!";
+        }        
     }
 
     /**

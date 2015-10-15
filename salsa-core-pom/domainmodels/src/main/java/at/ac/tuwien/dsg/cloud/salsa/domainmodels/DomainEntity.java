@@ -19,6 +19,7 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -140,4 +141,36 @@ public class DomainEntity {
         }
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + Objects.hashCode(this.domainID);
+        hash = 59 * hash + Objects.hashCode(this.name);
+        hash = 59 * hash + Objects.hashCode(this.category);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DomainEntity other = (DomainEntity) obj;
+        if (!Objects.equals(this.domainID, other.domainID)) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (this.category != other.category) {
+            return false;
+        }
+        return true;
+    }
+
+    
+    
 }

@@ -18,7 +18,7 @@ public class ConductorConfiguration {
     public static Logger logger = LoggerFactory.getLogger(ConductorConfiguration.class);
     public static final String CURRENT_DIR = System.getProperty("user.dir");
     public static final String COLLECTOR_ADAPTOR_CONFIG_FILE = CURRENT_DIR + "/adaptor.conf";
-    public static final String ELISE_CONFIGURATION_FILE = CURRENT_DIR + "/elise.conf";    
+    public static final String ELISE_CONFIGURATION_FILE = CURRENT_DIR + "/salsa.engine.properties";    
     private static String conductorID = null;
 
     public static String getJarDir() {
@@ -40,18 +40,14 @@ public class ConductorConfiguration {
         return getExtensionFolder() +"/" + collectorName;
     }
 
-    /*** GET parameters in the configuration file ***/
-    
-    public static String getName() {
-        return getGenericParameter("name", "unknown");
-    }
+    /*** GET parameters in the configuration file ***/    
 
     public static String getELISE_IP() {
-        return getGenericParameter("ELISE_IP", "localhost");
+        return getGenericParameter("SALSA_CENTER_IP", "localhost");
     }
 
     public static String getELISE_port() {
-        return getGenericParameter("ELISE_PORT", "8080");
+        return getGenericParameter("SALSA_CENTER_PORT", "8080");
     }
 
     public static String getBroker() {

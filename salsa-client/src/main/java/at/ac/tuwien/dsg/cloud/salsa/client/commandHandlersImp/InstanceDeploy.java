@@ -14,7 +14,7 @@ import org.kohsuke.args4j.Argument;
  *
  * @author Duc-Hung LE
  */
-public class UnitDeploy implements CommandHandler {
+public class InstanceDeploy implements CommandHandler {
 
     // the id must be serviceID/unitID
     @Argument(index = 0, metaVar = "unitID", usage = "The id of the unit to be deployed, should be serviceID/unitID.", required = true)

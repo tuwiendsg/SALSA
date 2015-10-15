@@ -343,6 +343,10 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
      * Convert from map[5683/tcp:[map[HostIp:10.99.0.32 HostPort:5686]] 80/tcp:[map[HostIp:10.99.0.32 HostPort:9083]] 2812/tcp:[map[HostIp:10.99.0.32
      * HostPort:2815]]] s1-->5683/tcp:[map[HostIp:10.99.0.32 HostPort:5686]] 80/tcp:[map[HostIp:10.99.0.32 HostPort:9083]] 2812/tcp:[map[HostIp:10.99.0.32
      * HostPort:2815]] s-->5683/tcp:[map[HostIp:10.99.0.32 HostPort:5686]] to 5683:5685 80:9083 2812:2815
+     * 
+     * Updated: new docker of 1.8.2 version give:
+     * map[2812/tcp:[{10.99.0.21 2812}] 5683/tcp:[{10.99.0.21 5683}] 80/tcp:[{10.99.0.21 9080}]]
+     * 
      *
      * @param dockerPortInfo
      * @return
@@ -357,10 +361,18 @@ public class DockerConfigurator implements ArtifactConfigurationInterface {
             logger.debug("s: " + s);
             if (!s.trim().equals("")) {
                 // s:  2812/tcp:[map[HostIp:10.99.0.32 HostPort:2817]
-                s = s.replace(" ", "]");  // because HostIP and HostPort can be in reverse order
+                //s = s.replace(" ", "]");  // because HostIP and HostPort can be in reverse order
                 // s: 2812/tcp:[map[HostIp:10.99.0.32]HostPort:2817]
-                int hostPortStrIndex = s.lastIndexOf("HostPort:") + 9;
-                result += s.substring(0, s.indexOf("/tcp")) + ":" + s.substring(hostPortStrIndex, s.indexOf("]", hostPortStrIndex)) + " ";
+                //int hostPortStrIndex = s.lastIndexOf("HostPort:") + 9;
+                // result += s.substring(0, s.indexOf("/tcp")) + ":" + s.substring(hostPortStrIndex, s.indexOf("]", hostPortStrIndex)) + " ";
+                
+                // below code update for docker 1.8.2
+                // s: 80/tcp:[{10.99.0.21 9080} ==> updated: docker 1.8.2:
+                // s is convert to 80:10.99.0.21:9080
+                s = s.trim();
+                s=s.replace("/tcp", "").replace("[", "").replace("]", "").replace("{", "").replace("}", "").replace(" ", ":");
+                result += s + " ";
+                //result += s.substring(0, s.indexOf("/tcp")) +":" + s.substring(s.lastIndexOf(" ")+1,s.lastIndexOf("}")) + " ";
             }
         }
         logger.debug("Format done: " + result.trim());

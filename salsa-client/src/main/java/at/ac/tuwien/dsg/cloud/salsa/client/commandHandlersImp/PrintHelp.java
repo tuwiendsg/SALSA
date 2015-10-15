@@ -112,6 +112,20 @@ public class PrintHelp implements CommandHandler {
         }                
         out.flush();        
     }
+    
+    /**
+     * List commands separated by space
+     * @return a String of the list
+     */
+    public static String getCommandList(){
+        List<String> myList = new ArrayList(OPTIONS.keySet());
+        String result = "";
+        StringBuilder sb = new StringBuilder();
+        for (String s : myList){
+            sb.append(s).append(" ");
+        }
+        return sb.toString().trim();
+    }
 
     @Override
     public String getCommandDescription() {

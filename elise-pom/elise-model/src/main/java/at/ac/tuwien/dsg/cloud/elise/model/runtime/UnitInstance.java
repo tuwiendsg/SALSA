@@ -20,6 +20,8 @@ package at.ac.tuwien.dsg.cloud.elise.model.runtime;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Metric;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,6 +35,7 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 
 /**
  * The instance managed by different cloud and management services
+ *
  * @author Duc-Hung LE
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -41,15 +44,15 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
 public class UnitInstance extends ServiceUnit {
 
     protected String identification;
-    
+
     // the configuration state. The state of the unit is in the domainInfo (see generic ServiceUnit.class)
     protected State state;
-    
+
     @RelatedTo(type = "HostOnRelationshipInstance", direction = Direction.OUTGOING)
     protected UnitInstance hostedOn;
-    
+
     @RelatedTo(type = "ConnectToRelationshipInstance", direction = Direction.OUTGOING)
-    protected Set<UnitInstance> connectTo; 
+    protected Set<UnitInstance> connectTo;
 
     public UnitInstance() {
     }
@@ -57,13 +60,13 @@ public class UnitInstance extends ServiceUnit {
     public UnitInstance(String name, ServiceCategory category) {
         super(name, category);
     }
-    
-    public void hostedOnInstance(UnitInstance hostedInst){
+
+    public void hostedOnInstance(UnitInstance hostedInst) {
         this.hostedOn = hostedInst;
     }
-    
-    public void connectToInstance(UnitInstance connectedToInst){
-        if (this.connectTo == null){
+
+    public void connectToInstance(UnitInstance connectedToInst) {
+        if (this.connectTo == null) {
             this.connectTo = new HashSet<>();
         }
         this.connectTo.add(connectedToInst);
@@ -86,7 +89,7 @@ public class UnitInstance extends ServiceUnit {
         this.identification = identification;
     }
 
-    public Set<Metric> findAllMetricValues(){
+    public Set<Metric> findAllMetricValues() {
         return new HashSet<>();
     }
 
@@ -99,14 +102,26 @@ public class UnitInstance extends ServiceUnit {
             ex.printStackTrace();
             return null;
         }
-    }    
-    
-    public void mergeWith(UnitInstance otherInstance){
-        this.getCapabilities().addAll(otherInstance.getCapabilities());
-        this.setState(otherInstance.getState());
-        // TODO: do actual merging
-      //  this.getDomainInfo().addAll(otherInstance.getDomainInfo());        
     }
-    
+
+    public void mergeWith(UnitInstance otherInstance) {
+        // TODO: if this and otherInstance are the same category, merge the DomainInfo, not the ExtendInfo
+
+        if (otherInstance == null) {
+            return;
+        }
+
+        this.getCapabilities().addAll(otherInstance.getCapabilities());
+        DomainEntity newEntity = otherInstance.parseDomainInfo();
+        if (newEntity != null) {
+            DomainEntities entities = this.parseExtendInfo();
+            if (entities == null) {
+                entities = new DomainEntities();
+            }
+            entities.hasDomainEntity(newEntity);
+            this.extendedInfo = entities.toJson();
+        }
+        //  this.getDomainInfo().addAll(otherInstance.getDomainInfo());        
+    }
 
 }

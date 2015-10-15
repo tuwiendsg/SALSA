@@ -318,17 +318,21 @@ public class InternalManagement {
     public boolean startConductor() {
         if (myConductor != null && myConductor.isAlive()) {
             EngineLogger.logger.debug("Tend to start a conductor, but it is already running... Salsa will do nothing!");
-            return true;
+            return false;
         }
         String fileName = "conductor.jar";
         String workingFolderName = "/tmp/conductor/";
-        String extentionsFolderName = workingFolderName + "extentions/";
+        String extensionsFolderName = workingFolderName + "extensions/";
 
-        (new File(extentionsFolderName)).mkdirs();
+        (new File(extensionsFolderName)).mkdirs();
         File localfile = new File(SalsaConfiguration.getConductorLocalFile());
+        File configFile = new File(SalsaConfiguration.getConfigurationFile());
         File runFile = new File(workingFolderName + fileName);
         try {
             FileUtils.copyFile(localfile, runFile);
+            EngineLogger.logger.debug("Copying configuration file from: {} to {}", configFile.getPath(), workingFolderName+"salsa.engine.properties");
+            FileUtils.copyFile(configFile, new File(workingFolderName+"salsa.engine.properties"));
+            
             EngineLogger.logger.debug("Starting a conductor ...");
             myConductor = SystemFunctions.executeCommandAndForget("java -jar " + fileName, workingFolderName, SalsaConfiguration.getSalsaCenterEndpoint());
         } catch (IOException ex) {

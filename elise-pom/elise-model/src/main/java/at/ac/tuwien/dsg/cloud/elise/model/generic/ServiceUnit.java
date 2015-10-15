@@ -17,6 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.generic;
 
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -80,11 +81,18 @@ public class ServiceUnit implements HasUniqueId {
     protected HashMap<String, String> extra;
 
     /**
-     * Known information model. This can contain a single info of this unit, or full service stack Note: I (23/07/2015) don't know how to use neo4j to store a
-     * generic class. Then the domain model is translate into json. Using the parseDomainInfo method to translate back The domainInfo can be: 1. Any class that
-     * extends the DomainEntity.class 2. The DomainEntityFullStack.class
+     * Known information model. This contains a set of Domain info
+     * I (23/07/2015) don't know how to use neo4j to store a generic class. 
+     * Then the domain model is translate into json. Using the parseDomainInfo method to translate back 
+     * The domainInfo class: DomainEntity.class
      */
     protected String domainInfo;
+    
+    /**
+     * This contain other domain info, e.g information from other service like govops, mela, sybl
+     * The extendedDomainInfo class: DomainEntities.class
+     */
+    protected String extendedInfo;
 
     /**
      * All the action can be executed
@@ -148,11 +156,27 @@ public class ServiceUnit implements HasUniqueId {
     }
 
     public DomainEntity parseDomainInfo() {
+        if (domainInfo == null){
+            return null;
+        }
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(domainInfo, DomainEntity.class);
         } catch (IOException ex) {
             Logger.getLogger("DomainModel").log(Level.SEVERE, "Cannot parse the domain info. Data to parse: {0}", domainInfo);
+        }
+        return null;
+    }
+    
+    public DomainEntities parseExtendInfo(){
+        if (extendedInfo == null){
+            return null;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(extendedInfo, DomainEntities.class);
+        } catch (IOException ex) {
+            Logger.getLogger("DomainModel").log(Level.SEVERE, "Cannot parse the domain info. Data to parse: {0}", extendedInfo);
         }
         return null;
     }
@@ -234,6 +258,14 @@ public class ServiceUnit implements HasUniqueId {
 
     public void setDomainInfo(String domainInfo) {
         this.domainInfo = domainInfo;
+    }
+
+    public String getExtendedInfo() {
+        return extendedInfo;
+    }
+
+    public void setExtendedInfo(String extendedInfo) {
+        this.extendedInfo = extendedInfo;
     }
 
     public Set<Capability> getCapabilities() {

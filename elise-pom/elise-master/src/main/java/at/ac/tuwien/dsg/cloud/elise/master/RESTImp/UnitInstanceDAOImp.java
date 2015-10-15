@@ -30,7 +30,7 @@ import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntityFullStack;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -82,7 +82,7 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
             return null;
         }
         Set<UnitInstance> hostedInstances = repo.findByHostOn(uniqueID);
-        DomainEntityFullStack full = new DomainEntityFullStack();
+        DomainEntities full = new DomainEntities();
         for (UnitInstance i : hostedInstances) {
             logger.debug("Aggregrate hosted instance information: name={}, category={}", i.getName(), i.getCategory());
             DomainEntity entity = DomainEntity.fromJson(i.getDomainInfo());
@@ -108,7 +108,7 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
         logger.debug("Getting unit instance full stack by name: {}", name);
         UnitInstance theInstance = repo.findByName(name);
         Set<UnitInstance> instances = repo.findByHostOn(theInstance.getId());
-        DomainEntityFullStack full = new DomainEntityFullStack();
+        DomainEntities full = new DomainEntities();
         for (UnitInstance i : instances) {
             logger.debug("Found and adding domainEntity of instance name={}, category={}", i.getName(), i.getCategory());
             DomainEntity entity = DomainEntity.fromJson(i.getDomainInfo());
@@ -122,10 +122,10 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
     public String addUnitInstance(UnitInstance unitInstance) {
         logger.debug("Save UnitInstance: " + unitInstance.getName());
 
-        if (unitInstance.getId() == null || unitInstance.getId().isEmpty()) {
-            String uuid = updateComposedIdentification(unitInstance);
-            logger.debug("The service is assign UUID: " + uuid);
-        }
+        //if (unitInstance.getId() == null || unitInstance.getId().isEmpty()) {
+        String uuid = updateComposedIdentification(unitInstance);
+        logger.debug("The service is assign UUID: " + uuid);
+        //}
 
         UnitInstance existedInstance = this.repo.findByUniqueID(unitInstance.getId());
 
@@ -133,17 +133,19 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
         // if unit is in data base, merge and save new one 
         // TODO: check Neo4j for better query to update node
         if (existedInstance != null) {
-            logger.debug("Merging service ....");
-            unitInstance.mergeWith(existedInstance);
-            logger.debug("Deleting unit... ");
-            this.repo.delete(existedInstance);
-//            this.repo.deleteUnitByID(existedInstance.getId());
-            logger.debug("Deleting done...");
+            //logger.debug("Deleting instance unit... ");
+            //this.repo.delete(existedInstance);
+            logger.debug("Deleting done..., now merging instance ...");            
+            existedInstance.mergeWith(unitInstance);
+//            this.repo.deleteUnitByID(existedInstance.getId());            
+        } else {
+            logger.debug("Found no existing instance, this saving instance will be the new one !");
+            existedInstance = unitInstance;
         }
 
-        logger.debug("Start saving. Json: " + unitInstance.toJson());
+        logger.debug("Start saving. Json: " + existedInstance.toJson());
 
-        UnitInstance u = repo.save(unitInstance);
+        UnitInstance u = this.repo.save(existedInstance);
 
         logger.debug("Saved ...");
         if (u != null) {
@@ -175,7 +177,7 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
     }
 
     private String updateComposedIdentification(UnitInstance instance) {
-        EliseManager collectorService = ((EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider())));
+        EliseManager eliseManager = ((EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider())));
         //LocalIdentification si = LocalIdentification.fromJson(instance.getIdentification());
 
         // unit instance carry the global iden of other elise, should be mix here
@@ -190,12 +192,12 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
         logger.debug("Local ID extracted: " + li.toJson());
 
         // if there is no global ID exist, the instance.getId() will be the new ID
-        GlobalIdentification global = collectorService.updateComposedIdentification(li, instance.getId());
-        logger.debug("Global ID after query: " + global.toJson());
+        GlobalIdentification global = eliseManager.updateComposedIdentification(li, instance.getId());
         if (global == null) {
             this.logger.error("Cannot get the UUID of the composed-identification. That is impossible to happen !");
             return null;
         }
+        logger.debug("Global ID after query: " + global.toJson());
         instance.setId(global.getUuid());
         instance.setIdentification(global.toJson());
         return global.getUuid();

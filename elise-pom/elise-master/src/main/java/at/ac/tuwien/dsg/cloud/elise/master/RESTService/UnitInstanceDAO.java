@@ -18,7 +18,7 @@
 package at.ac.tuwien.dsg.cloud.elise.master.RESTService;
 
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntityFullStack;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import java.util.Set;
 import javax.ws.rs.Consumes;

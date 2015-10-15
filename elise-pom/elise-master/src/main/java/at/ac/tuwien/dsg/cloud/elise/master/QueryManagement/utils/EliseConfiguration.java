@@ -105,7 +105,7 @@ public class EliseConfiguration {
     }
 
     public static String getRESTEndpoint() {
-        return "http://" + getSALSA_CENTER_IP() + ":" + getPort() + "/salsa-engine/rest/elise";
+        return "http://" + getSALSA_CENTER_IP() + ":" + getSALSA_CENTER_PORT() + "/salsa-engine/rest/elise";
     }
 
     public static String getRESTEndpointLocal() {
@@ -121,10 +121,10 @@ public class EliseConfiguration {
 
     private static String getSALSA_CENTER_IP() {
         return getSalsaGenericParameter("SALSA_CENTER_IP", getEth0IPAddress());
-    }
+    }    
     
     private static String getSALSA_CENTER_PORT() {
-        return getSalsaGenericParameter("SALSA_CENTER_PORT", "8080");
+        return getSalsaGenericParameter("SALSA_CENTER_PORT", detectPort());
     }
 
     /**
@@ -133,7 +133,7 @@ public class EliseConfiguration {
      * @return
      */
     @Deprecated
-    private static String getPort() {
+    private static String detectPort() {
         try {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             Set<ObjectName> objs = mbs.queryNames(new ObjectName("*:type=Connector,*"),

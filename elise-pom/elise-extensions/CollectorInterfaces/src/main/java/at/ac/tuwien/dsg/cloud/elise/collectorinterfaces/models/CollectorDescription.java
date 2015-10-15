@@ -41,6 +41,12 @@ public class CollectorDescription {
         this.configurations.addAll(Arrays.asList(aconfs));
     }
 
+    public List<String> getConfigurations() {
+        return configurations;
+    }
+    
+    
+
     public String getName() {
         return name;
     }
