@@ -45,6 +45,12 @@ public class Application implements DiscoveryService {
 		return (new DiscoveryResponse()).setServiceIp(ip);
 	}
 	
+	@Override
+	@RequestMapping(value="/isDeployed", method = RequestMethod.GET)
+	public boolean isDeployed() {
+		return true;
+	}
+	
 	/**
 	 * @param args the command line arguments
 	 */
