@@ -31,9 +31,11 @@ import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;
+import java.util.ArrayList;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 
@@ -122,39 +124,42 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
     public String addUnitInstance(UnitInstance unitInstance) {
         logger.debug("Save UnitInstance: " + unitInstance.getName());
 
-        //if (unitInstance.getId() == null || unitInstance.getId().isEmpty()) {
-        String uuid = updateComposedIdentification(unitInstance);
-        logger.debug("The service is assign UUID: " + uuid);
-        //}
+        List<String> uuids = updateComposedIdentification(unitInstance);
+        StringBuilder result = new StringBuilder();
+        for (String uuid : uuids) {
+            result.append(uuid).append(" ");
+            //String uuid = updateComposedIdentification(unitInstance);
+            logger.debug("Found an instance can be merged with UUID: " + uuid);
+            UnitInstance existedInstance = this.repo.findByUniqueID(uuid);
 
-        UnitInstance existedInstance = this.repo.findByUniqueID(unitInstance.getId());
+            logger.debug("SHOULD PASS THIS LINE 1");
+            // if unit is in data base, merge and save new one 
+            // TODO: check Neo4j for better query to update node
+            if (existedInstance != null) {
+                //logger.debug("Deleting instance unit... ");
+                //this.repo.delete(existedInstance);
+                logger.debug("Deleting done..., now merging instance ...");
+                existedInstance.mergeWith(unitInstance);
+//            this.repo.deleteUnitByID(existedInstance.getId());
+            } else {
+                logger.debug("Found no existing instance, this saving instance will be the new one !");
+                existedInstance = unitInstance;
+            }
 
-        logger.debug("SHOULD PASS THIS LINE 1");
-        // if unit is in data base, merge and save new one 
-        // TODO: check Neo4j for better query to update node
-        if (existedInstance != null) {
-            //logger.debug("Deleting instance unit... ");
-            //this.repo.delete(existedInstance);
-            logger.debug("Deleting done..., now merging instance ...");            
-            existedInstance.mergeWith(unitInstance);
-//            this.repo.deleteUnitByID(existedInstance.getId());            
-        } else {
-            logger.debug("Found no existing instance, this saving instance will be the new one !");
-            existedInstance = unitInstance;
+            logger.debug("Start saving. Json: " + existedInstance.toJson());
+
+            UnitInstance u = this.repo.save(existedInstance);
+
+            logger.debug("Saved ...");
+            if (u != null) {
+                logger.debug("Saved unit instance:" + u.getId() + ", name: " + u.getName());
+
+            } else {
+                logger.debug("Fail to save unit instance: " + unitInstance.getId() + ", name: " + unitInstance.getName());
+
+            }
         }
-
-        logger.debug("Start saving. Json: " + existedInstance.toJson());
-
-        UnitInstance u = this.repo.save(existedInstance);
-
-        logger.debug("Saved ...");
-        if (u != null) {
-            logger.debug("Saved unit instance:" + u.getId() + ", name: " + u.getName());
-            return u.getId();
-        } else {
-            logger.debug("Fail to save unit instance: " + unitInstance.getId() + ", name: " + unitInstance.getName());
-            return null;
-        }
+        return result.toString().trim();
     }
 
     @Override
@@ -176,7 +181,7 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
         return set;
     }
 
-    private String updateComposedIdentification(UnitInstance instance) {
+    private List<String> updateComposedIdentification(UnitInstance instance) {
         EliseManager eliseManager = ((EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider())));
         //LocalIdentification si = LocalIdentification.fromJson(instance.getIdentification());
 
@@ -192,15 +197,20 @@ public class UnitInstanceDAOImp implements UnitInstanceDAO {
         logger.debug("Local ID extracted: " + li.toJson());
 
         // if there is no global ID exist, the instance.getId() will be the new ID
-        GlobalIdentification global = eliseManager.updateComposedIdentification(li, instance.getId());
-        if (global == null) {
+        List<GlobalIdentification> globals = eliseManager.updateComposedIdentification(li, instance.getId());
+        if (globals.isEmpty()) {
             this.logger.error("Cannot get the UUID of the composed-identification. That is impossible to happen !");
             return null;
         }
-        logger.debug("Global ID after query: " + global.toJson());
-        instance.setId(global.getUuid());
-        instance.setIdentification(global.toJson());
-        return global.getUuid();
+        logger.debug("Global ID after query: {} IDs", globals.size());
+
+//        instance.setId(global.getUuid());
+//        instance.setIdentification(global.toJson());
+        List<String> listOfGlobalID = new ArrayList<>();
+        for (GlobalIdentification gl : globals) {
+            listOfGlobalID.add(gl.getUuid());
+        }
+        return listOfGlobalID;
     }
 
     private Set<UnitInstance> filterInstance(Set<UnitInstance> instances, EliseQuery query) {

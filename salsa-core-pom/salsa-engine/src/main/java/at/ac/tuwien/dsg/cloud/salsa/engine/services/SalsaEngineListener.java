@@ -112,7 +112,7 @@ public class SalsaEngineListener {
                         try {
                             centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
                             switch (fullID.getUnitType()) {
-                                case AppContainer: {
+                                case Docker: {
                                     String dockerPropString = state.getDomainModel();
                                     if (fullID.getActionName().equals("deploy") && dockerPropString != null) {
                                         EngineLogger.logger.debug("Receive docker info:" + dockerPropString);

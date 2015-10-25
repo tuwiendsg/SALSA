@@ -20,7 +20,6 @@ package at.ac.tuwien.dsg.cloud.elise.model.runtime;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
@@ -40,7 +39,7 @@ public class GlobalIdentification {
     protected ServiceCategory category;
 
     // note: cannot use Set. These LocalIdentifications are all equal due to the hashcode and equal functions.
-    protected List<LocalIdentification> localIDs = new ArrayList<>();
+    protected ArrayList<LocalIdentification> localIDs = new ArrayList<>();
 
     public GlobalIdentification() {
     }
@@ -62,7 +61,7 @@ public class GlobalIdentification {
         return uuid;
     }
 
-    public List<LocalIdentification> getLocalIDs() {
+    public ArrayList<LocalIdentification> getLocalIDs() {
         return localIDs;
     }
 

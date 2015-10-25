@@ -24,7 +24,7 @@ public class WebAppInfo extends DomainEntity{
     }
 
     public WebAppInfo(String domainID, String name) {
-        super(ServiceCategory.WebApp, domainID, name);
+        super(ServiceCategory.JavaWebApp, domainID, name);
         updateStateList(States.values());
     }
     

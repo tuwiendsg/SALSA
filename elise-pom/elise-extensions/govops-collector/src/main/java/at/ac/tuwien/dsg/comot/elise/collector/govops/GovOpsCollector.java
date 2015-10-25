@@ -31,7 +31,7 @@ import org.codehaus.jackson.map.ObjectMapper;
  */
 public class GovOpsCollector extends UnitInstanceCollector {
 
-    String govoptREST = "http://128.130.172.199:8080/APIManager";
+    String govoptREST;
 
     public GovOpsCollector() {
         System.out.println("Start GovOps collector");
@@ -42,6 +42,9 @@ public class GovOpsCollector extends UnitInstanceCollector {
             Logger.getLogger(GovOpsCollector.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.govoptREST = readAdaptorConfig("endpoint");
+        if (govoptREST==null || govoptREST.isEmpty()){
+            govoptREST = "http://localhost:8080/APIManager";
+        }
     }
 
     @Override

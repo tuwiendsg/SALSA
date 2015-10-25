@@ -17,7 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.generic;
 
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;    
 import java.util.HashSet;
 import java.util.Set;
 
@@ -99,7 +99,7 @@ public class ServiceUnit implements HasUniqueId {
      */
     @RelatedTo(direction = Direction.OUTGOING, type = "INTERNAL")
     @Fetch
-    protected Set<Capability> capabilities;
+    protected Set<Capability> capabilities = new HashSet<>();
 
     public ServiceUnit() {
     }

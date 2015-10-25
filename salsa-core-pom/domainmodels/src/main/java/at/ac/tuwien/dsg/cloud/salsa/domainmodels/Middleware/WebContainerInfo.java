@@ -25,7 +25,7 @@ public class WebContainerInfo extends DomainEntity {
     }
 
     public WebContainerInfo(String domainID, String name) {
-        super(ServiceCategory.WebContainer, domainID, name);
+        super(ServiceCategory.TomcatContainer, domainID, name);
         updateStateList(States.values());
     }
 

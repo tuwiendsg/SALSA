@@ -112,7 +112,11 @@ public interface EliseManager {
     @Path("/identification/{possibleGlobalID}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public GlobalIdentification updateComposedIdentification(LocalIdentification si, @PathParam("possibleGlobalID") String possibleGlobalID);
+    public List<GlobalIdentification> updateComposedIdentification(LocalIdentification si, @PathParam("possibleGlobalID") String possibleGlobalID);
+    
+    @DELETE
+    @Path("/identification/{globalID}")
+    public void deleteGlobalIdentification(@PathParam("globalID") String globalID);
 
     @GET
     @Path("/query/{queryUUID}")

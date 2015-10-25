@@ -34,8 +34,8 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 //@NodeEntity
 public class CostFunction  {
 
-    protected Set<OfferedServiceUnit> appliedInConjunctionWith;
-    protected Set<CostElement> costElements;
+    protected Set<OfferedServiceUnit> appliedInConjunctionWith= new HashSet<>();
+    protected Set<CostElement> costElements = new HashSet<>();
     protected String name;
 
     public CostFunction() {

@@ -21,8 +21,11 @@ import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
+import scala.collection.mutable.ArrayLike;
 
 /**
  *
@@ -50,25 +53,30 @@ public class IdentificationManager {
         }
         return new IdentificationDB();
     }
+    
+    public void deleteAndUpdate(String globalID){
+        IdentificationDB currentDB = load();
+        currentDB.removeGlobalID(globalID);
+    }
 
-    public GlobalIdentification searchAndUpdate(LocalIdentification entityComposedID, String possibleGlobalID) {
+    public List<GlobalIdentification> searchAndUpdate(LocalIdentification entityComposedID, String possibleGlobalID) {
         // search if there is an exist service identification that "equals" the the provided. Node: equals function is defined
         IdentificationDB currentDB = load();
-        GlobalIdentification existGlobal = null;
+        List<GlobalIdentification> existGlobals = new ArrayList<>();
         for (GlobalIdentification ite : currentDB.getIdentifications()) {
             if (ite.addLocalIdentification(entityComposedID)) {
-                existGlobal = ite;
-                break;
+                existGlobals.add(ite);                
             }
         }
 
         // update        
-        if (existGlobal == null) {  // if there is no existSI in the DB, create one
+        if (existGlobals.isEmpty()) {  // if there is no existSI in the DB, create one
             System.out.println("There is no exist SI match with Identification, generating one...:" + entityComposedID);            
-            existGlobal = new GlobalIdentification(entityComposedID.getCategory());
-            existGlobal.setUuid(possibleGlobalID);
-            existGlobal.addLocalIdentification(entityComposedID); // add again
-            currentDB.hasIdentification(existGlobal);
+            GlobalIdentification newGlobal = new GlobalIdentification(entityComposedID.getCategory());
+            newGlobal.setUuid(possibleGlobalID);
+            newGlobal.addLocalIdentification(entityComposedID); // add again
+            existGlobals.add(newGlobal);
+            currentDB.hasIdentification(newGlobal);
         }        
 
         // and save to file        
@@ -78,7 +86,7 @@ public class IdentificationManager {
             logger.error("Cannot save Identification. Error: " + ex);
             ex.printStackTrace();            
         }
-        return existGlobal;
+        return existGlobals;
 
     }
 

@@ -41,6 +41,13 @@ public class IdentificationDB {
         return identifications;
     }
     
-    
+    public void removeGlobalID(String globalID){
+        for(GlobalIdentification g: this.identifications){
+            if (g.getUuid().equals(globalID)){
+                this.identifications.remove(g);
+                break;
+            }
+        }
+    }
     
 }

@@ -299,15 +299,15 @@ public class InfoParser {
             case EXECUTABLE:
                 return ServiceCategory.ExecutableApp;
             case DOCKER:
-                return ServiceCategory.AppContainer;
+                return ServiceCategory.Docker;
             case TOMCAT:
-                return ServiceCategory.WebContainer;
+                return ServiceCategory.TomcatContainer;
             case OPERATING_SYSTEM:
                 return ServiceCategory.VirtualMachine;
             case SERVICE:
                 return ServiceCategory.SystemService;
             case WAR:
-                return ServiceCategory.WebApp;
+                return ServiceCategory.JavaWebApp;
             default:
                 return ServiceCategory.SystemService;
         }

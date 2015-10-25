@@ -21,16 +21,20 @@ import at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.ScriptExecution;
 
 import java.io.IOException;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
+
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonMethod;
 import org.codehaus.jackson.map.ObjectMapper;
+
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
@@ -50,11 +54,12 @@ public class Capability {
     protected String name;
     protected String executedBy;
     protected ExecutionMethod executionMethod;
+
     /**
      * The execution model is store as String and will be (un)marshal via JSON
      */
     protected String executionModel;
-    protected Set<String> parameters;
+    protected Set<String> parameters = new HashSet<>();
     protected Set<CapabilityEffect> effects = new HashSet<>();
 
     public Capability() {
@@ -63,7 +68,10 @@ public class Capability {
     @XmlType
     public static enum ExecutionMethod {
 
-        Script, REST, Dockerfile, Unknown;
+        Script,
+        REST,
+        Dockerfile,
+        Unknown;
     }
 
     public Capability(String name, ExecutionMethod executeMethod, Object executionModel) {
@@ -131,10 +139,10 @@ public class Capability {
         try {
             ObjectMapper mapper = new ObjectMapper();
             switch (this.executionMethod) {
-                case Script:
-                    return mapper.readValue(this.executionModel, ScriptExecution.class);
-                case REST:
-                    return mapper.readValue(this.executionModel, RestExecution.class);
+            case Script:
+                return mapper.readValue(this.executionModel, ScriptExecution.class);
+            case REST:
+                return mapper.readValue(this.executionModel, RestExecution.class);
             }
             return null;
         } catch (IOException ex) {

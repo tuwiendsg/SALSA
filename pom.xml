@@ -141,7 +141,7 @@
                     <doclet>ydoc.doclets.YStandard</doclet>
                     <docletPath>${yworks.uml.path}/lib/ydoc.jar:${yworks.uml.path}/resources</docletPath>
                     <additionalparam>-umlautogen</additionalparam>
-                    <!--                    <docletArtifact>
+                                        <docletArtifact>
                         <groupId>com.yworks</groupId>
                         <artifactId>umldoclet</artifactId>
                         <version>3.0.02</version>
@@ -149,7 +149,7 @@
                     <additionalparam>
                         -umlautogen
                         -resourcepath ${yworks.uml.path}/resources
-                    </additionalparam>-->
+                    </additionalparam>
                     
                     
                     <!-- Apple's JVM sometimes requires more memory -->

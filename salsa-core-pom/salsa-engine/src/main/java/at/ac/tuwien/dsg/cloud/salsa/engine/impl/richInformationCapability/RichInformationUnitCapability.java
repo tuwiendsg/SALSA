@@ -182,15 +182,20 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         ServiceUnit unit = service.getComponentById(nodeId);
         if (unit == null) {
             EngineLogger.logger.error("Try to delete instance of unit {}/{} but get NULL data.", serviceId, nodeId);
+            return;
         }
         ServiceInstance instance = unit.getInstanceById(instanceId);
 
         if (instance != null) {
             if (unitInstanceDAO != null) {
                 logger.debug("Trying to delete unit with UUID: {}" + instance.getUuid());
-                try {
+                try {                    
                     unitInstanceDAO.deleteUnitInstanceByID(instance.getUuid().toString());
+                    EliseManager eliseManager = ((EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider())));
+                    logger.debug("Now deleting the unit identification");
+                    eliseManager.deleteGlobalIdentification(instance.getUuid().toString());
                 } catch (Exception e) {
+                    logger.error(e.getMessage()+", "+e.getCause().getMessage());
                     e.printStackTrace();
                 }
             } else {
@@ -227,7 +232,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             unitInst.setDomainInfo(VMInfo.toJson());
         } else if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
             logger.debug("Making App container domain info: {}/{}/{}", service.getId(), unit.getId(), ins.getInstanceId());
-            unitInst.setCategory(ServiceCategory.AppContainer);
+            unitInst.setCategory(ServiceCategory.Docker);
             // get basic docker info
             SalsaInstanceDescription_Docker dockerDescription = getDockerUnit(service, topo, unit, ins);
             if (dockerDescription != null) {
@@ -237,7 +242,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             }
 
         } else if (unit.getType().equals(SalsaEntityType.TOMCAT.getEntityTypeString())) {
-            unitInst.setCategory(ServiceCategory.WebContainer);
+            unitInst.setCategory(ServiceCategory.TomcatContainer);
         } else if (unit.getId().toLowerCase().startsWith("sensor")) {
             unitInst.setCategory(ServiceCategory.Sensor);
         } else if (unit.getType().equals(SalsaEntityType.SERVICE.getEntityTypeString())) {

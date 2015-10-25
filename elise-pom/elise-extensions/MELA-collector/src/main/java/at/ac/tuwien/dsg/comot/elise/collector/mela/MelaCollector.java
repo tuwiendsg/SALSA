@@ -13,6 +13,7 @@ import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -43,6 +44,7 @@ public class MelaCollector extends UnitInstanceCollector {
 
     @Override
     public Set<UnitInstance> collectAllInstance() {
+        Set<UnitInstance> unitInstances = new HashSet<>();
         String listServiceJson = RestHandler.callRest(endpoint + "/elasticservices", RestHandler.HttpVerb.GET, null, null, MediaType.APPLICATION_JSON);
         if (listServiceJson != null && !listServiceJson.isEmpty()) {
             ObjectMapper mapper = new ObjectMapper();
@@ -56,6 +58,7 @@ public class MelaCollector extends UnitInstanceCollector {
                     String monitorEndpoint = this.endpoint + "/" + elasticService.getId() + "/monitoringdata/json";
                     newInstance.hasCapability(new Capability("monitor", Capability.ExecutionMethod.REST, new RestExecution(monitorEndpoint, RestExecution.RestMethod.GET, null)).executedBy("MELA"));                    
                     newInstance.hasExtra("MELA_SERVICE_ID", elasticService.getId());
+                    unitInstances.add(newInstance);
                 }
             } catch (IOException ex) {
                 System.out.println("Cannot query MELA");
@@ -63,7 +66,7 @@ public class MelaCollector extends UnitInstanceCollector {
         } else {
             System.out.println("MELA does not manage any services");
         }
-        return null;
+        return unitInstances;
     }
 
     @Override

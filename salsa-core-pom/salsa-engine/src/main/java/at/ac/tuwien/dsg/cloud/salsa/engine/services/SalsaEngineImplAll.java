@@ -962,13 +962,13 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
                     replicaInst.setExtra(extra);
                     updateComponentStateBasedOnInstance(service);	// update the Tosca node
                     SalsaXmlDataProcess.writeCloudServiceToFile(service, salsaFile);
-
-                } else {
+                } else {   
                     throw new ServicedataProcessingException(serviceId + "/" + nodeId + "/" + instanceId);
                 }
             }
 
         } catch (JAXBException | IOException ex) {
+            LOGGER.error("Failed to update node state of node: " + nodeId + ", instance: " + instanceId + ", state: " + value);
             throw new ServicedataProcessingException(serviceId, ex);
         } finally {
             MutualFileAccessControl.releaseFile();
@@ -1053,7 +1053,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
                     LOGGER.debug("The command will be sent is: " + preRunByMe + " and undeploy following: " + runByMe + ". Undeploy apply for node type: " + InfoParser.mapOldAndNewCategory(SalsaEntityType.fromString(nodeData.getType())));
                 }
                 // to undeploy Docker, we send the DockerID into runByMe
-                if (theCategory == ServiceCategory.AppContainer) {
+                if (theCategory == ServiceCategory.Docker) {
                     EngineLogger.logger.debug("The instance {}/{}/{} is Docker, checking docker property", serviceId, nodeId, instanceId);
                     if (instance.getProperties() != null) {
                         SalsaInstanceDescription_Docker vm = (SalsaInstanceDescription_Docker) instance.getProperties().getAny();

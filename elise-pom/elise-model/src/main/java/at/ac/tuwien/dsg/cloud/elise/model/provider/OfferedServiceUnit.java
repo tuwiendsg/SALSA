@@ -36,7 +36,7 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 @NodeEntity
 public class OfferedServiceUnit extends ServiceUnit {
 
-    protected Set<CostFunction> costFuntions;
+    protected Set<CostFunction> costFuntions = new HashSet<>();
 
     @Fetch
     protected String providerID;

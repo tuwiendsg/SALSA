@@ -36,12 +36,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 
 /**
@@ -236,7 +238,13 @@ public class ConductorListener {
 //        publish.pushMessage(msg);
 //        logger.info("Registering message is published, not sure an ELISE can received it ! Note: we need to unicast, or ID checking.");
 //    }
-    // query all instance
+    /**
+     * Query all the instances Note: as conductor runs within a single thread, the whole collection can be block if the collector is not proper implemented
+     *
+     * @param queryOrDomainID
+     * @param isSingleInstanceQuery
+     * @return
+     */
     private static Set<UnitInstance> runAllUnitInstanceCollector(String queryOrDomainID, boolean isSingleInstanceQuery) {
         logger.debug("Execute all the collectors...");
         Set<UnitInstance> unitInstances = new HashSet<>();
@@ -245,9 +253,9 @@ public class ConductorListener {
             try {
                 logger.debug("Create collector object from class: {}", c.getName());
                 UnitInstanceCollector collector = c.newInstance();
-                
+
                 if (collector != null) {
-                    logger.debug("Now we have the collector: {}, classname:", collector.getName(), collector.getClass().getName());
+                    logger.debug("Now we have the collector: {}, classname:{}", collector.getName(), collector.getClass().getName());
                 } else {
                     logger.error("No no, the class {} cannot be initiated", c.getName());
                     continue;
@@ -258,11 +266,22 @@ public class ConductorListener {
                 } else {
                     logger.debug("Calling collection for all instances");
                     try {
-                        logger.debug("debug call 1");
                         Set<UnitInstance> tmpVar = collector.collectAllInstance();
-                        logger.debug("debug call 2");
-                        unitInstances.addAll(tmpVar);
-                        logger.debug("debug call 3");
+
+                        logger.debug("All the collection has done !");
+                        if (tmpVar != null && !tmpVar.isEmpty()) {
+                            for (UnitInstance i : tmpVar) {
+                                System.out.println("Adding unit instance ID for: " + i.getName() + "/" + i.getId());
+                                LocalIdentification si = collector.identify(i);
+                                GlobalIdentification gi = new GlobalIdentification(si.getCategory());   // the instance contain a globalID, but null uuid and has 1 localID
+                                gi.addLocalIdentification(si);
+                                i.setIdentification(gi.toJson());
+                            }
+
+                            unitInstances.addAll(tmpVar);
+                        } else {
+                            logger.debug("Collector {} do not have any instance !", collector.getName());
+                        }
                     } catch (Exception e) {
                         logger.debug("Error !");
                         logger.error(e.getMessage(), e);
@@ -271,14 +290,7 @@ public class ConductorListener {
                     }
 
                 }
-                logger.debug("All the collection has done !");
-                for (UnitInstance i : unitInstances) {
-                    System.out.println("Adding unit instance: " + i.getName() + "/" + i.getId());
-                    LocalIdentification si = collector.identify(i);
-                    GlobalIdentification gi = new GlobalIdentification(si.getCategory());   // the instance contain a globalID, but null uuid and has 1 localID
-                    gi.addLocalIdentification(si);
-                    i.setIdentification(gi.toJson());
-                }
+
             } catch (InstantiationException | IllegalAccessException ex) {
                 logger.error("Error when initiate the class instance for collector. Class name: {}", c.getClass().getName(), ex);
             }
@@ -334,8 +346,7 @@ public class ConductorListener {
     private static final String mainFolder = ConductorConfiguration.CURRENT_DIR + "/extensions";
 
     private static Set<Class<? extends UnitInstanceCollector>> loadAllJar() {
-        logger.debug("Running all collector ...");
-
+        logger.debug("Loading all collector in folder: {}", mainFolder);
         String[] folders = listSubFolder(mainFolder);
         if (folders == null) {
             logger.debug("There is no collector module loaded...");
@@ -371,7 +382,10 @@ public class ConductorListener {
         urlClassLoader = new URLClassLoader(allURLs.toArray(new URL[allURLs.size()]));
 
         Reflections reflextions = new Reflections(new ConfigurationBuilder()
+                //.addScanners(new SubTypesScanner())
+                .filterInputsBy(new FilterBuilder().include("at.ac.tuwien.*"))
                 .addClassLoader(urlClassLoader)
+                .setScanners(new SubTypesScanner())
                 .addUrls(ClasspathHelper.forClassLoader(urlClassLoader)));
 
         Set<Class<? extends UnitInstanceCollector>> classes = reflextions.getSubTypesOf(UnitInstanceCollector.class);

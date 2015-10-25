@@ -46,7 +46,7 @@ public class InstanceInfoCollect implements CommandHandler {
                 int done = 0;
                 int coolDown = 10;
                 while (true) {
-                    String progress = RestHandler.callRest(Main.getEliseAPI("/manager/query"), RestHandler.HttpVerb.GET, query.toJson(), null, null);
+                    String progress = RestHandler.callRest(Main.getEliseAPI("/manager/query/"+queryUUID), RestHandler.HttpVerb.GET, query.toJson(), null, null);
                     if (progress == null && coolDown <= 0) {
                         System.out.println("Waiting for the conductor to receive collection command [" + coolDown + "]...");
                         Thread.sleep(2000);

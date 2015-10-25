@@ -20,14 +20,14 @@ package at.ac.tuwien.dsg.cloud.salsa.domainmodels.types;
 public enum ServiceCategory {
 
     VirtualMachine(ServiceStack.Infrastructure),// provide operating system to run other programs    
-    AppContainer(ServiceStack.Infrastructure), // can deploy middleware or app, a container behaviors similar like VM
+    Docker(ServiceStack.Infrastructure), // can deploy middleware or app, a container behaviors similar like VM
 
-    WebContainer(ServiceStack.Middleware), // deploy web app, e.g. Tomcat, Apache2, PHP
+    TomcatContainer(ServiceStack.Middleware), // deploy web app, e.g. Tomcat, Apache2, PHP
     DatabaseManagement(ServiceStack.Middleware),// database management system, e.g. MySQL
 
     SystemService(ServiceStack.Application), // the application that runs continuously as service in the system
     ExecutableApp(ServiceStack.Application), // the application that runs only one time (e.g. via deployment script or start script)
-    WebApp(ServiceStack.Application), // the application that is deployed in a web container
+    JavaWebApp(ServiceStack.Application), // the application that is deployed in Tomcat
     ElasticPlatformService(ServiceStack.Application),
 
     Sensor(ServiceStack.IOT), // not sure about this category, for IOT

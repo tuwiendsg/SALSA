@@ -17,6 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.provider;
 
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
@@ -38,22 +39,14 @@ public class Artifact {
     Long graphID;
     
     protected String name;
-    protected ArtifactType type;
+    protected SalsaArtifactType type;
     protected String reference;
-    
-    @XmlType
-    public enum ArtifactType{
-        sh, 
-        Dockerfile, 
-        war, 
-        jar, 
-        misc
-    }
+  
 
     public Artifact() {
     }
 
-    public Artifact(String name, ArtifactType type, String reference) {
+    public Artifact(String name, SalsaArtifactType type, String reference) {
         this.name = name;
         this.type = type;
         this.reference = reference;
@@ -63,7 +56,7 @@ public class Artifact {
         return name;
     }
 
-    public ArtifactType getType() {
+    public SalsaArtifactType getType() {
         return type;
     }
 

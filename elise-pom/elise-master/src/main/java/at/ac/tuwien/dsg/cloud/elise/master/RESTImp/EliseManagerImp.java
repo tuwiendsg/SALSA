@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -185,9 +186,15 @@ public class EliseManagerImp implements EliseManager {
 
     // FOR IDENTIFICATION
     @Override
-    public GlobalIdentification updateComposedIdentification(LocalIdentification si, String possibleGlobalID) {
+    public List<GlobalIdentification> updateComposedIdentification(LocalIdentification si, String possibleGlobalID) {
         IdentificationManager im = new IdentificationManager();
         return im.searchAndUpdate(si, possibleGlobalID);
+    }
+    
+    @Override
+    public void deleteGlobalIdentification(@PathParam("globalID") String globalID){
+        IdentificationManager im = new IdentificationManager();
+        im.deleteAndUpdate(globalID);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class UnitInstance extends ServiceUnit {
     protected UnitInstance hostedOn;
 
     @RelatedTo(type = "ConnectToRelationshipInstance", direction = Direction.OUTGOING)
-    protected Set<UnitInstance> connectTo;
+    protected Set<UnitInstance> connectTo = new HashSet<>();
 
     public UnitInstance() {
     }
@@ -121,7 +121,7 @@ public class UnitInstance extends ServiceUnit {
             entities.hasDomainEntity(newEntity);
             this.extendedInfo = entities.toJson();
         }
-        //  this.getDomainInfo().addAll(otherInstance.getDomainInfo());        
+        //  this.getDomainInfo().addAll(otherInstance.getDomainInfo());
     }
 
 }

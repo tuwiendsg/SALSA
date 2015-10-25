@@ -43,7 +43,7 @@ public class DockerInfo extends VirtualMachineInfo {
     
     public DockerInfo(String provider, String instanceId, String dockerName){
 		super(provider, instanceId, dockerName);
-                this.setCategory(ServiceCategory.AppContainer);
+                this.setCategory(ServiceCategory.Docker);
                 updateStateList(States.values());                
 	}
 
