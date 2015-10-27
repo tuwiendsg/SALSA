@@ -18,7 +18,6 @@
 package at.ac.tuwien.dsg.cloud.elise.master.RESTService;
 
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import java.util.Set;
 import javax.ws.rs.Consumes;
@@ -37,13 +36,14 @@ import javax.ws.rs.core.MediaType;
  * @author Duc-Hung Le
  */
 @Path("/unitinstance")
-public interface UnitInstanceDAO {
+public interface UnitInstanceInfoManagement {
     /* Service instance management */
 
     /**
      * Get all the instance in database. Note: the number of instance could be very large.
      * @return a set of unit instances
      */
+
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
@@ -64,6 +64,7 @@ public interface UnitInstanceDAO {
      * @param uniqueID
      * @return an unit instance with DomainInfoFullstack 
      */
+
     @GET
     @Path("/{uniqueID}/fullstack")
     @Produces(MediaType.APPLICATION_JSON)
@@ -74,6 +75,7 @@ public interface UnitInstanceDAO {
      * @param unitName
      * @return an unit instance
      */
+
     @GET
     @Path("/name/{unitName}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -84,6 +86,7 @@ public interface UnitInstanceDAO {
      * @param unitName
      * @return an unit instance with DomainInfoFullstack 
      */
+
     @GET
     @Path("/name/{unitName}/fullstack")
     @Produces(MediaType.APPLICATION_JSON)
@@ -94,6 +97,7 @@ public interface UnitInstanceDAO {
      * @param unitInstance
      * @return the ID of the added instance, or null if failed
      */
+
     @POST
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -103,6 +107,7 @@ public interface UnitInstanceDAO {
      * Delete unit by ID
      * @param uniqueID 
      */
+
     @DELETE
     @Path("/{uniqueID}")
     void deleteUnitInstanceByID(@PathParam("uniqueID")String uniqueID);
@@ -110,9 +115,10 @@ public interface UnitInstanceDAO {
     
     /**
      * Filter unit instance by an ID
-     * @param query
+     * @param query A filter to query the result
      * @return a set of unit instancess
      */
+
     @POST
     @Path("/query")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -120,7 +126,7 @@ public interface UnitInstanceDAO {
     
     /**
      * Return a list of supported service unit types.
-     * @return a category of service units
+     * @return A list of categories of service units
      */
     @POST
     @Path("/categories")

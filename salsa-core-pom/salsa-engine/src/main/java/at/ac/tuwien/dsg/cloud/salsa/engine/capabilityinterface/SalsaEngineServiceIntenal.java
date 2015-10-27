@@ -37,12 +37,13 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnitRelationship;
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.ApplicationManagementAPI;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import javax.ws.rs.QueryParam;
 
 //@Service
 @Path("/")
-public interface SalsaEngineServiceIntenal {
+public interface SalsaEngineServiceIntenal extends ApplicationManagementAPI {
 
     // INTERFACES FOR SALSA USERS TO DEPLOY AND MANAGE THEIR APPLICATION
     /**
@@ -66,14 +67,14 @@ public interface SalsaEngineServiceIntenal {
      * @return
      * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
-    @PUT
-    @Path("/services/xml")
-    @Consumes(MediaType.APPLICATION_XML)
-    public Response deployServiceFromXML(String uploadedInputStream) throws SalsaException;
-
-    @POST
-    @Path("/services/{serviceId}/redeploy")
-    public Response redeployService(@PathParam("serviceId") String serviceId) throws SalsaException;
+//    @PUT
+//    @Path("/services/xml")
+//    @Consumes(MediaType.APPLICATION_XML)
+//    public Response deployServiceFromXML(String uploadedInputStream) throws SalsaException;
+//
+//    @POST
+//    @Path("/services/{serviceId}/redeploy")
+//    public Response redeployService(@PathParam("serviceId") String serviceId) throws SalsaException;
 
     /**
      * Remove the whole cloud service
@@ -82,9 +83,9 @@ public interface SalsaEngineServiceIntenal {
      * @return
      * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
-    @DELETE
-    @Path("/services/{serviceId}")
-    public Response undeployService(@PathParam("serviceId") String serviceId) throws SalsaException;
+//    @DELETE
+//    @Path("/services/{serviceId}")
+//    public Response undeployService(@PathParam("serviceId") String serviceId) throws SalsaException;
 
     /**
      * This service deploy a number of service units
@@ -96,12 +97,11 @@ public interface SalsaEngineServiceIntenal {
      * @return
      * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
-    @POST
-    @Path("/services/{serviceId}/nodes/{nodeId}/instance-count/{quantity}")
-    //@Produces(MediaType.APPLICATION_JSON)
-    public Response spawnInstance(@PathParam("serviceId") String serviceId,
-            @PathParam("nodeId") String nodeId,
-            @PathParam("quantity") int quantity) throws SalsaException;
+//    @POST
+//    @Path("/services/{serviceId}/nodes/{nodeId}/instance-count/{quantity}")
+//    public Response spawnInstance(@PathParam("serviceId") String serviceId,
+//            @PathParam("nodeId") String nodeId,
+//            @PathParam("quantity") int quantity) throws SalsaException;
 
     /**
      * This method will destroy an instance, regardless it is a VM or a software
@@ -112,11 +112,11 @@ public interface SalsaEngineServiceIntenal {
      * @return
      * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */    
-    @DELETE
-    @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}")
-    public Response destroyInstance(@PathParam("serviceId") String serviceId,            
-            @PathParam("nodeId") String nodeId,
-            @PathParam("instanceId") int instanceId) throws SalsaException;
+//    @DELETE
+//    @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}")
+//    public Response destroyInstance(@PathParam("serviceId") String serviceId,            
+//            @PathParam("nodeId") String nodeId,
+//            @PathParam("instanceId") int instanceId) throws SalsaException;
     
     @GET
     @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}")
@@ -138,10 +138,10 @@ public interface SalsaEngineServiceIntenal {
      * @return XML document of service
      * @throws at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException
      */
-    @GET
-    @Path("/services/{serviceId}")
-    @Produces(MediaType.TEXT_XML)
-    public Response getService(@PathParam("serviceId") String serviceDeployId) throws SalsaException;
+//    @GET
+//    @Path("/services/{serviceId}")
+//    @Produces(MediaType.TEXT_XML)
+//    public Response getService(@PathParam("serviceId") String serviceDeployId) throws SalsaException;
 
     /**
      * Get service description in TOSCA
@@ -326,7 +326,6 @@ public interface SalsaEngineServiceIntenal {
      */
     @POST
     @Path("/services/{serviceId}/topologies/{topologyId}/relationship")
-    //@Consumes(MediaType.APPLICATION_XML)
     public Response addRelationship(ServiceUnitRelationship data,
             @PathParam("serviceId") String serviceId,
             @PathParam("topologyId") String topologyId) throws SalsaException;
@@ -460,13 +459,13 @@ public interface SalsaEngineServiceIntenal {
      * @return
      * @throws SalsaException
      */
-    @POST
-    @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/action_queue/{actionName}")
-    public Response queueAction(
-            @PathParam("serviceId") String serviceId,
-            @PathParam("nodeId") String nodeId,
-            @PathParam("instanceId") int instanceId,
-            @PathParam("actionName") String actionName) throws SalsaException;
+//    @POST
+//    @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/action_queue/{actionName}")
+//    public Response queueAction(
+//            @PathParam("serviceId") String serviceId,
+//            @PathParam("nodeId") String nodeId,
+//            @PathParam("instanceId") int instanceId,
+//            @PathParam("actionName") String actionName) throws SalsaException;
 
     /**
      *

@@ -19,7 +19,7 @@ package at.ac.tuwien.dsg.cloud.elise.master.RESTImp;
 
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.ProviderRepository;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
-import at.ac.tuwien.dsg.cloud.elise.master.RESTService.ProviderDAO;
+import at.ac.tuwien.dsg.cloud.elise.master.RESTService.ProviderInfoManagement;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.IdentificationDB;
 import at.ac.tuwien.dsg.cloud.elise.model.provider.Provider;
 import java.io.File;
@@ -35,7 +35,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
  *
  * @author Duc-Hung Le
  */
-public class ProviderDAOImp  implements ProviderDAO {
+public class ProviderDAOImp  implements ProviderInfoManagement {
     /* MANAGE PROVIDERS */
 
     

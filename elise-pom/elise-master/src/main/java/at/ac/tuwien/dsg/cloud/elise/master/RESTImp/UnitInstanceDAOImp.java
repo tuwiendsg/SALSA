@@ -21,7 +21,7 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.UnitInstanceRepository;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseManager;
-import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceDAO;
+import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceInfoManagement;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryRule;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Metric;
@@ -47,7 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Duc-Hung Le
  */
-public class UnitInstanceDAOImp implements UnitInstanceDAO {
+public class UnitInstanceDAOImp implements UnitInstanceInfoManagement {
 
     Logger logger = EliseConfiguration.logger;
 

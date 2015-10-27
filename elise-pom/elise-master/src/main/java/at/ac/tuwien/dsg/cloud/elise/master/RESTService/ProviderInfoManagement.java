@@ -32,7 +32,7 @@ import javax.ws.rs.core.MediaType;
  * @author Duc-Hung Le
  */
 @Path("/provider")
-public interface ProviderDAO {
+public interface ProviderInfoManagement {
      /* PROVIDER ACCESS */
     @GET
     @Path("/{uniqueID}")

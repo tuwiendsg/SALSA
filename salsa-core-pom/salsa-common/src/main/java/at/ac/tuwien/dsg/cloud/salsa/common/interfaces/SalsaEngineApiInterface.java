@@ -22,7 +22,7 @@ import java.io.InputStream;
 import javax.ws.rs.core.Response;
 
 
-
+@Deprecated
 public interface SalsaEngineApiInterface {
 
     Response deployService(String serviceName, InputStream uploadedInputStream) throws SalsaException;

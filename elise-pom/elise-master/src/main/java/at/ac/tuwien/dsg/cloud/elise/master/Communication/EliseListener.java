@@ -19,7 +19,7 @@ package at.ac.tuwien.dsg.cloud.elise.master.Communication;
 
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseManager;
-import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceDAO;
+import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceInfoManagement;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.elise.model.wrapper.UnitInstanceWrapper;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
@@ -95,7 +95,7 @@ public class EliseListener {
                 switch (message.getMsgType()) {
                     case elise_instanceInfoUpdate: {
                         logger.debug("Received a message to update unit instances information");
-                        UnitInstanceDAO unitInstanceDAO = (UnitInstanceDAO) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceDAO.class, Collections.singletonList(new JacksonJsonProvider()));
+                        UnitInstanceInfoManagement unitInstanceDAO = (UnitInstanceInfoManagement) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceInfoManagement.class, Collections.singletonList(new JacksonJsonProvider()));
                         UnitInstanceWrapper wrapper = UnitInstanceWrapper.fromJson(message.getPayload());
                         for (UnitInstance unit : wrapper.getUnitInstances()) {
                             unitInstanceDAO.addUnitInstance(unit);

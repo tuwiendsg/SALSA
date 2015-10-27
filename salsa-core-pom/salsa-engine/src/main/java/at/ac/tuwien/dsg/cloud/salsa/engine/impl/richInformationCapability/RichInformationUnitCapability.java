@@ -19,7 +19,7 @@ package at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability;
 
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseManager;
-import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceDAO;
+import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceInfoManagement;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
@@ -157,7 +157,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         } else {
             logger.error("Cannot contact to ELISE");
         }
-        UnitInstanceDAO unitInstanceDAO = (UnitInstanceDAO) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceDAO.class, Collections.singletonList(new JacksonJsonProvider()));
+        UnitInstanceInfoManagement unitInstanceDAO = (UnitInstanceInfoManagement) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceInfoManagement.class, Collections.singletonList(new JacksonJsonProvider()));
         if (unitInstanceDAO != null) {
             logger.debug("unitInstanceDao is not null, prepare to add");
             unitInstanceDAO.addUnitInstance(unitInst);
@@ -171,7 +171,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
     @Override
     public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {
         logger.debug("Trying to remove information of {}/{}/{} from ELISE database...", serviceId, nodeId, instanceId);
-        UnitInstanceDAO unitInstanceDAO = (UnitInstanceDAO) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceDAO.class, Collections.singletonList(new JacksonJsonProvider()));
+        UnitInstanceInfoManagement unitInstanceDAO = (UnitInstanceInfoManagement) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceInfoManagement.class, Collections.singletonList(new JacksonJsonProvider()));
         SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
 
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);

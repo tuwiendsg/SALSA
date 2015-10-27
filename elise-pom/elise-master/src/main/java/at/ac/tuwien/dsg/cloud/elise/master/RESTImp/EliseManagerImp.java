@@ -197,21 +197,7 @@ public class EliseManagerImp implements EliseManager {
         im.deleteAndUpdate(globalID);
     }
 
-    @Override
-    public String getQueryInformation(String queryUUID) {
-        logger.debug("Writing query management info to Json");
-        Map<String, EliseQueryProcessNotification.QueryProcessStatus> map = QueryManager.getQueryStatusAll(queryUUID);
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            logger.debug("writing ...");
-            String s = mapper.writeValueAsString(map);
-            logger.debug("done...");
-            return s;
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }
+   
 
     // for query management
 }

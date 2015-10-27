@@ -46,6 +46,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
+import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.ApplicationInfoAPI;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.SalsaXmlDataProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataForceDirect;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataTree;
@@ -63,7 +64,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @Path("/viewgenerator")
-public class ViewGenerator {
+public class ViewGenerator{
 	static Logger logger;
 	static {
 		logger = Logger.getLogger("SalsaCenterLogger");
@@ -71,7 +72,7 @@ public class ViewGenerator {
 
 	@GET
 	@Path("/cloudservice/json/compact/{serviceId}")
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)        
 	public String getServiceRuntimeJsonTreeCompact(@PathParam("serviceId") String serviceDeployId) {
 		if (serviceDeployId.equals("") || serviceDeployId.equals("null")) {
 			return "";

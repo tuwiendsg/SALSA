@@ -62,7 +62,7 @@ import org.codehaus.jackson.type.JavaType;
 import org.slf4j.Logger;
 
 /**
- *
+ * This service contains APIs to communicate with distributed collectors to gather information
  * @author Duc-Hung Le
  */
 @Path("/communication")
@@ -75,9 +75,9 @@ public class EliseCommunicationService {
     static int eliseCounter = 0;
 
     /**
-     * Get the information of all conductors
+     * Get the information of available conductors and collectors which are running and registered.
      *
-     * @return the number of conductors
+     * @return The description of all conductors.
      */
     @GET
     @Path("/count")
@@ -126,12 +126,12 @@ public class EliseCommunicationService {
     String rtLogFile;
 
     /**
-     * Send a query to collect the information
+     * Send a query to all the conductors, which then will trigger collector module, collect the information, and update to the central service.
      *
-     * @param query a query to specify which information to be collected
-     * @param isUpdated the information will be update continously
-     * @param isNotified the change will be notify to the topic: at.ac.tuwien.dsg.elise.notification
-     * @return a String of the Wrapper that wrap multiple service instances
+     * @param query A query to specify which information to be collected
+     * @param isUpdated The information will be update continously or this is an one-time query
+     * @param isNotified The change will be notify to the topic
+     * @return An UUID of the query, which can be used to trace the status of this query.
      */
     @POST
     @Path("/queryUnitInstance")
@@ -173,34 +173,34 @@ public class EliseCommunicationService {
 
     // the collector module can execute with single domainID, but from this level, it is imposible?
     // must use the querySetOfInstance.
-    @Deprecated
-    @POST
-    @Path("/queryUnitInstance/{domainID}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public String querySingleInstance(@PathParam("domainID") String instanceID,
-            @DefaultValue("false") @QueryParam("isUpdated") final boolean isUpdated,
-            @DefaultValue("false") @QueryParam("notify") final boolean isNotified) {
-        String uuid = UUID.randomUUID().toString();
-        MessageSubscribeInterface sub = factory.getMessageSubscriber(new SalsaMessageHandling() {
-            Map<String, String> answeredElises = new HashMap();
-
-            @Override
-            public void handleMessage(SalsaMessage message) {
-                toHandleMessageAndSaveData(message, answeredElises, isNotified, uuid);
-            }
-        });
-
-        logger.debug("Subscribing the topic: " + EliseQueueTopic.getFeedBackTopic(uuid));
-        sub.subscribe(EliseQueueTopic.getFeedBackTopic(uuid));
-        
-        logger.debug("Subscribe to feedback topic done, now push request ...");
-        MessagePublishInterface pub = factory.getMessagePublisher();
-
-        pub.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_querySingleInstance, EliseConfiguration.getEliseID(), EliseQueueTopic.QUERY_TOPIC, EliseQueueTopic.getFeedBackTopic(uuid), instanceID));
-        logger.debug("Push message done, just waiting for the message ...");
-
-        return uuid;
-    }
+//    @Deprecated
+//    @POST
+//    @Path("/queryUnitInstance/{domainID}")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public String querySingleInstance(@PathParam("domainID") String instanceID,
+//            @DefaultValue("false") @QueryParam("isUpdated") final boolean isUpdated,
+//            @DefaultValue("false") @QueryParam("notify") final boolean isNotified) {
+//        String uuid = UUID.randomUUID().toString();
+//        MessageSubscribeInterface sub = factory.getMessageSubscriber(new SalsaMessageHandling() {
+//            Map<String, String> answeredElises = new HashMap();
+//
+//            @Override
+//            public void handleMessage(SalsaMessage message) {
+//                toHandleMessageAndSaveData(message, answeredElises, isNotified, uuid);
+//            }
+//        });
+//
+//        logger.debug("Subscribing the topic: " + EliseQueueTopic.getFeedBackTopic(uuid));
+//        sub.subscribe(EliseQueueTopic.getFeedBackTopic(uuid));
+//        
+//        logger.debug("Subscribe to feedback topic done, now push request ...");
+//        MessagePublishInterface pub = factory.getMessagePublisher();
+//
+//        pub.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_querySingleInstance, EliseConfiguration.getEliseID(), EliseQueueTopic.QUERY_TOPIC, EliseQueueTopic.getFeedBackTopic(uuid), instanceID));
+//        logger.debug("Push message done, just waiting for the message ...");
+//
+//        return uuid;
+//    }
 
     private void toHandleMessageAndSaveData(SalsaMessage message, Map<String, String> answeredElises, boolean isNotified, String uuid) {
         String fromElise = message.getFromSalsa();
@@ -232,7 +232,7 @@ public class EliseCommunicationService {
             UnitInstanceWrapper wrapper = (UnitInstanceWrapper) mapper.readValue(message.getPayload(), UnitInstanceWrapper.class);
             Set<UnitInstance> uis = wrapper.getUnitInstances();
             logger.debug("Recieved " + uis.size() + " unitinstance. Saving....");
-            UnitInstanceDAO unitInstanceDAO = (UnitInstanceDAO) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceDAO.class, Collections.singletonList(new JacksonJsonProvider()));
+            UnitInstanceInfoManagement unitInstanceDAO = (UnitInstanceInfoManagement) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceInfoManagement.class, Collections.singletonList(new JacksonJsonProvider()));
             for (UnitInstance u : uis) {
                 unitInstanceDAO.addUnitInstance(u);
             }
@@ -306,5 +306,31 @@ public class EliseCommunicationService {
 
     public static String padLeft(String s, int n) {
         return String.format("%1$" + n + "s", s);
+    }
+    
+    
+    
+    
+    /**
+     * Query the status of a query.
+     * @param queryUUID The UUID of the query
+     * @return A list of conductors that are working for this query and the status of each
+     */
+    @GET
+    @Path("/query/{queryUUID}")
+    @Produces(MediaType.APPLICATION_JSON)     
+    public String getQueryProcessStatus(String queryUUID) {
+        logger.debug("Writing query management info to Json");
+        Map<String, EliseQueryProcessNotification.QueryProcessStatus> map = QueryManager.getQueryStatusAll(queryUUID);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            logger.debug("writing ...");
+            String s = mapper.writeValueAsString(map);
+            logger.debug("done...");
+            return s;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 }

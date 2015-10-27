@@ -118,11 +118,6 @@ public interface EliseManager {
     @Path("/identification/{globalID}")
     public void deleteGlobalIdentification(@PathParam("globalID") String globalID);
 
-    @GET
-    @Path("/query/{queryUUID}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getQueryInformation(@PathParam("queryUUID") String queryUUID);
-
     // health and generic stuff
     @GET
     @Path("/health")

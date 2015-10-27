@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
  * @author Duc-Hung Le
  */
 @Path("/cloudservice")
-public interface CloudServiceStructureDAO{
+public interface AppStructureInfoManagement{
     /* Cloud service structure management */
     @POST
     @Path("/")
