@@ -7,10 +7,10 @@ h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
 small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
+ u, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
+table, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
@@ -22,6 +22,17 @@ time, mark, audio, video {
   vertical-align: baseline;
 }
 
+
+/* Document buttons */
+.documentation {
+  background: #3498db;
+ 	box-shadow: inset 0px 0px 0px 0 rgba(233,2,38, 1);
+}
+
+.documentation:hover {
+  background: #3cb0fd;
+	box-shadow: inset 0px 0px 0px 0 rgba(233,2,38, 1);
+}
 
 /* Base text styles */
 
@@ -158,6 +169,12 @@ p img {
   border: none;
 }
 
+.caption{  
+  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+  text-align: center;
+  margin:0px 20px;
+}
+
 /* Code blocks */
 
 code, pre {
@@ -206,7 +223,7 @@ td {
 
 /* Wrapper */
 .wrapper {
-  width:960px;
+  width:1260px;
 }
 
 
@@ -244,7 +261,8 @@ h1.header {
 }
 
 
-h1.header, a.header, a.name, header a{
+
+h1.header, h2.header, a.header, a.name, header a{
 	color: #fff;
 }
 
@@ -312,6 +330,10 @@ a.javadoc {
 	background: url(../images/icon-java-small.png) no-repeat 1px;
 }
 
+a.doc {
+	background: url(../images/sharp.png) no-repeat 1px;
+}
+
 a.buttons:hover {
 	color: #fff;
 	text-decoration: none;
@@ -321,7 +343,7 @@ a.buttons:hover {
 /* Section - for main page content */
 
 section {
-  width:650px;
+  width:950px;
   float:right;
   padding-bottom:50px;
 }
