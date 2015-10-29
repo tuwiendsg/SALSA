@@ -10,6 +10,10 @@ p.small {
     line-height: 70%;
 }
 </style>
+
+
+
+<h3>APIs for application management</h3>
 <table class="tg" style="undefined;table-layout: fixed; width: 676px">
 <colgroup>
 <col style="width: 27px">
@@ -18,73 +22,121 @@ p.small {
 </colgroup>
   <tr>
     <th class="tg-hgcj">#</th>
-    <th class="tg-hgcj">API</th>
+    <th class="tg-hgcj">APIs</th>
     <th class="tg-amwm">Description</th>
   </tr>
   <tr>
-    <td class="tg-baqh">1<br>		</td>
+    <td class="tg-baqh">1	</td>
     <td class="tg-yw4l">PUT /services/{serviceName}<br>Consume: Multipart/Form-data</td>
-    <td class="tg-yw4l">Submit and deploy a service*. Tosca is embedded in a HTML form.<br>		</td>
+    <td class="tg-yw4l">Submit and deploy a service*. Tosca is embedded in a HTML form.	</td>
   </tr>
   <tr>
-    <td class="tg-baqh">2<br>		</td>
+    <td class="tg-baqh">2		</td>
     <td class="tg-yw4l">PUT /services/xml<br>Consume:Application/ XML</td>
     <td class="tg-yw4l">Submit and deploy a service*. Tosca is embedded in a HTML form.</td>
   </tr>
   <tr>
-    <td class="tg-baqh">3<br>		</td>
+    <td class="tg-baqh">3		</td>
     <td class="tg-yw4l">GET /services/{serviceId}<br>Produce: Application/XML</td>
-    <td class="tg-yw4l">Get the deployment structure of the application.<br>		</td>
+    <td class="tg-yw4l">Get the deployment structure of the application.		</td>
   </tr>
   <tr>
-    <td class="tg-baqh">4<br>		</td>
+    <td class="tg-baqh">4		</td>
     <td class="tg-yw4l">POST /services/{serviceId}/redeploy</td>
-    <td class="tg-yw4l">Redeploy the service<br>		</td>
+    <td class="tg-yw4l">Redeploy the service	</td>
   </tr>
   <tr>
-    <td class="tg-baqh">5<br>		</td>
-    <td class="tg-yw4l">DELETE /services/{serviceId}<br>		</td>
-    <td class="tg-yw4l">Remove the service<br>		</td>
+    <td class="tg-baqh">5	</td>
+    <td class="tg-yw4l">DELETE /services/{serviceId}	</td>
+    <td class="tg-yw4l">Remove the service	</td>
   </tr>
   <tr>
-    <td class="tg-baqh">6<br>		</td>
-    <td class="tg-yw4l">POST /services/{serviceId}/nodes/{nodeId}/instance-count/{quantity}<br>		</td>
-    <td class="tg-yw4l">Deploy more units.<br>		</td>
+    <td class="tg-baqh">6	</td>
+    <td class="tg-yw4l">POST /services/{serviceId}/nodes/{nodeId}/instance-count/{quantity}</td>
+    <td class="tg-yw4l">Deploy more units.	</td>
   </tr>
   <tr>
-    <td class="tg-baqh">7<br>		</td>
-    <td class="tg-yw4l">POST /services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/action_queue/{actionName}<br>		</td>
-    <td class="tg-yw4l">Execute a reconfiguration. The command is put in to a queue.<br>		</td>
+    <td class="tg-baqh">7	</td>
+    <td class="tg-yw4l">POST /services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/action_queue/{actionName}	</td>
+    <td class="tg-yw4l">Execute a reconfiguration. The command is put in to a queue.</td>
   </tr>
   <tr>
-    <td class="tg-baqh">8<br>		</td>
-    <td class="tg-yw4l">DELETE /services/{serviceId}/nodes/{nodeId}/instances/{instanceId}<br>		</td>
-    <td class="tg-yw4l">Delete a specific instance by ID.<br>		</td>
+    <td class="tg-baqh">8	</td>
+    <td class="tg-yw4l">DELETE /services/{serviceId}/nodes/{nodeId}/instances/{instanceId}		</td>
+    <td class="tg-yw4l">Delete a specific instance by ID.</td>
   </tr>
   <tr>
     <td class="tg-baqh">9		</td>
-    <td class="tg-yw4l">GET /viewgenerator/cloudservice/json/compact/<br>		</td>
-    <td class="tg-yw4l">Show application structure as a tree.<br>		</td>
+    <td class="tg-yw4l">GET /viewgenerator/cloudservice/json/compact/		</td>
+    <td class="tg-yw4l">Show application structure as a tree.</td>
   </tr>
   <tr>
-    <td class="tg-baqh">10<br>		</td>
+    <td class="tg-baqh">10		</td>
     <td class="tg-yw4l">GET /viewgenerator/cloudservice/json/list<br>Produce: Application/JSON</td>
     <td class="tg-yw4l">Get the list of the applications.<br>		</td>
   </tr>
   <tr>
-    <td class="tg-baqh">11<br>		</td>
+    <td class="tg-baqh">11		</td>
     <td class="tg-yw4l">POST /elise/communication/queryUnitInstance<br>Produce: Application/JSON</td>
-    <td class="tg-yw4l">Start a query from external service for the configuration information.<br>		</td>
+    <td class="tg-yw4l">Start a query from external service for the configuration information.</td>
   </tr>
   <tr>
-    <td class="tg-baqh">12<br>		</td>
+    <td class="tg-baqh">12	</td>
     <td class="tg-yw4l">GET /elise/manager/query/{queryUUID}<br>Produce: Text/plain</td>
-    <td class="tg-yw4l">Check the status of the information collection process of (11)<br>		</td>
+    <td class="tg-yw4l">Check the status of the information collection process of (11)</td>
   </tr>
   <tr>
-    <td class="tg-baqh">13<br>		</td>
+    <td class="tg-baqh">13	</td>
     <td class="tg-yw4l">GET /elise/unitinstance/{instanceUUID}<br>Produce: Application/JSON</td>
-    <td class="tg-yw4l">Get the more information of an instance after (12). The instanceUUID is get from (3) or (9).<br>		</td>
+    <td class="tg-yw4l">Get the more information of an instance after (12). The instanceUUID is get from (3) or (9).</td>
   </tr>
 </table>
+
+
+
+<h3>APIs for rSYBL</h3>
+
+
+<table class="tg" style="undefined;table-layout: fixed; width: 676px">
+<colgroup>
+<col style="width: 27px">
+<col style="width: 530px">
+<col style="width: 370px">
+</colgroup>
+  <tr>
+    <th class="tg-hgcj">#</th>
+    <th class="tg-hgcj">APIs</th>
+    <th class="tg-amwm">Description</th>
+  </tr>
+  <tr>
+    <td class="tg-baqh">1	</td>
+    <td class="tg-yw4l">POST /services/{serviceId}/nodes/{nodeId}/scaleout</td>
+    <td class="tg-yw4l">Scale out a service unit by ID</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">2		</td>
+    <td class="tg-yw4l">POST /services/{serviceId}/nodes/{nodeId}/scalein</td>
+    <td class="tg-yw4l">Scale in a service unit by ID</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">3		</td>
+    <td class="tg-yw4l">POST /services/{serviceId}/vmnodes/{ip}/scalein</td>
+    <td class="tg-yw4l">Scale in a service unit by IP address<br>		</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">4</td>
+    <td class="tg-yw4l">POST /services/{serviceId}/vmnodes/{ip}/scaleout</td>
+    <td class="tg-yw4l">Scale out a service unit by IP address<br>		</td>
+  </tr>
+  <tr>
+    <td class="tg-baqh">5		</td>
+    <td class="tg-yw4l">GET /services/tosca/{serviceId}/sybl</td>
+    <td class="tg-yw4l">Read the description in rSYBL format<br>		</td>
+  </tr>  
+</table>
+
+
+
+
+
 

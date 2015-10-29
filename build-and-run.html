@@ -1,0 +1,128 @@
+<h3>Build from source code</h3>
+SALSA is built by maven and JDK 1.8+. After checkout the source code from Github, run the default maven build command:
+<pre><code>mvn clean install
+</code></pre>
+There are many sub-modules need to be built, and the final artifacts are put together in the standalone module. User will find in the <code>target</code> folder:
+<ul>
+  <li>salsa-engine.jar: the main service.
+  <li>salsa-pioneer.jar: the configuration agent.
+  <li>conductor.jar: the information collector.
+  <li>./extensions folder: contains collector plug-in modules.
+  <li>salsa-client.jar: commandline client.
+</ul>
+The target folder is ready to run as salsa-engine will search for other artifacts in the same folder.
+
+
+
+
+
+
+
+
+
+<h3>Configure SALSA's parameters</h3>
+The parameter for SALSA is putting in the file ./salsa.engine.properties. The configuration will be default as bellow if not be set or no configuration file is found.
+<code><pre>
+# The IP and PORT of the salsa-engine, normally it will be detected, except the case of floating IP or proxy.
+# These options will be obsolete soon. Currently we need them for downloading default artifact.
+SALSA_CENTER_IP=localhost 
+SALSA_CENTER_PORT=8080
+
+# The directory that SALSA works on.
+SALSA_CENTER_WORKING_DIR=/tmp/salsa-engine
+SALSA_PIONEER_WORKING_DIR=/tmp/salsa-pioneer
+
+# The credential file to connect to clouds
+CLOUD_USER_PARAMETERS=./cloudUserParameters.ini
+
+# The message queue broker for SALSA's internal communication
+BROKER=tcp://iot.eclipse.org:1883
+BROKER_TYPE=mqtt
+
+# The message queue broker for publishing events to external services or users.
+EXPORT_BROKER=tcp://iot.eclipse.org:1883
+EXPORT_BROKER_TYPE=mqtt
+</pre></code>
+
+<p>Currently, SALSA support two BROKER_TYPE: mqtt, ampq. The endpoint is depended on the the BROKER_TYPE. All the component of SALSA will try to connect to the queue at start, thus it will fail if the queue is incorrectly set. These configuration will be passed to other components, then the whole SALSA framework can share.</p> 
+
+
+
+
+
+
+
+<h3>Configure user credentials for clouds</h3>
+<p>The cloud settings is on the file ./cloudUserParameters.ini. The parameters are different for various clouds. Below is the configuration of the SALSA-enabled clouds.
+<code><pre>
+[&ltmysite&gt@openstack]
+username=&ltOpenStack username&gt
+password=&ltOpenStack password&gt
+tenant=&ltProject name, tenant name&gt
+keystone_endpoint=&ltURL to keystone service, e.g http://.../identity/v2.0/&gt
+port=&ltkeystone port&gt
+sshKeyName=&ltthe keypair name, which created by openstack&gt
+location=&ltoptional localtion information&gt
+
+[&ltmysite&gt@flexiant]
+email=&ltaccount email&gt
+customerUUID=
+password=
+endpoint=&ltThe endpoint to JADE API of the datacenter&gt
+vdcUUID=&ltdefault value&gt
+defaultProductOfferUUID=&ltdefault value&gt
+clusterUUID=&ltdefault value&gt
+networkUUID=&ltdefault value&gt
+sshkey=&ltssh key which will be push to the VM&gt
+
+[&ltmysite&gt@stratuslab]
+Endpoint=&ltVM service endpoint&gt
+pdisk_endpoint=&ltStorage service endpoint&gt
+marketplace_endpoint=&ltMarketplace service endpoint&gt
+username=&ltuser name&gt
+password=&ltpassword&gt
+client_path=&ltlocal path to the client package&gt
+</pre></code>
+
+SALSA enables to run the application purely on Docker and do not require any cloud credenntial. Please refer to the examples for more details.
+
+
+<h3>Run the main service</h3>
+<p>Run salsa-engine by the command: <code>java -jar salsa-engine.jar --httpPort portNumber</code>. SALSA will run by default on port 8080. SALSA will create the working directory if need. The log files for developer are put into the folder <strong>logs</strong> in the working directory. When SALSA is successful started, user can use salsa-client or access to the webpage (by default at http://localhost:8080/salsa-engine) to check the status.</p>
+
+
+
+
+
+<h3>Using the salsa-client</h3>
+<p>Sys-admin can use Salsa-client to manage the system. Available commands is shown via --help option:</p>
+<code><pre>
+./salsa-client --help
+Usage: java -jar salsa-client.jar
+SALSA Java command-line client
+
+ -a (--address) &ltaddress&gt : The address of the salsa engine (default:
+                            128.130.172.216)
+ -h (--help)              : Print the help and exit (default: true)
+ -p (--port) &ltport&gt       : The port of the salsa engine (default: 8080)
+
+Type 'java -jar salsa-client.jar help &ltcommand&gt' for help on a specific command.
+
+Available commands:
+  conductor-list-collector: Get the list of available collector plugins. 
+  conductor-push-collector: Add a collector plugin to conductor to collect information. 
+  conductor-start     : Start a conductor to collect the information 
+  conductor-stop      : Stop a conductor by ID or at salsa-engine 
+  instance-deploy     : Deploy one or more instances of a service unit. 
+  instance-info-collect: Ask collector to start gathering the information. The process may take time. 
+  instance-query      : Get the information of an instance by ID. 
+  instance-remove     : Remove an running instance. 
+  meta                : Get metadata of the SALSA which is connected. 
+  service-list        : List the current managed cloud services 
+  service-remove      : Undeploy all components and remove the cloud services. 
+  service-status      : Get all the list of instances 
+  service-submit      : Submit a TOSCA to start a deployment. 
+  syn                 : Send message the synchronize pioneers.
+</pre></code>
+Beside the commands that manage the system, some commands are for distributing the collectors and configuring with external services to collecting external capabilities. Conductor manages collector modules and communicates with salsa-engine. The salsa-client can send the request to salsa-engine or salsa-pioneer to start/stop a conductor. When a conductor is running, salsa-client pushes and configures collector modules on the conductor.
+

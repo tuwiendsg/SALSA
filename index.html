@@ -35,9 +35,12 @@
   
   <script> 
       $(function(){
-        $("#apis_content").load("api_table.html");  
         $("#introduction_content").load("introduction.html");  
         $("#architecture_content").load("architecture.html");
+        $("#how-to-use_content").load("how-to-use.html");
+        $("#SALSA-specification_content").load("SALSA-specification.html");
+        $("#build-and-run_content").load("build-and-run.html");
+        $("#apis_content").load("api_table.html");          
       });
       window.onload = loadPart;
     </script> 
@@ -45,12 +48,12 @@
     <div class="wrapper">
       <header>
         <h1 class="header">SALSA</h1>
-        <p class="header">A Framework for Dynamic Orchestration and Configuration Application on Multi-cloud</p>
+        <p class="header">A Framework for Dynamic Configuration of IoT Cloud Systems</p>
         <h2 class="header">Sources</h2>
         
         <ul>
           <li class="download"><a class="buttons" href="https://github.com/tuwiendsg/SALSA/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/tuwiendsg/SALSA/tarball/master">Download TAR</a></li>
+<!--          <li class="download"><a class="buttons" href="https://github.com/tuwiendsg/SALSA/tarball/master">Download TAR</a></li>  -->
           <li><a class="buttons github" href="https://github.com/tuwiendsg/SALSA">View On GitHub</a></li>
           <li><a class="buttons javadoc" href="http://tuwiendsg.github.io/SALSA/apidocs/">Javadoc & UML</a></li>
         </ul>
@@ -59,134 +62,70 @@
         <ul>
           <li class="documentation"><a class="buttons doc" href="#abstract">Introduction</a></li>
           <li class="documentation"><a class="buttons doc" href="#architecture">Architecture</a></li>
-          <li class="documentation"><a class="buttons doc" href="#apis">APIs</a></li>
-          <li class="documentation"><a class="buttons doc" href="#installation">Build & Install</a></li>
-          <li class="documentation"><a class="buttons doc" href="#usage">Usage</a></li>
+          <li class="documentation"><a class="buttons doc" href="#how-to-use">How-to-use</a></li>
+          <li class="documentation"><a class="buttons doc" href="#SALSA-specification">Domain-specs</a></li>
+          <li class="documentation"><a class="buttons doc" href="#build-and-run">Build & run</a></li>
+          <li class="documentation"><a class="buttons doc" href="#apis">APIs</a></li>          
+          
           <li class="documentation"><a class="buttons doc" href="#screenshots">Screenshots</a></li>
           <li class="documentation"><a class="buttons doc" href="#publications">Publications</a></li>
           <li class="documentation"><a class="buttons doc" href="#contact">Contact us</a></li>
           
         </ul>
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/tuwiendsg">tuwiendsg</a></p>
+        <p class="header">Maintained by <a class="header name" href="https://github.com/tuwiendsg">tuwiendsg</a></p>
 
 
       </header>
       <section>
-      <h1><a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>Introduction</h1>
-          <div id="introduction_content"> </div>
+<h1><a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>Introduction</h1>
+<div id="introduction_content"> </div>
 
 <h1><a name="architecture" class="anchor" href="#architecture"><span class="octicon octicon-link"></span></a>Architecture</h1>
-
 <div id="architecture_content"></div>
 
-<h2>
-<a name="application-description" class="anchor" href="#application-description"><span class="octicon octicon-link"></span></a>Application description</h2>
+<h1><a name="how-to-use" class="anchor" href="#how-to-use"><span class="octicon octicon-link"></span></a>How-to-use</h1>
+<div id="how-to-use_content"></div>
 
-<p class="justify">Below is an example of description of the Cassandra cluster configuration using TOSCA description. The TOSCA contains some SALSA specific definition for node type and artifact type, and the custom Properties.</p>
+<h1><a name="SALSA-specification" class="anchor" href="#how-to-use"><span class="octicon octicon-link"></span></a>Domain specifications</h1>
+<div id="SALSA-specification_content"></div>
 
-<div class="highlight highlight-XML"><pre><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;tosca:Definitions</span> <span class="na">xmlns:tosca=</span><span class="s">"http://docs.oasis-open.org/tosca/ns/2011/12"</span> <span class="na">xmlns:salsa=</span><span class="s">"http://example.com"</span> <span class="na">id=</span><span class="s">"CassandraApp"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;tosca:ServiceTemplate</span> <span class="na">id=</span><span class="s">"CassandraTopology"</span><span class="nt">&gt;</span>      
-        <span class="nt">&lt;tosca:TopologyTemplate&gt;</span>        
-            <span class="nt">&lt;tosca:NodeTemplate</span> <span class="na">id=</span><span class="s">"CassandraSeed"</span>  <span class="na">name=</span><span class="s">"Cassandra seed node"</span> <span class="na">type=</span><span class="s">"salsa:software"</span> <span class="na">minInstances=</span><span class="s">"1"</span> <span class="na">maxInstances=</span><span class="s">"1"</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;tosca:DeploymentArtifacts&gt;</span>
-                    <span class="nt">&lt;tosca:DeploymentArtifact</span> <span class="na">artifactType=</span><span class="s">"salsa:sh"</span> <span class="na">name=</span><span class="s">"Deployment script"</span> <span class="na">artifactRef=</span><span class="s">"deployCassandraSeed"</span><span class="nt">/&gt;</span>
-                <span class="nt">&lt;/tosca:DeploymentArtifacts&gt;</span>
-            <span class="nt">&lt;/tosca:NodeTemplate&gt;</span>
+<h1><a name="build-and-run" class="anchor" href="#build-and-run"><span class="octicon octicon-link"></span></a>Build and run</h1>
+<div id="build-and-run_content"></div>
 
-            <span class="nt">&lt;tosca:NodeTemplate</span> <span class="na">id=</span><span class="s">"CassandraNode"</span> <span class="na">name=</span><span class="s">"Cassandra data node"</span> <span class="na">type=</span><span class="s">"salsa:software"</span> <span class="na">maxInstances=</span><span class="s">"1"</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;tosca:DeploymentArtifacts&gt;</span>
-                    <span class="nt">&lt;tosca:DeploymentArtifact</span> <span class="na">artifactType=</span><span class="s">"salsa:sh"</span> <span class="na">name=</span><span class="s">"Deployment script"</span> <span class="na">artifactRef=</span><span class="s">"deployCassandraNode"</span><span class="nt">/&gt;</span>
-                <span class="nt">&lt;/tosca:DeploymentArtifacts&gt;</span>
-            <span class="nt">&lt;/tosca:NodeTemplate&gt;</span>
-
-            <span class="nt">&lt;tosca:NodeTemplate</span> <span class="na">type=</span><span class="s">"salsa:os"</span> <span class="na">id=</span><span class="s">"OS_Datanode"</span> <span class="na">minInstances=</span><span class="s">"1"</span> <span class="na">maxInstances=</span><span class="s">"5"</span><span class="nt">&gt;</span>
-                 <span class="nt">&lt;tosca:Properties&gt;</span>
-                                <span class="nt">&lt;MappingProperties&gt;</span>                     
-                        <span class="nt">&lt;MappingProperty</span> <span class="na">type=</span><span class="s">"os"</span><span class="nt">&gt;</span>
-                            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"instanceType"</span><span class="nt">&gt;</span>000000960<span class="nt">&lt;/property&gt;</span>
-                            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"provider"</span><span class="nt">&gt;</span>dsg@openstack<span class="nt">&lt;/property&gt;</span> 
-                            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"baseImage"</span><span class="nt">&gt;</span>8f1428ac-f239-42e0-ab35-137f6e234101<span class="nt">&lt;/property&gt;</span>
-                            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"packages"</span><span class="nt">&gt;</span>openjdk-7-jre<span class="nt">&lt;/property&gt;</span>
-                            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"plugins"</span><span class="nt">&gt;</span>mela-dataservice<span class="nt">&lt;/property&gt;</span> 
-                        <span class="nt">&lt;/MappingProperty&gt;</span>
-                    <span class="nt">&lt;/MappingProperties&gt;</span>
-                <span class="nt">&lt;/tosca:Properties&gt;</span>
-            <span class="nt">&lt;/tosca:NodeTemplate&gt;</span>
-
-            <span class="nt">&lt;tosca:RelationshipTemplate</span> <span class="na">name=</span><span class="s">"Relation"</span> <span class="na">type=</span><span class="s">"salsa:CONNECTTO"</span> <span class="na">id=</span><span class="s">"head2datanode"</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;tosca:SourceElement</span> <span class="na">ref=</span><span class="s">"CassandraNode"</span><span class="nt">/&gt;</span>
-                <span class="nt">&lt;tosca:TargetElement</span> <span class="na">ref=</span><span class="s">"CassandraSeed"</span><span class="nt">/&gt;</span>
-            <span class="nt">&lt;/tosca:RelationshipTemplate&gt;</span>
-
-            <span class="nt">&lt;tosca:RelationshipTemplate</span> <span class="na">name=</span><span class="s">"Relation"</span> <span class="na">type=</span><span class="s">"salsa:HOSTON"</span> <span class="na">id=</span><span class="s">"datanode2os"</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;tosca:SourceElement</span> <span class="na">ref=</span><span class="s">"CassandraNode"</span><span class="nt">/&gt;</span>
-                <span class="nt">&lt;tosca:TargetElement</span> <span class="na">ref=</span><span class="s">"OS_Datanode"</span> <span class="nt">/&gt;</span>
-            <span class="nt">&lt;/tosca:RelationshipTemplate&gt;</span>
-        <span class="nt">&lt;/tosca:TopologyTemplate&gt;</span>
-    <span class="nt">&lt;/tosca:ServiceTemplate&gt;</span>
-
-<span class="c">&lt;!-- DEPLOYMENT ARTIFACTS DESCRIPTION --&gt;</span>   
-    <span class="nt">&lt;tosca:ArtifactTemplate</span> <span class="na">id=</span><span class="s">"deployCassandraSeed"</span> <span class="na">type=</span><span class="s">"sh"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;tosca:ArtifactReferences&gt;</span>
-            <span class="nt">&lt;tosca:ArtifactReference</span> <span class="na">reference=</span><span class="s">"http://128.130.172.215/salsa/upload/files/DaasService/deployCassandraSeed.sh"</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/tosca:ArtifactReferences&gt;</span>
-    <span class="nt">&lt;/tosca:ArtifactTemplate&gt;</span>
-
-    <span class="nt">&lt;tosca:ArtifactTemplate</span> <span class="na">id=</span><span class="s">"deployCassandraNode"</span> <span class="na">type=</span><span class="s">"sh"</span><span class="nt">&gt;</span>       
-        <span class="nt">&lt;tosca:ArtifactReferences&gt;</span>
-            <span class="nt">&lt;tosca:ArtifactReference</span> <span class="na">reference=</span><span class="s">"http://128.130.172.215/salsa/upload/files/DaasService/deployCassandraNode.sh"</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/tosca:ArtifactReferences&gt;</span>
-    <span class="nt">&lt;/tosca:ArtifactTemplate&gt;</span>
-<span class="nt">&lt;/tosca:Definitions&gt;</span>
-</pre></div>
-
-<h2>
-<a name="apis" class="anchor" href="#apis"><span class="octicon octicon-link"></span></a>API calls</h2>
-
+<h1><a name="apis" class="anchor" href="#apis"><span class="octicon octicon-link"></span></a>API calls</h1>
 <div id="apis_content"></div>
 
 
+<h1><a name="screenshots" class="anchor" href="#screenshots"><span class="octicon octicon-link"></span></a>Screenshots</h1>
 
-<h1>
-<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h1>
+<p align="center">
+<img src="images/screenshot1.png" alt="Screenshot1">
+<div class="caption">The list of the managed services</div>
+</p>
 
-<ol>
-<li><strong>Build</strong> the source and check two artifact: salsa-engine.jar and salsa-pioneer.jar. The two artifacts are put into the same folder.</li>
-<li><strong>Deploy</strong> buy running the salsa-engine.jar. The log files will be put into the folder <strong>logs</strong>.</li>
-<li><strong>Configure SALSA parameter</strong>: ./salsa.engine.properties if need. An example of this configuration is on the <code>salsa-engine/src/main/resources</code> folder. Most of the parameters can be left as default</li>
-<li><strong>Configure user parameter</strong>: ./cloudUserParameters.ini. This file configure the parameter to access to cloud providers which users registered. As the parameter are different between providers, please refer to the example in the <code>resources</code> folder.</li>
-</ol>
+<p align="center">
+<img src="images/screenshot2.png" alt="Screenshot2">
+<div class="caption">The configuration process</div>
+</p>
 
-<h1>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
-
-<p class="justify"><strong>Access to the web interface</strong> at the URL: <code>http://&lt;tomcatIP&gt;:8080/salsa-engine</code>. On this page, user can upload a TOSCA and executes the first deployment of the application. The web interface provides basic deploy and undeploy operations on different level of application structure.</p>
-
-<p><strong>Access to the API</strong> at the URL <code>http://&lt;tomcatIP&gt;:8080/salsa-engine/rest</code> to have configuration features. The API can be referred on <a href="https://github.com/tuwiendsg/SALSA/tree/master/salsa-core-pom/salsa-common/src/main/java/at/ac/tuwien/dsg/cloud/salsa/common/interfaces">salsa-common/interfaces pakage</a>.</p>
-
-<h1>
-<a name="screenshots" class="anchor" href="#screenshots"><span class="octicon octicon-link"></span></a>Screenshots</h1>
-
-<p>The graph shows the configuration status of the application.</p>
-
-<p><img src="http://tuwiendsg.github.io/SALSA/images/screenshot1.png" alt="Screenshot1"></p>
+<p align="center">
+<img src="images/screenshot4.png" alt="Screenshot4">
+<div class="caption">Salsa-client queries the status of salsa-engine</div>
+</p>
 
 
 
 
-<h1>
-<a name="publications" class="anchor" href="#publications"><span class="octicon octicon-link"></span></a>Publications</h1>
+<h1><a name="publications" class="anchor" href="#publications"><span class="octicon octicon-link"></span></a>Publications</h1>
 <ul>
 <li>
     Duc-Hung Le, Hong-Linh Truong, Georgiana Copil, Stefan Nastic, Schahram Dustdar, <strong>"SALSA: a Framework for Dynamic Configuration of Cloud Services"</strong>, (<a href="http://www.infosys.tuwien.ac.at/research/viecom/papers/SALSA_CloudCom2014.pdf">PDF</a>),  6th International Conference on Cloud Computing Technology and Science, 15-18 December 2014, Singapore. <em>Accepted</em>
 </li>
 </ul>
 
-<h1>
-<a name="contact" class="anchor" href="#contact"><span class="octicon octicon-link"></span></a>Contact</h1>
+<h1><a name="contact" class="anchor" href="#contact"><span class="octicon octicon-link"></span></a>Contact</h1>
 
-<p>Please contact Le Duc Hung <a href="mailto:d.le@dsg.tuwien.ac.at">d.le@dsg.tuwien.ac.at</a> for any kind of issue.</p>
+<p>Please contact Le Duc Hung <a href="mailto:d.le@dsg.tuwien.ac.at">d.le [at] dsg.tuwien.ac.at</a> and/or Hong-Linh Truong <a href="mailto:truong@dsg.tuwien.ac.at">truong [at] dsg.tuwien.ac.at</a> for any kind of issue.</p>
       </section>
       <footer>
         <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
