@@ -28,12 +28,12 @@ p.small {
   <tr>
     <td class="tg-baqh">1	</td>
     <td class="tg-yw4l">PUT /services/{serviceName}<br>Consume: Multipart/Form-data</td>
-    <td class="tg-yw4l">Submit and deploy a service*. Tosca is embedded in a HTML form.	</td>
+    <td class="tg-yw4l">Submit and deploy a service. Tosca is embedded in a HTML form.	</td>
   </tr>
   <tr>
     <td class="tg-baqh">2		</td>
     <td class="tg-yw4l">PUT /services/xml<br>Consume:Application/ XML</td>
-    <td class="tg-yw4l">Submit and deploy a service*. Tosca is embedded in a HTML form.</td>
+    <td class="tg-yw4l">Submit and deploy a service. Tosca is the POST data.</td>
   </tr>
   <tr>
     <td class="tg-baqh">3		</td>
@@ -130,7 +130,7 @@ p.small {
   </tr>
   <tr>
     <td class="tg-baqh">5		</td>
-    <td class="tg-yw4l">GET /services/tosca/{serviceId}/sybl</td>
+    <td class="tg-yw4l">GET /services/tosca/{serviceId}/sybl<br> Produce: Application/XML</td>
     <td class="tg-yw4l">Read the description in rSYBL format<br>		</td>
   </tr>  
 </table>
