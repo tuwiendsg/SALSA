@@ -2,7 +2,7 @@
 SALSA is built by maven and JDK 1.8+. After checkout the source code from Github, run the default maven build command:
 <pre><code>mvn clean install
 </code></pre>
-There are many sub-modules need to be built, and the final artifacts are put together in the standalone module. User will find in the <code>target</code> folder:
+There are many sub-modules will to be built. The ready-to-use artifacts are put together in the standalone module. User will find in the <code>target</code> folder:
 <ul>
   <li>salsa-engine.jar: the main service.
   <li>salsa-pioneer.jar: the configuration agent.
@@ -10,7 +10,7 @@ There are many sub-modules need to be built, and the final artifacts are put tog
   <li>./extensions folder: contains collector plug-in modules.
   <li>salsa-client.jar: commandline client.
 </ul>
-The target folder is ready to run as salsa-engine will search for other artifacts in the same folder.
+The structure in the target folder is ready to run, salsa-engine will search for other artifacts in the same folder.
 
 
 
@@ -21,11 +21,11 @@ The target folder is ready to run as salsa-engine will search for other artifact
 
 
 <h3>Configure SALSA's parameters</h3>
-The parameter for SALSA is putting in the file ./salsa.engine.properties. The configuration will be default as bellow if not be set or no configuration file is found.
+The parameters for SALSA are in the file ./salsa.engine.properties. The variables are set as default if not available or no configuration file is not found.
 <code><pre>
 # The IP and PORT of the salsa-engine, normally it will be detected, except the case of floating IP or proxy.
 # These options will be obsolete soon. Currently we need them for downloading default artifact.
-SALSA_CENTER_IP=localhost 
+SALSA_CENTER_IP=(will be detected)
 SALSA_CENTER_PORT=8080
 
 # The directory that SALSA works on.
@@ -44,7 +44,7 @@ EXPORT_BROKER=tcp://iot.eclipse.org:1883
 EXPORT_BROKER_TYPE=mqtt
 </pre></code>
 
-<p>Currently, SALSA support two BROKER_TYPE: mqtt, ampq. The endpoint is depended on the the BROKER_TYPE. All the component of SALSA will try to connect to the queue at start, thus it will fail if the queue is incorrectly set. These configuration will be passed to other components, then the whole SALSA framework can share.</p> 
+<p>Currently, SALSA supports two BROKER_TYPE: mqtt and ampq. The BROKER's endpoint depends on the the BROKER_TYPE. All the components of SALSA will try to connect to the queue at start, thus they will be failed if the queue is incorrect. These configurations will be passed to other components by salsa-engine, so the whole SALSA framework can share the same message queue.</p> 
 
 
 
@@ -53,7 +53,7 @@ EXPORT_BROKER_TYPE=mqtt
 
 
 <h3>Configure user credentials for clouds</h3>
-<p>The cloud settings is on the file ./cloudUserParameters.ini. The parameters are different for various clouds. Below is the configuration of the SALSA-enabled clouds.
+<p>The cloud settings are on the file ./cloudUserParameters.ini. The parameters are different for various clouds. Currently there are three SALSA-enabled clouds as belows:
 <code><pre>
 [&ltmysite&gt@openstack]
 username=&ltOpenStack username&gt
@@ -87,8 +87,8 @@ client_path=&ltlocal path to the client package&gt
 SALSA enables to run the application purely on Docker and do not require any cloud credenntial. Please refer to the examples for more details.
 
 
-<h3>Run the main service</h3>
-<p>Run salsa-engine by the command: <code>java -jar salsa-engine.jar --httpPort portNumber</code>. SALSA will run by default on port 8080. SALSA will create the working directory if need. The log files for developer are put into the folder <strong>logs</strong> in the working directory. When SALSA is successful started, user can use salsa-client or access to the webpage (by default at http://localhost:8080/salsa-engine) to check the status.</p>
+<h3>Run the salsa-engine</h3>
+<p>Run the main service (salsa-engine) by the command: <code>java -jar salsa-engine.jar --httpPort portNumber</code>. SALSA runs on port 8080 by default and creates the working directory if need. The log files for developer are put into the folder <strong>logs</strong> in the working directory. When SALSA is successful started, user can use salsa-client or access to the WebUI (by default at http://localhost:8080/salsa-engine) to check the status.</p>
 
 
 

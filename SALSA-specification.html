@@ -1,7 +1,7 @@
-<p>A number of examples of TOSCA for simple and complex application <a href="https://github.com/tuwiendsg/SALSA/tree/master/examples">available on Github</a>. These TOSCA files contain SALSA's special information pieces that are shown followings:</p>
+<p>A number of examples of TOSCA from simple to complex application are <a href="https://github.com/tuwiendsg/SALSA/tree/master/examples">available on Github</a>. These TOSCA files contain SALSA's special information as followings:</p>
 
-<h3>1. SALSA NodeTemplate type</h3>
-<p>The NodeTemplate types define which components can be place on where, enable SALSA to select right module to execute the configuration: using cloud connector for VM, pioneer for others. Also SALSA can parse the correct runtime information corresponding to the type. In the NodeTemplate, put an attribute as type="salsa:typeName". Currently, following type can be parsed: </p>
+<h3>1. SALSA NodeTemplate types</h3>
+<p>The NodeTemplate types define which components can be deploy on top of which, enabling SALSA to select right execution module to execute the configuration: using cloud connector for VM, artifact configuration for others. In the TOSCA NodeTemplate, the attribute is <code>type="salsa:typeName"</code>. Currently, following type can be parsed: </p>
 <code><pre>
  - salsa:software 	=> for the script-based artifacts 
  - salsa:war		=> describe a web application 
@@ -10,8 +10,8 @@
  - salsa:os 		=> default VM with Ubuntu 
 </pre></code>
 <h3>2. SALSA Artifact types</h3>
-Artifact types define the artifact that is used for the deployment, enable SALSA can use appropriate mechanism to configure the instance.
-In the ArtifactTemplate, put an attribute as type="salsa:typeName". Currently SALSA supports: 
+Artifact types define the artifacts that is used for the deployment, enabling SALSA to use appropriate mechanism to configure the instance.
+In the ArtifactTemplate, the attribute is type="salsa:typeName". Currently SALSA supports: 
 <code><pre>
  - salsa:sh		=> bash script, using bash to execute the deployment script. The deployment script must be finished. 
  - salsa:contsh		=> bash script which is called and run continuously. The running  process will be managed by SALSA in order to stop latter. 
@@ -42,7 +42,7 @@ Below is an example of the custom VM Node deployment information stated in <tosc
     &lt/MappingProperties&gt 
   &lt/tosca:Properties&gt 
 </pre></code>
-The provider name is at the format: <site>@<connector>. This string is specified in the cloud configuration file, (default at ./cloudUserParameters.ini or /etc/cloudUserParameters.ini) with the parameters suitable for a cloud (e.g. user, password, endpoint). User need to define the instance type (the VM configuration) and the based image for the VM. The additional packages are optional, which describe the pre-configured environment inside the VM.
+The provider name is at the format: <site>@<connector>. This string is specified in the cloud configuration file, (default at ./cloudUserParameters.ini or /etc/cloudUserParameters.ini) with the parameters suitable for a cloud (e.g. user, password, endpoint). User needs to define the instance type (the VM configuration) and the based image for the VM. The additional packages are optional, which describe the pre-configured environment inside the VM.
 <h4>3.2.Custom actions properties</h4>
 A NodeTemplate can have action property which map from a name with a system command. 
 <code><pre>
@@ -57,7 +57,7 @@ A NodeTemplate can have action property which map from a name with a system comm
     &lt/MappingProperties&gt 
   &lt/tosca:Properties&gt 
 </pre></code>
-By default in SALSA, the "undeploy" action will firstly look for the "stop" action if available to execute to ensure the semantic of the application. If there is no "undeploy" script, SALSA will try to detect the artifact type and clean up the service by default. 
+By default in SALSA, the "undeploy" action will firstly look for the "stop" action if available to execute to ensure the semantic of the application. If there is no "undeploy" script, SALSA will try to detect the artifact type and clean up the service by default module.
 
 <h3>4. Relationship types</h3>
 The relationships represent the order of deployment between nodes. In a relationship, the source node will be deploy before the target node. 
@@ -69,9 +69,9 @@ There are two types of relationship between nodes.
 </pre></code>
 
 <h3>5. Wiring the configuration</h3>
-The components have dependencies, such as the web-server need to know the database endpoint to run. SALSA enable to publish the dependent variable via environment variable. The share variables can be defined as the ID of the Connect-To relationships or the ID of the requirement in the description (see examples).
+The components have dependencies, such as the web-server needs to know the LoadBalancer IP to be deployed and reconfigured. SALSA enables to publish the dependencies via system environment variables. The share variables can be defined as the ID of the Connect-To relationships or the ID of the depending node (e.g the LoadBalancer) in the description (see examples).
 
-In most of the case, the dependency is just the IP address, which is by default supported. For example, if the <code>WebService node</code> need to know the IP of the <code>LoadBalancer node</code>, SALSA will inject into the file <code>/etc/environment</code> of the WebService node 2 lines, e.g:
+In most of the case, the dependency is just the IP address, which is supported by default. For example, if the <code>WebService node</code> needs to know the IP of the <code>LoadBalancer node</code>, SALSA will inject into the file <code>/etc/environment</code> of the WebService node, e.g:
 <code><pre>
 # cat /etc/environment
 LoadBalancer_IP=10.0.0.1  # use the name of the node that the configuration depends on
@@ -80,8 +80,8 @@ WebService_CONNECT_LoadBalancer_IP=10.0.0.1  # use the name of the relationship
 Thus, in the configuration script of the webserver, the IP can be get, e.g.:
 <code><pre>
 . /etc/environment 
-echo LoadBalancer_IP
-echo WebService_CONNECT_LoadBalancer_IP
+echo $LoadBalancer_IP
+echo $WebService_CONNECT_LoadBalancer_IP
 </pre></code>
 
 <p align="center">
@@ -91,7 +91,7 @@ echo WebService_CONNECT_LoadBalancer_IP
 
 
 <h3>6. Wiring two separate applications</h3>
-SALSA enable to wire a new deployment to an existing deployment. To do that, user need to define the existed component in the description of the new deployment. Instead of defining in details, user use the <code>"reference"</code>  field to link the existing units. The reference in a TOSCA node tells SALSA that do not configure that node, but refer to the existed node. The reference can be on the same SALSA or different SALSA, e.g.:
+SALSA enables to wire a new deployment to an existing deployment. To do that, user needs to define the existed components in the description of the new deployment. Instead of defining in details, user uses the <code>"reference"</code>  field to link the existing units. The reference in a TOSCA node tells SALSA not to configure that node, but to refer to the existed node. The reference can be on the same SALSA or different SALSA, e.g.:
 <code><pre>
 # Refer to the actual node MqttQueueVM of service ElasticIoTPlatform
 &ltns2:NodeTemplate reference="ElasticIoTPlatform/MqttQueueVM" id="MqttQueueVM"&gt

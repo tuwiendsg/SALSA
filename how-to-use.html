@@ -1,9 +1,9 @@
-The flow of using SALSA to deploy and manage the system consists of following steps:
+<p>The flow of using SALSA to deploy and manage the system consists of following steps:</p>
 
-<b><u>Step 1:</u> Prepare material of the application and the system.</b>
-<p>User knows about the application and the infrastructure and preprare followings:</p>
+<b><u>Step 1:</u> Prepare materials of the system.</b>
+<p>User knows about the application and the infrastructure in order to prepare followings:</p>
 <ol>
-  <li><i>The static artifacts</i> such as: binary packages, application's files or default config. files.
+  <li><i>The static artifacts</i> such as binary packages, application's files or default config. files.
   <li><i>The configuration scripts</i> to run at deployment time, e.g. to create new user, change config. files, and/or wiring components. The application needs these scripts to deal with the information that is only available at deployment time like dynamic IP addresses or environment variables.
   <li><i>The capabilities</i> of the application, e.g. a component can be reconfigured via a script, or APIs.
   <li><i>The infrastructure</i> to deploy the application, e.g. user must have credential to access to the cloud, or having right to run docker on the machine.
@@ -12,13 +12,13 @@ The flow of using SALSA to deploy and manage the system consists of following st
 <p>Most of the time, artifacts and scripts are uploaded onto a repository, e.g. Apache2 file server or Github.</p>
 
 <b><u>Step 2:</u> Make a description of the deployment and topology.</b>
-<p>With all these information from step 1, user define application deployment and topology in a TOSCA description. SALSA use TOSCA as a meta model to specify the systems, thus it has additional extended information, such as the types of services, relationships and artifacts, or the reference to wire multiple application, etc. <a href="#">Check the SALSA domain specifications for the details</a>.</p>
+<p>With all the information from step 1, user defines application deployment and topology in a TOSCA description. SALSA uses TOSCA as a meta model to specify the systems, thus it has additional extended information, such as the types of services, relationships and artifacts, or the reference to wire multiple applications, etc. <a href="#">Check the SALSA domain specifications for the details</a>.</p>
 
-<p>The TOSCA will be use as the initial input for SALSA in next step. Please check <a href="https://github.com/tuwiendsg/SALSA/tree/master/examples">some examples here</a> to know more about the TOSCA for SALSA. Also, we are developing a DSL in Java for developer for describing the system and interact with SALSA, please see <a href="http://tuwiendsg.github.io/iCOMOT/demo.html#javaDevPerspective">the tutorial</a>, and <a href="https://github.com/tuwiendsg/iCOMOT">examples</a> of the DSL.</p>
+<p>The TOSCA will be use as the initial input for SALSA in the next step. Please check <a href="https://github.com/tuwiendsg/SALSA/tree/master/examples">some examples here</a> to know more about the TOSCA for SALSA. Also, we are developing a DSL in Java for developer for describing the system and interact with SALSA, please see <a href="http://tuwiendsg.github.io/iCOMOT/demo.html#javaDevPerspective">the tutorial</a>, and <a href="https://github.com/tuwiendsg/iCOMOT">examples</a> of the DSL.</p>
 
 
 <b><u>Step 3:</u> Deploy the system and reconfiguring by SALSA capabilities.</b>
 <p>By using the RESTful API or commandline client, user submit the TOSCA and query the configuration status. At runtime, user can invoke the SALSA's default capabilities (e.g. deploy, undeploy, start, stop) and pre-defined capabilities which are defined in the TOSCA.</p>
 
 <b><u>Step 4:</u> Collect and query more capabilities to configure the system.</b>
-<p>The system is not running alone, but be possible to have many other service involving such as cloud providers, elasticity control, monitoring or IoT governance. SALSA can interact with these services to collect more available capabilities for the system, such as collecting monitoring information, asking for change controller policy.</p>
+<p>The system is not running alone, but be possible to have many other services involving such as cloud providers, elasticity control, monitoring or IoT governance. SALSA can interact with these services to collect more available capabilities for the system, such as collecting monitoring information, asking for changing controller policy.</p>
