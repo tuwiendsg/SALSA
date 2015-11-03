@@ -6,10 +6,11 @@
 package at.ac.tuwien.dsg.cloud.salsa.messaging.discovery.service;
 
 import at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.discovery.LightweightSalsaDiscovery;
-import at.ac.tuwien.dsg.cloud.utilities.messaging.api.DiscoveryRequest;
-import at.ac.tuwien.dsg.cloud.utilities.messaging.api.DiscoveryResponse;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.discoveryHelper.DiscoveryRequest;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.discoveryHelper.DiscoveryResponse;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.api.DiscoveryService;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.Config;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.ConfigService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,13 +29,7 @@ public class Application implements DiscoveryService {
 	private LightweightSalsaDiscovery discovery;
 	
 	public Application() {
-		
-		//todo: think about deplouyment: how does this property file get written?!
-		//todo: read from properties
-		
-		Config config = new Config<>();
-		config.setSalsaIp("128.130.172.215");
-		config.setSalsaPort(8080);
+		Config config = new ConfigService().getConfig();
 		this.discovery = new LightweightSalsaDiscovery(config);
 	}
 	

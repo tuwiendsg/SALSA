@@ -39,7 +39,7 @@ public class LightweightSalsaDiscovery extends ADiscovery implements Discovery {
 
 	@Override
 	public String discoverHost() {
-		return super.discoverHost(this.discoverHost(this.config.getServiceName()));
+		return this.discoverHost(this.config.getServiceName());
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class LightweightSalsaDiscovery extends ADiscovery implements Discovery {
 		try {
 			URI statusUri = UriBuilder.fromPath(restCommand).build(serviceName);
 			HttpGet method = new HttpGet(statusUri);
-			HttpHost host = new HttpHost(this.config.getSalsaIp(), this.config.getSalsaPort());
+			HttpHost host = new HttpHost(this.config.getDiscoveryIp(), this.config.getDiscoveryPort());
 			HttpClient client = new DefaultHttpClient();
 			HttpResponse response = client.execute(host, method);
 			
@@ -77,7 +77,6 @@ public class LightweightSalsaDiscovery extends ADiscovery implements Discovery {
 			//todo: log
 		}
 		
-		return null;
+		return super.discoverHost(null);
 	}
-
 }
