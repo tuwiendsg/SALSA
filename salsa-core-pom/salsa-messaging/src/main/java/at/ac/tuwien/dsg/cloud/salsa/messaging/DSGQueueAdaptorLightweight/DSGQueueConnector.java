@@ -27,8 +27,8 @@ public class DSGQueueConnector {
             return;
         }        
         try {
-            config.setSalsaIp(confs[0])
-                    .setSalsaPort(Integer.parseInt(confs[1]))
+            config.setDiscoveryIp(confs[0])
+                    .setDiscoveryPort(Integer.parseInt(confs[1]))
                     .setServiceName(confs[2]);
             this.instance = new LightweightSalsaDiscovery(config);
         } catch (NumberFormatException e) {
