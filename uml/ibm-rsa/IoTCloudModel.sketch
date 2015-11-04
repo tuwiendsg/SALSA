@@ -1,0 +1,1063 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--xtools2_universal_type_manager-->
+<!--Rational Software Architect Designer 9.5-->
+<SketchNotation:SketchDiagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SketchNotation="http://www.ibm.com/ccl/soa/sketch/notation/1.0.0/" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmi:id="_-Y33YILPEeWGtobikV4hJQ" type="Sketch" name="sketch" measurementUnit="Himetric">
+  <children xmi:type="notation:Node" xmi:id="_-byBcILPEeWGtobikV4hJQ" type="skrectangle">
+    <children xmi:type="notation:Node" xmi:id="_-byBcYLPEeWGtobikV4hJQ" type="skshapes">
+      <children xmi:type="notation:Node" xmi:id="_-b1r0ILPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-b2S4ILPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b2S4YLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b2S4oLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b2S44LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b2S5ILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-b2S5YLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-b1r0YLPEeWGtobikV4hJQ" description="GlobalIdentification" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-b1r0oLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-b1r04LPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_rdZWwILNEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_005lkIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-b1r1ILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-b1r1YLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-b1r1oLPEeWGtobikV4hJQ" x="11025" y="13058"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-b4IEILPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-b4IF4LPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b4IGILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b4IGYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b4vIILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b4vIYLPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-b4vIoLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-b4IEYLPEeWGtobikV4hJQ" description="IdentificationItem" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-b4IEoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-b4IE4LPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_rddoMILNEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_0wHzQYK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-b4IFILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-b4IFYLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-b4IFoLPEeWGtobikV4hJQ" x="6772" y="5701"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-b4vI4LPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-b4vKoLPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b4vK4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b4vLILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b5WMILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b5WMYLPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-b5WMoLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-b4vJILPEeWGtobikV4hJQ" description="LocalIdentification" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-b4vJYLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-b4vJoLPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_rdgEcILNEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_0ybgYIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-b4vJ4LPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-b4vKILPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-b4vKYLPEeWGtobikV4hJQ" x="11351" y="10729"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-b5WM4LPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-b5WOoLPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b5WO4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b5WPILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b5WPYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b59QILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-b59QYLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-b5WNILPEeWGtobikV4hJQ" description="UnitInstance" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-b5WNYLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-b5WNoLPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_rdkV4ILNEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_003wYIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-b5WN4LPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-b5WOILPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-b5WOYLPEeWGtobikV4hJQ" x="2056" y="1810"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-b59QoLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-b59SYLPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b59SoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b59S4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b59TILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b59TYLPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-b6kUILPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-b59Q4LPEeWGtobikV4hJQ" description="IDType" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-b59RILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-b59RYLPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_rdmLEILNEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_0yRvYIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-b59RoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-b59R4LPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-b59SILPEeWGtobikV4hJQ" x="749" y="6652"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-b6kUYLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-b6kWILPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b6kWYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b6kWoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b6kW4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b6kXILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-b6kXYLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-b6kUoLPEeWGtobikV4hJQ" description="State" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-b6kU4LPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-b6kVILPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_rdonUILNEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_00TvsIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-b6kVYLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-b6kVoLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-b6kV4LPEeWGtobikV4hJQ" x="8040" y="3223"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-b7LYILPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-b7LZ4LPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b7LaILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b7LaYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b7LaoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b7La4LPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-b7LbILPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-b7LYYLPEeWGtobikV4hJQ" description="DomainEntities" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-b7LYoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-b7LY4LPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_3NQQIILNEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_0ydVkYK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-b7LZILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-b7LZYLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-b7LZoLPEeWGtobikV4hJQ" x="6132" y="9834"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-b7LbYLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-b7ydoLPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b7yd4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b7yeILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b7yeYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b7yeoLPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-b7ye4LPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-b7ycILPEeWGtobikV4hJQ" description="DomainEntity" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-b7ycYLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-b7ycoLPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_3NVIoILNEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_00Vk4IK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-b7yc4LPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-b7ydILPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-b7ydYLPEeWGtobikV4hJQ" x="776" y="9674"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-b9AkILPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-b9noILPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b9noYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b9nooLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b9no4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b9npILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-b-OsILPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-b9AkYLPEeWGtobikV4hJQ" description="DockerExecution" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-b9AkoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-b9Ak4LPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_b6QjkILOEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_00-eEIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-b9AlILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-b9AlYLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-b9AloLPEeWGtobikV4hJQ" x="18818" y="7286"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-b-OsYLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-b-1wILPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b-1wYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b-1woLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b-1w4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b-1xILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-b-1xYLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-b-OsoLPEeWGtobikV4hJQ" description="PrimitiveToStringConverable" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-b-Os4LPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-b-OtILPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_b6S_0ILOEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_0wPvEIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-b-OtYLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-b-OtoLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-b-Ot4LPEeWGtobikV4hJQ" x="11844" y="7603"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-b-1xoLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-b-1zYLPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b-1zoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b-1z4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b-10ILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b-10YLPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-b_c0ILPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-b-1x4LPEeWGtobikV4hJQ" description="RestExecution" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-b-1yILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-b-1yYLPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_b6VcEILOEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_00jAQIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-b-1yoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-b-1y4LPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-b-1zILPEeWGtobikV4hJQ" x="18818" y="3482"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-b_c0YLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-b_c2ILPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b_c2YLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b_c2oLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-b_c24LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-b_c3ILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-b_c3YLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-b_c0oLPEeWGtobikV4hJQ" description="ScriptExecution" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-b_c04LPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-b_c1ILPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_b6X4UILOEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_0yhnAYK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-b_c1YLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-b_c1oLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-b_c14LPEeWGtobikV4hJQ" x="19135" y="9822"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_-byB9oLPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_-byB94LPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_-byB-ILPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_-byB-YLPEeWGtobikV4hJQ"/>
+      <element xsi:nil="true"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_-byB-oLPEeWGtobikV4hJQ" type="skdescription">
+      <element xsi:nil="true"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_-byB-4LPEeWGtobikV4hJQ" fontHeight="16" description="Runtime" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-byB_ILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-byB_YLPEeWGtobikV4hJQ">
+      <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_2cdP4ILOEeWGtobikV4hJQ</visualizedFromList>
+      <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+    </styles>
+    <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-byB_oLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="notation:TextStyle" xmi:id="_-byB_4LPEeWGtobikV4hJQ" textAlignment="Center"/>
+    <element xsi:nil="true"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-byCAILPEeWGtobikV4hJQ" x="39340" y="13400" width="24421" height="15955"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_-cX3UILPEeWGtobikV4hJQ" type="skrectangle">
+    <children xmi:type="notation:Node" xmi:id="_-cX3UYLPEeWGtobikV4hJQ" type="skshapes">
+      <children xmi:type="notation:Node" xmi:id="_-cZFcILPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-cZFd4LPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cZFeILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cZFeYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cZFeoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cZFe4LPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-cZFfILPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-cZFcYLPEeWGtobikV4hJQ" description="Capability" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-cZFcoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-cZFc4LPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_-nm1wIK1EeWfOMCRfGZuXw</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_00f88oK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-cZFdILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-cZFdYLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-cZFdoLPEeWGtobikV4hJQ" x="4832" y="6690"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-cZsgILPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-cZsh4LPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cZsiILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cZsiYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cZsioLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cZsi4LPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-cZsjILPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-cZsgYLPEeWGtobikV4hJQ" description="CapabilityEffect" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-cZsgoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-cZsg4LPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_-n5JoIK1EeWfOMCRfGZuXw</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_00of0IK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-cZshILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-cZshYLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-cZshoLPEeWGtobikV4hJQ" x="1488" y="4201"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-caTkILPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-caTl4LPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-caTmILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-caTmYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-caTmoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-caTm4LPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-caTnILPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-caTkYLPEeWGtobikV4hJQ" description="ServiceUnit" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-caTkoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-caTk4LPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_-n-CIIK1EeWfOMCRfGZuXw</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_0ynGkoK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-caTlILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-caTlYLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-caTloLPEeWGtobikV4hJQ" x="8175" y="2509"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-caTnYLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-ca6oILPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-ca6oYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-ca6ooLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-ca6o4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-ca6pILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-ca6pYLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-caTnoLPEeWGtobikV4hJQ" description="HasUniqueId" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-caTn4LPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-caToILPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_-oC6oIK1EeWfOMCRfGZuXw</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_00YBIIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-caToYLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-caTooLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-caTo4LPEeWGtobikV4hJQ" x="1144" y="1120"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-ca6poLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-cbhsILPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cbhsYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cbhsoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cbhs4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cbhtILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-cbhtYLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-ca6p4LPEeWGtobikV4hJQ" description="ServiceCategory" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-ca6qILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-ca6qYLPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_l-cQMILMEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_0v-CQIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-ca6qoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-ca6q4LPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-ca6rILPEeWGtobikV4hJQ" x="12442" y="7947"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-cbhtoLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-cbhvYLPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cbhvoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cbhv4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-ccIwILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-ccIwYLPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-ccIwoLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-cbht4LPEeWGtobikV4hJQ" description="ServiceStack" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-cbhuILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-cbhuYLPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_l-odcILMEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_0wN54IK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-cbhuoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-cbhu4LPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-cbhvILPEeWGtobikV4hJQ" x="12610" y="3973"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_-cX3lILPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_-cX3lYLPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_-cX3loLPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_-cX3l4LPEeWGtobikV4hJQ"/>
+      <element xsi:nil="true"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_-cX3mILPEeWGtobikV4hJQ" type="skdescription">
+      <element xsi:nil="true"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_-cX3mYLPEeWGtobikV4hJQ" fontHeight="16" description="Common" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-cX3moLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-cX3m4LPEeWGtobikV4hJQ">
+      <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_8mV_QILOEeWGtobikV4hJQ</visualizedFromList>
+      <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+    </styles>
+    <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-cX3nILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="notation:TextStyle" xmi:id="_-cX3nYLPEeWGtobikV4hJQ" textAlignment="Center"/>
+    <element xsi:nil="true"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-cX3noLPEeWGtobikV4hJQ" x="15478" y="18457" width="21934" height="11007"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_-cnu8ILPEeWGtobikV4hJQ" type="skrectangle">
+    <children xmi:type="notation:Node" xmi:id="_-cnu8YLPEeWGtobikV4hJQ" type="skshapes">
+      <children xmi:type="notation:Node" xmi:id="_-coWAILPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-co9EILPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-co9EYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-co9EoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-co9E4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-co9FILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-co9FYLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-coWAYLPEeWGtobikV4hJQ" description="CloudService" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-coWAoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-coWA4LPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_UrtusILNEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_007awIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-coWBILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-coWBYLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-coWBoLPEeWGtobikV4hJQ" x="505" y="1606"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-co9FoLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-cpkIILPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cpkIYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cpkIoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cpkI4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cpkJILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-cpkJYLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-co9F4LPEeWGtobikV4hJQ" description="ServiceEntity" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-co9GILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-co9GYLPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_UrynMILNEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_00mqoIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-co9GoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-co9G4LPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-co9HILPEeWGtobikV4hJQ" x="1826" y="5563"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-cpkJoLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-cpkLYLPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cpkLoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cpkL4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cpkMILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cpkMYLPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-cpkMoLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-cpkJ4LPEeWGtobikV4hJQ" description="ServiceTopology" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-cpkKILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-cpkKYLPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_Ur1qgILNEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_000tEIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-cpkKoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-cpkK4LPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-cpkLILPEeWGtobikV4hJQ" x="6313" y="1289"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-cqLMILPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-cqLN4LPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cqLOILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cqLOYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cqLOoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cqLO4LPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-cqLPILPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-cqLMYLPEeWGtobikV4hJQ" description="ServiceUnitTemplate" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-cqLMoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-cqLM4LPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_Ur4GwILNEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_00k1cYK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-cqLNILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-cqLNYLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-cqLNoLPEeWGtobikV4hJQ" x="13287" y="1289"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_-cnvHoLPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_-cnvH4LPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_-cnvIILPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_-cnvIYLPEeWGtobikV4hJQ"/>
+      <element xsi:nil="true"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_-cnvIoLPEeWGtobikV4hJQ" type="skdescription">
+      <element xsi:nil="true"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_-cnvI4LPEeWGtobikV4hJQ" fontHeight="16" description="Deployment phase" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-cnvJILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-cnvJYLPEeWGtobikV4hJQ">
+      <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_OKEUsILPEeWGtobikV4hJQ</visualizedFromList>
+      <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+    </styles>
+    <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-cnvJoLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="notation:TextStyle" xmi:id="_-cnvJ4LPEeWGtobikV4hJQ" textAlignment="Center"/>
+    <element xsi:nil="true"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-cnvKILPEeWGtobikV4hJQ" x="15212" y="8428" width="23229" height="8096"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_-cyHAILPEeWGtobikV4hJQ" type="skrectangle">
+    <children xmi:type="notation:Node" xmi:id="_-cyHAYLPEeWGtobikV4hJQ" type="skshapes">
+      <children xmi:type="notation:Node" xmi:id="_-cz8MILPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-cz8N4LPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cz8OILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cz8OYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-cz8OoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-cz8O4LPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-c0jQILPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-cz8MYLPEeWGtobikV4hJQ" description="Metric" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-cz8MoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-cz8M4LPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_-n7l4IK1EeWfOMCRfGZuXw</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_00brgYK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-cz8NILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-cz8NYLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-cz8NoLPEeWGtobikV4hJQ" x="613" y="8613"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-c0jQYLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-c0jSILPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-c0jSYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-c0jSoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-c0jS4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-c0jTILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-c0jTYLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-c0jQoLPEeWGtobikV4hJQ" description="Artifact" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-c0jQ4LPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-c0jRILPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_pu4b8ILMEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_0wFXAIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-c0jRYLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-c0jRoLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-c0jR4LPEeWGtobikV4hJQ" x="9751" y="8397"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-c1KUILPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-c1KV4LPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-c1KWILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-c1KWYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-c1KWoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-c1KW4LPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-c1KXILPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-c1KUYLPEeWGtobikV4hJQ" description="CostElement" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-c1KUoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-c1KU4LPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_pu97gILMEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_0yejsIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-c1KVILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-c1KVYLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-c1KVoLPEeWGtobikV4hJQ" x="296" y="5289"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-c1KXYLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-c1xYILPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-c1xYYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-c1xYoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-c1xY4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-c1xZILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-c1xZYLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-c1KXoLPEeWGtobikV4hJQ" description="CostFunction" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-c1KX4LPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-c1KYILPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_pvBl4ILMEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_0ykDQIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-c1KYYLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-c1KYoLPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-c1KY4LPEeWGtobikV4hJQ" x="508" y="1915"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-c1xZoLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-c2YcILPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-c2YcYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-c2YcoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-c2Yc4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-c2YdILPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-c2YdYLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-c1xZ4LPEeWGtobikV4hJQ" description="OfferedServiceUnit" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-c1xaILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-c1xaYLPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_pvFQQILMEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_002iQIK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-c1xaoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-c1xa4LPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-c1xbILPEeWGtobikV4hJQ" x="9172" y="5235"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-c2YdoLPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-c2YfYLPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-c2YfoLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-c2Yf4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-c2_gILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-c2_gYLPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-c2_goLPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-c2Yd4LPEeWGtobikV4hJQ" description="Provider" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-c2YeILPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-c2YeYLPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_pvI6oILMEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_00sxQYK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-c2YeoLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-c2Ye4LPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-c2YfILPEeWGtobikV4hJQ" x="9384" y="1915"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_-c2_g4LPEeWGtobikV4hJQ" type="skrectangle">
+        <children xmi:type="notation:Node" xmi:id="_-c2_ioLPEeWGtobikV4hJQ" type="skshapes">
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-c2_i4LPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-c2_jILPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:DrawerStyle" xmi:id="_-c2_jYLPEeWGtobikV4hJQ"/>
+          <styles xmi:type="notation:TitleStyle" xmi:id="_-c2_joLPEeWGtobikV4hJQ"/>
+          <element xsi:nil="true"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_-c2_j4LPEeWGtobikV4hJQ" type="skdescription">
+          <element xsi:nil="true"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_-c2_hILPEeWGtobikV4hJQ" description="SalsaArtifactType" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+        <styles xmi:type="notation:LineTypeStyle" xmi:id="_-c2_hYLPEeWGtobikV4hJQ"/>
+        <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-c2_hoLPEeWGtobikV4hJQ" viewTemplate="">
+          <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_vIFVQILMEeWGtobikV4hJQ</visualizedFromList>
+          <elementTemplateList>platform:/resource/exportJavaProject/IoTCloudModel.emx#_00sKMYK1EeWfOMCRfGZuXw</elementTemplateList>
+          <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+          <elementTemplateNameList>IoTCloudModel.emx ()</elementTemplateNameList>
+        </styles>
+        <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-c2_h4LPEeWGtobikV4hJQ"/>
+        <styles xmi:type="notation:TextStyle" xmi:id="_-c2_iILPEeWGtobikV4hJQ" textAlignment="Center"/>
+        <element xsi:nil="true"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-c2_iYLPEeWGtobikV4hJQ" x="8808" y="12052"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_-cyuHYLPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_-cyuHoLPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_-cyuH4LPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_-cyuIILPEeWGtobikV4hJQ"/>
+      <element xsi:nil="true"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_-cyuIYLPEeWGtobikV4hJQ" type="skdescription">
+      <element xsi:nil="true"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_-cyuIoLPEeWGtobikV4hJQ" fontHeight="16" description="Development phase" transparency="0" lineWidth="3" roundedBendpointsRadius="12"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-cyuI4LPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-cyuJILPEeWGtobikV4hJQ">
+      <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_VRj70ILPEeWGtobikV4hJQ</visualizedFromList>
+      <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+    </styles>
+    <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-cyuJYLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="notation:TextStyle" xmi:id="_-cyuJoLPEeWGtobikV4hJQ" textAlignment="Center"/>
+    <element xsi:nil="true"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-cyuJ4LPEeWGtobikV4hJQ" y="13615" width="14420" height="15849"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_-dbnQILPEeWGtobikV4hJQ" type="sklink">
+    <children xmi:type="notation:Node" xmi:id="_-dcOUILPEeWGtobikV4hJQ" type="skshapes">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_-dcOUYLPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_-dcOUoLPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_-dcOU4LPEeWGtobikV4hJQ"/>
+      <styles xmi:type="notation:TitleStyle" xmi:id="_-dcOVILPEeWGtobikV4hJQ"/>
+      <element xsi:nil="true"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_-dcOVYLPEeWGtobikV4hJQ" type="skdescription">
+      <element xsi:nil="true"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_-dbnQYLPEeWGtobikV4hJQ" fontHeight="10" underline="true" description="&lt;&lt; IoTCloudModel.dnx (Class)" transparency="0" lineColor="16711680" lineWidth="3" roundedBendpointsRadius="12"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dbnQoLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dbnQ4LPEeWGtobikV4hJQ">
+      <visualizedFromList>platform:/resource/exportJavaProject/IoTCloudModel.dnx#_9LhSQIK1EeWfOMCRfGZuXw</visualizedFromList>
+      <visualizedFromNameList>IoTCloudModel.dnx (Class)</visualizedFromNameList>
+    </styles>
+    <styles xmi:type="notation:RoundedCornersStyle" xmi:id="_-dbnRILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="notation:TextStyle" xmi:id="_-dbnRYLPEeWGtobikV4hJQ" textAlignment="Center"/>
+    <element xsi:nil="true"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_-dbnRoLPEeWGtobikV4hJQ" x="100" y="100"/>
+  </children>
+  <edges xmi:type="notation:Connector" xmi:id="_-dRPMILPEeWGtobikV4hJQ" type="skline" source="_-caTkILPEeWGtobikV4hJQ" target="_-caTnYLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dRPMYLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dRPMoLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dRPM4LPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dRPNILPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dSdUILPEeWGtobikV4hJQ" type="skline" source="_-coWAILPEeWGtobikV4hJQ" target="_-co9FoLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dSdUYLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dSdUoLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dSdU4LPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dSdVILPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dSdVYLPEeWGtobikV4hJQ" type="skline" source="_-caTkILPEeWGtobikV4hJQ" target="_-cZFcILPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dSdVoLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dSdV4LPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dSdWILPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dSdWYLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dSdWoLPEeWGtobikV4hJQ" type="skline" source="_-cpkJoLPEeWGtobikV4hJQ" target="_-co9FoLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dSdW4LPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dSdXILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dSdXYLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dSdXoLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dTEYILPEeWGtobikV4hJQ" type="skline" source="_-cqLMILPEeWGtobikV4hJQ" target="_-b5WM4LPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dTEYYLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dTEYoLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dTEY4LPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dTEZILPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dTEZYLPEeWGtobikV4hJQ" type="skline" source="_-b9AkILPEeWGtobikV4hJQ" target="_-b-OsYLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dTEZoLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dTEZ4LPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dTEaILPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dTEaYLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dTEaoLPEeWGtobikV4hJQ" type="skline" source="_-c1KXYLPEeWGtobikV4hJQ" target="_-c1KUILPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dTrcILPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dTrcYLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dTrcoLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dTrc4LPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dTrdILPEeWGtobikV4hJQ" type="skline" source="_-c2YdoLPEeWGtobikV4hJQ" target="_-caTnYLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dTrdYLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dTrdoLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dTrd4LPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dTreILPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dTreYLPEeWGtobikV4hJQ" type="skline" source="_-cpkJoLPEeWGtobikV4hJQ" target="_-cpkJoLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dTreoLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dTre4LPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dTrfILPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dTrfYLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dTrfoLPEeWGtobikV4hJQ" type="skline" source="_-b5WM4LPEeWGtobikV4hJQ" target="_-b6kUYLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dTrf4LPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dTrgILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dTrgYLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dTrgoLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dUSgILPEeWGtobikV4hJQ" type="skline" source="_-ca6poLPEeWGtobikV4hJQ" target="_-cbhtoLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dUSgYLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dUSgoLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dUSg4LPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dUShILPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dUShYLPEeWGtobikV4hJQ" type="skline" source="_-c1KXYLPEeWGtobikV4hJQ" target="_-c1xZoLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dUShoLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dUSh4LPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dUSiILPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dUSiYLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dUSioLPEeWGtobikV4hJQ" type="skline" source="_-b1r0ILPEeWGtobikV4hJQ" target="_-b4vI4LPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dUSi4LPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dUSjILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dUSjYLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dUSjoLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dU5kILPEeWGtobikV4hJQ" type="skline" source="_-b1r0ILPEeWGtobikV4hJQ" target="_-ca6poLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dU5kYLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dU5koLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dU5k4LPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dU5lILPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dVgoILPEeWGtobikV4hJQ" type="skline" source="_-c0jQYLPEeWGtobikV4hJQ" target="_-c2_g4LPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dVgoYLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dVgooLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dWHsILPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dWHsYLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dWHsoLPEeWGtobikV4hJQ" type="skline" source="_-caTkILPEeWGtobikV4hJQ" target="_-ca6poLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dWHs4LPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dWHtILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dWHtYLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dWHtoLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dWHt4LPEeWGtobikV4hJQ" type="skline" source="_-c1xZoLPEeWGtobikV4hJQ" target="_-caTkILPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dWHuILPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dWHuYLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dWHuoLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dWHu4LPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dWuwILPEeWGtobikV4hJQ" type="skline" source="_-cZFcILPEeWGtobikV4hJQ" target="_-cZsgILPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dWuwYLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dWuwoLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dWuw4LPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dWuxILPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dWuxYLPEeWGtobikV4hJQ" type="skline" source="_-b7LYILPEeWGtobikV4hJQ" target="_-b7LbYLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dWuxoLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dWux4LPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dWuyILPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dWuyYLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dWuyoLPEeWGtobikV4hJQ" type="skline" source="_-co9FoLPEeWGtobikV4hJQ" target="_-caTkILPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dWuy4LPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dWuzILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dWuzYLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dWuzoLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dXV0ILPEeWGtobikV4hJQ" type="skline" source="_-b4vI4LPEeWGtobikV4hJQ" target="_-ca6poLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dXV0YLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dXV0oLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dXV04LPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dXV1ILPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dXV1YLPEeWGtobikV4hJQ" type="skline" source="_-b5WM4LPEeWGtobikV4hJQ" target="_-caTkILPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dXV1oLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dXV14LPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dXV2ILPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dXV2YLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dXV2oLPEeWGtobikV4hJQ" type="skline" source="_-cqLMILPEeWGtobikV4hJQ" target="_-cqLMILPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dXV24LPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dXV3ILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dXV3YLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dXV3oLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dXV34LPEeWGtobikV4hJQ" type="skline" source="_-b-1xoLPEeWGtobikV4hJQ" target="_-b-OsYLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dXV4ILPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dX84ILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dX84YLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dX84oLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dX844LPEeWGtobikV4hJQ" type="skline" source="_-cqLMILPEeWGtobikV4hJQ" target="_-cqLMILPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dX85ILPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dX85YLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dX85oLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dX854LPEeWGtobikV4hJQ" points="[-168, 656, -168, 656]$[-616, 2403, -616, 2403]$[-2409, 2403, -2409, 2403]$[-658, 656, -658, 656]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dX86ILPEeWGtobikV4hJQ" type="skline" source="_-b_c0YLPEeWGtobikV4hJQ" target="_-b-OsYLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dX86YLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dX86oLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dX864LPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dX87ILPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dYj8ILPEeWGtobikV4hJQ" type="skline" source="_-coWAILPEeWGtobikV4hJQ" target="_-cpkJoLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dYj8YLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dYj8oLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dYj84LPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dYj9ILPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dYj9YLPEeWGtobikV4hJQ" type="skline" source="_-c1xZoLPEeWGtobikV4hJQ" target="_-c1KXYLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dYj9oLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dYj94LPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dYj-ILPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dYj-YLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dYj-oLPEeWGtobikV4hJQ" type="skline" source="_-b5WM4LPEeWGtobikV4hJQ" target="_-b5WM4LPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dYj-4LPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dYj_ILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dYj_YLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dYj_oLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dZLAILPEeWGtobikV4hJQ" type="skline" source="_-c2YdoLPEeWGtobikV4hJQ" target="_-c1xZoLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dZLAYLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dZLAoLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dZLA4LPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dZLBILPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dZLBYLPEeWGtobikV4hJQ" type="skline" source="_-c1xZoLPEeWGtobikV4hJQ" target="_-c0jQYLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dZLBoLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dZLB4LPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dZLCILPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dZLCYLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dZLCoLPEeWGtobikV4hJQ" type="skline" source="_-cpkJoLPEeWGtobikV4hJQ" target="_-cqLMILPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dZLC4LPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dZLDILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dZLDYLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dZLDoLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dZLD4LPEeWGtobikV4hJQ" type="skline" source="_-b5WM4LPEeWGtobikV4hJQ" target="_-b5WM4LPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dZLEILPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dZLEYLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dZLEoLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dZLE4LPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dZyEILPEeWGtobikV4hJQ" type="skline" source="_-cqLMILPEeWGtobikV4hJQ" target="_-co9FoLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dZyEYLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dZyEoLPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dZyE4LPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dZyFILPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dZyFYLPEeWGtobikV4hJQ" type="skline" source="_-b7LbYLPEeWGtobikV4hJQ" target="_-ca6poLPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dZyFoLPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dZyF4LPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dZyGILPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dZyGYLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_-dZyGoLPEeWGtobikV4hJQ" type="skline" source="_-c1KUILPEeWGtobikV4hJQ" target="_-cz8MILPEeWGtobikV4hJQ" roundedBendpointsRadius="12" smoothness="Normal" avoidObstructions="true" lineWidth="2">
+    <styles xmi:type="notation:ArrowStyle" xmi:id="_-dZyG4LPEeWGtobikV4hJQ" arrowTarget="OpenArrow"/>
+    <styles xmi:type="notation:LineTypeStyle" xmi:id="_-dZyHILPEeWGtobikV4hJQ"/>
+    <styles xmi:type="SketchNotation:SketchStyle" xmi:id="_-dZyHYLPEeWGtobikV4hJQ"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_-dZyHoLPEeWGtobikV4hJQ" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
+  </edges>
+</SketchNotation:SketchDiagram>
