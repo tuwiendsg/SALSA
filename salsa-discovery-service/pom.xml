@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
-        <artifactId>SALSA</artifactId>
-        <version>2.0</version>
-    </parent>
-    <artifactId>salsa-discovery-service</artifactId>
-    <packaging>jar</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+		<artifactId>SALSA</artifactId>
+		<version>2.0</version>
+	</parent>
+	<artifactId>salsa-discovery-service</artifactId>
+	<packaging>jar</packaging>
 	
 	<build>
 		<plugins>
@@ -39,35 +39,61 @@
 		</dependencies>
 	</dependencyManagement>
 	
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <type>jar</type>
-        </dependency>
+	<dependencies>
+		<!--        <dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<type>jar</type>
+		</dependency>-->
 		
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <type>jar</type>
-        </dependency>
+		<!--        <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
+			<type>jar</type>
+		</dependency>-->
 		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 		
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jetty</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<type>jar</type>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		
+		<!--		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-common</artifactId>
 			<version>2.22</version>
-		</dependency>
+		</dependency>-->
 		
 		<dependency>
-            <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
-            <artifactId>salsa-messaging</artifactId>
-            <version>2.0</version>
-            <type>jar</type>
-        </dependency>
-    </dependencies>
+			<groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+			<artifactId>salsa-messaging</artifactId>
+			<version>2.0</version>
+			<type>jar</type>
+		</dependency>
+	</dependencies>
 </project>
