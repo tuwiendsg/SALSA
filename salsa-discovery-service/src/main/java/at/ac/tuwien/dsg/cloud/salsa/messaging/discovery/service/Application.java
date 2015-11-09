@@ -11,6 +11,8 @@ import at.ac.tuwien.dsg.cloud.utilities.messaging.discoveryHelper.DiscoveryRespo
 import at.ac.tuwien.dsg.cloud.utilities.messaging.api.DiscoveryService;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.Config;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.ConfigService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication
 @RestController
 public class Application implements DiscoveryService {
-
+	private static Logger logger = LoggerFactory.getLogger(Application.class);
 	private LightweightSalsaDiscovery discovery;
 	
 	public Application() {
@@ -36,6 +38,7 @@ public class Application implements DiscoveryService {
 	@Override
 	@RequestMapping(value="/discover", method = RequestMethod.POST)
 	public DiscoveryResponse discover(@RequestBody DiscoveryRequest request) {
+		logger.trace("Discovering {}", request.getServiceName());
 		String ip = this.discovery.discoverHost(request.getServiceName());
 		return (new DiscoveryResponse()).setServiceIp(ip);
 	}
