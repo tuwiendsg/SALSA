@@ -1,0 +1,286 @@
+GET http://128.130.172.216:8080/salsa-engine/rest/viewgenerator/cloudservice/json/compact/ElasticIoTPlatform
+
+{
+    "id": "ElasticIoTPlatform",
+    "state": "DEPLOYED",
+    "children": [
+        {
+            "id": "DataEndTopology",
+            "state": "DEPLOYED",
+            "properties": {
+                "Number of service units": "15"
+            },
+            "children": [
+                {
+                    "id": "PersonalMachine_1",
+                    "uuid": "6c0c1fc8-ae5d-4646-85ff-befb0b9949e9",
+                    "state": "DEPLOYED",
+                    "properties": {
+                        "instanceId": "icomot-docker",
+                        "provider": "localhost",
+                        "instanceType": "",
+                        "privateIp": "localhost",
+                        "extra": "Pioneer is deployed",
+                        "baseImage": "",
+                        "publicIp": "localhost"
+                    },
+                    "children": [
+                        {
+                            "id": "MqttQueueVM_1",
+                            "uuid": "0fc84a28-92e3-4f5b-8a02-160bd34b4940",
+                            "state": "DEPLOYED",
+                            "properties": {
+                                "instanceId": "d9b82e5ad24fe6e01f755b1a8166a38b7ac656866ebef3ed76adecbfaf0f596f",
+                                "provider": "local@dockerhost",
+                                "dockername": "/MqttQueueVM_1",
+                                "privateIp": "172.17.0.37",
+                                "extra": "Pioneer is deployed",
+                                "baseImage": "salsa.ubuntu",
+                                "publicIp": "172.17.0.37",
+                                "portmap": ""
+                            },
+                            "children": [
+                                {
+                                    "id": "QueueUnit_0",
+                                    "uuid": "6dc57eba-55b1-4998-b464-891e73d6ff3d",
+                                    "state": "DEPLOYED",
+                                    "properties": {
+                                        "extra": "Configure script DONE: run_mqtt_broker.sh",
+                                        "Capability[brokerIp_Capability]": "172.17.0.37"
+                                    },
+                                    "isAbstract": false,
+                                    "nodeType": "software",
+                                    "artifactType": "sh",
+                                    "connectto": []
+                                }
+                            ],
+                            "isAbstract": false,
+                            "nodeType": "docker",
+                            "artifactType": "dockerfile",
+                            "connectto": []
+                        },
+                        {
+                            "id": "LoadBalancerUnitVM_1",
+                            "uuid": "9df134fa-b52d-4abe-97e4-ab28de7ab4b9",
+                            "state": "DEPLOYED",
+                            "properties": {
+                                "instanceId": "2f6f1345aaa7f486300a4b0ba4b357b05aeb3db69239d5bc1c747792b91c4fef",
+                                "provider": "local@dockerhost",
+                                "dockername": "/LoadBalancerUnitVM_1",
+                                "privateIp": "172.17.0.42",
+                                "extra": "Pioneer is deployed",
+                                "baseImage": "salsa.ubuntu",
+                                "publicIp": "172.17.0.42",
+                                "portmap": ""
+                            },
+                            "children": [
+                                {
+                                    "id": "LoadBalancerUnit_0",
+                                    "uuid": "1e52dbd2-0eb8-454b-81cd-6fa6c96ae1ae",
+                                    "state": "DEPLOYED",
+                                    "properties": {
+                                        "extra": "Configure script DONE: deployLoadBalancer.sh",
+                                        "Capability[LoadBalancer_IP_information]": "172.17.0.42"
+                                    },
+                                    "isAbstract": false,
+                                    "nodeType": "software",
+                                    "artifactType": "sh",
+                                    "connectto": []
+                                }
+                            ],
+                            "isAbstract": false,
+                            "nodeType": "docker",
+                            "artifactType": "dockerfile",
+                            "connectto": []
+                        },
+                        {
+                            "id": "MoMVM_1",
+                            "uuid": "b89b1930-45e0-47bb-9f9a-493db6c8d8a7",
+                            "state": "DEPLOYED",
+                            "properties": {
+                                "instanceId": "1dc9a32ce8df8e28cd2ac6e900478b3cb985351ba78d01364a8f73fa1e4c64e1",
+                                "provider": "local@dockerhost",
+                                "dockername": "/MoMVM_1",
+                                "privateIp": "172.17.0.39",
+                                "extra": "Pioneer is deployed",
+                                "baseImage": "salsa.ubuntu",
+                                "publicIp": "172.17.0.39",
+                                "portmap": ""
+                            },
+                            "children": [
+                                {
+                                    "id": "MOMUnit_0",
+                                    "uuid": "3c3223fc-eade-4204-b9fa-aa57613f8fdd",
+                                    "state": "DEPLOYED",
+                                    "properties": {
+                                        "Capability[MOM_IP_information]": "172.17.0.39",
+                                        "extra": "Configure script DONE: deployQueue.sh"
+                                    },
+                                    "isAbstract": false,
+                                    "nodeType": "software",
+                                    "artifactType": "sh",
+                                    "connectto": []
+                                }
+                            ],
+                            "isAbstract": false,
+                            "nodeType": "docker",
+                            "artifactType": "dockerfile",
+                            "connectto": []
+                        },
+                        {
+                            "id": "DataControllerUnitVM_1",
+                            "uuid": "23e88663-d3b8-4ddb-a0f9-cf047b6035f1",
+                            "state": "DEPLOYED",
+                            "properties": {
+                                "instanceId": "6b42528547e6ecb7c5b83e5eb4c94298e81df755f41cc8bdc8293b6ec6cc9f32",
+                                "provider": "local@dockerhost",
+                                "dockername": "/DataControllerUnitVM_1",
+                                "privateIp": "172.17.0.38",
+                                "extra": "Pioneer is deployed",
+                                "baseImage": "salsa.ubuntu",
+                                "publicIp": "172.17.0.38",
+                                "portmap": ""
+                            },
+                            "children": [
+                                {
+                                    "id": "DataControllerUnit_0",
+                                    "uuid": "174fd4f8-f0fe-4658-933e-5540d51c4ab6",
+                                    "state": "DEPLOYED",
+                                    "properties": {
+                                        "extra": "Configure script DONE: deployCassandraSeed.sh",
+                                        "Capability[DataController_IP_information]": "172.17.0.38"
+                                    },
+                                    "isAbstract": false,
+                                    "nodeType": "software",
+                                    "artifactType": "sh",
+                                    "connectto": []
+                                }
+                            ],
+                            "isAbstract": false,
+                            "nodeType": "docker",
+                            "artifactType": "dockerfile",
+                            "connectto": []
+                        },
+                        {
+                            "id": "DataNodeUnitVM_1",
+                            "uuid": "a08646ff-7e58-4c8d-a4c5-ab29d347cfd8",
+                            "state": "DEPLOYED",
+                            "properties": {
+                                "instanceId": "372d2d4844ca8db0b90f847c89654e9cc8a8d4b02635603a425156d070b9e742",
+                                "provider": "local@dockerhost",
+                                "dockername": "/DataNodeUnitVM_1",
+                                "privateIp": "172.17.0.41",
+                                "extra": "Pioneer is deployed",
+                                "baseImage": "salsa.ubuntu",
+                                "publicIp": "172.17.0.41",
+                                "portmap": ""
+                            },
+                            "children": [
+                                {
+                                    "id": "DataNodeUnit_0",
+                                    "uuid": "5218e13e-95aa-4097-a104-5f31047f5b7c",
+                                    "state": "DEPLOYED",
+                                    "properties": {
+                                        "extra": "Configure script DONE: deployCassandraNode.sh"
+                                    },
+                                    "isAbstract": false,
+                                    "nodeType": "software",
+                                    "artifactType": "sh",
+                                    "connectto": [
+                                        "DataControllerUnit_0"
+                                    ]
+                                }
+                            ],
+                            "isAbstract": false,
+                            "nodeType": "docker",
+                            "artifactType": "dockerfile",
+                            "connectto": []
+                        },
+                        {
+                            "id": "LocalProcessingUnitVM_1",
+                            "uuid": "ff60cd9a-a32d-4b7e-89a8-bc99dadbd49b",
+                            "state": "DEPLOYED",
+                            "properties": {
+                                "instanceId": "09857a935221d56adf43ff8443e9fe38b24b557790228d8a1e893ae67bea5fb3",
+                                "provider": "local@dockerhost",
+                                "dockername": "/LocalProcessingUnitVM_1",
+                                "privateIp": "172.17.0.43",
+                                "extra": "Pioneer is deployed",
+                                "baseImage": "salsa.ubuntu",
+                                "publicIp": "172.17.0.43",
+                                "portmap": ""
+                            },
+                            "children": [
+                                {
+                                    "id": "LocalProcessingUnit_0",
+                                    "uuid": "752ecd75-bd06-4884-b1bf-e4b92dc5778b",
+                                    "state": "DEPLOYED",
+                                    "properties": {
+                                        "extra": "Configure script DONE: deployLocalAnalysis.sh"
+                                    },
+                                    "isAbstract": false,
+                                    "nodeType": "software",
+                                    "artifactType": "sh",
+                                    "connectto": [
+                                        "QueueUnit_0",
+                                        "LoadBalancerUnit_0"
+                                    ]
+                                }
+                            ],
+                            "isAbstract": false,
+                            "nodeType": "docker",
+                            "artifactType": "dockerfile",
+                            "connectto": []
+                        },
+                        {
+                            "id": "EventProcessingUnitVM_1",
+                            "uuid": "91943d94-d695-4f33-9f91-6ea1a90e36d2",
+                            "state": "DEPLOYED",
+                            "properties": {
+                                "instanceId": "140a3e8b3bf5357a3a521362ced6326c0e7cef5fdf21391f9b1d6578f4de399f",
+                                "provider": "local@dockerhost",
+                                "dockername": "/EventProcessingUnitVM_1",
+                                "privateIp": "172.17.0.40",
+                                "extra": "Pioneer is deployed",
+                                "baseImage": "salsa.ubuntu",
+                                "publicIp": "172.17.0.40",
+                                "portmap": ""
+                            },
+                            "children": [
+                                {
+                                    "id": "EventProcessingUnit_0",
+                                    "uuid": "24688420-a3b0-442d-90f1-eef40fcad007",
+                                    "state": "DEPLOYED",
+                                    "properties": {
+                                        "extra": "Configure script DONE: deployEventProcessing.sh"
+                                    },
+                                    "isAbstract": false,
+                                    "nodeType": "software",
+                                    "artifactType": "sh",
+                                    "connectto": [
+                                        "MOMUnit_0",
+                                        "DataControllerUnit_0",
+                                        "LoadBalancerUnit_0"
+                                    ]
+                                }
+                            ],
+                            "isAbstract": false,
+                            "nodeType": "docker",
+                            "artifactType": "dockerfile",
+                            "connectto": []
+                        }
+                    ],
+                    "isAbstract": false,
+                    "nodeType": "os",
+                    "connectto": []
+                }
+            ],
+            "isAbstract": true,
+            "nodeType": "TOPOLOGY",
+            "connectto": []
+        }
+    ],
+    "isAbstract": true,
+    "nodeType": "CLOUD SERVICE",
+    "connectto": []
+}

@@ -1,0 +1,132 @@
+GET http://128.130.172.216:8080/salsa-engine/rest/viewgenerator/cloudservice/json/compact/IoTSensors
+
+{
+    "id": "IoTSensors",
+    "state": "DEPLOYED",
+    "children": [
+        {
+            "id": "IoTTopology",
+            "state": "DEPLOYED",
+            "properties": {
+                "Number of service units": "6"
+            },
+            "children": [
+                {
+                    "id": "gatewayVM_1",
+                    "uuid": "bb9412af-b8d4-4923-b8c7-ed6c154fcf4c",
+                    "state": "DEPLOYED",
+                    "properties": {
+                        "instanceId": "icomot-docker",
+                        "provider": "localhost",
+                        "instanceType": "",
+                        "privateIp": "localhost",
+                        "extra": "Pioneer is deployed",
+                        "baseImage": "",
+                        "publicIp": "localhost"
+                    },
+                    "children": [
+                        {
+                            "id": "gatewayDocker_1",
+                            "uuid": "f0a3a2b9-a8fa-437e-96a1-fbf3d76bc0e4",
+                            "state": "DEPLOYED",
+                            "properties": {
+                                "instanceId": "3315a6abbd231145a2834328b0a7ec0ffc25ee2d405d28e3738863923395fa82",
+                                "provider": "local@dockerhost",
+                                "dockername": "/gatewayDocker_1",
+                                "privateIp": "172.17.0.44",
+                                "extra": "Pioneer is deployed",
+                                "baseImage": "salsa.ubuntu",
+                                "publicIp": "172.17.0.44",
+                                "portmap": "2812:10.99.0.21:2813 5683:10.99.0.21:5684 80:10.99.0.21:9081"
+                            },
+                            "children": [
+                                {
+                                    "id": "sensorUnit_0",
+                                    "uuid": "d392f95f-64fb-4796-ab51-de51e0c6bc84",
+                                    "state": "DEPLOYED",
+                                    "properties": {
+                                        "extra": "Configure script DONE: runSensor_gps1279_location.sh"
+                                    },
+                                    "isAbstract": false,
+                                    "nodeType": "software",
+                                    "artifactType": "sh",
+                                    "connectto": [
+                                        "QueueUnit_0"
+                                    ]
+                                }
+                            ],
+                            "isAbstract": false,
+                            "nodeType": "docker",
+                            "artifactType": "dockerfile",
+                            "connectto": []
+                        }
+                    ],
+                    "isAbstract": false,
+                    "nodeType": "os",
+                    "connectto": []
+                },
+                {
+                    "id": "PersonalMachine_1",
+                    "uuid": "6c0c1fc8-ae5d-4646-85ff-befb0b9949e9",
+                    "state": "DEPLOYED",
+                    "properties": {
+                        "reference": "ElasticIoTPlatform/PersonalMachine/1",
+                        "instanceId": "icomot-docker",
+                        "provider": "localhost",
+                        "instanceType": "",
+                        "privateIp": "localhost",
+                        "extra": "Pioneer is deployed",
+                        "baseImage": "",
+                        "publicIp": "localhost"
+                    },
+                    "children": [
+                        {
+                            "id": "MqttQueueVM_1",
+                            "uuid": "0fc84a28-92e3-4f5b-8a02-160bd34b4940",
+                            "state": "DEPLOYED",
+                            "properties": {
+                                "reference": "ElasticIoTPlatform/MqttQueueVM/1",
+                                "instanceId": "d9b82e5ad24fe6e01f755b1a8166a38b7ac656866ebef3ed76adecbfaf0f596f",
+                                "provider": "local@dockerhost",
+                                "dockername": "/MqttQueueVM_1",
+                                "privateIp": "172.17.0.37",
+                                "extra": "Pioneer is deployed",
+                                "baseImage": "salsa.ubuntu",
+                                "publicIp": "172.17.0.37",
+                                "portmap": ""
+                            },
+                            "children": [
+                                {
+                                    "id": "QueueUnit_0",
+                                    "uuid": "6dc57eba-55b1-4998-b464-891e73d6ff3d",
+                                    "state": "DEPLOYED",
+                                    "properties": {
+                                        "reference": "ElasticIoTPlatform/QueueUnit/0",
+                                        "extra": "Configure script DONE: run_mqtt_broker.sh",
+                                        "Capability[brokerIp_Capability]": "172.17.0.37"
+                                    },
+                                    "isAbstract": false,
+                                    "nodeType": "software",
+                                    "connectto": []
+                                }
+                            ],
+                            "isAbstract": false,
+                            "nodeType": "docker",
+                            "artifactType": "dockerfile",
+                            "connectto": []
+                        }
+                    ],
+                    "isAbstract": false,
+                    "nodeType": "os",
+                    "connectto": []
+                }
+            ],
+            "isAbstract": true,
+            "nodeType": "TOPOLOGY",
+            "connectto": []
+        }
+    ],
+    "isAbstract": true,
+    "nodeType": "CLOUD SERVICE",
+    "connectto": []
+}
