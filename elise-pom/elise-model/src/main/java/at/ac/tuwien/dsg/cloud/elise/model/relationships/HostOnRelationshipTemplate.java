@@ -39,7 +39,7 @@ public class HostOnRelationshipTemplate {
     }
 
     @GraphId
-    Long graphId;
+    private Long graphId;
 
     @StartNode
     protected ServiceUnitTemplate from;

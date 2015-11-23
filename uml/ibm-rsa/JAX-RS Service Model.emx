@@ -192,7 +192,7 @@
             <visualizedToList>platform:/resource/exportJavaProject/SalsaAPI.sketch#_GaRIsILVEeWGtobikV4hJQ</visualizedToList>
             <visualizedToNameList>SalsaAPI.sketch</visualizedToNameList>
           </styles>
-          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_UjHGYYJLEeWhw-TVukGlYw" y="3804"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_UjHGYYJLEeWhw-TVukGlYw" x="2536" y="3804"/>
         </children>
         <children xmi:type="umlnotation:UMLShape" xmi:id="_jquAcILUEeWGtobikV4hJQ" element="_jqn50ILUEeWGtobikV4hJQ" fontName="Sans" fontHeight="8" transparency="0" lineColor="14263149" lineWidth="1" showStereotype="Image">
           <children xmi:type="notation:DecorationNode" xmi:id="_jqungILUEeWGtobikV4hJQ" type="ImageCompartment">
@@ -209,7 +209,20 @@
             <visualizedToList>platform:/resource/exportJavaProject/SalsaAPI.sketch#_GaTk8ILVEeWGtobikV4hJQ</visualizedToList>
             <visualizedToNameList>SalsaAPI.sketch</visualizedToNameList>
           </styles>
-          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_jquAcYLUEeWGtobikV4hJQ" x="7925" y="8559"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_jquAcYLUEeWGtobikV4hJQ" x="7925" y="10144"/>
+        </children>
+        <children xmi:type="umlnotation:UMLShape" xmi:id="_ir8iQJICEeWB3eAsgec_gA" element="_iivi8JICEeWB3eAsgec_gA" fontName="Sans" fontHeight="8" showListSignature="true" transparency="0" lineColor="14263149" lineWidth="1" showStereotype="Image">
+          <children xmi:type="notation:DecorationNode" xmi:id="_ir9JUJICEeWB3eAsgec_gA" type="ImageCompartment">
+            <layoutConstraint xmi:type="notation:Size" xmi:id="_ir9JUZICEeWB3eAsgec_gA" width="1320" height="1320"/>
+          </children>
+          <children xmi:type="notation:BasicDecorationNode" xmi:id="_ir9wYJICEeWB3eAsgec_gA" type="Stereotype"/>
+          <children xmi:type="notation:BasicDecorationNode" xmi:id="_ir-XcJICEeWB3eAsgec_gA" type="Name"/>
+          <children xmi:type="notation:BasicDecorationNode" xmi:id="_ir-XcZICEeWB3eAsgec_gA" type="Parent"/>
+          <children xmi:type="notation:SemanticListCompartment" xmi:id="_ir--gJICEeWB3eAsgec_gA" type="AttributeCompartment"/>
+          <children xmi:type="notation:SemanticListCompartment" xmi:id="_ir--gZICEeWB3eAsgec_gA" type="OperationCompartment"/>
+          <children xmi:type="notation:SemanticListCompartment" xmi:id="_ir_lkJICEeWB3eAsgec_gA" visible="false" type="SignalCompartment"/>
+          <children xmi:type="umlnotation:UMLShapeCompartment" xmi:id="_ir_lkZICEeWB3eAsgec_gA" visible="false" type="StructureCompartment"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_ir8iQZICEeWB3eAsgec_gA" x="634" y="6657"/>
         </children>
         <edges xmi:type="umlnotation:UMLConnector" xmi:id="_w9xfQIJCEeWhw-TVukGlYw" element="_w9UzUIJCEeWhw-TVukGlYw" source="_7sdsAIJBEeWhw-TVukGlYw" target="_rqbWUIJCEeWhw-TVukGlYw" fontName="Sans" fontHeight="8" roundedBendpointsRadius="4" routing="Rectilinear" lineColor="8421504" lineWidth="1" showStereotype="Text">
           <children xmi:type="notation:DecorationNode" xmi:id="_w-HdgIJCEeWhw-TVukGlYw" type="NameLabel">
@@ -320,6 +333,14 @@
           <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_sUM-wYLUEeWGtobikV4hJQ" points="[39, 100, 3819, -2855]$[39, 734, 3819, -2221]$[-3740, 734, 40, -2221]$[-3740, 2955, 40, 0]"/>
           <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_3_2tkILUEeWGtobikV4hJQ" id="(0.4999999999999997,0.9432125473228772)"/>
           <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_3_3UoILUEeWGtobikV4hJQ" id="(0.5001969751270982,-9.83769282609982E-16)"/>
+        </edges>
+        <edges xmi:type="umlnotation:UMLConnector" xmi:id="_0MpjcJIDEeWB3eAsgec_gA" element="_0MfLYJIDEeWB3eAsgec_gA" source="_7sdsAIJBEeWhw-TVukGlYw" target="_ir8iQJICEeWB3eAsgec_gA" fontName="Sans" fontHeight="8" roundedBendpointsRadius="4" routing="Rectilinear" lineColor="8421504" lineWidth="1" showStereotype="Text">
+          <children xmi:type="notation:DecorationNode" xmi:id="_0MpjcpIDEeWB3eAsgec_gA" type="NameLabel">
+            <children xmi:type="notation:BasicDecorationNode" xmi:id="_0MqKgJIDEeWB3eAsgec_gA" type="Stereotype"/>
+            <children xmi:type="notation:BasicDecorationNode" xmi:id="_0MqKgZIDEeWB3eAsgec_gA" type="Name"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_0Mpjc5IDEeWB3eAsgec_gA" x="-1256" y="-437"/>
+          </children>
+          <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_0MpjcZIDEeWB3eAsgec_gA" points="[-1374, 52, 7933, -7105]$[-12494, 52, -3187, -7105]$[-12494, 7209, -3187, 52]$[-11594, 7209, -2287, 52]"/>
         </edges>
       </contents>
     </eAnnotations>
@@ -439,7 +460,7 @@
     <packageImport xmi:id="_bUlbm4JAEeWhw-TVukGlYw">
       <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#_0"/>
     </packageImport>
-    <packagedElement xmi:type="uml:Class" xmi:id="_7r5EQIJBEeWhw-TVukGlYw" name="SALSA API" clientDependency="_w9UzUIJCEeWhw-TVukGlYw _I3-8AIJLEeWhw-TVukGlYw _bgnrEIJLEeWhw-TVukGlYw"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_7r5EQIJBEeWhw-TVukGlYw" name="SALSA API" clientDependency="_w9UzUIJCEeWhw-TVukGlYw _I3-8AIJLEeWhw-TVukGlYw _bgnrEIJLEeWhw-TVukGlYw _0MfLYJIDEeWB3eAsgec_gA"/>
     <packagedElement xmi:type="uml:Class" xmi:id="_rqWd0IJCEeWhw-TVukGlYw" name="services" clientDependency="_FHG6IIJFEeWhw-TVukGlYw _farpsIJHEeWhw-TVukGlYw">
       <ownedOperation xmi:id="_8XM1oIJCEeWhw-TVukGlYw" name="submitService">
         <ownedParameter xmi:id="_A-oTwIJDEeWhw-TVukGlYw" name="serviceName">
@@ -535,7 +556,7 @@
       </ownedOperation>
     </packagedElement>
     <packagedElement xmi:type="uml:Dependency" xmi:id="_I3-8AIJLEeWhw-TVukGlYw" name="/viewgenerator/cloudservice/json" supplier="_A_hyAIJLEeWhw-TVukGlYw" client="_7r5EQIJBEeWhw-TVukGlYw"/>
-    <packagedElement xmi:type="uml:Class" xmi:id="_UjCN4IJLEeWhw-TVukGlYw" name="queryUnitInstance">
+    <packagedElement xmi:type="uml:Class" xmi:id="_UjCN4IJLEeWhw-TVukGlYw" name="collectInstanceInfo">
       <ownedOperation xmi:id="_Z4XT0IJLEeWhw-TVukGlYw" name="queryUnitInstance">
         <ownedParameter xmi:id="_yJ4qoILSEeWGtobikV4hJQ" name="query">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
@@ -547,6 +568,14 @@
       <ownedOperation xmi:id="_lHKwUILUEeWGtobikV4hJQ" name="getListOfServices"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Dependency" xmi:id="_sUFC8ILUEeWGtobikV4hJQ" name="/list" supplier="_jqn50ILUEeWGtobikV4hJQ" client="_A_hyAIJLEeWhw-TVukGlYw"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_iivi8JICEeWB3eAsgec_gA" name="getUnitInstanceByID">
+      <ownedOperation xmi:id="__Ih3oJICEeWB3eAsgec_gA" name="getUnitInstanceByID">
+        <ownedParameter xmi:id="_LoG9wJIDEeWB3eAsgec_gA" name="instanceUUID">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        </ownedParameter>
+      </ownedOperation>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Dependency" xmi:id="_0MfLYJIDEeWB3eAsgec_gA" name="/elise/unitinstance/{instanceUUID}" supplier="_iivi8JICEeWB3eAsgec_gA" client="_7r5EQIJBEeWhw-TVukGlYw"/>
     <profileApplication xmi:id="_bUlbnIJAEeWhw-TVukGlYw">
       <eAnnotations xmi:id="_bUlbnYJAEeWhw-TVukGlYw" source="http://www.eclipse.org/uml2/2.0.0/UML">
         <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILES/Standard.profile.uml#_yzU58YinEdqtvbnfB2L_5w"/>
@@ -659,4 +688,12 @@
   <REST:Resource xmi:id="_jqqWEILUEeWGtobikV4hJQ" base_Class="_jqn50ILUEeWGtobikV4hJQ"/>
   <REST:GET xmi:id="_lHPBwILUEeWGtobikV4hJQ" base_Operation="_lHKwUILUEeWGtobikV4hJQ"/>
   <REST:Path xmi:id="_sUG4IILUEeWGtobikV4hJQ" base_Dependency="_sUFC8ILUEeWGtobikV4hJQ"/>
+  <REST:Resource xmi:id="_ioQ8IJICEeWB3eAsgec_gA" base_Class="_iivi8JICEeWB3eAsgec_gA"/>
+  <REST:GET xmi:id="__IliAJICEeWB3eAsgec_gA" base_Operation="__Ih3oJICEeWB3eAsgec_gA">
+    <producesEx xmi:id="_BFrg0JIDEeWB3eAsgec_gA">
+      <typeRef xmi:type="uml:Property" href="pathmap://REST_REFERENCE_LIBRARY/RESTReference.emx#_cvT9ABlcEeKLlYuxjnl7lg?RestReference/MediaType/APPLICATION_JSON?"/>
+    </producesEx>
+  </REST:GET>
+  <REST:Param xmi:id="_LoNEYJIDEeWB3eAsgec_gA" paramType="PathParam" paramName="instanceUUID" base_Parameter="_LoG9wJIDEeWB3eAsgec_gA"/>
+  <REST:Path xmi:id="_0Mi1wJIDEeWB3eAsgec_gA" base_Dependency="_0MfLYJIDEeWB3eAsgec_gA"/>
 </xmi:XMI>

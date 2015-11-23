@@ -43,7 +43,7 @@ import org.springframework.data.neo4j.annotation.GraphId;
 public class Provider implements HasUniqueId {
 
     @GraphId
-    Long graphID;
+    private Long graphID;
     @Indexed(unique = true)
     protected String id;
     protected String name;

@@ -37,7 +37,7 @@ import org.springframework.data.neo4j.annotation.StartNode;
 @RelationshipEntity(type = "ConnectToRelationshipTemplate")
 public class ConnectToRelationshipTemplate {
     @GraphId
-    Long graphId;
+    private Long graphId;
 
     @StartNode
     protected ServiceUnitTemplate from;
