@@ -1,0 +1,36 @@
+GET http://128.130.172.216:8080/salsa-engine/rest/elise/unitinstance/24688420-a3b0-442d-90f1-eef40fcad007
+
+{
+  "id": "24688420-a3b0-442d-90f1-eef40fcad007",
+  "name": "EventProcessingUnit",
+  "category": "ExecutableApp",
+  "unitType": "software",
+  "capabilities": [
+    {
+      "name": "monitor",
+      "executedBy": "MELA",
+      "executionMethod": "REST",
+      "executionModel": "{\"endpoint\":\"http://localhost:8080/MELA/REST_WS/ElasticIoTPlatform/monitoringdata/json\",\"method\":\"GET\",\"data\":null}",
+      "effects": []
+    },
+    {
+      "name": "undeploy",
+      "executedBy": "SALSA",
+      "executionMethod": "REST",
+      "executionModel": "{\"endpoint\":\"http://10.99.0.21:8080/salsa-engine/services/ElasticIoTPlatform/topologies/DataEndTopology/nodes/EventProcessingUnit/instances/0\",\"method\":\"DELETE\",\"data\":\"\"}",
+      "effects": []
+    },
+    {
+      "name": "deploy",
+      "executedBy": "SALSA",
+      "executionMethod": "REST",
+      "executionModel": "{\"endpoint\":\"http://10.99.0.21:8080/salsa-engine/services/ElasticIoTPlatform/topologies/DataEndTopology/nodes/EventProcessingUnit/instance-count/{quantity}\",\"method\":\"POST\",\"data\":\"\"}",
+      "parameters": [
+        "1",
+        "quantity"
+      ],
+      "effects": []
+    }
+  ],
+  "identification": "{\"uuid\":\"24688420-a3b0-442d-90f1-eef40fcad007\",\"category\":\"ExecutableApp\",\"localIDs\":[{\"assignedBy\":\"SALSA\",\"category\":\"ExecutableApp\",\"idItems\":{\"SALSA_TOPOLOGY\":\"ElasticIoTPlatform/DataEndTopology\",\"SALSA_SERVICE\":\"ElasticIoTPlatform\",\"SALSA_UNIT\":\"ElasticIoTPlatform/EventProcessingUnit\",\"SALSA_INSTANCE\":\"ElasticIoTPlatform/EventProcessingUnit/0\"}}]}"
+}

@@ -1,0 +1,58 @@
+GET http://128.130.172.216:8080/salsa-engine/rest/elise/unitinstance/d392f95f-64fb-4796-ab51-de51e0c6bc84
+
+{
+  "id": "d392f95f-64fb-4796-ab51-de51e0c6bc84",
+  "name": "sensorUnit",
+  "category": "Sensor",
+  "unitType": "software",
+  "extendedInfo": "{\"entities\":[{\"@class\":\"IoT_Gateway\",\"domainID\":\"10.99.0.21:9081\",\"name\":null,\"category\":null,\"states\":null,\"currentState\":null,\"location\":null,\"ip\":\"\"}]}",
+  "capabilities": [
+    {
+      "name": "undeploy",
+      "executedBy": "SALSA",
+      "executionMethod": "REST",
+      "executionModel": "{\"endpoint\":\"http://10.99.0.21:8080/salsa-engine/services/IoTSensors/topologies/IoTTopology/nodes/sensorUnit/instances/0\",\"method\":\"DELETE\",\"data\":\"\"}",
+      "effects": []
+    },
+    {
+      "name": "deploy",
+      "executedBy": "SALSA",
+      "executionMethod": "REST",
+      "executionModel": "{\"endpoint\":\"http://10.99.0.21:8080/salsa-engine/services/IoTSensors/topologies/IoTTopology/nodes/sensorUnit/instance-count/{quantity}\",\"method\":\"POST\",\"data\":\"\"}",
+      "parameters": [
+        "1",
+        "quantity"
+      ],
+      "effects": []
+    },
+    {
+      "name": "ChangeProto",
+      "executedBy": "rtGovOps",
+      "executionMethod": "REST",
+      "executionModel": "{\"endpoint\":\"http://localhost:8080/APIManager/invoke/10.99.0.21:9081/cChangeProto.sh\",\"method\":\"GET\",\"data\":\"\"}",
+      "effects": []
+    },
+    {
+      "name": "ChangeSensorRate",
+      "executedBy": "rtGovOps",
+      "executionMethod": "REST",
+      "executionModel": "{\"endpoint\":\"http://localhost:8080/APIManager/invoke/10.99.0.21:9081/cChangeSensorRate.sh\",\"method\":\"GET\",\"data\":\"\"}",
+      "effects": []
+    },
+    {
+      "name": "Service",
+      "executedBy": "rtGovOps",
+      "executionMethod": "REST",
+      "executionModel": "{\"endpoint\":\"http://localhost:8080/APIManager/invoke/10.99.0.21:9081/cService.sh\",\"method\":\"GET\",\"data\":\"\"}",
+      "effects": []
+    },
+    {
+      "name": "StartStopSensor",
+      "executedBy": "rtGovOps",
+      "executionMethod": "REST",
+      "executionModel": "{\"endpoint\":\"http://localhost:8080/APIManager/invoke/10.99.0.21:9081/cStartStopSensor.sh\",\"method\":\"GET\",\"data\":\"\"}",
+      "effects": []
+    }
+  ],
+  "identification": "{\"uuid\":\"d392f95f-64fb-4796-ab51-de51e0c6bc84\",\"category\":\"Sensor\",\"localIDs\":[{\"assignedBy\":\"SALSA\",\"category\":\"Sensor\",\"idItems\":{\"IP_PORT\":\"10.99.0.21:9081\",\"SALSA_TOPOLOGY\":\"IoTSensors/IoTTopology\",\"SALSA_SERVICE\":\"IoTSensors\",\"SALSA_UNIT\":\"IoTSensors/sensorUnit\",\"SALSA_INSTANCE\":\"IoTSensors/sensorUnit/0\"}}]}"
+}
