@@ -19,7 +19,6 @@ package at.ac.tuwien.dsg.cloud.elise.master.RESTImp;
 
 import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.CollectorDescription;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseManager;
-import at.ac.tuwien.dsg.cloud.elise.master.Communication.QueryManager;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.OfferedServiceRepository;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.IdentificationManager;
@@ -29,7 +28,6 @@ import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.ConductorDescript
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.CollectorArtifactManager;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryProcessNotification;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.EliseQueueTopic;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
@@ -38,7 +36,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -192,7 +189,7 @@ public class EliseManagerImp implements EliseManager {
     }
     
     @Override
-    public void deleteGlobalIdentification(@PathParam("globalID") String globalID){
+    public void deleteGlobalIdentification(String globalID){
         IdentificationManager im = new IdentificationManager();
         im.deleteAndUpdate(globalID);
     }

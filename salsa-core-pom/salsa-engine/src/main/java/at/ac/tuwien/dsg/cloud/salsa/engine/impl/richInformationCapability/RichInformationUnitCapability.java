@@ -192,10 +192,10 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
                 try {                    
                     unitInstanceDAO.deleteUnitInstanceByID(instance.getUuid().toString());
                     EliseManager eliseManager = ((EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider())));
-                    logger.debug("Now deleting the unit identification");
+                    logger.debug("Now deleting the unit identification: " + instance.getUuid().toString());
                     eliseManager.deleteGlobalIdentification(instance.getUuid().toString());
                 } catch (Exception e) {
-                    logger.error(e.getMessage()+", "+e.getCause().getMessage());
+                    logger.error("Msg: " + e.getMessage()+", cause: "+e.getCause());
                     e.printStackTrace();
                 }
             } else {

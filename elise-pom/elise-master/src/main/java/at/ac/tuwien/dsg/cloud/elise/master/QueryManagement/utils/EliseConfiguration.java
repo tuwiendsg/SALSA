@@ -140,7 +140,7 @@ public class EliseConfiguration {
                     Query.match(Query.attr("protocol"), Query.value("HTTP/1.1")));
             for (ObjectName obj : objs) {
                 String port = obj.getKeyProperty("port");
-                logger.debug("Getting port: {}", port);
+                logger.debug("Detected port: {}", port);
                 return port;
             }
         } catch (MalformedObjectNameException e) {
