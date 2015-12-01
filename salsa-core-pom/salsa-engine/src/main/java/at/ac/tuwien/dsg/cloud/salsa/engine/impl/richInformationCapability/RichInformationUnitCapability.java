@@ -101,12 +101,11 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         GlobalIdentification globalID = new GlobalIdentification(unitInst.getCategory());
         globalID.setUuid(instance.getUuid().toString());
         LocalIdentification id = new LocalIdentification(unitInst.getCategory(), "SALSA");
-        logger.debug("Setting identification with salsaID=" + unitInst.getExtra().get("salsaID"));        
+        logger.debug("Setting identification with salsaID=" + unitInst.getExtra().get("salsaID"));
         id.hasIdentification(IDType.SALSA_SERVICE.toString(), serviceId);
-        id.hasIdentification(IDType.SALSA_TOPOLOGY.toString(), serviceId+"/"+topo.getId());
-        id.hasIdentification(IDType.SALSA_UNIT.toString(), serviceId+"/"+nodeId);
-        id.hasIdentification(IDType.SALSA_INSTANCE.toString(), serviceId+"/"+nodeId+"/"+instanceId);
-        
+        id.hasIdentification(IDType.SALSA_TOPOLOGY.toString(), serviceId + "/" + topo.getId());
+        id.hasIdentification(IDType.SALSA_UNIT.toString(), serviceId + "/" + nodeId);
+        id.hasIdentification(IDType.SALSA_INSTANCE.toString(), serviceId + "/" + nodeId + "/" + instanceId);
 
         // in the case it is a sensor (name started with sensor ??) and hosted on docker ==> we may have GovOps        
         if (unit.getId().toLowerCase().startsWith("sensor") && !unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
@@ -118,18 +117,22 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
                 ServiceInstance hostedInstance = hostedUnit.getInstanceById(instance.getHostedId_Integer());
                 if (hostedInstance != null && hostedInstance.getProperties() != null) {
                     logger.debug("debug1: marshalling docker description ........");
-                    SalsaInstanceDescription_Docker dockerDesp = (SalsaInstanceDescription_Docker) hostedInstance.getProperties().getAny();                    
+                    SalsaInstanceDescription_Docker dockerDesp = (SalsaInstanceDescription_Docker) hostedInstance.getProperties().getAny();
                     logger.debug("debug1: marshalling docker description ........ DONE !");
                     // portmap should be 2102:10.99.0.21:2102   80:10.99.0.21:9080   4567:10.99.0.21:4567
-                    String portmap = dockerDesp.getPortmap() + " ";  
+                    String portmap = dockerDesp.getPortmap() + " ";
                     logger.debug("Get port map: " + portmap);
-                    String portmap80 = portmap.substring(portmap.indexOf("80:") + 3, portmap.indexOf(" ", portmap.indexOf("80:")));
-                    logger.debug("{} will be {}", IDType.IP_PORT.toString(), portmap80);
-                    id.hasIdentification(IDType.IP_PORT.toString(), portmap80.trim());
+                    if (!portmap.trim().isEmpty()) {
+                        String portmap80 = portmap.substring(portmap.indexOf("80:") + 3, portmap.indexOf(" ", portmap.indexOf("80:")));
+                        if (portmap80.trim().isEmpty()) {
+                            logger.debug("{} will be {}", IDType.IP_PORT.toString(), portmap80);
+                            id.hasIdentification(IDType.IP_PORT.toString(), portmap80.trim());
+                        }
+                    }
                 } else {
                     logger.debug("Do not find the instance or the instance properties of node {} that hosted node {}/{}", hostedUnit.getId(), unit.getId(), instance.getInstanceId());
                 }
-                 
+
             } else {
                 logger.debug("The hostedUnit of the sensor {} is null or not a docker", unit.getId());
             }
@@ -189,13 +192,13 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         if (instance != null) {
             if (unitInstanceDAO != null) {
                 logger.debug("Trying to delete unit with UUID: {}" + instance.getUuid());
-                try {                    
+                try {
                     unitInstanceDAO.deleteUnitInstanceByID(instance.getUuid().toString());
                     EliseManager eliseManager = ((EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider())));
                     logger.debug("Now deleting the unit identification: " + instance.getUuid().toString());
                     eliseManager.deleteGlobalIdentification(instance.getUuid().toString());
                 } catch (Exception e) {
-                    logger.error("Msg: " + e.getMessage()+", cause: "+e.getCause());
+                    logger.error("Msg: " + e.getMessage() + ", cause: " + e.getCause());
                     e.printStackTrace();
                 }
             } else {

@@ -177,6 +177,10 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             CloudService service = this.wholeAppCapability.addService(serviceId, def);
             String output = "Deployed service. Id: " + service.getId();
             LOGGER.debug(output);
+            // delete tmp file
+            File file = new File(tmpFile);
+            file.delete();
+            
             // return 201: resource created
             return Response.status(201).entity(serviceId).build();
         } catch (JAXBException e) {
@@ -1038,7 +1042,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
             } else {
                 EngineLogger.logger.debug("There is no description for action: " + actionName + ". Pioneer will use its default operation.");
             }
-            String preRunByMe;
+            String preRunByMe = "";
 
             String newActionID = UUID.randomUUID().toString();
             EngineLogger.logger.debug("Converting SALSA node type to category. nodetype: {}", nodeData.getType());
@@ -1081,7 +1085,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
                 return null;
             }
             EngineLogger.logger.debug("Found a pioneer to execute this action: {}", pioneerID);
-            SalsaMsgConfigureArtifact configCommand = new SalsaMsgConfigureArtifact(newActionID, actionName, pioneerID, SalsaConfiguration.getUserName(), serviceId, topoID, nodeId, instanceId, theCategory, "", runByMe, artifactTypeOfDeployment, "");
+            SalsaMsgConfigureArtifact configCommand = new SalsaMsgConfigureArtifact(newActionID, actionName, pioneerID, SalsaConfiguration.getUserName(), serviceId, topoID, nodeId, instanceId, theCategory, preRunByMe, runByMe, artifactTypeOfDeployment, "");
             ActionIDManager.addAction(newActionID, configCommand);
             SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_reconfigure, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.getPioneerTopicByID(pioneerID), "", configCommand.toJson());
             MessagePublishInterface publish = SalsaConfiguration.getMessageClientFactory().getMessagePublisher();
