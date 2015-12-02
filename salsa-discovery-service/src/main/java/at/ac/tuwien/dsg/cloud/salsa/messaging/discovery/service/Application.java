@@ -5,14 +5,15 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.messaging.discovery.service;
 
+import at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.discovery.Config;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.discovery.LightweightSalsaDiscovery;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.discoveryHelper.DiscoveryRequest;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.discoveryHelper.DiscoveryResponse;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.api.DiscoveryService;
-import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.Config;
-import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.ConfigService;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.DiscoverySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,8 +31,14 @@ public class Application implements DiscoveryService {
 	private static Logger logger = LoggerFactory.getLogger(Application.class);
 	private LightweightSalsaDiscovery discovery;
 	
+	@Autowired
+	private DiscoverySettings discoverySettings;
+	
 	public Application() {
-		Config config = new ConfigService().getConfig();
+		Config config = new Config();
+		config.setDiscoveryIp(discoverySettings.getIp())
+				.setDiscoveryIp(discoverySettings.getIp())
+				.setServiceName(discoverySettings.getServiceName());
 		this.discovery = new LightweightSalsaDiscovery(config);
 	}
 	

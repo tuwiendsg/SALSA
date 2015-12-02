@@ -9,7 +9,6 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.rSYBL.deploymentDe
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.rSYBL.deploymentDescription.DeploymentUnit;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.api.Discovery;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.discovery.ADiscovery;
-import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.Config;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
