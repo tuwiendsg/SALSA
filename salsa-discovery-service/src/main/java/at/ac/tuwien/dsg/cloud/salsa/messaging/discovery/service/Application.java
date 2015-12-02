@@ -10,11 +10,13 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.discove
 import at.ac.tuwien.dsg.cloud.utilities.messaging.discoveryHelper.DiscoveryRequest;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.discoveryHelper.DiscoveryResponse;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.api.DiscoveryService;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,9 +36,13 @@ public class Application implements DiscoveryService {
 	private SalsaSettings salsaSettings;
 	
 	public Application() {
+	}
+	
+	@PostConstruct
+	private void inti() {
 		Config config = new Config();
 		config.setDiscoveryIp(salsaSettings.getIp())
-				.setDiscoveryIp(salsaSettings.getIp())
+				.setDiscoveryPort(salsaSettings.getPort())
 				.setServiceName(salsaSettings.getServiceName());
 		this.discovery = new LightweightSalsaDiscovery(config);
 	}
