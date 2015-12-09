@@ -152,6 +152,27 @@ public class SalsaConfiguration {
         String[] versionFile = {SalsaConfiguration.class.getResource("/version.txt").getFile()};
         return getGenericParameterFromFile(versionFile, "build.date", "unknown") + " UTC";
     }
+    
+    
+    // for placement ADHOC implementation
+    public static boolean getDynamicPlacementOn(){
+        String placementOn = getGenericParameter("DYNAMIC_PLACEMENT", "off");
+        if (placementOn.equals("on")){
+            return true;
+        } 
+        return false;
+    }
+    
+    public static String getPlacementThreadholdMetric(){
+        return getGenericParameter("METRIC", "mem");
+    }
+    
+    public static float getPlacementThreadhold(){
+        return Float.parseFloat(getGenericParameter("THREADHOLD", "0.8"));
+    }
+    
+    
+    
 
     public static File getCloudUserParametersFile() {
         String fileNames[] = {CURRENT_DIR + "/cloudUserParameters.ini", "/etc/cloudUserParameters.ini"};
@@ -194,6 +215,12 @@ public class SalsaConfiguration {
     public static String getConfigurationFile() {
         return CURRENT_DIR + "/salsa.engine.properties";
     }
+    
+    
+    public static String getEventLogFile(){
+        return "./logs/salsa.messages.log";
+    }
+    
 
     public static String getGenericParameterFromFile(String[] fileNames, String key, String theDefault) {
         Properties prop = new Properties();

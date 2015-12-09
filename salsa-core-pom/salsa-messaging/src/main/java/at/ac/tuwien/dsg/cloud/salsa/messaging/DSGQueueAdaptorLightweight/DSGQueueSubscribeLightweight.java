@@ -12,6 +12,7 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandl
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.api.Consumer;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.api.Message;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.api.MessageReceivedListener;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.ComotMessagingFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +35,16 @@ public class DSGQueueSubscribeLightweight extends DSGQueueConnector implements M
     @Override
     public void subscribe(String topic) {
         Consumer consumer = ComotMessagingFactory.getRabbitMqConsumer(new LightweightSalsaDiscovery(config));
-        consumer.addMessageReceivedListener((Message message) -> {
-            //handler.handleMessage(SalsaMessage.fromJson(message.getMessage()));
-            new Thread(new AsynHandleMessages(SalsaMessage.fromJson(message.getMessage()))).start();
-        });
+        consumer.addMessageReceivedListener(new MessageReceivedListener() {
+            @Override
+            public void messageReceived(Message message) {
+                new Thread(new AsynHandleMessages(SalsaMessage.fromJson(message.getMessage()))).start();
+            }
+        });        
+//        consumer.addMessageReceivedListener((Message message) -> {
+//            //handler.handleMessage(SalsaMessage.fromJson(message.getMessage()));
+//            new Thread(new AsynHandleMessages(SalsaMessage.fromJson(message.getMessage()))).start();
+//        });
     }
 
     @Override

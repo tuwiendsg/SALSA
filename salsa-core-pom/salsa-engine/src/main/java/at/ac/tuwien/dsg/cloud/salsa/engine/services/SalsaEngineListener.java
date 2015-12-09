@@ -27,9 +27,9 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.DockerInfo;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
 import at.ac.tuwien.dsg.cloud.salsa.engine.exceptions.EngineConnectionException;
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.SalsaException;
-import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonList;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.ActionIDManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EngineLogger;
+import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
@@ -42,11 +42,10 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtif
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureState;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
+import com.google.common.base.Joiner;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
@@ -101,9 +100,11 @@ public class SalsaEngineListener {
                                 EngineLogger.logger.error("Deployment action failed. ActionID: {}", fullID.getActionID(), ex);
                             }
                             salsaState = SalsaEntityState.DEPLOYED;
+                            EventPublisher.publishInstanceEvent(Joiner.on("/").join(fullID.getService(), fullID.getUnit(), fullID.getInstance()), EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.DONE, "The instance deployment is finished");
                         } else if (fullID.getActionName().equals("undeploy")) {
                             EngineLogger.logger.debug("The undeploy action for unit {}/{}/{}/{} is successful", fullID.getUser(), fullID.getService(), fullID.getUnit(), fullID.getInstance());
                             salsaState = SalsaEntityState.UNDEPLOYED;
+                            EventPublisher.publishInstanceEvent(Joiner.on("/").join(fullID.getService(), fullID.getUnit(), fullID.getInstance()), EventPublisher.ACTION_TYPE.REMOVE, EventPublisher.ACTION_STATUS.DONE, "The instance deployment is finished");
                         }
                         ActionIDManager.removeAction(state.getActionID());
                         break;

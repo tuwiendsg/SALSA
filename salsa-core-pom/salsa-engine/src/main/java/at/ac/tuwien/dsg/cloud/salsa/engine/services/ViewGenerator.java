@@ -48,6 +48,7 @@ import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.common.interfaces.ApplicationInfoAPI;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.SalsaXmlDataProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.base.DynamicPlacementHelper;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataForceDirect;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataTree;
 import at.ac.tuwien.dsg.cloud.salsa.engine.services.jsondata.ServiceJsonDataTreeSimple;
@@ -61,6 +62,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 
 @Service
 @Path("/viewgenerator")
@@ -383,6 +385,9 @@ public class ViewGenerator{
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		return gson.toJson(jsonObject);
 	}
+    
+    
+    
 
 	private ServiceJsonDataTreeSimple createServiceJsonNode(String name, String type) {
 		ServiceJsonDataTreeSimple newNode = new ServiceJsonDataTreeSimple();

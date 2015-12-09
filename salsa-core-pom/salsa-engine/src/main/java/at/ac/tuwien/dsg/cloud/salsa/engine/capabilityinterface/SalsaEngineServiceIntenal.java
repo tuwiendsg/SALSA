@@ -481,6 +481,24 @@ public interface SalsaEngineServiceIntenal extends ApplicationManagementAPI {
             @PathParam("serviceId") String serviceId,
             @PathParam("nodeId") String nodeId,
             @PathParam("instanceId") int instanceId) throws SalsaException;
+    
+    /**
+     * Get the fragment of Ganglia of the VM to host the instance.
+     * Note:
+     * - This function is not care about docker, just the VM.
+     * - This is function do not use message queue, which require the VM must be access by salsa-engine     * 
+     * @param serviceID
+     * @param nodeID
+     * @param instanceID
+     * @return the ganglia information
+     */
+    @GET
+    @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/ganglia")
+    @Produces(MediaType.APPLICATION_XML)
+    public String getGangliaHostInfo(
+            @PathParam("serviceId") String serviceID,
+            @PathParam("nodeId") String nodeId,
+            @PathParam("instanceId") int instanceId);
 
     /**
      *

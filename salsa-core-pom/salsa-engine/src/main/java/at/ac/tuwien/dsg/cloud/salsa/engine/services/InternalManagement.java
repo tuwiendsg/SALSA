@@ -308,6 +308,15 @@ public class InternalManagement {
     //run and manage a single conductor on the main service
     static Process myConductor;
 
+    boolean isRunning(Process process) {
+        try {
+            process.exitValue();
+            return false;
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
     /**
      * Run a conductor. By default just copy all to /tmp and run
      *
@@ -316,7 +325,7 @@ public class InternalManagement {
     @GET
     @Path("/conductor/start")
     public boolean startConductor() {
-        if (myConductor != null && myConductor.isAlive()) {
+        if (myConductor != null && isRunning(myConductor)) {
             EngineLogger.logger.debug("Tend to start a conductor, but it is already running... Salsa will do nothing!");
             return false;
         }
@@ -330,9 +339,9 @@ public class InternalManagement {
         File runFile = new File(workingFolderName + fileName);
         try {
             FileUtils.copyFile(localfile, runFile);
-            EngineLogger.logger.debug("Copying configuration file from: {} to {}", configFile.getPath(), workingFolderName+"salsa.engine.properties");
-            FileUtils.copyFile(configFile, new File(workingFolderName+"salsa.engine.properties"));
-            
+            EngineLogger.logger.debug("Copying configuration file from: {} to {}", configFile.getPath(), workingFolderName + "salsa.engine.properties");
+            FileUtils.copyFile(configFile, new File(workingFolderName + "salsa.engine.properties"));
+
             EngineLogger.logger.debug("Starting a conductor ...");
             myConductor = SystemFunctions.executeCommandAndForget("java -jar " + fileName, workingFolderName, SalsaConfiguration.getSalsaCenterEndpoint());
         } catch (IOException ex) {

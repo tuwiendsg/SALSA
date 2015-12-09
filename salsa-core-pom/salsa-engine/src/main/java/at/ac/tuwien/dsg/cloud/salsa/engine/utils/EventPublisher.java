@@ -21,28 +21,129 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFact
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
  * @author Duc-Hung LE
  */
-public class EventPublisher  {
+public class EventPublisher {
 
-    static final MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBrokerExport(), SalsaConfiguration.getBrokerTypeExport());
-    static final MessagePublishInterface publish = factory.getMessagePublisher();    
-  
-    public static void publishINFO(String msg) {
-        msg = "[INFO] " + msg;
-        SalsaMessage ssmsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_log, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.SALSA_PUBLISH_EVENT, "", msg);
-        EngineLogger.logger.info(msg);        
-        publish.pushMessage(ssmsg);
+    static final MessageClientFactory FACTORY = MessageClientFactory.getFactory(SalsaConfiguration.getBrokerExport(), SalsaConfiguration.getBrokerTypeExport());
+    static final MessagePublishInterface PUBLISH = FACTORY.getMessagePublisher();
+
+    public static void publishINFO(INFOMessage msg) {
+        SalsaMessage ssmsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_log, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.SALSA_PUBLISH_EVENT, "", msg.toJson());
+        EngineLogger.logger.info(msg.toJson());
+        try {
+            FileUtils.writeStringToFile(new File(SalsaConfiguration.getEventLogFile()), msg.toJson(), true);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        PUBLISH.pushMessage(ssmsg);
     }
 
+    public static void publishInstanceEvent(String id, ACTION_TYPE type, ACTION_STATUS status, String extra) {
+        INFOMessage msg = new INFOMessage(type, status, id, SERVICE_LEVEL.INSTANCE, getTimeStamp(), extra);
+        publishINFO(msg);
+    }
 
-    public static void publishERROR(String msg) {
-        msg = "[ERROR] " + msg;
-        SalsaMessage ssmsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_log, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.SALSA_PUBLISH_EVENT, "", msg);
-        EngineLogger.logger.info(msg);
-        publish.pushMessage(ssmsg);
+    public static void publishUnitEvent(String id, ACTION_TYPE type, ACTION_STATUS status, String extra) {
+        INFOMessage msg = new INFOMessage(type, status, id, SERVICE_LEVEL.UNIT, getTimeStamp(), extra);
+        publishINFO(msg);
+    }
+
+    public static void publishCloudServiceEvent(String id, ACTION_TYPE type, ACTION_STATUS status, String extra) {
+        INFOMessage msg = new INFOMessage(type, status, id, SERVICE_LEVEL.CLOUDSERVICE, getTimeStamp(), extra);
+        publishINFO(msg);
+    }
+
+    public static void publishSALSAEvent(String id, String extra){
+        INFOMessage msg = new INFOMessage(ACTION_TYPE.SALSA_ACTION, ACTION_STATUS.STARTED, id, SERVICE_LEVEL.OTHER, getTimeStamp(), extra);
+        publishINFO(msg);
+    }
+
+    private static long getTimeStamp() {
+        return (new Date()).getTime();
+    }
+
+    public static enum SERVICE_LEVEL {
+        CLOUDSERVICE, TOPOLOGY, UNIT, INSTANCE, OTHER
+    }
+
+    public static enum ACTION_TYPE {
+        DEPLOY, RECONFIGURE, REMOVE, SALSA_ACTION
+    }
+
+    public static enum ACTION_STATUS {
+        STARTED, PROCESSING, DONE, ERROR
+    }
+
+    public static class INFOMessage {
+
+        ACTION_TYPE action;
+        ACTION_STATUS status;
+        String id;
+        SERVICE_LEVEL level;
+        long timestamp;
+        String producer;
+        String extra;
+
+        public INFOMessage() {
+        }
+
+        public INFOMessage(ACTION_TYPE action, ACTION_STATUS status, String id, SERVICE_LEVEL level, long timestamp, String extra) {
+            this.action = action;
+            this.status = status;
+            this.id = id;
+            this.level = level;
+            this.timestamp = timestamp;
+            this.producer = Thread.currentThread().getStackTrace()[1].getClassName();
+            this.extra = extra;
+        }
+
+        public ACTION_STATUS getStatus() {
+            return status;
+        }
+
+        public String getExtra() {
+            return extra;
+        }
+
+        public ACTION_TYPE getAction() {
+            return action;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public SERVICE_LEVEL getLevel() {
+            return level;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
+
+        public String getProducer() {
+            return producer;
+        }
+
+        public String toJson() {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                return mapper.writeValueAsString(this);
+            } catch (IOException ex) {
+                return "error-message";
+            }
+        }
+
     }
 }

@@ -46,12 +46,14 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFact
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
+import com.google.common.base.Joiner;
 import generated.oasis.tosca.TDefinitions;
 import generated.oasis.tosca.TRelationshipTemplate;
 import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.core.Response;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * The class contain functionalities for preparing the task at salsa center, then request pioneer to execute it
@@ -71,8 +73,9 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
     }
 
     @Override
-    public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {
-        EventPublisher.publishINFO("Start the based deployment of software stacks. Node: " + serviceId + "/" + nodeId + "/" + instanceId);
+    public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {        
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.STARTED, "Start the based deployment of software stacks");
+        
         setLock(nodeId + "/" + instanceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         // find the hosted node of this node              
@@ -98,7 +101,25 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
                 ids += instanceTmp.getInstanceId() + ", ";
             }
             EngineLogger.logger.debug("And their IDs are: " + ids);
-            if (unit.getInstanceHostOn(hostedInst.getInstanceId()).size() < unit.getMax()) {
+            
+            //Doing: check the hosteOn instance by : static: via max instance definition, dynamic: via a resource
+            
+            boolean dynamicPlacementOn = SalsaConfiguration.getDynamicPlacementOn();
+            boolean placeOnMe = false;
+            if (dynamicPlacementOn && unit.getMax()<=0){
+                float threadhold = SalsaConfiguration.getPlacementThreadhold();                
+                EngineLogger.logger.debug("Dynamic placement. Threadhold: {}, instance:: {}/{}/{} ", threadhold, service.getId(), nodeId, instanceId);
+                if (DynamicPlacementHelper.checkMemoryUsageIsBelowThreadholdByInstanceID_NoDockerConcern(threadhold, service, hostedUnit.getId(), hostedInst.getInstanceId())){
+                    placeOnMe = true;
+                }
+            } else {
+                EngineLogger.logger.debug("Static placement, unitMax: {}, sice: {}", unit.getMax(), unit.getInstanceHostOn(hostedInst.getInstanceId()).size());
+                if (unit.getInstanceHostOn(hostedInst.getInstanceId()).size() < unit.getMax()) {
+                    placeOnMe = true;
+                }
+            }
+            
+            if (placeOnMe) {
                 suitableHostedInstance = hostedInst;
                 hostInstanceId = hostedInst.getInstanceId();
                 EngineLogger.logger.debug("DEPLOY MORE INSTANCE. FOUND EXISTED HOST: " + hostedUnit.getId() + "/" + hostInstanceId);
@@ -295,13 +316,13 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
             publish.pushMessage(msg);
         }
 
-        EventPublisher.publishINFO("Sending request to deploy more instance artifacts is done: " + serviceId + "/" + nodeId + "/" + instanceId);
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.PROCESSING, "Sending request to deploy more instance artifacts is done");
         return new ServiceInstance(instanceId);
     }
 
     @Override
-    public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {
-        EventPublisher.publishINFO("Removing a software node somewhere: " + serviceId + "/" + nodeId + "/" + instanceId);
+    public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {        
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), EventPublisher.ACTION_TYPE.REMOVE, EventPublisher.ACTION_STATUS.STARTED, "Removing a software node somewhere");
         //set the state=STAGING and stagingAction=undeploy, the pioneer handle the rest			
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         String topologyId = service.getTopologyOfNode(nodeId).getId();
@@ -334,7 +355,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
         } catch (SalsaException e) {
             throw e;
         }
-        EventPublisher.publishINFO("Removed a software node: " + serviceId + "/" + nodeId + "/" + instanceId);
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), EventPublisher.ACTION_TYPE.REMOVE, EventPublisher.ACTION_STATUS.DONE, "Removed a software node");        
     }
 
     static boolean orchestating = false;

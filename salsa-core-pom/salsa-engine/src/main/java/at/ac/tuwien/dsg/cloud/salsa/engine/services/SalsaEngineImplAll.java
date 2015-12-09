@@ -101,6 +101,8 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Doc
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaXmlProcess;
+import at.ac.tuwien.dsg.cloud.salsa.engine.impl.base.DynamicPlacementHelper;
+import static at.ac.tuwien.dsg.cloud.salsa.engine.services.ViewGenerator.logger;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import javax.management.AttributeNotFoundException;
@@ -108,6 +110,10 @@ import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
 import javax.management.MalformedObjectNameException;
 import javax.management.ReflectionException;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 @Service
 public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
@@ -127,8 +133,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
      * MAIN SERVICES TO EXPOSE TO USERS
      */
     @Override
-    public Response deployService(String serviceNameParam, InputStream uploadedInputStream) throws SalsaException {
-        EventPublisher.publishINFO("Recieved a deployment request with service name: " + serviceNameParam);
+    public Response deployService(String serviceNameParam, InputStream uploadedInputStream) throws SalsaException {        
+        //EventPublisher.publishSALSAEvent(serviceNameParam, "Recieved a deployment request with service name: " + serviceNameParam);
         String tmpID = UUID.randomUUID().toString();
         String tmpFile = "/tmp/salsa_tmp_" + tmpID;
         String serviceName = serviceNameParam.replaceAll("\\s", "");
@@ -1189,6 +1195,20 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
         } catch (MalformedObjectNameException | NullPointerException | UnknownHostException | AttributeNotFoundException | InstanceNotFoundException | MBeanException | ReflectionException e) {
             return "Working but cannot get the endpoint";
         }
+    }
+    
+    // note: this function is not care about docker, just the VM
+    @Override
+    public String getGangliaHostInfo(String serviceID, String nodeID, int instanceID){
+        String salsaFile = SalsaConfiguration.getServiceStorageDir() + "/" + serviceID + ".data";
+        CloudService service;
+        try {
+            service = SalsaXmlDataProcess.readSalsaServiceFile(salsaFile);
+            return DynamicPlacementHelper.getGangliaVMInfo(service, nodeID, instanceID);            
+        } catch (JAXBException | IOException ex) {
+            logger.error("Failed to get the Ganglia information for the service");
+        }
+        return null;        
     }
 
     @Override

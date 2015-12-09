@@ -32,7 +32,7 @@ import generated.oasis.tosca.TRequirementDefinition;
  */
 public class GenerateService {
     public static void main(String[] args) {
-        
+        System.out.println("Testing");
         TDefinitions def = new TDefinitions();
         
         def.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();

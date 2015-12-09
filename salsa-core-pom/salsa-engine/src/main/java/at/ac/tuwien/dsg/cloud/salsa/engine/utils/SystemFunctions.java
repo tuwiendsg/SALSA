@@ -166,29 +166,29 @@ public class SystemFunctions {
             StringBuffer output = new StringBuffer();
             int lineCount = 0;
             while ((line = reader.readLine()) != null) {
-                if (lineCount < 10) {  // only get 10 lines to prevent the overflow
-                    output.append(line);
-                }
+//                if (lineCount < 10) {  // only get 10 lines to prevent the overflow
+                    output.append(line+"\n");
+//                }
                 lineCount += 1;
-                logger.debug(line);
+//                logger.debug(line);
             }
-            if (lineCount >= 10) {
-                logger.debug("... there are alot of more output here which is not shown ! ...");
-            }
+//            if (lineCount >= 10) {
+//                logger.debug("... there are alot of more output here which is not shown ! ...");
+//            }
             p.waitFor();
-            System.out.println("Execute Commang output: " + output.toString().trim());
+            System.out.println("Execute Command output: " + output.toString().trim());
 
             if (p.exitValue() == 0) {
-                logger.debug("Command exit 0, result: " + output.toString().trim());
-                return output.toString().trim();
+                logger.debug("Command exit 0, result: " + output.toString().trim());                
             } else {
-                logger.debug("Command return non zero code: " + p.exitValue());
-                return null;
+                logger.debug("Command return non zero code: " + p.exitValue());                
             }
+            logger.debug("The output of the command contains {} character. Some first chars:", output.length(), output.substring(0, Math.min(output.length(), 50)));
+            return output.toString().trim();
         } catch (InterruptedException | IOException e1) {
             logger.error("Error when execute command. Error: " + e1);
-        }
-        return null;
+            return null;
+        }        
     }
 
     /**

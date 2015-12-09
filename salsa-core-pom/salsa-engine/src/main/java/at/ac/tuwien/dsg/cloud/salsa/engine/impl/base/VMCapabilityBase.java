@@ -27,7 +27,6 @@ import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.MultiCloudConnect
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.multiclouds.SalsaCloudProviders;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
@@ -43,11 +42,8 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SystemFunctions;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
+import com.google.common.base.Joiner;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -95,7 +91,7 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
     @Override
     public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {
         waitForCooledDown();
-        EventPublisher.publishINFO("Start to deploy new VM: " + serviceId + "/" + nodeId + "/" + instanceId);
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.STARTED, "Start to deploy new VM");        
         //TDefinitions def = centerCon.getToscaDescription(serviceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         String topologyId = service.getTopologyOfNode(nodeId).getId();
@@ -151,7 +147,7 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
         centerCon.updateInstanceUnitProperty(serviceId, topologyId, nodeId, instanceId, instanceDesc);
         EngineLogger.logger.debug("Updated VM info for node: " + nodeId);
 
-        EventPublisher.publishINFO("Finished to create a new VM: " + serviceId + "/" + nodeId + "/" + instanceId + ". The IP is: " + instanceDesc.getPrivateIp());
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.DONE, "A new VM is created with IP: " + instanceDesc.getPrivateIp());        
         return repData;
     }
 
@@ -234,7 +230,7 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
             List<String> lstPkgs = tprop.getPackagesDependenciesList().getPackageDependency();
             if (!lstPkgs.isEmpty()) {
                 for (String pkg : lstPkgs) {
-                    EventPublisher.publishINFO("Installing package " + pkg + " on node: " + serviceId + "/" + nodeId + "/" + replica);
+                    EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, replica), EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.PROCESSING, "Installing package " + pkg);                    
                     // TODO: should change, now just support Ubuntu image			
                     userDataBuffer.append("apt-get -q -y install ").append(pkg).append(" \n");
                 }

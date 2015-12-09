@@ -19,7 +19,6 @@ package at.ac.tuwien.dsg.cloud.salsa.engine.impl.base;
 
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.CloudService;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceInstance;
-import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceTopology;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaCenterConnector;
@@ -38,6 +37,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaXmlProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
+import com.google.common.base.Joiner;
 import generated.oasis.tosca.TDefinitions;
 import java.io.File;
 import java.io.IOException;
@@ -71,8 +71,8 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
     }
 
     @Override
-    public CloudService addService(String serviceName, TDefinitions def) throws SalsaException {        
-        EventPublisher.publishINFO("Start to add a new cloud service with ID " + serviceName);
+    public CloudService addService(String serviceName, TDefinitions def) throws SalsaException {                
+        EventPublisher.publishCloudServiceEvent(serviceName, EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.STARTED, "Start to add a new cloud service with ID " + serviceName);
         if (configFile == null) {
             throw new EngineMisconfiguredException("./salsa.engine.properties", "The file is missing");
         }
@@ -110,14 +110,14 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
         serviceData.setName(def.getId());
         SalsaXmlDataProcess.writeCloudServiceToFile(serviceData, fullSalsaDataFile);
         EngineLogger.logger.debug("debugggg Sep 8 - 4");
-
-        EventPublisher.publishINFO("creating to add a new cloud service with ID " + serviceName);
+        
+        EventPublisher.publishCloudServiceEvent(serviceName, EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.DONE, "Add new cloud service with ID " + serviceName);
         return actualCreateNewService(serviceData);
     }
 
     @Override
-    public boolean cleanService(String serviceId) throws SalsaException {        
-        EventPublisher.publishINFO("Start to clean service ID " + serviceId);
+    public boolean cleanService(String serviceId) throws SalsaException {                
+        EventPublisher.publishCloudServiceEvent(serviceId, EventPublisher.ACTION_TYPE.REMOVE, EventPublisher.ACTION_STATUS.STARTED, "Start to clean service with ID " + serviceId);
         centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         if (service == null) {
@@ -174,7 +174,7 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
         
         // unregister pioneers
         PioneerManager.removePioneerOfWholeService(SalsaConfiguration.getUserName(), serviceId);        
-        EventPublisher.publishINFO("Clean service done: " + serviceId);
+        EventPublisher.publishCloudServiceEvent(serviceId, EventPublisher.ACTION_TYPE.REMOVE, EventPublisher.ACTION_STATUS.DONE, "Clean service done: " + serviceId);
         return true;
     }
 
