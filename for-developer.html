@@ -1,0 +1,17 @@
+<h3>For developers</h3>
+<h4>Create new collector for data retrieving</h4>
+An adaptor is an .jar package that is plugged in to the collector to query data. Followings are some guidelines and notations to create this:
+<ol>
+<li> Create a normal Java project, then a class which extends <a href="https://github.com/tuwiendsg/SALSA/blob/master/elise-pom/elise-extensions/CollectorInterfaces/src/main/java/at/ac/tuwien/dsg/cloud/elise/collectorinterfaces/UnitInstanceCollector.java">the UnitInstanceCollector interface</a>. The class should implement the mechanism (1) to collect the information and (2) to identify the instance.
+<li> The collector may gather application-specific information, which should be marshalled into string-based format (e.g. can be JSON or XML) in order to store in the UnitInstance object.
+<li> The implementation can reuse the function "readAdaptorConfig(String parameter)" to retrieve the value in properties file going with the plug-in.
+<li> SALSA will merge the collected information with existed instances in the database, thus the identification must enable SALSA to link with existed information.
+<ol>
+
+The artifact of the adaptor will be plugged in the collector as <a href"#populate_collector">the previous guide</a>.
+
+Please check the <a href="https://github.com/tuwiendsg/SALSA/tree/master/elise-pom/elise-extensions/govops-collector/src/main/java/at/ac/tuwien/dsg/comot/elise/collector/govops">adaptor written for GovOps service</a>. Other available adaptors are <a href="https://github.com/tuwiendsg/SALSA/tree/master/elise-pom/elise-extensions">here</a>.
+
+
+
+

@@ -9,7 +9,7 @@
 <ul>
   <li><b>Salsa-engine</b>: the central component which provides high level orchestration of configuration and management APIs.
   <li><b>Pioneer</b>: these agents run on infrastructure or docker platform to execute the configurations.
-  <li><b>Conductor</b>: these agents interact with external services to collect more capabilities to configure the systems.
+  <li><b>Collector</b>: these agents interact with external services to collect more capabilities to configure the systems.
   <li><b>Commandline client and Java DSL</b>: the tools for sysadmin and developer to interact with SALSA.
 </ul>
 
@@ -19,19 +19,19 @@
 <div class="caption">Deployment architecture of SALSA.</div>
 </p>
 
-
+c
 
 <map name="image-maps-2015-10-28-113244" id="ImageMapsCom-image-maps-2015-10-28-113244">
 <area  alt="" title="Click to open user APIs code" href="https://github.com/tuwiendsg/SALSA/tree/master/salsa-core-pom/salsa-common/src/main/java/at/ac/tuwien/dsg/cloud/salsa/common/interfaces" shape="rect" coords="12,34,84,62" style="outline:none;" target="_blank"     />
-<area  alt="" title="Click to open pioneer management (move to the right a bit to see conductor management)" href="https://github.com/tuwiendsg/SALSA/blob/master/salsa-core-pom/salsa-engine/src/main/java/at/ac/tuwien/dsg/cloud/salsa/engine/services/InternalManagement.java" shape="rect" coords="87,33,134,61" style="outline:none;" target="_blank"     />
-<area  alt="" title="Click to open conductor management (move to the left a bit to see pioneer)" href="https://github.com/tuwiendsg/SALSA/blob/master/elise-pom/elise-master/src/main/java/at/ac/tuwien/dsg/cloud/elise/master/RESTService/EliseManager.java" shape="rect" coords="134,32,176,62" style="outline:none;" target="_blank"     />
+<area  alt="" title="Click to open pioneer management (move to the right a bit to see collector management)" href="https://github.com/tuwiendsg/SALSA/blob/master/salsa-core-pom/salsa-engine/src/main/java/at/ac/tuwien/dsg/cloud/salsa/engine/services/InternalManagement.java" shape="rect" coords="87,33,134,61" style="outline:none;" target="_blank"     />
+<area  alt="" title="Click to open collector management (move to the left a bit to see pioneer)" href="https://github.com/tuwiendsg/SALSA/blob/master/elise-pom/elise-master/src/main/java/at/ac/tuwien/dsg/cloud/elise/master/RESTService/EliseManager.java" shape="rect" coords="134,32,176,62" style="outline:none;" target="_blank"     />
 <area  alt="" title="Click to open Smart Deployment modules" href="https://github.com/tuwiendsg/SALSA/tree/master/salsa-core-pom/salsa-engine/src/main/java/at/ac/tuwien/dsg/cloud/salsa/engine/smartdeployment" shape="rect" coords="10,65,84,95" style="outline:none;" target="_blank"     />
 <area  alt="" title="Click to open the information model" href="https://github.com/tuwiendsg/SALSA/tree/master/elise-pom/elise-model/src/main/java/at/ac/tuwien/dsg/cloud/elise/model" shape="rect" coords="85,66,177,95" style="outline:none;" target="_blank"     />
 <area  alt="" title="Click to open SALSA default capabilities interfaces (move right a bit for the implementations)" href="https://github.com/tuwiendsg/SALSA/tree/master/salsa-core-pom/salsa-engine/src/main/java/at/ac/tuwien/dsg/cloud/salsa/engine/capabilityinterface" shape="rect" coords="8,96,50,128" style="outline:none;" target="_blank"     />
 <area  alt="" title="Click to open capabilities implementations (move left a bit to see the interfaces)" href="https://github.com/tuwiendsg/SALSA/tree/master/salsa-core-pom/salsa-engine/src/main/java/at/ac/tuwien/dsg/cloud/salsa/engine/impl" shape="rect" coords="46,97,88,129" style="outline:none;" target="_blank"     />
 <area  alt="" title="Click to open cloud connectors" href="https://github.com/tuwiendsg/SALSA/tree/master/salsa-cloud-connector" shape="rect" coords="90,101,176,127" style="outline:none;" target="_blank"     />
 <area  alt="" title="Click to open pioneer" href="https://github.com/tuwiendsg/SALSA/tree/master/salsa-core-pom/salsa-pioneer" shape="rect" coords="249,15,309,97" style="outline:none;" target="_blank"     />
-<area  alt="" title="Click to open conductor code" href="https://github.com/tuwiendsg/SALSA/tree/master/elise-pom/elise-conductor" shape="rect" coords="247,133,309,238" style="outline:none;" target="_blank"     />
+<area  alt="" title="Click to open collector code" href="https://github.com/tuwiendsg/SALSA/tree/master/elise-pom/elise-conductor" shape="rect" coords="247,133,309,238" style="outline:none;" target="_blank"     />
 <area  alt="" title="Click to open collector modules" href="https://github.com/tuwiendsg/SALSA/tree/master/elise-pom/elise-extensions" shape="rect" coords="308,136,414,239" style="outline:none;" target="_blank"     />
 <area  alt="" title="Click to open client code" href="https://github.com/tuwiendsg/SALSA/tree/master/salsa-client" shape="rect" coords="9,167,75,200" style="outline:none;" target="_blank"     />
 <area  alt="" title="Click to open iCOMOT DSL and orchestrator code" href="https://github.com/tuwiendsg/iCOMOT" shape="rect" coords="10,205,74,234" style="outline:none;" target="_blank"     />

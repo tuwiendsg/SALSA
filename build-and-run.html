@@ -6,7 +6,7 @@ There are many sub-modules will to be built. The ready-to-use artifacts are put 
 <ul>
   <li>salsa-engine.jar: the main service.
   <li>salsa-pioneer.jar: the configuration agent.
-  <li>conductor.jar: the information collector.
+  <li>collector.jar: the information collector.
   <li>./extensions folder: contains collector plug-in modules.
   <li>salsa-client.jar: commandline client.
 </ul>
@@ -92,6 +92,17 @@ SALSA enables to run the application purely on Docker and do not require any clo
 
 
 
+<a name="populate_collector"></a>
+<h3>Populate the collectors and adaptors</h3>
+<p>
+The collectors and adaptors are a set of .jar artifact, where collector.jar is executable. The figure below shows how to inject adaptors to a collector. When receiving a query, the collector will scan all the <i>extensions</i> folder for the adaptors and execute appropriate functions. The custom settings for the adaptors can be put in the adaptor.conf.
+</p>
+
+<p>The collector can be execute via normal java: "java -jar collector.jar"</p>
+<img src="images/ss-populate-output.png" alt="Populate the collectors and adaptors"">
+
+Above folder structure can be created manually or using salsa-client. Salsa-client will inform salsa-pioneer to deploy the collector as a normal software component on the infrastructure.
+
 
 
 <h3>Using the salsa-client</h3>
@@ -109,10 +120,10 @@ SALSA Java command-line client
 Type 'java -jar salsa-client.jar help &ltcommand&gt' for help on a specific command.
 
 Available commands:
-  conductor-list-collector: Get the list of available collector plugins. 
-  conductor-push-collector: Add a collector plugin to conductor to collect information. 
-  conductor-start     : Start a conductor to collect the information 
-  conductor-stop      : Stop a conductor by ID or at salsa-engine 
+  collector-list-adaptor: Get the list of available collector plugins. 
+  collector-push-adaptor: Add a collector plugin to collector to collect information. 
+  collector-start     : Start a collector to collect the information 
+  collector-stop      : Stop a collector by ID or at salsa-engine 
   instance-deploy     : Deploy one or more instances of a service unit. 
   instance-info-collect: Ask collector to start gathering the information. The process may take time. 
   instance-query      : Get the information of an instance by ID. 
@@ -124,5 +135,5 @@ Available commands:
   service-submit      : Submit a TOSCA to start a deployment. 
   syn                 : Send message the synchronize pioneers.
 </pre></code>
-Beside the commands that manage the system, some commands are for distributing the collectors and configuring with external services to collecting external capabilities. Conductor manages collector modules and communicates with salsa-engine. The salsa-client can send the request to salsa-engine or salsa-pioneer to start/stop a conductor. When a conductor is running, salsa-client pushes and configures collector modules on the conductor.
+Beside the commands that manage the system, some commands are for populating the adaptor and configuring with external services to collecting external capabilities. Collector manages adaptors and communicates with salsa-engine. The salsa-client can send the request to salsa-engine or salsa-pioneer to start/stop a collector. When a collector is running, salsa-client pushes and configures adaptor on the collector.
 
