@@ -45,6 +45,7 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.INFOMessage;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import com.google.common.base.Joiner;
 import generated.oasis.tosca.TDefinitions;
@@ -74,7 +75,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
 
     @Override
     public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {        
-        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.STARTED, "Start the based deployment of software stacks");
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.STARTED, "AppCapabilityBase", "Start the based deployment of software stacks");
         
         setLock(nodeId + "/" + instanceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
@@ -316,13 +317,13 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
             publish.pushMessage(msg);
         }
 
-        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.PROCESSING, "Sending request to deploy more instance artifacts is done");
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.PROCESSING, "AppCapabilityBase", "Sending request to deploy more instance artifacts is done");
         return new ServiceInstance(instanceId);
     }
 
     @Override
     public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {        
-        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), EventPublisher.ACTION_TYPE.REMOVE, EventPublisher.ACTION_STATUS.STARTED, "Removing a software node somewhere");
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.REMOVE, INFOMessage.ACTION_STATUS.STARTED, "AppCapabilityBase", "Removing a software node somewhere");
         //set the state=STAGING and stagingAction=undeploy, the pioneer handle the rest			
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         String topologyId = service.getTopologyOfNode(nodeId).getId();
@@ -355,7 +356,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
         } catch (SalsaException e) {
             throw e;
         }
-        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), EventPublisher.ACTION_TYPE.REMOVE, EventPublisher.ACTION_STATUS.DONE, "Removed a software node");        
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.REMOVE, INFOMessage.ACTION_STATUS.DONE, "AppCapabilityBase", "Removed a software node");        
     }
 
     static boolean orchestating = false;

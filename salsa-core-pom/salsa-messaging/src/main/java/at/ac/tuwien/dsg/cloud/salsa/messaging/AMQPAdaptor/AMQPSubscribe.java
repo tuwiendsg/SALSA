@@ -21,11 +21,12 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeI
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.ConsumerCancelledException;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
-import org.codehaus.jackson.map.ObjectMapper;
+
 
 /**
  *

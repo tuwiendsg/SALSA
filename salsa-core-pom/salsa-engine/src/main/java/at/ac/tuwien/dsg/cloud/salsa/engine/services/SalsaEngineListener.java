@@ -35,6 +35,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.INFOMessage;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.PioneerInfo;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
@@ -100,11 +101,11 @@ public class SalsaEngineListener {
                                 EngineLogger.logger.error("Deployment action failed. ActionID: {}", fullID.getActionID(), ex);
                             }
                             salsaState = SalsaEntityState.DEPLOYED;
-                            EventPublisher.publishInstanceEvent(Joiner.on("/").join(fullID.getService(), fullID.getUnit(), fullID.getInstance()), EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.DONE, "The instance deployment is finished");
+                            EventPublisher.publishInstanceEvent(Joiner.on("/").join(fullID.getService(), fullID.getUnit(), fullID.getInstance()), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.DONE, "EventListener", "The instance deployment is finished");
                         } else if (fullID.getActionName().equals("undeploy")) {
                             EngineLogger.logger.debug("The undeploy action for unit {}/{}/{}/{} is successful", fullID.getUser(), fullID.getService(), fullID.getUnit(), fullID.getInstance());
                             salsaState = SalsaEntityState.UNDEPLOYED;
-                            EventPublisher.publishInstanceEvent(Joiner.on("/").join(fullID.getService(), fullID.getUnit(), fullID.getInstance()), EventPublisher.ACTION_TYPE.REMOVE, EventPublisher.ACTION_STATUS.DONE, "The instance deployment is finished");
+                            EventPublisher.publishInstanceEvent(Joiner.on("/").join(fullID.getService(), fullID.getUnit(), fullID.getInstance()), INFOMessage.ACTION_TYPE.REMOVE, INFOMessage.ACTION_STATUS.DONE, "EventListener", "The instance deployment is finished");
                         }
                         ActionIDManager.removeAction(state.getActionID());
                         break;
@@ -178,18 +179,18 @@ public class SalsaEngineListener {
                     }
                     case elise_conductorActivated: {
                         ConductorDescription conInfo = ConductorDescription.fromJson(msg.getPayload());
-                        if (conInfo!=null){
+                        if (conInfo != null) {
                             EngineLogger.logger.debug("Registering a conductor: ", conInfo.toJson());
                             EliseManager eliseManager = ((EliseManager) JAXRSClientFactory.create(SalsaConfiguration.getSalsaCenterEndpointLocalhost() + "/rest/elise", EliseManager.class, Collections.singletonList(new JacksonJsonProvider())));
                             eliseManager.registerConductor(conInfo);
                             EngineLogger.logger.debug("Registering a conductor DONE !");
-                        }                        
+                        }
                         break;
                     }
                     default:
                         break;
                 }
-                
+
             }
         });
 

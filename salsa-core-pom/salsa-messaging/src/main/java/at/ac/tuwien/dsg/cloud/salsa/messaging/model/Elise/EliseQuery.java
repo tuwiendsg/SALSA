@@ -6,10 +6,11 @@
 package at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise;
 
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import org.codehaus.jackson.map.ObjectMapper;
+
 
 /**
  *

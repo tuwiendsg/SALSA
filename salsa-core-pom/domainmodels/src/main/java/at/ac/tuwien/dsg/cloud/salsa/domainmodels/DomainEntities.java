@@ -6,16 +6,17 @@
 package at.ac.tuwien.dsg.cloud.salsa.domainmodels;
 
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonMethod;
-import org.codehaus.jackson.map.ObjectMapper;
+//import org.codehaus.jackson.annotate.JsonAutoDetect;
+//import org.codehaus.jackson.annotate.JsonMethod;
+//import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  * This class manages set of DomainEntity, which used for collecting both application and infrastructure information
@@ -57,7 +58,7 @@ public class DomainEntities {
     
      public String toJson() {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         try {
             return mapper.writeValueAsString(this);
         } catch (IOException ex) {
@@ -68,7 +69,7 @@ public class DomainEntities {
 
     public static DomainEntities fromJson(String json) {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
         try {
             return mapper.readValue(json, DomainEntities.class);

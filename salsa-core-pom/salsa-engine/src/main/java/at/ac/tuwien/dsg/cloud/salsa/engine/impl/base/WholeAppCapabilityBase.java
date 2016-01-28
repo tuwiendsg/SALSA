@@ -37,6 +37,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaXmlProcess;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.INFOMessage;
 import com.google.common.base.Joiner;
 import generated.oasis.tosca.TDefinitions;
 import java.io.File;
@@ -72,7 +73,7 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
 
     @Override
     public CloudService addService(String serviceName, TDefinitions def) throws SalsaException {                
-        EventPublisher.publishCloudServiceEvent(serviceName, EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.STARTED, "Start to add a new cloud service with ID " + serviceName);
+        EventPublisher.publishCloudServiceEvent(serviceName, INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.STARTED, "WholeAppCapabilityBase", "Start to add a new cloud service with ID " + serviceName);
         if (configFile == null) {
             throw new EngineMisconfiguredException("./salsa.engine.properties", "The file is missing");
         }
@@ -111,13 +112,13 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
         SalsaXmlDataProcess.writeCloudServiceToFile(serviceData, fullSalsaDataFile);
         EngineLogger.logger.debug("debugggg Sep 8 - 4");
         
-        EventPublisher.publishCloudServiceEvent(serviceName, EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.DONE, "Add new cloud service with ID " + serviceName);
+        EventPublisher.publishCloudServiceEvent(serviceName, INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.DONE, "WholeAppCapabilityBase", "Add new cloud service with ID " + serviceName);
         return actualCreateNewService(serviceData);
     }
 
     @Override
     public boolean cleanService(String serviceId) throws SalsaException {                
-        EventPublisher.publishCloudServiceEvent(serviceId, EventPublisher.ACTION_TYPE.REMOVE, EventPublisher.ACTION_STATUS.STARTED, "Start to clean service with ID " + serviceId);
+        EventPublisher.publishCloudServiceEvent(serviceId, INFOMessage.ACTION_TYPE.REMOVE, INFOMessage.ACTION_STATUS.STARTED, "WholeAppCapabilityBase", "Start to clean service with ID " + serviceId);
         centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         if (service == null) {
@@ -174,7 +175,7 @@ public class WholeAppCapabilityBase implements WholeAppCapabilityInterface {
         
         // unregister pioneers
         PioneerManager.removePioneerOfWholeService(SalsaConfiguration.getUserName(), serviceId);        
-        EventPublisher.publishCloudServiceEvent(serviceId, EventPublisher.ACTION_TYPE.REMOVE, EventPublisher.ACTION_STATUS.DONE, "Clean service done: " + serviceId);
+        EventPublisher.publishCloudServiceEvent(serviceId, INFOMessage.ACTION_TYPE.REMOVE, INFOMessage.ACTION_STATUS.DONE, "WholeAppCapabilityBase", "Clean service done: " + serviceId);
         return true;
     }
 

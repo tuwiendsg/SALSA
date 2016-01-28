@@ -11,6 +11,7 @@
     <name>elise-pom</name>
     <modules>
         <module>elise-model</module>
+        <module>elise-model-plain</module>
         <module>elise-master</module>
         <module>elise-extensions</module>
         <module>elise-conductor</module>

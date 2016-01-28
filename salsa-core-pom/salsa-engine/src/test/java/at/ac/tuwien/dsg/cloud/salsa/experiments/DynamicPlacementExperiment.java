@@ -47,12 +47,25 @@ public class DynamicPlacementExperiment {
         String vmNodeID = "EventProcessingUnitVM";
         String dockerNodeID = "EventProcessingDocker";
         String outputDir = "/home/hungld/test/salsa/exp/";
-        String testName = "m1small";
+        
+        // m1.small
+//        String testName = "m1small";        
+//        double vmCost = 0.0071;
+//        double VMMem = 1921068; 
+        
+        // t1.micro
+        double VMMem = 952364;
+        String testName = "t1micro";        
+        double vmCost = 0.0031;
+        
+        // m1.medium
+//        double VMMem = 952364;
+//        String testName = "m1medium";        
+//        double vmCost = 0.0098;
+        
         String csvFile = outputDir + testName + ".csv";
-        double vmCost = 0.0071;
-        double VMMem = 1921068;
 
-        int maxEP = 10;
+        int maxEP = 9;
         String csvLine = "test,numVM,numService,totalMem,avgMem,usagedPercent,cost\n";
         FileUtils.writeStringToFile(new File(csvFile), csvLine, true);
 

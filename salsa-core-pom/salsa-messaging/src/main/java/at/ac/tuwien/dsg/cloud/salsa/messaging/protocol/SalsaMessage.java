@@ -17,9 +17,10 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.messaging.protocol;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import org.codehaus.jackson.map.ObjectMapper;
+
 
 /**
  *

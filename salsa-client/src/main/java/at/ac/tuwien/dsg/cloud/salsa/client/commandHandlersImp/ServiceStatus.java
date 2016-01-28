@@ -12,12 +12,10 @@ import at.ac.tuwien.dsg.cloud.salsa.client.data.ServiceJsonDataTree;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityState;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.core.MediaType;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 
@@ -69,7 +67,7 @@ public class ServiceStatus implements CommandHandler {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(ServiceStatus.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
 
     }

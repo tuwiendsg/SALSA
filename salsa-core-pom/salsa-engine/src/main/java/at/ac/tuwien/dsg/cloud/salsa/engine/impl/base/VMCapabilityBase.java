@@ -42,6 +42,7 @@ import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.PioneerManager;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SalsaConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.SystemFunctions;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.INFOMessage;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import com.google.common.base.Joiner;
 import java.io.IOException;
@@ -91,7 +92,7 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
     @Override
     public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {
         waitForCooledDown();
-        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.STARTED, "Start to deploy new VM");        
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.STARTED, "VMCapabilityBase", "Start to deploy new VM");        
         //TDefinitions def = centerCon.getToscaDescription(serviceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         String topologyId = service.getTopologyOfNode(nodeId).getId();
@@ -147,7 +148,7 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
         centerCon.updateInstanceUnitProperty(serviceId, topologyId, nodeId, instanceId, instanceDesc);
         EngineLogger.logger.debug("Updated VM info for node: " + nodeId);
 
-        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.DONE, "A new VM is created with IP: " + instanceDesc.getPrivateIp());        
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.DONE, "VMCapabilityBase", "A new VM is created with IP: " + instanceDesc.getPrivateIp());        
         return repData;
     }
 
@@ -230,7 +231,7 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
             List<String> lstPkgs = tprop.getPackagesDependenciesList().getPackageDependency();
             if (!lstPkgs.isEmpty()) {
                 for (String pkg : lstPkgs) {
-                    EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, replica), EventPublisher.ACTION_TYPE.DEPLOY, EventPublisher.ACTION_STATUS.PROCESSING, "Installing package " + pkg);                    
+                    EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, replica), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.PROCESSING, "VMCapabilityBase", "Installing package " + pkg);                    
                     // TODO: should change, now just support Ubuntu image			
                     userDataBuffer.append("apt-get -q -y install ").append(pkg).append(" \n");
                 }

@@ -11,14 +11,13 @@ import at.ac.tuwien.dsg.cloud.salsa.client.RestHandler;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryProcessNotification;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.core.MediaType;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+
 
 /**
  *
@@ -34,7 +33,7 @@ public class InstanceInfoCollect implements CommandHandler {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(InstanceInfoCollect.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         // now query if there are update process
         if (queryUUID != null) {            

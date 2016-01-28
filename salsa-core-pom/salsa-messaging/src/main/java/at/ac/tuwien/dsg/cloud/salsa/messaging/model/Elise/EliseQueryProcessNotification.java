@@ -5,8 +5,9 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import org.codehaus.jackson.map.ObjectMapper;
+
 
 /**
  *

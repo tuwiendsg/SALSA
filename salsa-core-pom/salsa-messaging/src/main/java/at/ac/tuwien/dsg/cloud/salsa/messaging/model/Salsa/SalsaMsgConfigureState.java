@@ -17,10 +17,11 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.codehaus.jackson.map.ObjectMapper;
+
 
 /**
  *

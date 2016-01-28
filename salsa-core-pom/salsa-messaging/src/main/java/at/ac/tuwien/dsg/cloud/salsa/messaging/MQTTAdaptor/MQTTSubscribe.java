@@ -21,7 +21,7 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeI
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;

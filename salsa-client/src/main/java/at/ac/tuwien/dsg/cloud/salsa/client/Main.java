@@ -15,6 +15,7 @@ import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.ServiceList;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.ServiceRemove;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.ServiceStatus;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.ServiceSubmit;
+import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.SubscribeQueue;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.Syn;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.ConductorListCollector;
 import at.ac.tuwien.dsg.cloud.salsa.client.commandHandlersImp.eliseAPI.ConductorPushCollector;
@@ -61,6 +62,7 @@ public class Main {
         @SubCommand(name = "conductor-push-collector", impl = ConductorPushCollector.class),
         @SubCommand(name = "conductor-list-collector", impl = ConductorListCollector.class),        
         @SubCommand(name = "help", impl = PrintHelp.class),
+        @SubCommand(name = "subscribe-queue", impl = SubscribeQueue.class),
 
         @SubCommand(name = "service-submit", impl = ServiceSubmit.class),
         @SubCommand(name = "service-list", impl = ServiceList.class),

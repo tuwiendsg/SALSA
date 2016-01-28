@@ -19,10 +19,11 @@ package at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa;
 
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.codehaus.jackson.map.ObjectMapper;
+
 
 /**
  *
