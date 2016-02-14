@@ -1,0 +1,12 @@
+action.start=capabilities/start.sh
+action.stop=capabilities/stop.sh
+action.changeRate=capabilities/changeRate.sh
+action.setProtocolDry=capabilities/setProtocolDry.sh
+action.setProtocolMQTT=capabilities/setProtocolMQTT.sh
+action.setProtocolCOAP=capabilities/setProtocolCOAP.sh
+action.redirect=capabilities/redirect.sh
+
+name=testSensor
+location=room1
+type=Temprature
+
