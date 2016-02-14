@@ -17,6 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.pioneer;
 
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
 import static at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType.apt;
 import static at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType.chef;
 import static at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType.chefSolo;
@@ -31,6 +32,7 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFact
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureState;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgUpdateMetadata;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.elise.EliseConductorManager;
@@ -45,12 +47,18 @@ import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.DockerConfigurator;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.instruments.WarInstrument;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.PioneerConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.pioneer.utils.SystemFunctions;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
-import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -111,8 +119,8 @@ public class Main {
                         publish_conf.pushMessage(reply);
                         logger.debug("Result is published !");
                         break;
-                    }                    
-                    case salsa_shutdownPioneer:{
+                    }
+                    case salsa_shutdownPioneer: {
                         logger.debug("Received a message to shutdown this pioneer. Bye!");
                         System.exit(0);
                     }
@@ -257,6 +265,44 @@ public class Main {
 
                 // if the artifact is an archieve, try to extract it
                 extractFile(filePath, PioneerConfiguration.getWorkingDirOfInstance(confInfo.getUnit(), confInfo.getInstance()));
+
+                // of artifact is META, parse new capabilities and publish a message to update capabilities
+                if (art.getType().equals(SalsaArtifactType.metadata.getString())) {
+                    logger.debug("Found a meta artifact: " + filePath);
+
+                    HashMap<String, String> metadataActions = new HashMap<>();
+                    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                        logger.debug("Ok, now reading meta data file");
+                        while (true) {
+                            String inputLine = reader.readLine();
+                            logger.debug("Read a meta data line: " + inputLine);
+                            if (inputLine == null) {
+                                logger.debug("Reading meta data file completed");
+                                break;
+                            } else if (inputLine.startsWith("action.")) {
+                                logger.debug("  -> The line starts with action. , parsing the action");
+                                String newActionName = inputLine.substring(inputLine.indexOf(".") + 1, inputLine.indexOf("="));
+                                logger.debug(" --> action name: " + newActionName);
+                                String newActionRef = inputLine.substring(inputLine.indexOf("=") + 1);
+                                logger.debug(" --> action ref: " + newActionRef);
+                                if (newActionName != null && newActionRef != null && !newActionName.trim().isEmpty() && !newActionRef.trim().isEmpty()) {
+                                    metadataActions.put(newActionName, newActionRef);
+                                    logger.debug("Parsing metadata action for {}/{}, action: {}, ref: {}", confInfo.getUnit(), confInfo.getInstance(), newActionName, newActionRef);
+                                } else {
+                                    logger.debug("Parsing error: either action or action reference is empty");
+                                }
+                            } else if (!inputLine.trim().isEmpty()) {
+                                logger.debug("Do not parse custom attributes yet, pass this: {}", inputLine);
+                            }
+                        }
+                    }
+
+                    MessagePublishInterface publish_deploy = factory.getMessagePublisher();
+                    SalsaMsgUpdateMetadata updateMsg = new SalsaMsgUpdateMetadata(confInfo, metadataActions);
+                    SalsaMessage salsaMsg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_updateNodeMetadata, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_UPDATE_CONFIGURATION_STATE, "", updateMsg.toJson());
+                    publish_deploy.pushMessage(salsaMsg);
+                }
+
             } catch (IOException e) {   // in the case cannot create artifact
                 logger.error("Error while downloading artifact for: " + confInfo.getUnit() + ". URL:" + art);
                 return new SalsaMsgConfigureState(confInfo.getActionID(), SalsaMsgConfigureState.CONFIGURATION_STATE.ERROR, 0, "Failed to download artifact at: " + art.getReference());

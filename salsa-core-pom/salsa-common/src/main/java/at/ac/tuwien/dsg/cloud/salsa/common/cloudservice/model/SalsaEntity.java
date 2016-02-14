@@ -170,7 +170,7 @@ public class SalsaEntity {
 
     public void addPrimitiveOperation(PrimitiveOperation opp) {
         if (this.primitive == null) {
-            this.primitive = new ArrayList<PrimitiveOperation>();
+            this.primitive = new ArrayList<>();
         }
         this.primitive.add(opp);
     }

@@ -48,7 +48,15 @@ import generated.oasis.tosca.TNodeTemplate;
 import generated.oasis.tosca.TRelationshipTemplate;
 import generated.oasis.tosca.TRequirement;
 import generated.oasis.tosca.TServiceTemplate;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -148,7 +156,7 @@ public class InfoParser {
             EngineLogger.logger.debug("Number of HostOn relationships: " + relas_hoston.size());
             for (TNodeTemplate node : nodes) {
                 /**
-                 * TRANSLATE BASIC INFORMATION
+                 * TRANSLATE BASIC INFORMATION AS Name, Min/max, Reference
                  */
                 ServiceUnit nodeData = new ServiceUnit(node.getId(), node.getType().getLocalPart());
                 nodeData.setState(SalsaEntityState.UNDEPLOYED);
@@ -174,7 +182,7 @@ public class InfoParser {
 
                 /**
                  * TRANSLATE ACTION MAPPING PROPERTIES
-                 */                
+                 */
                 if (node.getProperties() != null) {
                     if (node.getProperties().getAny() != null) {
                         SalsaMappingProperties props = (SalsaMappingProperties) node.getProperties().getAny();
@@ -251,13 +259,14 @@ public class InfoParser {
                         nodeData.addArtifact(art.getName(), art.getArtifactType().getLocalPart(), artTemp.getArtifactReferences().getArtifactReference().get(0).getReference());
                     }
                 }
-                // add the artifact type for deploying the node. The first artifact type which is not misc will be selected.
-                // we know docker, it is a but hack, but work
+                // add the artifact type for deploying the node. The first artifact type which is not misc or metadata will be selected.
+                // we know docker, it is a bit hack, but work
                 if (node.getType().getLocalPart().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
                     nodeData.setArtifactType(SalsaArtifactType.dockerfile.getString());
                 } else if (node.getDeploymentArtifacts() != null && node.getDeploymentArtifacts().getDeploymentArtifact() != null) {
                     for (TDeploymentArtifact tArt : node.getDeploymentArtifacts().getDeploymentArtifact()) {
-                        if (!tArt.getArtifactType().getLocalPart().equals(SalsaArtifactType.misc.getString())) {
+                        if (!tArt.getArtifactType().getLocalPart().equals(SalsaArtifactType.misc.getString())
+                                && !tArt.getArtifactType().getLocalPart().equals(SalsaArtifactType.metadata.getString())) {
                             nodeData.setArtifactType(tArt.getArtifactType().getLocalPart());
                         }
                     }
@@ -271,13 +280,13 @@ public class InfoParser {
                     ServiceUnit.Properties props = new ServiceUnit.Properties();
                     if (node.getType().getLocalPart().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
                         SalsaInstanceDescription_VM instanceDesc = new SalsaInstanceDescription_VM();
-                        instanceDesc.updateFromMappingProperties(mapProp);                        
-                        props.setAny(instanceDesc);                        
+                        instanceDesc.updateFromMappingProperties(mapProp);
+                        props.setAny(instanceDesc);
                     } else if (node.getType().getLocalPart().equals(SalsaEntityType.SERVICE.getEntityTypeString())) {
                         SalsaInstanceDescription_SystemProcess instanceDesc = new SalsaInstanceDescription_SystemProcess();
                         instanceDesc.updateFromMappingProperties(mapProp);
                         props.setAny(instanceDesc);
-                    } else if (node.getType().getLocalPart().equals(SalsaEntityType.DOCKER.getEntityTypeString())){
+                    } else if (node.getType().getLocalPart().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
                         SalsaInstanceDescription_Docker dockerDesc = new SalsaInstanceDescription_Docker();
                         dockerDesc.updateFromMappingProperties(mapProp);
                         props.setAny(dockerDesc);

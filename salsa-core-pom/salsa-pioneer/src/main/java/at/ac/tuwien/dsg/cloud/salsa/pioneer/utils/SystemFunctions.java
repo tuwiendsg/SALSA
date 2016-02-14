@@ -38,22 +38,14 @@ public class SystemFunctions {
     private final static File envFileGlobal = new File("/etc/environment");
 
     // write to a /etc/profile.d and the /etc/environment
-    public static void writeSystemVariable(String key, String value) {
-        try {
-            String data1 = key + "=" + value + "\n";
-            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(envFileGlobal.getPath(), true)));
-            out.println(data1);
-            out.flush();
-            out.close();
-        } catch (IOException e) {
-            logger.error("Could not write in config file. Error: " + e);
-        }
-    }
-
+    // the format is metric=value;metric2=value2
     public static void writeSystemVariable(String keyAndValue) {
         try {
+            String[] pairs=keyAndValue.split(";");
             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(envFileGlobal.getPath(), true)));
-            out.println(keyAndValue);
+            for (String s:pairs){
+                out.println(s +"\n");
+            }
             out.flush();
             out.close();
         } catch (IOException e) {

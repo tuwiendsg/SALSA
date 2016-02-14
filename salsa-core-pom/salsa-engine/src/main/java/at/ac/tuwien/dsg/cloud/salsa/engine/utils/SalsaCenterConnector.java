@@ -88,6 +88,7 @@ public class SalsaCenterConnector {
         this.workingDir = workingDir;
         this.engineInternal = JAXRSClientFactory.create(this.centerRestfulEndpoint, SalsaEngineServiceIntenal.class);
         if (engineInternal == null) {
+            logger.error("Cannot create SalsaConnector object !");
             throw new EngineConnectionException(this.centerRestfulEndpoint);
         }
     }
@@ -121,6 +122,12 @@ public class SalsaCenterConnector {
      */
     public String updateNodeState(String serviceId, String topologyId, String nodeId, int instanceId, SalsaEntityState state, String extra) throws SalsaException {
         Response res = engineInternal.updateNodeState(serviceId, topologyId, nodeId, instanceId, state.getNodeStateString(), extra);
+        return res.getEntity().toString();
+    }
+    
+    public String updateNodeMetadata(String metadata, String serviceId, String topologyId, String nodeId) throws SalsaException {
+        logger.debug("inside the center connection to update metadata");
+        Response res = engineInternal.updateNodeMetadata(metadata, serviceId, topologyId, nodeId);
         return res.getEntity().toString();
     }
 

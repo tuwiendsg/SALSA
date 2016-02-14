@@ -25,11 +25,14 @@ import org.kohsuke.args4j.Argument;
  */
 public class SubscribeQueue implements CommandHandler {
 
-    @Argument(index = 0, metaVar = "queue_type", usage = "The type of the queue. SALSA support MQTT and AMQP", required = true)
+    @Argument(index = 0, metaVar = "queue_type", usage = "The type of the queue. SALSA support mqtt and ampq", required = true)
     String type;
 
-    @Argument(index = 1, metaVar = "endpoint", usage = "The number of instance will be create.", required = false)
+    @Argument(index = 1, metaVar = "endpoint", usage = "The endpoint of the queue.", required = true)
     String endpoint;
+    
+    @Argument(index = 2, metaVar = "topic", usage = "The topic to subscribt.", required = false)
+    String topic;
     
     @Override
     public void execute() {
@@ -59,7 +62,11 @@ public class SubscribeQueue implements CommandHandler {
                 System.out.println("Undefined queue protocol: " + type +". Should be mqtt or ampq!");                
                 return;
         }
-        sub.subscribe(SalsaMessageTopic.SALSA_PUBLISH_EVENT);
+        if (topic==null){
+            sub.subscribe(SalsaMessageTopic.SALSA_PUBLISH_EVENT);
+        } else {
+            sub.subscribe(topic);
+        }
     }
 
     @Override

@@ -430,6 +430,14 @@ public interface SalsaEngineServiceIntenal extends ApplicationManagementAPI {
             @PathParam("instanceId") int instanceId,
             @PathParam("value") String value,
             @QueryParam("extra") String extra) throws SalsaException;
+    
+    @POST
+    @Path("/services/{serviceId}/topologies/{topologyId}/nodes/{nodeId}/metadata")
+    public Response updateNodeMetadata(
+            String metadata,
+            @PathParam("serviceId") String serviceId,
+            @PathParam("topologyId") String topologyId,
+            @PathParam("nodeId") String nodeId) throws SalsaException;
 
     /**
      *

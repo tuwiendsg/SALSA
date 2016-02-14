@@ -41,12 +41,15 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureState;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgUpdateMetadata;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaCapaReqString;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_Docker;
 import com.google.common.base.Joiner;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
@@ -69,6 +72,30 @@ public class SalsaEngineListener {
 
             @Override
             public void handleMessage(SalsaMessage msg) {
+
+                EngineLogger.logger.debug("Get a message from pioneer to update somethings....");
+                if (msg.getMsgType().equals(SalsaMessage.MESSAGE_TYPE.salsa_updateNodeMetadata)) {
+                    EngineLogger.logger.debug(" --> The message is for updating metadata, msgtype: " + msg.getMsgType());
+                    SalsaMsgUpdateMetadata metadataInfo = SalsaMsgUpdateMetadata.fromJson(msg.getPayload());                    
+                    try {
+                        SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
+                        EngineLogger.logger.debug(" --> Is about calling salsa API to update");
+                        EngineLogger.logger.debug(" --> msg.getPayload: {}", msg.getPayload());
+                        EngineLogger.logger.debug(" --> metadataInfo.getService: {}", metadataInfo.getService());
+                        EngineLogger.logger.debug(" --> metadataInfo.getTopology: {}", metadataInfo.getTopology());
+                        EngineLogger.logger.debug(" --> metadataInfo.getUnit: {}", metadataInfo.getUnit());
+                        centerCon.updateNodeMetadata(msg.getPayload(), metadataInfo.getService(), metadataInfo.getTopology(), metadataInfo.getUnit());
+                        EngineLogger.logger.debug(" --> Seem to update done");
+                    } catch (EngineConnectionException ex) {
+                        EngineLogger.logger.error("Cannot connect to SALSA service in localhost: " + SalsaConfiguration.getSalsaCenterEndpointLocalhost() + ". This is a fatal error !");
+                    } catch (SalsaException ex) {
+                        EngineLogger.logger.error("Cannot update the metadata");
+                    }
+                    return;
+                }
+                EngineLogger.logger.debug(" --> The message is for updating configuration state, msgtype: " + msg.getMsgType());
+
+                // OTHER CASE ONLY: SalsaMessage.MESSAGE_TYPE.salsa_configurationStateUpdate
                 SalsaMsgConfigureState state = SalsaMsgConfigureState.fromJson(msg.getPayload());
                 SalsaCenterConnector centerCon = null;
                 try {

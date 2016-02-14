@@ -110,6 +110,16 @@ public interface ApplicationManagementAPI {
             @PathParam("instanceId") int instanceId,
             @PathParam("actionName") String actionName) throws SalsaException;
     
+    // Note: the parameters are separated by ,    
+    @POST
+    @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/action_queue/{actionName}/parameters/{parameters}")
+    public Response queueActionWithParameter(
+            @PathParam("serviceId") String serviceId,
+            @PathParam("nodeId") String nodeId,
+            @PathParam("instanceId") int instanceId,
+            @PathParam("actionName") String actionName,
+            @PathParam("parameters") String parameters) throws SalsaException;
+    
     
     
 }
