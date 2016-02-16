@@ -13,6 +13,8 @@ public class PhysicalResource {
     private String location;
 
     private Map<String, String> attributes;
+    
+    private String domainModel;
 
     public PhysicalResource() {
     }
