@@ -1,0 +1,61 @@
+{
+    "vnfForwardGraphs": [
+        {
+            "nodes": [
+                {
+                    "name": "weave-router1",
+                    "routingProtocol": "IGRP",
+                    "peers": null,
+                    "dns": null,
+                    "networkInterface": [
+                        {
+                            "networkAddress": "172.17.0.150"
+                        }
+                    ]
+                },
+                {
+                    "name": "weave-router2",
+                    "routingProtocol": "IGRP",
+                    "peers": null,
+                    "dns": null,
+                    "networkInterface": [
+                        {
+                            "networkAddress": "172.17.0.151"
+                        }
+                    ]
+                },
+                {
+                    "name": "weave-router3",
+                    "routingProtocol": "IGRP",
+                    "peers": null,
+                    "dns": null,
+                    "networkInterface": [
+                        {
+                            "networkAddress": "172.17.0.152"
+                        }
+                    ]
+                }
+            ],
+            "links": [
+                {
+                    "source": "weave-router1",
+                    "target": "weave-router2",
+                    "bandwidth": "100Mbps"
+                },
+                {
+                    "source": "weave-router2",
+                    "target": "weave-router3",
+                    "bandwidth": "500Mbps"
+                }
+            ]
+        }
+    ],
+    "accessPoints": [
+        {
+            "networkAddress": "172.17.0.150"
+        },
+        {
+            "networkAddress": "172.17.0.152"
+        }
+    ]
+}

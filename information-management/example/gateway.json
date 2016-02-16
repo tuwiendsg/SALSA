@@ -1,0 +1,50 @@
+{
+    "uuid": "9321a1c2-a622-4b4c-ba3d-f51e8af79460",
+    "name": "Gateway1",
+    "capabilities": [
+        {
+            "name": "changeSensorRate",
+            "serviceName": "SALSA",
+            "invokeProtocol": "POST",
+            "reference": "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/changeRate/parameters/{1}",
+            "postData": "",
+            "effect": null
+        },
+        {
+            "name": "setProtocolMQTT",
+            "serviceName": "SALSA",
+            "invokeProtocol": "POST",
+            "reference": "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolMQTT",
+            "postData": "",
+            "effect": null
+        },
+        {
+            "name": "setProtocolDRY",
+            "serviceName": "SALSA",
+            "invokeProtocol": "POST",
+            "reference": "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolDRY",
+            "postData": "",
+            "effect": null
+        }
+    ],
+    "dataStreams": [
+        {
+            "queue": null,
+            "observedProperty": {
+                "name": "GPS",
+                "measureUnit": "lat/long"
+            },
+            "physicalResource": null,
+            "bufferType": "MQTT",
+            "bufferReference": "tcp://172.17.0.140:1883/topic",
+            "description": "The location of the device"
+        }
+    ],
+    "physicalResources": null,
+    "defaultGateway": {
+        "networkAddress": "172.17.0.150"
+    },
+    "meta": {
+        "model": "G2021"
+    }
+}
