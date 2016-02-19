@@ -1,0 +1,205 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>ELISE by tuwiendsg</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <style>
+		p.justify{
+				text-align: justify;
+		}
+		p.margined{
+				text-align: justify;
+				margin-left: 35px;
+		}
+
+
+.tg  {border-collapse:collapse;border-spacing:0;border-color:#ccc;}
+.tg td{line-height: 100%;font-family:Arial, sans-serif;font-size:12px;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:break-word;border-color:#ccc;color:#333;background-color:#fff;}
+.tg th{line-height: 100%;font-family:Arial, sans-serif;font-size:12px;font-weight:normal;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#ccc;color:#333;background-color:#f0f0f0;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-hgcj{font-weight:bold;text-align:center}
+.tg .tg-amwm{font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-yw4l{vertical-align:top}
+p.small {
+    line-height: 70%;
+}
+
+		</style>
+		
+		
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+            <script src="scripts/jquery-1.3.2.debug.js" type="text/javascript"></script>
+        <script src="scripts/json.debug.js" type="text/javascript"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    
+  </head>
+  <body>
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-27052073-2', 'auto');
+    ga('send', 'pageview');
+  </script>
+ 
+    
+    <div class="wrapper">
+      <header>
+        <h1 class="header">ELISE</h1> 
+        <p class="header">Managing Information for Dynamic Configuration of
+Elastic IoT Cloud Systems</p>
+        <h2 class="header">Sources</h2>
+        
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/tuwiendsg/SALSA/zipball/master">Download ZIP</a></li>
+<!--          <li class="download"><a class="buttons" href="https://github.com/tuwiendsg/SALSA/tarball/master">Download TAR</a></li>  -->
+          <li><a class="buttons github" href="https://github.com/tuwiendsg/SALSA/tree/master/elise-pom">View On GitHub</a></li>
+          <li><a class="buttons javadoc" href="http://tuwiendsg.github.io/SALSA/apidocs/">Javadoc & UML</a></li>
+        </ul>
+        
+        <p class="header">Maintained by <a class="header name" href="https://github.com/tuwiendsg">tuwiendsg</a></p>
+
+      </header>
+      <section>
+      
+      
+<h1><a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>Introduction</h1>
+<p>This page provides extra materials for the paper <b>"Managing Information for Dynamic Configuration of Elastic IoT Cloud Systems"</b>. </p>
+
+<p>At the moment, ELISE is integrated in SALSA, towards providing information of IoT Cloud Systems for the configuration processes. By the integration, ELISE reuses some of concepts and designs in SALSA, as well as automatically captures deployment information from SALSA by default, such as the cloud service structure and cloud infrastructure information.</p>
+
+<h1><a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>ELISE API</h1>
+
+<h2>API for managing information</h2>
+<p>In current version, the information of provider and cloud service structure is static collected, thus it can be query dirrectly in ELISE. The unit instances are dynamically create/remove and being distributed over infrastructures, thus the collection process can take time. To deal with this, ELISE provides a separate API to start the queries and an API to get the information.</p>
+
+<table class="tg" style="undefined;table-layout: fixed; width: 676px">
+<colgroup>
+<col style="width: 27px">
+<col style="width: 430px">
+<col style="width: 470px">
+</colgroup>
+  <tr>
+    <th class="tg-hgcj">#</th>
+    <th class="tg-hgcj">APIs</th>
+    <th class="tg-amwm">Description</th>
+  </tr>
+
+  <tr>
+    <td class="tg-baqh">1</td>
+    <td class="tg-yw4l">GET /provider</td>
+    <td class="tg-yw4l">Get list of providers</td>
+  </tr> 
+  
+  <tr>
+    <td class="tg-baqh">2</td>
+    <td class="tg-yw4l">GET /provider/{uniqueID}</td>
+    <td class="tg-yw4l">Get list of offered service from a provider</td>
+  </tr> 
+  
+  <tr>
+    <td class="tg-baqh">4</td>
+    <td class="tg-yw4l">GET /cloudservice</td>
+    <td class="tg-yw4l">Get list of cloud services</td>
+  </tr> 
+  
+  <tr>
+    <td class="tg-baqh">3</td>
+    <td class="tg-yw4l">GET /cloudservice/{uniqueID}</td>
+    <td class="tg-yw4l">Get cloud service's structure</td>
+  </tr> 
+  
+  <tr>
+    <td class="tg-baqh">4</td>
+    <td class="tg-yw4l">POST /communication/queryUnitInstance</td>
+    <td class="tg-yw4l">Start a query by forwarding request to collectors. This consume a query string and return an ID of the query to check</td>
+  </tr> 
+  
+  <tr>
+    <td class="tg-baqh">5</td>
+    <td class="tg-yw4l">GET /communication/query/{queryUUID}</td>
+    <td class="tg-yw4l">Return status of a query: how many collectors are involving to get information for that query, what is the status of the collection process</td>
+  </tr> 
+  
+   <tr>
+    <td class="tg-baqh">6</td>
+    <td class="tg-yw4l">POST /unitinstance/{uniqueID}</td>
+    <td class="tg-yw4l">Get details the information of single instance</td>
+  </tr> 
+  
+</table>
+
+<h2>API for managing ELISE components</h2>
+<table class="tg" style="undefined;table-layout: fixed; width: 676px">
+<colgroup>
+<col style="width: 27px">
+<col style="width: 430px">
+<col style="width: 470px">
+</colgroup>
+  <tr>
+    <th class="tg-hgcj">#</th>
+    <th class="tg-hgcj">APIs</th>
+    <th class="tg-amwm">Description</th>
+  </tr>
+  <tr>
+    <td class="tg-baqh">1</td>
+    <td class="tg-yw4l">GET /manager/count</td>
+    <td class="tg-yw4l">Get the description of running collectors</td>
+  </tr> 
+  <tr>
+    <td class="tg-baqh">2</td>
+    <td class="tg-yw4l">POST /manager/conductor/salsa/{pioneerID}</td>
+    <td class="tg-yw4l">Request SALSA to deploy a conductor (which host collector artifact)</td>
+  </tr> 
+  <tr>
+    <td class="tg-baqh">3</td>
+    <td class="tg-yw4l">POST /manager/conductor/{conductorID}/collector/{collectorName}</td>
+    <td class="tg-yw4l">Push a collector artifact to a conductor</td>
+  </tr> 
+  <tr>
+    <td class="tg-baqh">4</td>
+    <td class="tg-yw4l">GET /manager/collector</td>
+    <td class="tg-yw4l">Get the list of supported collectors which can be deployed</td>
+  </tr>  
+  <tr>
+    <td class="tg-baqh">5</td>
+    <td class="tg-yw4l">POST /manager/conductor/resyn</td>
+    <td class="tg-yw4l">Synchronize the collectors with elise master</td>
+  </tr> 
+</table>
+
+
+
+
+<h1><a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>Examples</h1>
+
+<p>We provide in the repository <a href="https://github.com/tuwiendsg/SALSA/tree/master/examples/ELISE" target="_blank">the examples of the service description and result of queries</a>. The service description can be found in <a href="http://tuwiendsg.github.io/iCOMOT/demo.html#javaDevPerspective" target="_blank">Java domain-specific language</a> or <a href="http://docs.oasis-open.org/tosca/TOSCA/v1.0/os/TOSCA-v1.0-os.html" target="_blank">TOSCA file</a> in XML format</p>
+
+
+
+
+<h1><a name="contact" class="anchor" href="#contact"><span class="octicon octicon-link"></span></a>Contact</h1>
+
+<p>Please contact Le Duc Hung <a href="mailto:d.le@dsg.tuwien.ac.at">d.le [at] dsg.tuwien.ac.at</a> and/or Hong-Linh Truong <a href="mailto:truong@dsg.tuwien.ac.at">truong [at] dsg.tuwien.ac.at</a> for any kind of issue.</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
