@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:Definitions id="ElasticIoTPlatform" name="ElasticIoTPlatform" xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12">
+    <ns2:ServiceTemplate id="DataEndTopology">
+        <ns2:TopologyTemplate>
+            <ns2:RelationshipTemplate id="dataControllerToVM" type="HOSTON">
+                <ns2:SourceElement ref="DataControllerUnit"/>
+                <ns2:TargetElement ref="DataControllerUnitVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="dataNodeToDataController" type="CONNECTTO">
+                <ns2:SourceElement ref="DataController_IP_information"/>
+                <ns2:TargetElement ref="DataController_IP_Data_Node_Req"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="dataNodeToVM" type="HOSTON">
+                <ns2:SourceElement ref="DataNodeUnit"/>
+                <ns2:TargetElement ref="DataNodeUnitVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="DataControllerUnit" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities>
+                    <ns2:Capability id="DataController_IP_information" type="variable"/>
+                </ns2:Capabilities>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_fe62975f-537c-4c0c-93b6-8cebab74c8da" artifactType="salsa:sh" artifactRef="Artifact_fe62975f-537c-4c0c-93b6-8cebab74c8da" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_ba4ee94f-f1b5-439b-be9c-4eb37385d1eb" artifactType="salsa:misc" artifactRef="Artifact_ba4ee94f-f1b5-439b-be9c-4eb37385d1eb" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="DataNodeUnit" type="software">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="action">
+                            <property name="stop">sudo service joinRing stop</property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement name="requiringDataNodeIP" id="DataController_IP_Data_Node_Req" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies>
+                    <ns2:Policy name="DN_ST2: STRATEGY CASE cpuUsage &gt; 80 % : scaleOut" policyType="SYBLConstraint"/>
+                    <ns2:Policy name="DN_ST1: STRATEGY CASE cpuUsage &lt; 40 % : scaleIn" policyType="SYBLConstraint"/>
+                </ns2:Policies>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_1a999f2c-8936-46b5-8412-d66697e61010" artifactType="salsa:sh" artifactRef="Artifact_1a999f2c-8936-46b5-8412-d66697e61010" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_a13de2d8-3557-4acd-a347-42f21f6c50c1" artifactType="salsa:misc" artifactRef="Artifact_a13de2d8-3557-4acd-a347-42f21f6c50c1" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="DataControllerUnitVM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="DataNodeUnitVM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000000960</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="mqttToVM" type="HOSTON">
+                <ns2:SourceElement ref="QueueUnit"/>
+                <ns2:TargetElement ref="MqttQueueVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="localProcessingToVM" type="HOSTON">
+                <ns2:SourceElement ref="LocalProcessingUnit"/>
+                <ns2:TargetElement ref="LocalProcessingUnitVM"/>
+            </ns2:RelationshipTemplate>
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    <ns2:ArtifactTemplate id="Artifact_fe62975f-537c-4c0c-93b6-8cebab74c8da" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/scripts/OpenStack/deployCassandraSeed.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_ba4ee94f-f1b5-439b-be9c-4eb37385d1eb" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/artifacts/ElasticCassandraSetup-1.0.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_1a999f2c-8936-46b5-8412-d66697e61010" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/scripts/OpenStack/deployCassandraNode.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_a13de2d8-3557-4acd-a347-42f21f6c50c1" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/artifacts/ElasticCassandraSetup-1.0.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ServiceTemplate id="Gateway">
+        <ns2:TopologyTemplate>
+            <ns2:RelationshipTemplate id="dataControllerToVM" type="HOSTON">
+                <ns2:SourceElement ref="DataControllerUnit"/>
+                <ns2:TargetElement ref="DataControllerUnitVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="dataNodeToDataController" type="CONNECTTO">
+                <ns2:SourceElement ref="DataController_IP_information"/>
+                <ns2:TargetElement ref="DataController_IP_Data_Node_Req"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqttToVM" type="HOSTON">
+                <ns2:SourceElement ref="QueueUnit"/>
+                <ns2:TargetElement ref="MqttQueueVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="dataNodeToVM" type="HOSTON">
+                <ns2:SourceElement ref="DataNodeUnit"/>
+                <ns2:TargetElement ref="DataNodeUnitVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="localProcessingToVM" type="HOSTON">
+                <ns2:SourceElement ref="LocalProcessingUnit"/>
+                <ns2:TargetElement ref="LocalProcessingUnitVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="MqttQueueVM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="QueueUnit" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities>
+                    <ns2:Capability id="brokerIp_Capability" type="variable"/>
+                </ns2:Capabilities>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_5fbcabaf-fd7b-4832-b507-8811b3b518cf" artifactType="salsa:sh" artifactRef="Artifact_5fbcabaf-fd7b-4832-b507-8811b3b518cf" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="LocalProcessingUnit" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement" type="variable"/>
+                    <ns2:Requirement id="loadBalancerIp_Requirement" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies>
+                    <ns2:Policy name="LPT_ST2: STRATEGY CASE avgBufferSize &gt; 50 # : Salsa.scaleOut" policyType="SYBLConstraint"/>
+                    <ns2:Policy name="LPT_ST1: STRATEGY CASE avgBufferSize &lt; 50 # : Salsa.scaleIn" policyType="SYBLConstraint"/>
+                </ns2:Policies>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_b2b06142-4e26-4d28-90f0-e2d489374f82" artifactType="salsa:misc" artifactRef="Artifact_b2b06142-4e26-4d28-90f0-e2d489374f82" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_3bc6076e-520a-486c-997d-14ddd99f2cf5" artifactType="salsa:sh" artifactRef="Artifact_3bc6076e-520a-486c-997d-14ddd99f2cf5" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_7264ec79-3d42-4b93-8a8e-a36e30b901ae" artifactType="salsa:misc" artifactRef="Artifact_7264ec79-3d42-4b93-8a8e-a36e30b901ae" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="LocalProcessingUnitVM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="eventProcessingToVM" type="HOSTON">
+                <ns2:SourceElement ref="EventProcessingUnit"/>
+                <ns2:TargetElement ref="EventProcessingUnitVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="momToVM" type="HOSTON">
+                <ns2:SourceElement ref="MOMUnit"/>
+                <ns2:TargetElement ref="MoMVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="eventProcessingToDataController" type="CONNECTTO">
+                <ns2:SourceElement ref="DataController_IP_information"/>
+                <ns2:TargetElement ref="EventProcessingUnit_DataController_IP_Req"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="loadbalancerToVM" type="HOSTON">
+                <ns2:SourceElement ref="LoadBalancerUnit"/>
+                <ns2:TargetElement ref="LoadBalancerUnitVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="load_balancer" type="CONNECTTO">
+                <ns2:SourceElement ref="LoadBalancer_IP_information"/>
+                <ns2:TargetElement ref="loadBalancerIp_Requirement"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="eventProcessingToMOM" type="CONNECTTO">
+                <ns2:SourceElement ref="MOM_IP_information"/>
+                <ns2:TargetElement ref="EventProcessingUnit_MOM_IP_Req"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="eventProcessingToLoadBalancer" type="CONNECTTO">
+                <ns2:SourceElement ref="LoadBalancer_IP_information"/>
+                <ns2:TargetElement ref="EventProcessingUnit_LoadBalancer_IP_Req"/>
+            </ns2:RelationshipTemplate>
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    <ns2:ArtifactTemplate id="Artifact_5fbcabaf-fd7b-4832-b507-8811b3b518cf" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/scripts/OpenStack/run_mqtt_broker.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_b2b06142-4e26-4d28-90f0-e2d489374f82" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/artifacts/LocalDataAnalysis.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_3bc6076e-520a-486c-997d-14ddd99f2cf5" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/scripts/OpenStack/deployLocalAnalysis.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_7264ec79-3d42-4b93-8a8e-a36e30b901ae" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/Misc/artifacts/jre-7-linux-x64.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ServiceTemplate id="EventProcessingTopology">
+        <ns2:TopologyTemplate>
+            <ns2:RelationshipTemplate id="dataControllerToVM" type="HOSTON">
+                <ns2:SourceElement ref="DataControllerUnit"/>
+                <ns2:TargetElement ref="DataControllerUnitVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="eventProcessingToVM" type="HOSTON">
+                <ns2:SourceElement ref="EventProcessingUnit"/>
+                <ns2:TargetElement ref="EventProcessingUnitVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="dataNodeToDataController" type="CONNECTTO">
+                <ns2:SourceElement ref="DataController_IP_information"/>
+                <ns2:TargetElement ref="DataController_IP_Data_Node_Req"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="loadbalancerToVM" type="HOSTON">
+                <ns2:SourceElement ref="LoadBalancerUnit"/>
+                <ns2:TargetElement ref="LoadBalancerUnitVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="eventProcessingToMOM" type="CONNECTTO">
+                <ns2:SourceElement ref="MOM_IP_information"/>
+                <ns2:TargetElement ref="EventProcessingUnit_MOM_IP_Req"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqttToVM" type="HOSTON">
+                <ns2:SourceElement ref="QueueUnit"/>
+                <ns2:TargetElement ref="MqttQueueVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="momToVM" type="HOSTON">
+                <ns2:SourceElement ref="MOMUnit"/>
+                <ns2:TargetElement ref="MoMVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="dataNodeToVM" type="HOSTON">
+                <ns2:SourceElement ref="DataNodeUnit"/>
+                <ns2:TargetElement ref="DataNodeUnitVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="eventProcessingToDataController" type="CONNECTTO">
+                <ns2:SourceElement ref="DataController_IP_information"/>
+                <ns2:TargetElement ref="EventProcessingUnit_DataController_IP_Req"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="load_balancer" type="CONNECTTO">
+                <ns2:SourceElement ref="LoadBalancer_IP_information"/>
+                <ns2:TargetElement ref="loadBalancerIp_Requirement"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="eventProcessingToLoadBalancer" type="CONNECTTO">
+                <ns2:SourceElement ref="LoadBalancer_IP_information"/>
+                <ns2:TargetElement ref="EventProcessingUnit_LoadBalancer_IP_Req"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="localProcessingToVM" type="HOSTON">
+                <ns2:SourceElement ref="LocalProcessingUnit"/>
+                <ns2:TargetElement ref="LocalProcessingUnitVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="LoadBalancerUnit" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities>
+                    <ns2:Capability id="LoadBalancer_IP_information" type="variable"/>
+                </ns2:Capabilities>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_2009abfa-a709-4983-92d1-c986c8e8e4ec" artifactType="salsa:sh" artifactRef="Artifact_2009abfa-a709-4983-92d1-c986c8e8e4ec" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_80feaaaa-fcc2-4c14-8112-0a44b88691a8" artifactType="salsa:misc" artifactRef="Artifact_80feaaaa-fcc2-4c14-8112-0a44b88691a8" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="EventProcessingUnit" type="software">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="action">
+                            <property name="stop">sudo service event-processing stop</property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="EventProcessingUnit_MOM_IP_Req" type="variable"/>
+                    <ns2:Requirement id="EventProcessingUnit_DataController_IP_Req" type="variable"/>
+                    <ns2:Requirement id="EventProcessingUnit_LoadBalancer_IP_Req" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies>
+                    <ns2:Policy name="EP_ST2: STRATEGY CASE responseTime &gt; 100 ms AND avgThroughput &gt; 200 operations/s : scaleOut" policyType="SYBLConstraint"/>
+                    <ns2:Policy name="EP_ST1: STRATEGY CASE avgThroughput &lt; 200 operations/s AND responseTime &lt; 100 ms : scaleIn" policyType="SYBLConstraint"/>
+                </ns2:Policies>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_22123662-7312-4ff4-a095-551d60013e95" artifactType="salsa:sh" artifactRef="Artifact_22123662-7312-4ff4-a095-551d60013e95" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_98192515-da83-424d-a2e9-f024e68f837f" artifactType="salsa:misc" artifactRef="Artifact_98192515-da83-424d-a2e9-f024e68f837f" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="MOMUnit" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities>
+                    <ns2:Capability id="MOM_IP_information" type="variable"/>
+                </ns2:Capabilities>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_c65993ee-17cf-4bbb-bef2-54877783ed19" artifactType="salsa:misc" artifactRef="Artifact_c65993ee-17cf-4bbb-bef2-54877783ed19" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_1c4315ce-759e-42e2-8ae8-f548b4296751" artifactType="salsa:sh" artifactRef="Artifact_1c4315ce-759e-42e2-8ae8-f548b4296751" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="LoadBalancerUnitVM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="EventProcessingUnitVM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="MoMVM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    <ns2:ArtifactTemplate id="Artifact_2009abfa-a709-4983-92d1-c986c8e8e4ec" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/scripts/OpenStack/deployLoadBalancer.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_80feaaaa-fcc2-4c14-8112-0a44b88691a8" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/artifacts/HAProxySetup-1.0.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_22123662-7312-4ff4-a095-551d60013e95" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/scripts/OpenStack/deployEventProcessing.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_98192515-da83-424d-a2e9-f024e68f837f" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/artifacts/DaaS-1.0.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_c65993ee-17cf-4bbb-bef2-54877783ed19" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/artifacts/DaaSQueue-1.0.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_1c4315ce-759e-42e2-8ae8-f548b4296751" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/ElasticIoTCloudPlatform/scripts/OpenStack/deployMoM.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+</ns2:Definitions>

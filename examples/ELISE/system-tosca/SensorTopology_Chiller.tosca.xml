@@ -1,0 +1,669 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:Definitions id="ChillerSensors_OpenStack" name="ChillerSensors_OpenStack" xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12">
+    <ns2:ServiceTemplate id="QueueServiceTopology">
+        <ns2:TopologyTemplate>
+            <ns2:RelationshipTemplate id="QueueUnitOnMqttQueueVM" type="HOSTON">
+                <ns2:SourceElement ref="QueueUnit"/>
+                <ns2:TargetElement ref="MqttQueueVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:NodeTemplate reference="IoTSensors/MqttQueueVM" minInstances="1" maxInstances="2147483647" id="MqttQueueVM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate reference="IoTSensors/QueueUnit" minInstances="1" maxInstances="1" id="QueueUnit" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities>
+                    <ns2:Capability id="brokerIp_Capability" type="variable"/>
+                </ns2:Capabilities>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_evaporator_fouling_fcu_ff1_space_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_fcu_ff1_space_temp"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_fcu_ff1_set_point_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_fcu_ff1_set_point"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_evaporator_fouling_fcu_ff1_set_point" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_fcu_ff1_set_point"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_ch2a_exv_position_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_ch2a_exv_position"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_difference_oat_and_con_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_ch2a_exv_position"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_fcu_ff1_space_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_fcu_ff1_space_temp"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_chw_supply_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_chw_supply_temp"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    <ns2:ServiceTemplate id="evaporator_fouling_topology">
+        <ns2:TopologyTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_evaporator_fouling_fcu_ff1_space_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_fcu_ff1_space_temp"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_fcu_ff1_set_point_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_fcu_ff1_set_point"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_evaporator_fouling_fcu_ff1_set_point" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_fcu_ff1_set_point"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_ch2a_exv_position_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_ch2a_exv_position"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_difference_oat_and_con_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_ch2a_exv_position"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_fcu_ff1_space_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_fcu_ff1_space_temp"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="QueueUnitOnMqttQueueVM" type="HOSTON">
+                <ns2:SourceElement ref="QueueUnit"/>
+                <ns2:TargetElement ref="MqttQueueVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_chw_supply_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_chw_supply_temp"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="evaporator_fouling_sensors_VM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">7ac2cc53-2301-40d7-a030-910d72f552ff</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="evaporator_fouling_ch2a_exv_position" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement_evaporator_fouling_ch2a_exv_position" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_ccf62480-5afc-43d9-ac91-15a1afc8be22" artifactType="salsa:misc" artifactRef="Artifact_ccf62480-5afc-43d9-ac91-15a1afc8be22" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_b45638d7-5007-423a-b47a-8b9985b622da" artifactType="salsa:shcont" artifactRef="Artifact_b45638d7-5007-423a-b47a-8b9985b622da" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="evaporator_fouling_chw_supply_temp" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement_evaporator_fouling_chw_supply_temp" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_f7cfb689-2483-4ec7-b1d2-e05b7fa609b4" artifactType="salsa:misc" artifactRef="Artifact_f7cfb689-2483-4ec7-b1d2-e05b7fa609b4" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_76827864-352c-460f-9be1-aad4eb87fcee" artifactType="salsa:shcont" artifactRef="Artifact_76827864-352c-460f-9be1-aad4eb87fcee" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="evaporator_fouling_fcu_ff1_set_point" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement_evaporator_fouling_fcu_ff1_set_point" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_173bee5a-d5eb-44d5-a25b-216cd3d725f0" artifactType="salsa:shcont" artifactRef="Artifact_173bee5a-d5eb-44d5-a25b-216cd3d725f0" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_3eed7c7d-f7c6-46aa-bde1-106a1d71f9ce" artifactType="salsa:misc" artifactRef="Artifact_3eed7c7d-f7c6-46aa-bde1-106a1d71f9ce" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="evaporator_fouling_fcu_ff1_space_temp" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement_evaporator_fouling_fcu_ff1_space_temp" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_d30b8f47-8e5f-42f0-8208-0a7643e9b19c" artifactType="salsa:misc" artifactRef="Artifact_d30b8f47-8e5f-42f0-8208-0a7643e9b19c" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_5d2f1593-0af7-4ae8-abbc-000782223115" artifactType="salsa:shcont" artifactRef="Artifact_5d2f1593-0af7-4ae8-abbc-000782223115" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_motor_status" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_condenser_rule_motor_status"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="condenser_rule_oat_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="condenser_rule_oat"/>
+                <ns2:TargetElement ref="condenser_rule_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="condenser_rule_difference_oat_and_con_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="condenser_rule_difference_oat_and_con_temp"/>
+                <ns2:TargetElement ref="condenser_rule_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_oat" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_condenser_rule_oat"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="condenser_rule_motor_status_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="condenser_rule_motor_status"/>
+                <ns2:TargetElement ref="condenser_rule_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    <ns2:ArtifactTemplate id="Artifact_ccf62480-5afc-43d9-ac91-15a1afc8be22" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillersensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_b45638d7-5007-423a-b47a-8b9985b622da" type="shcont">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillerrunSensor_evaporator_fouling_ch2a_exv_position.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_f7cfb689-2483-4ec7-b1d2-e05b7fa609b4" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillersensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_76827864-352c-460f-9be1-aad4eb87fcee" type="shcont">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillerrunSensor_evaporator_fouling_chw_supply_temp.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_173bee5a-d5eb-44d5-a25b-216cd3d725f0" type="shcont">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillerrunSensor_evaporator_fouling_fcu_ff1_set_point.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_3eed7c7d-f7c6-46aa-bde1-106a1d71f9ce" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillersensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_d30b8f47-8e5f-42f0-8208-0a7643e9b19c" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillersensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_5d2f1593-0af7-4ae8-abbc-000782223115" type="shcont">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillerrunSensor_evaporator_fouling_fcu_ff1_space_temp.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ServiceTemplate id="condenser_rule_topology">
+        <ns2:TopologyTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_motor_status" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_condenser_rule_motor_status"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="condenser_rule_oat_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="condenser_rule_oat"/>
+                <ns2:TargetElement ref="condenser_rule_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="condenser_rule_difference_oat_and_con_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="condenser_rule_difference_oat_and_con_temp"/>
+                <ns2:TargetElement ref="condenser_rule_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_oat" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_condenser_rule_oat"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_evaporator_fouling_fcu_ff1_space_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_fcu_ff1_space_temp"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_fcu_ff1_set_point_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_fcu_ff1_set_point"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_evaporator_fouling_fcu_ff1_set_point" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_fcu_ff1_set_point"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_ch2a_exv_position_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_ch2a_exv_position"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_difference_oat_and_con_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_ch2a_exv_position"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_fcu_ff1_space_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_fcu_ff1_space_temp"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="condenser_rule_motor_status_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="condenser_rule_motor_status"/>
+                <ns2:TargetElement ref="condenser_rule_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="QueueUnitOnMqttQueueVM" type="HOSTON">
+                <ns2:SourceElement ref="QueueUnit"/>
+                <ns2:TargetElement ref="MqttQueueVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_chw_supply_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_chw_supply_temp"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="condenser_rule_sensors_VM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">7ac2cc53-2301-40d7-a030-910d72f552ff</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="condenser_rule_difference_oat_and_con_temp" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement_condenser_rule_difference_oat_and_con_temp" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_e72c6d9e-9711-4757-8d23-eded703c68cd" artifactType="salsa:misc" artifactRef="Artifact_e72c6d9e-9711-4757-8d23-eded703c68cd" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_60eb9d5b-7ea6-4abe-a4d5-e7309349ca17" artifactType="salsa:shcont" artifactRef="Artifact_60eb9d5b-7ea6-4abe-a4d5-e7309349ca17" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="condenser_rule_motor_status" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement_condenser_rule_motor_status" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_acd079ba-c5af-4a9e-83ce-f802268069da" artifactType="salsa:misc" artifactRef="Artifact_acd079ba-c5af-4a9e-83ce-f802268069da" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_a11629ea-e36c-4b19-9730-36e551f28bb1" artifactType="salsa:shcont" artifactRef="Artifact_a11629ea-e36c-4b19-9730-36e551f28bb1" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="condenser_rule_oat" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement_condenser_rule_oat" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_a2c14449-3fa8-4b0f-9960-bbda15a42ee1" artifactType="salsa:misc" artifactRef="Artifact_a2c14449-3fa8-4b0f-9960-bbda15a42ee1" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_cd7c68d0-44ca-4647-8346-5cc3be34ea2a" artifactType="salsa:shcont" artifactRef="Artifact_cd7c68d0-44ca-4647-8346-5cc3be34ea2a" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:RelationshipTemplate id="ch3_cktA_exv_position_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="ch3_cktA_exv_position"/>
+                <ns2:TargetElement ref="low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_cmn_chws_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_cmn_chws_temp"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="ch3_cktA_percent_total_capacity_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="ch3_cktA_percent_total_capacity"/>
+                <ns2:TargetElement ref="low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="ch3_cktA_compressor_suction_superheat_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="ch3_cktA_compressor_suction_superheat_temp"/>
+                <ns2:TargetElement ref="low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="cmn_chws_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="cmn_chws_temp"/>
+                <ns2:TargetElement ref="low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="ch3_cktA_suction_pressure_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="ch3_cktA_suction_pressure"/>
+                <ns2:TargetElement ref="low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_ch3_cktA_percent_total_capacity" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_ch3_cktA_percent_total_capacity"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_ch3_cktA_exv_position" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_ch3_cktA_exv_position"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_ch3_cktA_compressor_suction_superheat_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_ch3_cktA_compressor_suction_superheat_temp"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_ch3_cktA_suction_pressure" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_ch3_cktA_suction_pressure"/>
+            </ns2:RelationshipTemplate>
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    <ns2:ArtifactTemplate id="Artifact_e72c6d9e-9711-4757-8d23-eded703c68cd" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillersensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_60eb9d5b-7ea6-4abe-a4d5-e7309349ca17" type="shcont">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillerrunSensor_condenser_rule_difference_oat_and_con_temp.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_acd079ba-c5af-4a9e-83ce-f802268069da" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillersensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_a11629ea-e36c-4b19-9730-36e551f28bb1" type="shcont">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillerrunSensor_condenser_rule_motor_status.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_a2c14449-3fa8-4b0f-9960-bbda15a42ee1" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillersensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_cd7c68d0-44ca-4647-8346-5cc3be34ea2a" type="shcont">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillerrunSensor_condenser_rule_oat.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ServiceTemplate id="low_suction_pressure_ch3_topology">
+        <ns2:TopologyTemplate>
+            <ns2:RelationshipTemplate id="ch3_cktA_exv_position_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="ch3_cktA_exv_position"/>
+                <ns2:TargetElement ref="low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_motor_status" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_condenser_rule_motor_status"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_cmn_chws_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_cmn_chws_temp"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="condenser_rule_oat_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="condenser_rule_oat"/>
+                <ns2:TargetElement ref="condenser_rule_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="ch3_cktA_percent_total_capacity_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="ch3_cktA_percent_total_capacity"/>
+                <ns2:TargetElement ref="low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="condenser_rule_difference_oat_and_con_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="condenser_rule_difference_oat_and_con_temp"/>
+                <ns2:TargetElement ref="condenser_rule_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_oat" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_condenser_rule_oat"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_evaporator_fouling_fcu_ff1_space_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_fcu_ff1_space_temp"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_fcu_ff1_set_point_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_fcu_ff1_set_point"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_evaporator_fouling_fcu_ff1_set_point" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_fcu_ff1_set_point"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="ch3_cktA_compressor_suction_superheat_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="ch3_cktA_compressor_suction_superheat_temp"/>
+                <ns2:TargetElement ref="low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_ch2a_exv_position_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_ch2a_exv_position"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="cmn_chws_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="cmn_chws_temp"/>
+                <ns2:TargetElement ref="low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="ch3_cktA_suction_pressure_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="ch3_cktA_suction_pressure"/>
+                <ns2:TargetElement ref="low_suction_pressure_ch3_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_condenser_rule_difference_oat_and_con_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_evaporator_fouling_ch2a_exv_position"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_ch3_cktA_percent_total_capacity" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_ch3_cktA_percent_total_capacity"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_ch3_cktA_exv_position" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_ch3_cktA_exv_position"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_ch3_cktA_compressor_suction_superheat_temp" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_ch3_cktA_compressor_suction_superheat_temp"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_fcu_ff1_space_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_fcu_ff1_space_temp"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="condenser_rule_motor_status_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="condenser_rule_motor_status"/>
+                <ns2:TargetElement ref="condenser_rule_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker_ch3_cktA_suction_pressure" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement_ch3_cktA_suction_pressure"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="QueueUnitOnMqttQueueVM" type="HOSTON">
+                <ns2:SourceElement ref="QueueUnit"/>
+                <ns2:TargetElement ref="MqttQueueVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="evaporator_fouling_chw_supply_temp_on_VM" type="HOSTON">
+                <ns2:SourceElement ref="evaporator_fouling_chw_supply_temp"/>
+                <ns2:TargetElement ref="evaporator_fouling_sensors_VM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="low_suction_pressure_ch3_VM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">7ac2cc53-2301-40d7-a030-910d72f552ff</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="ch3_cktA_compressor_suction_superheat_temp" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement_ch3_cktA_compressor_suction_superheat_temp" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_f41d5497-2923-40bc-ac7e-96888a61b383" artifactType="salsa:misc" artifactRef="Artifact_f41d5497-2923-40bc-ac7e-96888a61b383" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_8ba4cc58-a2ee-4f6d-8618-f46f742cc36c" artifactType="salsa:shcont" artifactRef="Artifact_8ba4cc58-a2ee-4f6d-8618-f46f742cc36c" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="ch3_cktA_exv_position" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement_ch3_cktA_exv_position" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_a4f4ae88-3b39-4c14-86f4-cf8a28dc0110" artifactType="salsa:misc" artifactRef="Artifact_a4f4ae88-3b39-4c14-86f4-cf8a28dc0110" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_619a574f-5825-4c37-9ef2-b07a2edbacff" artifactType="salsa:shcont" artifactRef="Artifact_619a574f-5825-4c37-9ef2-b07a2edbacff" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="ch3_cktA_percent_total_capacity" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement_ch3_cktA_percent_total_capacity" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_ed02c557-4302-411a-970e-c019264c607d" artifactType="salsa:shcont" artifactRef="Artifact_ed02c557-4302-411a-970e-c019264c607d" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_2f169cbc-3526-4beb-be8a-8138983da6cb" artifactType="salsa:misc" artifactRef="Artifact_2f169cbc-3526-4beb-be8a-8138983da6cb" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="ch3_cktA_suction_pressure" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement_ch3_cktA_suction_pressure" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_d06a28d3-5985-434b-adb6-58a79e207dba" artifactType="salsa:misc" artifactRef="Artifact_d06a28d3-5985-434b-adb6-58a79e207dba" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_b549d7d7-a9d8-4298-8d29-becdebb87a3c" artifactType="salsa:shcont" artifactRef="Artifact_b549d7d7-a9d8-4298-8d29-becdebb87a3c" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="cmn_chws_temp" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement_cmn_chws_temp" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_332391ec-5359-4b4b-a683-ba17952ddf66" artifactType="salsa:misc" artifactRef="Artifact_332391ec-5359-4b4b-a683-ba17952ddf66" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_8e4e222f-21e8-48da-a04b-d3d15b64d73c" artifactType="salsa:shcont" artifactRef="Artifact_8e4e222f-21e8-48da-a04b-d3d15b64d73c" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    <ns2:ArtifactTemplate id="Artifact_f41d5497-2923-40bc-ac7e-96888a61b383" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillersensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_8ba4cc58-a2ee-4f6d-8618-f46f742cc36c" type="shcont">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillerrunSensor_low_suction_pressure_ch3_ch3_cktA_compressor_suction_superheat_temp.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_a4f4ae88-3b39-4c14-86f4-cf8a28dc0110" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillersensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_619a574f-5825-4c37-9ef2-b07a2edbacff" type="shcont">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillerrunSensor_low_suction_pressure_ch3_ch3_cktA_exv_position.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_ed02c557-4302-411a-970e-c019264c607d" type="shcont">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillerrunSensor_low_suction_pressure_ch3_ch3_cktA_percent_total_capacity.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_2f169cbc-3526-4beb-be8a-8138983da6cb" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillersensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_d06a28d3-5985-434b-adb6-58a79e207dba" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillersensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_b549d7d7-a9d8-4298-8d29-becdebb87a3c" type="shcont">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillerrunSensor_low_suction_pressure_ch3_ch3_cktA_suction_pressure.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_332391ec-5359-4b4b-a683-ba17952ddf66" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillersensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_8e4e222f-21e8-48da-a04b-d3d15b64d73c" type="shcont">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.216/iCOMOTTutorial/files/IoTSensorData/chillerrunSensor_low_suction_pressure_ch3_ch3_cmn_chws_temp.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+</ns2:Definitions>

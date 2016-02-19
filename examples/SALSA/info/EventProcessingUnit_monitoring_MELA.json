@@ -1,0 +1,426 @@
+{
+    "children": [
+        {
+            "children": [
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "name": "1 [ numberOfVMs (#) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                }
+                            ],
+                            "name": "172.17.0.37",
+                            "type": "VM"
+                        },
+                        {
+                            "name": "1 [ numberOfVMs (#) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "0.12 [ cost ($) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        }
+                    ],
+                    "name": "QueueUnit",
+                    "type": "SERVICE_UNIT"
+                },
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "name": "2.7 [ bytes_in (bytes/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "172.05 [ bytes_out (bytes/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "94.8 [ cpu_idle (%) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "0.0002 [ dataTransfer (MB/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "1 [ numberOfVMs (#) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                }
+                            ],
+                            "name": "172.17.0.42",
+                            "type": "VM"
+                        },
+                        {
+                            "name": "5.2 [ cpuUsage (%) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "1 [ numberOfVMs (#) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "0.12 [ cost ($) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        }
+                    ],
+                    "name": "LoadBalancerUnit",
+                    "type": "SERVICE_UNIT"
+                },
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "name": "1 [ numberOfVMs (#) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                }
+                            ],
+                            "name": "172.17.0.39",
+                            "type": "VM"
+                        },
+                        {
+                            "name": "1 [ numberOfVMs (#) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "0.12 [ cost ($) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        }
+                    ],
+                    "name": "MOMUnit",
+                    "type": "SERVICE_UNIT"
+                },
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "name": "94.6 [ cpu_idle (%) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "3.75 [ bytes_in (bytes/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "158.3 [ bytes_out (bytes/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "0.0002 [ dataTransfer (MB/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "1 [ numberOfVMs (#) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                }
+                            ],
+                            "name": "172.17.0.38",
+                            "type": "VM"
+                        },
+                        {
+                            "name": "5.4 [ cpuUsage (%) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "1 [ numberOfVMs (#) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "0.12 [ cost ($) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        }
+                    ],
+                    "name": "DataControllerUnit",
+                    "type": "SERVICE_UNIT"
+                },
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "name": "4.55 [ bytes_in (bytes/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "94 [ cpu_idle (%) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "158.21 [ bytes_out (bytes/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "0.0002 [ dataTransfer (MB/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "1 [ numberOfVMs (#) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                }
+                            ],
+                            "name": "172.17.0.41",
+                            "type": "VM"
+                        },
+                        {
+                            "name": "6 [ cpuUsage (%) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "1 [ numberOfVMs (#) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "0.12 [ cost ($) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        }
+                    ],
+                    "name": "DataNodeUnit",
+                    "type": "SERVICE_UNIT"
+                },
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "name": "0 [ responseTime (millisonds) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "303.04 [ bytes_out (bytes/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "0 [ pendingRequests (#) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "0 [ throughput (#) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "2.7 [ bytes_in (bytes/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "96.5 [ cpu_idle (%) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "0.0003 [ dataTransfer (MB/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "1 [ numberOfVMs (#) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                }
+                            ],
+                            "name": "172.17.0.40",
+                            "type": "VM"
+                        },
+                        {
+                            "name": "0 [ avgPendingRequests (#) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "0 [ totalPendingRequests (#) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "3.5 [ cpuUsage (%) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "0 [ responseTime (ms) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "0 [ throughput (operations/s) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "0 [ avgThroughput (operations/s) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "1 [ numberOfVMs (#) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "0.12 [ cost ($) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        }
+                    ],
+                    "name": "EventProcessingUnit",
+                    "type": "SERVICE_UNIT"
+                },
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "name": "0 [ bufferSize (number) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "19.7 [ bytes_in (bytes/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "94.8 [ cpu_idle (%) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "189.05 [ bytes_out (bytes/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "0.0002 [ dataTransfer (MB/s) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                },
+                                {
+                                    "name": "1 [ numberOfVMs (#) ]",
+                                    "type": "metric",
+                                    "category": "RESOURCE"
+                                }
+                            ],
+                            "name": "172.17.0.43",
+                            "type": "VM"
+                        },
+                        {
+                            "name": "0 [ bufferSize (#) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "0 [ avgBufferSize (#) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "5.2 [ cpuUsage (%) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "1 [ numberOfVMs (#) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        },
+                        {
+                            "name": "0.12 [ cost ($) ]",
+                            "type": "metric",
+                            "category": "RESOURCE"
+                        }
+                    ],
+                    "name": "LocalProcessingUnit",
+                    "type": "SERVICE_UNIT"
+                },
+                {
+                    "name": "0 [ bufferSize (#) ]",
+                    "type": "metric",
+                    "category": "RESOURCE"
+                },
+                {
+                    "name": "0 [ avgBufferSize (#) ]",
+                    "type": "metric",
+                    "category": "RESOURCE"
+                },
+                {
+                    "name": "0 [ avgPendingRequests (#) ]",
+                    "type": "metric",
+                    "category": "RESOURCE"
+                },
+                {
+                    "name": "5.06 [ cpuUsage (%) ]",
+                    "type": "metric",
+                    "category": "RESOURCE"
+                },
+                {
+                    "name": "0 [ responseTime (ms) ]",
+                    "type": "metric",
+                    "category": "RESOURCE"
+                },
+                {
+                    "name": "0 [ throughput (operations/s) ]",
+                    "type": "metric",
+                    "category": "RESOURCE"
+                },
+                {
+                    "name": "0.84 [ cost ($/h) ]",
+                    "type": "metric",
+                    "category": "RESOURCE"
+                }
+            ],
+            "name": "DataEndTopology",
+            "type": "SERVICE_TOPOLOGY"
+        },
+        {
+            "name": "0.001 [ dataTransfer (MB/s) ]",
+            "type": "metric",
+            "category": "RESOURCE"
+        },
+        {
+            "name": "2.3333 [ cost ($/1000ops) ]",
+            "type": "metric",
+            "category": "COST"
+        }
+    ],
+    "name": "ElasticIoTPlatform",
+    "type": "SERVICE"
+}
