@@ -234,7 +234,28 @@ Beside the commands that manage the system, some commands are for populating the
 
 <p>We provide in the repository <a href="https://github.com/tuwiendsg/SALSA/tree/master/examples/ELISE" target="_blank">the examples of the service description and result of queries</a>. The service description can be found in <a href="http://tuwiendsg.github.io/iCOMOT/demo.html#javaDevPerspective" target="_blank">Java domain-specific language</a> or <a href="http://docs.oasis-open.org/tosca/TOSCA/v1.0/os/TOSCA-v1.0-os.html" target="_blank">TOSCA file</a> in XML format</p>
 
+<h3>ELISE supports Java programming</h3>
+ELISE provide a set of API to enable Java developer to query information, examine the service instances and call capabilities accordingly. Some examples are on <a href="https://github.com/tuwiendsg/SALSA/tree/master/elise-pom/elise-master/src/test/java/at/ac/tuwien/dsg/cloud/elise/master/examples">github</a>. A simple flow is shown below.
+<pre><code>
+    String endpoint = "http://[IP:port/path, where elise-master is deployed]/rest/elise/";
 
+    // the 1st proxy to manage the queries
+    EliseCommunicationInterface manageProxy = JAXRSClientFactory.create(endpoint, EliseCommunicationInterface.class);
+    EliseQuery query = new EliseQuery(ServiceCategory.Gateway)
+            .hasRule("location", "building1", EliseQueryRule.OPERATION.EQUAL);
+    String queryID = manageProxy.querySetOfInstances(query);
+    manageProxy.getQueryProcessStatus(queryID); // block
+
+    // the 2nd proxy to manage the information
+    UnitInstanceInfoManagement localProxy = JAXRSClientFactory.create(endpoint, UnitInstanceInfoManagement.class, Collections.singletonList(new JacksonJsonProvider()));
+    Set<UnitInstance> instances = localProxy.queryUnitInstance(query);
+    for (UnitInstance instance : instances) {
+        Capability c = instance.getCapabilityByName("changeRate");
+        if (c != null) {
+            CapabilityManagement.execute(c, new String[]{"5"});
+        }
+     }
+</pre></code>
 
 
 <h1><a name="contact" class="anchor" href="#contact"><span class="octicon octicon-link"></span></a>Contact</h1>
