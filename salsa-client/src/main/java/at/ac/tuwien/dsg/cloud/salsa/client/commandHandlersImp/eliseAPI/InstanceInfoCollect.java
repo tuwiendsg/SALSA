@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
-
 /**
  *
  * @author Duc-Hung LE
@@ -36,7 +35,7 @@ public class InstanceInfoCollect implements CommandHandler {
             ex.printStackTrace();
         }
         // now query if there are update process
-        if (queryUUID != null) {            
+        if (queryUUID != null) {
             Map<String, EliseQueryProcessNotification.QueryProcessStatus> map;
             ObjectMapper mapper = new ObjectMapper();
             try {
@@ -45,13 +44,14 @@ public class InstanceInfoCollect implements CommandHandler {
                 int done = 0;
                 int coolDown = 10;
                 while (true) {
-                    String progress = RestHandler.callRest(Main.getEliseAPI("/manager/query/"+queryUUID), RestHandler.HttpVerb.GET, query.toJson(), null, null);
+                    String progress = RestHandler.callRest(Main.getEliseAPI("/communication/query/" + queryUUID), RestHandler.HttpVerb.GET, query.toJson(), MediaType.APPLICATION_JSON, null);
                     if (progress == null && coolDown <= 0) {
                         System.out.println("Waiting for the conductor to receive collection command [" + coolDown + "]...");
                         Thread.sleep(2000);
                         coolDown = coolDown - 1;
                         continue;
                     }
+                    System.out.println("The query process is: " + progress);
                     map = mapper.readValue(progress, new TypeReference<HashMap<String, EliseQueryProcessNotification.QueryProcessStatus>>() {
                     });
                     for (Map.Entry<String, EliseQueryProcessNotification.QueryProcessStatus> entry : map.entrySet()) {

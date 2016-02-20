@@ -18,6 +18,7 @@ public class DeviceDTO {
     public String ipAddress;
     public String metaInfo;
     private HashMap<String, String> meta = new HashMap<>();
+    public String decision;
 
     public DeviceDTO() {
     }

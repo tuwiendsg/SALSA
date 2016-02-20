@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,7 +43,7 @@ public class GovOpsCollector extends UnitInstanceCollector {
             Logger.getLogger(GovOpsCollector.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.govoptREST = readAdaptorConfig("endpoint");
-        if (govoptREST==null || govoptREST.isEmpty()){
+        if (govoptREST == null || govoptREST.isEmpty()) {
             govoptREST = "http://localhost:8080/APIManager";
         }
     }
@@ -74,7 +75,7 @@ public class GovOpsCollector extends UnitInstanceCollector {
 //        String devicesJson = (String) target.request(new String[]{"application/json"}).get(genericType);
 
         String devicesJson = RestHandler.callRest(this.govoptREST + "/governanceScope/globalScope", RestHandler.HttpVerb.GET, null, null, "application/json");
-        
+
         System.out.println("Get data from GovOps in Json: " + devicesJson);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -96,6 +97,9 @@ public class GovOpsCollector extends UnitInstanceCollector {
                 gatewayInfo.setLocation(d.getMeta().get("location"));
             }
             u.hasExtra("GovOptID", d.getId());
+            for (Map.Entry<String, String> entry : d.getMeta().entrySet()) {
+                u.hasExtra(entry.getKey(), entry.getValue());
+            }
 
             String idParam = d.getId().replace(".", "_");
             System.out.println("Query to: " + this.govoptREST + "/mapper/capabilities/list/" + idParam);
@@ -104,10 +108,10 @@ public class GovOpsCollector extends UnitInstanceCollector {
 //            Invocation.Builder builder = target.request(new String[]{"application/json"});
 //
 //            Response res = target.request(new String[]{"application/json"}).get();
-            
+
             String allCapaResponse = RestHandler.callRest(this.govoptREST + "/mapper/capabilities/list/" + idParam, RestHandler.HttpVerb.GET, null, null, "application/json");
-            
-            if (allCapaResponse!=null && !allCapaResponse.isEmpty()) {
+
+            if (allCapaResponse != null && !allCapaResponse.isEmpty()) {
                 String capasStr = "{" + allCapaResponse.replace("}, ]", "} ]") + "}";
                 System.out.println("Parsing capabilities json: " + capasStr);
                 try {
@@ -138,7 +142,7 @@ public class GovOpsCollector extends UnitInstanceCollector {
 //        String unitID = instance.findFeatureByName("govops-device").getMetricValueByName("id").getValue().toString();
         String ip = unitID.split(":")[0].trim();
         String port = unitID.split(":")[1].trim();
-        System.out.println("IP: "+ip+", PORT: " + port);
+        System.out.println("IP: " + ip + ", PORT: " + port);
         LocalIdentification id = new LocalIdentification(ServiceCategory.Gateway, "rtGovOps");
         id.hasIdentification(IDType.IP_PORT.toString(), unitID);
 //        id.hasIdentification("rtGovOpsID", ip+":"+port);

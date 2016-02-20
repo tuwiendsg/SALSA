@@ -26,7 +26,7 @@ public class SoftwareDefineGateway {
      * The List of control capabilities and data streams
      */
     private List<Capability> capabilities;    
-    private List<DataStream> dataStreams;
+//    private List<DataStream> dataStreams;
     
     /**
      * The physical resource give info. of what Things this SDG manages
@@ -75,13 +75,13 @@ public class SoftwareDefineGateway {
         this.capabilities = capabilities;
     }
 
-    public List<DataStream> getDataStreams() {
-        return dataStreams;
-    }
-
-    public void setDataStreams(List<DataStream> dataStreams) {
-        this.dataStreams = dataStreams;
-    }
+//    public List<DataStream> getDataStreams() {
+//        return dataStreams;
+//    }
+//
+//    public void setDataStreams(List<DataStream> dataStreams) {
+//        this.dataStreams = dataStreams;
+//    }
 
     public List<PhysicalResource> getPhysicalResources() {
         return physicalResources;

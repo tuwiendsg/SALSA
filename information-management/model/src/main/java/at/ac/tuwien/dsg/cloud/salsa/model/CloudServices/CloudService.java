@@ -1,8 +1,6 @@
 package at.ac.tuwien.dsg.cloud.salsa.model.CloudServices;
 
-import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Capability;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.AccessPoint;
-import java.util.List;
 
 public class CloudService {
     private AccessPoint connectVia;    
@@ -26,14 +24,5 @@ public class CloudService {
     public void setDataCenter(DataCenter dataCenter) {
         this.dataCenter = dataCenter;
     }
-
-    public List<Capability> getCapabilities() {
-        return capabilities;
-    }
-
-    public void setCapabilities(List<Capability> capabilities) {
-        this.capabilities = capabilities;
-    }
-    
     
 }

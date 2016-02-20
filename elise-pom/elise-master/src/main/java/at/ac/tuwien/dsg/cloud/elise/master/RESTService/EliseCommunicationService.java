@@ -29,8 +29,8 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFact
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
-import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.CollectorsForConductor;
 import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.ConductorDescription;
+import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryProcessNotification;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -51,7 +51,6 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -63,10 +62,11 @@ import org.slf4j.Logger;
 
 /**
  * This service contains APIs to communicate with distributed collectors to gather information
+ *
  * @author Duc-Hung Le
  */
 @Path("/communication")
-public class EliseCommunicationService {
+public class EliseCommunicationService implements EliseCommunicationInterface {
 
     static Logger logger = EliseConfiguration.logger;
     static String listenerTopic = "at.ac.tuwien.dsg.comot.elise.listener";
@@ -171,6 +171,11 @@ public class EliseCommunicationService {
         return uuid;
     }
 
+    @Override
+    public String querySetOfInstances(EliseQuery query) {
+        return querySetOfInstance(query, false, false);
+    }
+
     // the collector module can execute with single domainID, but from this level, it is imposible?
     // must use the querySetOfInstance.
 //    @Deprecated
@@ -201,7 +206,6 @@ public class EliseCommunicationService {
 //
 //        return uuid;
 //    }
-
     private void toHandleMessageAndSaveData(SalsaMessage message, Map<String, String> answeredElises, boolean isNotified, String uuid) {
         String fromElise = message.getFromSalsa();
         String fromTopic = message.getTopic();
@@ -270,11 +274,11 @@ public class EliseCommunicationService {
     private void unsubscribe(final MessageSubscribeInterface sub, long delayInSecond) {
         new java.util.Timer().schedule(
                 new java.util.TimerTask() {
-                    @Override
-                    public void run() {
-                        sub.disconnect();
-                    }
-                },
+            @Override
+            public void run() {
+                sub.disconnect();
+            }
+        },
                 delayInSecond * 1000
         );
     }
@@ -307,18 +311,16 @@ public class EliseCommunicationService {
     public static String padLeft(String s, int n) {
         return String.format("%1$" + n + "s", s);
     }
-    
-    
-    
-    
+
     /**
      * Query the status of a query.
+     *
      * @param queryUUID The UUID of the query
      * @return A list of conductors that are working for this query and the status of each
      */
     @GET
     @Path("/query/{queryUUID}")
-    @Produces(MediaType.APPLICATION_JSON)     
+    @Produces(MediaType.APPLICATION_JSON)
     public String getQueryProcessStatus(String queryUUID) {
         logger.debug("Writing query management info to Json");
         Map<String, EliseQueryProcessNotification.QueryProcessStatus> map = QueryManager.getQueryStatusAll(queryUUID);

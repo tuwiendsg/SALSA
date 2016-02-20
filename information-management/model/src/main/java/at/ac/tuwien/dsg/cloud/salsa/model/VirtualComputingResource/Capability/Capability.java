@@ -8,49 +8,28 @@ public class Capability {
     /**
      * The name of the capability, e.g. start/stop/reconfigureXYZ
      */
-    String name;
-
+    protected String name;
+    
     /**
-     * Name of the service provide this capability, e.g. SALSA, GovOps, or local
+     * The type of the capability
      */
-    String serviceName;
+    protected CapabilityType type;
+    
+    /**
+     * Description
+     */
+    protected String description;
 
     /**
      * How to call the capability
      */
-    InvokeProtocol invokeProtocol;
-
-    /**
-     * The absolute path to the service, e.g. http://example.com/rest/start/{id} Note: The parameters are put in brackets
-     */
-    String reference;
-
-    /**
-     * The data using in POST and PUT
-     */
-    String postData;
-
-    /**
-     * The effect on an entity by the capability
-     */
-    CapabilityEffect effect;
-
-    public static enum InvokeProtocol {
-        GET, POST, DELETE, PUT
-    }
+//    CapabilityInvocation invocation;
+    
 
     /**
      * Constructor, get/set
      */
     public Capability() {
-    }
-
-    public Capability(String name, String serviceName, InvokeProtocol invokeProtocol, String reference, String postData) {
-        this.name = name;
-        this.serviceName = serviceName;
-        this.invokeProtocol = invokeProtocol;
-        this.reference = reference;
-        this.postData = postData;
     }
 
     public String getName() {
@@ -61,44 +40,23 @@ public class Capability {
         this.name = name;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public CapabilityType getType() {
+        return type;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    public void setType(CapabilityType type) {
+        this.type = type;
     }
 
-    public InvokeProtocol getInvokeProtocol() {
-        return invokeProtocol;
+    public String getDescription() {
+        return description;
     }
 
-    public void setInvokeProtocol(InvokeProtocol invokeProtocol) {
-        this.invokeProtocol = invokeProtocol;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getReference() {
-        return reference;
-    }
+    
 
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
-
-    public String getPostData() {
-        return postData;
-    }
-
-    public void setPostData(String postData) {
-        this.postData = postData;
-    }
-
-    public CapabilityEffect getEffect() {
-        return effect;
-    }
-
-    public void setEffect(CapabilityEffect effect) {
-        this.effect = effect;
-    }
 
 }

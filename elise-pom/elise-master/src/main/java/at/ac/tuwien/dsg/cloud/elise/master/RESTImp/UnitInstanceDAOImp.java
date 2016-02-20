@@ -34,8 +34,10 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;
 import java.util.ArrayList;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 
@@ -218,13 +220,18 @@ public class UnitInstanceDAOImp implements UnitInstanceInfoManagement {
 
         logger.debug("Filter " + instances.size() + " of the category: " + query.getCategory().toString());
         int rulefulfill = 0;    // 0: N/A, 1: fulfill, -1: violate
+        
         for (UnitInstance u : instances) {
             logger.debug("Checking instance: " + u.getId() + "/" + u.getName());
-            for (Metric value : u.findAllMetricValues()) {
+            
+            Map<String, String> extra = u.getExtra();            
+          
+            for (Map.Entry<String, String> entry : extra.entrySet()) {
+//            for (Metric value : u.findAllMetricValues()) {
                 for (EliseQueryRule rule : query.getRules()) {
-                    logger.debug("Comparing unit(" + value.getName() + "=" + value.getValue() + " with the rule " + rule.toString());
-                    if (value.getName().equals(rule.getMetric())) {  // if the metric name is match
-                        if (rule.isFulfilled(value.getValue())) {    // check if value is fulfill
+                    logger.debug("Comparing unit(" + entry.getKey() + "=" + entry.getValue() + " with the rule " + rule.toString());
+                    if (entry.getKey().equals(rule.getMetric())) {  // if the metric name is match
+                        if (rule.isFulfilled(entry.getValue())) {    // check if value is fulfill
                             logger.debug("One rule fulfilled !");
                             rulefulfill += 1;                           // add one to the counting of fulfilled value
                         } else {

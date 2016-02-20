@@ -17,7 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.generic;
 
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;    
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,6 +30,7 @@ import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -71,26 +72,23 @@ public class ServiceUnit implements HasUniqueId {
     protected String name;
 
     protected ServiceCategory category;
-    
+
     // the concrete unit types to match with SALSA Instance type, e.g. os, software, tomcat, dockker
     protected String unitType;
 
     /**
      * Blind properties, just let it be custom
      */
-    protected HashMap<String, String> extra;
+    protected Map<String, String> extra;
 
     /**
-     * Known information model. This contains a set of Domain info
-     * I (23/07/2015) don't know how to use neo4j to store a generic class. 
-     * Then the domain model is translate into json. Using the parseDomainInfo method to translate back 
-     * The domainInfo class: DomainEntity.class
+     * Known information model. This contains a set of Domain info I (23/07/2015) don't know how to use neo4j to store a generic class. Then the domain model is
+     * translate into json. Using the parseDomainInfo method to translate back The domainInfo class: DomainEntity.class
      */
     protected String domainInfo;
-    
+
     /**
-     * This contain other domain info, e.g information from other service like govops, mela, sybl
-     * The extendedDomainInfo class: DomainEntities.class
+     * This contain other domain info, e.g information from other service like govops, mela, sybl The extendedDomainInfo class: DomainEntities.class
      */
     protected String extendedInfo;
 
@@ -100,6 +98,15 @@ public class ServiceUnit implements HasUniqueId {
     @RelatedTo(direction = Direction.OUTGOING, type = "INTERNAL")
     @Fetch
     protected Set<Capability> capabilities = new HashSet<>();
+
+    public Capability getCapabilityByName(String name) {
+        for(Capability capa: capabilities){
+            if (capa.getName().equals(name)){
+                return capa;
+            }
+        }
+        return null;
+    }
 
     public ServiceUnit() {
     }
@@ -133,7 +140,7 @@ public class ServiceUnit implements HasUniqueId {
     public void setUnitType(String unitType) {
         this.unitType = unitType;
     }
-    
+
     @Override
     public String getId() {
         return id;
@@ -156,7 +163,7 @@ public class ServiceUnit implements HasUniqueId {
     }
 
     public DomainEntity parseDomainInfo() {
-        if (domainInfo == null){
+        if (domainInfo == null) {
             return null;
         }
         ObjectMapper mapper = new ObjectMapper();
@@ -167,9 +174,9 @@ public class ServiceUnit implements HasUniqueId {
         }
         return null;
     }
-    
-    public DomainEntities parseExtendInfo(){
-        if (extendedInfo == null){
+
+    public DomainEntities parseExtendInfo() {
+        if (extendedInfo == null) {
             return null;
         }
         ObjectMapper mapper = new ObjectMapper();
@@ -221,8 +228,7 @@ public class ServiceUnit implements HasUniqueId {
             return null;
         }
     }
-    
-    
+
     // other getters/setters
     public String getName() {
         return name;
@@ -231,7 +237,7 @@ public class ServiceUnit implements HasUniqueId {
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -244,7 +250,7 @@ public class ServiceUnit implements HasUniqueId {
         this.category = category;
     }
 
-    public HashMap<String, String> getExtra() {
+    public Map<String, String> getExtra() {
         return extra;
     }
 
@@ -275,7 +281,5 @@ public class ServiceUnit implements HasUniqueId {
     public void setCapabilities(Set<Capability> capabilities) {
         this.capabilities = capabilities;
     }
-    
-    
 
 }
