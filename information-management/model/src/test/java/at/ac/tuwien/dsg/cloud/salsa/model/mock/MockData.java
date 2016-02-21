@@ -46,6 +46,8 @@ public class MockData {
         gateway.getCapabilities().add(data2);
         
         gateway.getMeta().put("model", "G2021");
+        gateway.getMeta().put("owner", "tuwien");
+        gateway.getMeta().put("location", "building1");
         gateway.setName("Gateway1");
         gateway.setUuid("9321a1c2-a622-4b4c-ba3d-f51e8af79460");
         

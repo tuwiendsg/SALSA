@@ -63,6 +63,8 @@
     ],
     "physicalResources": null,
     "meta": {
-        "model": "G2021"
+        "owner": "tuwien",
+        "model": "G2021",
+        "location": "building1"
     }
 }
