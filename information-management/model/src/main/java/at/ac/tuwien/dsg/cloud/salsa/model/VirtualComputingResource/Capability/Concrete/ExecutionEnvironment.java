@@ -14,23 +14,24 @@ import java.util.Map;
  *
  * @author hungld
  */
-public abstract class ExecutionEnvironment extends Capability {
+public class ExecutionEnvironment extends Capability {
 
     public static enum EnvironmentType {
         JRE, Python, apache2
     }
 
     EnvironmentType env;
+
+    // e.g. version, status (on/off), settings
     Map<String, String> attributes;
 
-    public abstract void deploy(String artifactRef);
-
-    public abstract void start(String appRef);
-
-    public abstract void stop(String appRef);
-
-    public abstract void reconfigure(String appRef);
-
+//    public abstract void deploy(String artifactRef);
+//
+//    public abstract void start(String appRef);
+//
+//    public abstract void stop(String appRef);
+//
+//    public abstract void reconfigure(String appRef);
     /**
      * **************
      * GETER/SETTER * **************
@@ -39,8 +40,13 @@ public abstract class ExecutionEnvironment extends Capability {
         type = CapabilityType.ExecutionEnvironment;
     }
 
-    public ExecutionEnvironment(EnvironmentType env) {
-        this.env = env;
+    public ExecutionEnvironment(String name, String description) {
+        super(name, CapabilityType.ExecutionEnvironment, description);
+    }
+
+    public ExecutionEnvironment(String name, String description, EnvironmentType envType) {
+        super(name, CapabilityType.ExecutionEnvironment, description);
+        this.env = envType;
     }
 
     public EnvironmentType getEnv() {

@@ -7,54 +7,74 @@ package at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.C
 
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Capability;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.CapabilityType;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  *
  * @author hungld
  */
-public abstract class DataPoint extends Capability{
+public class DataPoint extends Capability {
 
-    Map<String, Object> dataBuffers;
-    String state;
+    // temperature, humidity, GPS, image, video_streaming, state
+    String datatype;
+
+    // if available based on type
+    String measurementUnit;
+
+    // reading rate
+    String rate;
 
     /**
-     * When the state of the data point is changed, e.g. the device is disconnected
+     * The class which implementation functions to interact with this DataPoint Some function can be: - onStateChanged() - onBufferChanged(String bufferName,
+     * Object oldData, Object newData); - Stream<Object> getDataStream(String buffer); - setData(String bufferName, Object newData); - changeDataRate(DataPoint
+     * datapoint, Long rate);
      */
-    public abstract void onStateChanged();
-
-    public abstract void onBufferChanged(String bufferName, Object oldData, Object newData);
-
-    public abstract Stream<Object> getDataStream(String buffer);
-    
-    public abstract void setData(String bufferName, Object newData);
-
-    public abstract void changeDataRate(DataPoint datapoint, Long rate);
+    String managementClass;
 
     public DataPoint() {
         type = CapabilityType.DataPointManagement;
     }
-    
-    
-    public Map<String, Object> getDataBuffers() {
-        if (dataBuffers == null){
-            dataBuffers = new HashMap<>();
-        }
-        return dataBuffers;
+
+    public DataPoint(String name, String description) {
+        super(name, CapabilityType.DataPointManagement, description);
     }
 
-    public void setDataBuffers(Map<String, Object> dataBuffers) {
-        this.dataBuffers = dataBuffers;
+    public DataPoint(String name, String description, String datatype, String measurementUnit, String rate) {
+        super(name, CapabilityType.DataPointManagement, description);
+        this.datatype = datatype;
+        this.measurementUnit = measurementUnit;
+        this.rate = rate;
     }
 
-    public String getState() {
-        return state;
+    public String getDatatype() {
+        return datatype;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setDatatype(String datatype) {
+        this.datatype = datatype;
+    }
+
+    public String getMeasurementUnit() {
+        return measurementUnit;
+    }
+
+    public void setMeasurementUnit(String measurementUnit) {
+        this.measurementUnit = measurementUnit;
+    }
+
+    public String getRate() {
+        return rate;
+    }
+
+    public void setRate(String rate) {
+        this.rate = rate;
+    }
+
+    public String getManagementClass() {
+        return managementClass;
+    }
+
+    public void setManagementClass(String managementClass) {
+        this.managementClass = managementClass;
     }
 
 }

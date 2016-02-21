@@ -9,27 +9,27 @@ public class Capability {
      * The name of the capability, e.g. start/stop/reconfigureXYZ
      */
     protected String name;
-    
+
     /**
      * The type of the capability
      */
     protected CapabilityType type;
-    
+
     /**
      * Description
      */
     protected String description;
 
     /**
-     * How to call the capability
-     */
-//    CapabilityInvocation invocation;
-    
-
-    /**
      * Constructor, get/set
      */
     public Capability() {
+    }
+
+    public Capability(String name, CapabilityType type, String description) {
+        this.name = name;
+        this.type = type;
+        this.description = description;
     }
 
     public String getName() {
@@ -55,8 +55,5 @@ public class Capability {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    
-
 
 }

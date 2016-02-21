@@ -12,35 +12,39 @@ import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Ca
  *
  * @author hungld
  */
-public abstract class CloudConnectivity extends Capability {
+public class CloudConnectivity extends Capability {
 
-    String connectivityMode;
+    // note the "name" can be used to define connection mode: 3G, 4G, WIFI, 
+    // the IP and port of the gateway/router that the resource link to
+    String defaultGateway;
+
+    // the endpoint of the cloud service it connect to
     String cloudEndpoint;
 
-    public abstract void changeEndpoint(String newEndpoint);
+    // the connectivity is on or off
+    String status;
 
-    public abstract void changeConnectivityMode(String newConnectivityMode);
-
-    public abstract void reconfigureNetwork(String configuration);
-
-    /****************
-     * GETER/SETTER *
-     ****************/
+//    public abstract void changeEndpoint(String newEndpoint);
+//
+//    public abstract void changeConnectivityMode(String newConnectivityMode);
+//
+//    public abstract void reconfigureNetwork(String configuration);
+    /**
+     * **************
+     * GETER/SETTER * **************
+     */
     public CloudConnectivity() {
         type = CapabilityType.CloudConnectivity;
     }
 
-    public CloudConnectivity(String connectivityMode, String cloudEndpoint) {
-        this.connectivityMode = connectivityMode;
+    public CloudConnectivity(String name, String description) {
+        super(name, CapabilityType.CloudConnectivity, description);
+    }
+
+    public CloudConnectivity(String name, String description, String defautGateway, String cloudEndpoint) {
+        super(name, CapabilityType.CloudConnectivity, description);
         this.cloudEndpoint = cloudEndpoint;
-    }
-
-    public String getConnectivityMode() {
-        return connectivityMode;
-    }
-
-    public void setConnectivityMode(String connectivityMode) {
-        this.connectivityMode = connectivityMode;
+        this.defaultGateway = defautGateway;
     }
 
     public String getCloudEndpoint() {
@@ -49,6 +53,22 @@ public abstract class CloudConnectivity extends Capability {
 
     public void setCloudEndpoint(String cloudEndpoint) {
         this.cloudEndpoint = cloudEndpoint;
+    }
+
+    public String getDefaultGateway() {
+        return defaultGateway;
+    }
+
+    public void setDefaultGateway(String defaultGateway) {
+        this.defaultGateway = defaultGateway;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
 }

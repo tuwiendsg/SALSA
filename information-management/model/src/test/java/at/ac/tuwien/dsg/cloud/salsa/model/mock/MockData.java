@@ -6,6 +6,10 @@
 package at.ac.tuwien.dsg.cloud.salsa.model.mock;
 
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Capability;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.CloudConnectivity;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint.InvokeProtocol;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.DataPoint;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.DataStream.DataStream;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.DataStream.ObservedProperty;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.SoftwareDefineGateway;
@@ -15,6 +19,7 @@ import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.VNF;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.VNFForwardGraph;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -24,22 +29,29 @@ public class MockData {
 
     public static void main(String[] arg) throws Exception {
         SoftwareDefineGateway gateway = new SoftwareDefineGateway();
+        
+        Capability control1 = new ControlPoint("changeSensorRate", "change data rate", InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/changeRate/parameters/{1}", null);
+        Capability control2 = new ControlPoint("setProtocolMQTT", "change to MQTT mode", InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolMQTT", null);
+        Capability control3 = new ControlPoint("setProtocolDRY", "change DRY mode", InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolDRY", null);
+        gateway.getCapabilities().addAll(Arrays.asList(control1, control2, control3));
 
-        Capability capa1 = new Capability("changeSensorRate", "SALSA", Capability.InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/changeRate/parameters/{1}", "");
-        Capability capa2 = new Capability("setProtocolMQTT", "SALSA", Capability.InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolMQTT", "");
-        Capability capa3 = new Capability("setProtocolDRY", "SALSA", Capability.InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolDRY", "");
+        CloudConnectivity connectivity1 = new CloudConnectivity("3G", "3G connection", "172.17.0.150", "");
+        CloudConnectivity connectivity2 = new CloudConnectivity("WIFI", "WIFI connection", "10.32.0.2", "");
+        gateway.getCapabilities().add(connectivity1);
+        gateway.getCapabilities().add(connectivity2);
 
-        gateway.setCapabilities(Arrays.asList(capa1, capa2, capa3));
-
-        AccessPoint accessPoint = new AccessPoint("172.17.0.150");
-        gateway.setDefaultGateway(accessPoint);
-
-        DataStream data1 = new DataStream(new ObservedProperty("GPS", "lat/long"), DataStream.BUFFER_TYPE.MQTT, "tcp://172.17.0.140:1883/topic", "The location of the device");
-        gateway.setDataStreams(Arrays.asList(data1));
-
+        Capability data1 = new DataPoint("temperature1", "temperature of room1", "temperature", "C", "5");
+        Capability data2 = new DataPoint("humidity1", "humidity of room1", "humidity", "%", "60");        
+        gateway.getCapabilities().add(data1);
+        gateway.getCapabilities().add(data2);
+        
         gateway.getMeta().put("model", "G2021");
         gateway.setName("Gateway1");
         gateway.setUuid("9321a1c2-a622-4b4c-ba3d-f51e8af79460");
+        
+        
+        ObjectMapper mapper = new ObjectMapper();
+        System.out.println(mapper.writeValueAsString(gateway));
 
         // network
         NetworkService network = new NetworkService();        
@@ -57,7 +69,7 @@ public class MockData {
 
         network.setVnfForwardGraphs(Arrays.asList(graph));
 
-        ObjectMapper mapper = new ObjectMapper();
+        
         //System.out.println(mapper.writeValueAsString(gateway));
         System.out.println(mapper.writeValueAsString(network));
 

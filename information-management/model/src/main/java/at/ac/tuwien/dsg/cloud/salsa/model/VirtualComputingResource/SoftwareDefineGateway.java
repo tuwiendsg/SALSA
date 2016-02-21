@@ -1,6 +1,5 @@
 package at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource;
 
-
 import at.ac.tuwien.dsg.cloud.salsa.model.PhysicalResource.PhysicalResource;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Capability;
 
@@ -9,45 +8,40 @@ import java.util.Map;
 
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.DataStream.DataStream;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.AccessPoint;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SoftwareDefineGateway {
+
     /**
      * The uuid is unique within the whole system
      */
     private String uuid;
-    
+
     /**
      * The name for human reading purpose
      */
     private String name;
-    
+
     /**
      * The List of control capabilities and data streams
      */
-    private List<Capability> capabilities;    
+    private List<Capability> capabilities;
 //    private List<DataStream> dataStreams;
-    
+
     /**
      * The physical resource give info. of what Things this SDG manages
      */
     private List<PhysicalResource> physicalResources;
-    
-    /**
-     * This gateway link to a router
-     */
-    private AccessPoint defaultGateway;
-    
+
     /**
      * For custom data, e.g. created date, position, comments
      */
     private Map<String, String> meta;
 
-    
     /**
      * Construction and get/set
      */
-    
     public SoftwareDefineGateway() {
     }
 
@@ -68,6 +62,9 @@ public class SoftwareDefineGateway {
     }
 
     public List<Capability> getCapabilities() {
+        if (capabilities == null) {
+            capabilities = new ArrayList<>();
+        }
         return capabilities;
     }
 
@@ -82,7 +79,6 @@ public class SoftwareDefineGateway {
 //    public void setDataStreams(List<DataStream> dataStreams) {
 //        this.dataStreams = dataStreams;
 //    }
-
     public List<PhysicalResource> getPhysicalResources() {
         return physicalResources;
     }
@@ -91,16 +87,8 @@ public class SoftwareDefineGateway {
         this.physicalResources = physicalResources;
     }
 
-    public AccessPoint getDefaultGateway() {
-        return defaultGateway;
-    }
-
-    public void setDefaultGateway(AccessPoint defaultGateway) {
-        this.defaultGateway = defaultGateway;
-    }
-
     public Map<String, String> getMeta() {
-        if (meta==null){
+        if (meta == null) {
             meta = new HashMap<>();
         }
         return meta;
@@ -109,7 +97,6 @@ public class SoftwareDefineGateway {
     public void setMeta(Map<String, String> meta) {
         this.meta = meta;
     }
-
 
     /**
      *

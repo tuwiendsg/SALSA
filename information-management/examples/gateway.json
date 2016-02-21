@@ -4,46 +4,64 @@
     "capabilities": [
         {
             "name": "changeSensorRate",
-            "serviceName": "SALSA",
+            "type": "ControlPointManagement",
+            "description": "change data rate",
             "invokeProtocol": "POST",
             "reference": "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/changeRate/parameters/{1}",
-            "postData": "",
-            "effect": null
+            "postData": null
         },
         {
             "name": "setProtocolMQTT",
-            "serviceName": "SALSA",
+            "type": "ControlPointManagement",
+            "description": "change to MQTT mode",
             "invokeProtocol": "POST",
             "reference": "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolMQTT",
-            "postData": "",
-            "effect": null
+            "postData": null
         },
         {
             "name": "setProtocolDRY",
-            "serviceName": "SALSA",
+            "type": "ControlPointManagement",
+            "description": "change DRY mode",
             "invokeProtocol": "POST",
             "reference": "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolDRY",
-            "postData": "",
-            "effect": null
-        }
-    ],
-    "dataStreams": [
+            "postData": null
+        },
         {
-            "queue": null,
-            "observedProperty": {
-                "name": "GPS",
-                "measureUnit": "lat/long"
-            },
-            "physicalResource": null,
-            "bufferType": "MQTT",
-            "bufferReference": "tcp://172.17.0.140:1883/topic",
-            "description": "The location of the device"
+            "name": "3G",
+            "type": "CloudConnectivity",
+            "description": "3G connection",
+            "defaultGateway": "172.17.0.150",
+            "cloudEndpoint": "",
+            "status": null
+        },
+        {
+            "name": "WIFI",
+            "type": "CloudConnectivity",
+            "description": "WIFI connection",
+            "defaultGateway": "10.32.0.2",
+            "cloudEndpoint": "",
+            "status": null
+        },
+        {
+            "name": "temperature1",
+            "type": "DataPointManagement",
+            "description": "temperature of room1",
+            "datatype": "temperature",
+            "measurementUnit": "C",
+            "rate": "5",
+            "managementClass": null
+        },
+        {
+            "name": "humidity1",
+            "type": "DataPointManagement",
+            "description": "humidity of room1",
+            "datatype": "humidity",
+            "measurementUnit": "%",
+            "rate": "60",
+            "managementClass": null
         }
     ],
     "physicalResources": null,
-    "defaultGateway": {
-        "networkAddress": "172.17.0.150"
-    },
     "meta": {
         "model": "G2021"
     }
