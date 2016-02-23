@@ -21,10 +21,11 @@ java -cp "collector-1.0.jar:TransformAndroidSensor-1.0.jar:TransformOpenIoTSenso
  
  2.OpenIoT data: Gather from API at http://130.206.80.47:5371/m2m/v2/services/OpenIoT
  
- - Query the catalog: http://130.206.80.47:5371/m2m/v2/services/OpenIoT/model/
+ - Query the catalog: http://130.206.80.47:5371/m2m/v2/services/OpenIoT/models/
  
  - Query the list of assets: http://130.206.80.47:5371/m2m/v2/services/OpenIoT/assets/
  
  - Query information of particular access: http://130.206.80.47:5371/m2m/v2/services/OpenIoT/assets/[assetsID]
 Note: query on 23-02-2016, there are 228 assets on this 
+Source: https://www.fiware.org, http://www.slideshare.net/TIDChile/fiware-io-tproposalcommunitychilefigwayv2
  
