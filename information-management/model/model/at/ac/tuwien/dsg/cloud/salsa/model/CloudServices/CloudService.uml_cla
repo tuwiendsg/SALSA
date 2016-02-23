@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<xmi:XMI xmlns:xmi='http://www.omg.org/spec/XMI/20110701' xmlns:uml='http://www.omg.org/spec/UML/20110701'>
+ <documentation exporter='Oracle JDeveloper' exporterVersion='12.1.3.0.0'/>
+ <uml:Class xmi:type='uml:Class' xmi:uuid='urn:uuid:72b0fa4d-6c9f-4e0a-a3ee-6202654a3e48'
+   isAbstract='false'
+   isActive='false'
+   isFinalSpecialization='false'
+   isLeaf='false'
+   name='CloudService'
+   visibility='public'>
+  <ownedOperation xmi:type='uml:Operation' xmi:uuid='urn:uuid:cc6fcd98-5e6d-4d62-9254-a471f4657541'
+    isAbstract='false'
+    isLeaf='false'
+    isQuery='false'
+    isStatic='false'
+    name='getConnectVia'
+    concurrency='sequential'
+    visibility='public'>
+   <ownedParameter xmi:type='uml:Parameter' xmi:uuid='urn:uuid:9a67d7ec-2595-4916-aa37-4cd151154190'
+     isException='false'
+     isOrdered='false'
+     isStream='false'
+     isUnique='true'
+     name=''
+     direction='return'>
+    <type href='urn:uuid:3ee9eb4d-4742-45fc-be43-67b7999a97ac'/>
+    <lowerValue xmi:type='uml:LiteralInteger' xmi:uuid='urn:uuid:3b923683-178f-4881-9e4d-50cd8f215e28'
+      value='1'
+      visibility='public'/>
+    <upperValue xmi:type='uml:LiteralUnlimitedNatural' xmi:uuid='urn:uuid:9b47690c-c97b-4781-b979-d58450cd6c60'
+      value='1'
+      visibility='public'/>
+   </ownedParameter>
+  </ownedOperation>
+  <ownedOperation xmi:type='uml:Operation' xmi:uuid='urn:uuid:c998ae05-2d4f-487d-8031-07b3e748e0c0'
+    isAbstract='false'
+    isLeaf='false'
+    isQuery='false'
+    isStatic='false'
+    name='setConnectVia'
+    concurrency='sequential'
+    visibility='public'>
+   <ownedParameter xmi:type='uml:Parameter' xmi:uuid='urn:uuid:315bd6b8-4c59-4482-9a8d-db85aed47fee'
+     isException='false'
+     isOrdered='false'
+     isStream='false'
+     isUnique='true'
+     name='connectVia'
+     direction='in'>
+    <type href='urn:uuid:3ee9eb4d-4742-45fc-be43-67b7999a97ac'/>
+    <lowerValue xmi:type='uml:LiteralInteger' xmi:uuid='urn:uuid:5d96d56d-6394-429c-a6a6-a76be35d5145'
+      value='1'
+      visibility='public'/>
+    <upperValue xmi:type='uml:LiteralUnlimitedNatural' xmi:uuid='urn:uuid:e2c41f08-1388-4092-886e-201db6487a26'
+      value='1'
+      visibility='public'/>
+   </ownedParameter>
+   <ownedParameter xmi:type='uml:Parameter' xmi:uuid='urn:uuid:8e169cce-61f6-45d9-97f4-dd1ba0024a62'
+     isException='false'
+     isOrdered='false'
+     isStream='false'
+     isUnique='true'
+     name=''
+     direction='return'>
+    <type href='mof:/void:uml:Type'/>
+    <lowerValue xmi:type='uml:LiteralInteger' xmi:uuid='urn:uuid:2d34899e-42cd-4403-b14d-5e428796d728'
+      value='1'
+      visibility='public'/>
+    <upperValue xmi:type='uml:LiteralUnlimitedNatural' xmi:uuid='urn:uuid:676d383b-0a9a-4d0f-9041-b021f2de6910'
+      value='1'
+      visibility='public'/>
+   </ownedParameter>
+  </ownedOperation>
+  <ownedOperation xmi:type='uml:Operation' xmi:uuid='urn:uuid:2168ce92-7411-48d8-bc13-ee593c7e7181'
+    isAbstract='false'
+    isLeaf='false'
+    isQuery='false'
+    isStatic='false'
+    name='getDataCenter'
+    concurrency='sequential'
+    visibility='public'>
+   <ownedParameter xmi:type='uml:Parameter' xmi:uuid='urn:uuid:8bdc7f9c-a6d8-49df-be40-b7122a54cc70'
+     isException='false'
+     isOrdered='false'
+     isStream='false'
+     isUnique='true'
+     name=''
+     direction='return'>
+    <type href='urn:uuid:d4d02d74-819b-4109-a33c-9e2c297eb05c'/>
+    <lowerValue xmi:type='uml:LiteralInteger' xmi:uuid='urn:uuid:4b4f23ac-f475-45a8-a38a-bca648bc6a48'
+      value='1'
+      visibility='public'/>
+    <upperValue xmi:type='uml:LiteralUnlimitedNatural' xmi:uuid='urn:uuid:8b0060ba-fa7f-40df-adf9-c86792b8fb9a'
+      value='1'
+      visibility='public'/>
+   </ownedParameter>
+  </ownedOperation>
+  <ownedOperation xmi:type='uml:Operation' xmi:uuid='urn:uuid:ea152540-af7f-41c6-ba14-fae7189dc12f'
+    isAbstract='false'
+    isLeaf='false'
+    isQuery='false'
+    isStatic='false'
+    name='setDataCenter'
+    concurrency='sequential'
+    visibility='public'>
+   <ownedParameter xmi:type='uml:Parameter' xmi:uuid='urn:uuid:16231c28-aada-48a1-a588-1ae24c7e1a7c'
+     isException='false'
+     isOrdered='false'
+     isStream='false'
+     isUnique='true'
+     name='dataCenter'
+     direction='in'>
+    <type href='urn:uuid:d4d02d74-819b-4109-a33c-9e2c297eb05c'/>
+    <lowerValue xmi:type='uml:LiteralInteger' xmi:uuid='urn:uuid:e5d7bfd2-375a-4241-8e39-b4828314a2e4'
+      value='1'
+      visibility='public'/>
+    <upperValue xmi:type='uml:LiteralUnlimitedNatural' xmi:uuid='urn:uuid:04173ab1-f338-4473-bddc-734ebe094be4'
+      value='1'
+      visibility='public'/>
+   </ownedParameter>
+   <ownedParameter xmi:type='uml:Parameter' xmi:uuid='urn:uuid:1a3f231f-ea69-493c-b051-bbf474d31d9d'
+     isException='false'
+     isOrdered='false'
+     isStream='false'
+     isUnique='true'
+     name=''
+     direction='return'>
+    <type href='mof:/void:uml:Type'/>
+    <lowerValue xmi:type='uml:LiteralInteger' xmi:uuid='urn:uuid:19f73ac7-66ba-4ed4-9e2b-d71f73f4494f'
+      value='1'
+      visibility='public'/>
+    <upperValue xmi:type='uml:LiteralUnlimitedNatural' xmi:uuid='urn:uuid:0cfd2a54-4a54-4985-9b11-0cc85868ab46'
+      value='1'
+      visibility='public'/>
+   </ownedParameter>
+  </ownedOperation>
+  <ownedOperation xmi:type='uml:Operation' xmi:uuid='urn:uuid:31c1622f-8db8-4f25-a535-bc68f805f42c'
+    isAbstract='false'
+    isLeaf='false'
+    isQuery='false'
+    isStatic='false'
+    name='CloudService'
+    concurrency='sequential'
+    visibility='public'/>
+ </uml:Class>
+</xmi:XMI>

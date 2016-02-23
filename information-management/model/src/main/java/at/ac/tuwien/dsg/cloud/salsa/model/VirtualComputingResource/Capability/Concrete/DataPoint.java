@@ -21,7 +21,7 @@ public class DataPoint extends Capability {
     String measurementUnit;
 
     // reading rate
-    String rate;
+    int rate;
 
     /**
      * The class which implementation functions to interact with this DataPoint Some function can be: - onStateChanged() - onBufferChanged(String bufferName,
@@ -38,7 +38,7 @@ public class DataPoint extends Capability {
         super(name, CapabilityType.DataPointManagement, description);
     }
 
-    public DataPoint(String name, String description, String datatype, String measurementUnit, String rate) {
+    public DataPoint(String name, String description, String datatype, String measurementUnit, int rate) {
         super(name, CapabilityType.DataPointManagement, description);
         this.datatype = datatype;
         this.measurementUnit = measurementUnit;
@@ -61,11 +61,11 @@ public class DataPoint extends Capability {
         this.measurementUnit = measurementUnit;
     }
 
-    public String getRate() {
+    public int getRate() {
         return rate;
     }
 
-    public void setRate(String rate) {
+    public void setRate(int rate) {
         this.rate = rate;
     }
 

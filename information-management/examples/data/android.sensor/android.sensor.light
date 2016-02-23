@@ -1,0 +1,1 @@
+{"mFifoMaxEventCount":240,"mFifoReservedEventCount":0,"mFlags":2,"mHandle":1,"mMaxDelay":1000000,"mMaxRange":30000.0,"mMinDelay":0,"mName":"APDS-9930/QPDS-T930 Proximity \u0026 Light","mPower":0.175,"mRequiredPermission":"","mResolution":0.009994507,"mStringType":"android.sensor.light","mType":5,"mVendor":"Avago","mVersion":2}

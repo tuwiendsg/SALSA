@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<xmi:XMI xmlns:xmi='http://www.omg.org/spec/XMI/20110701' xmlns:uml='http://www.omg.org/spec/UML/20110701'>
+ <documentation exporter='Oracle JDeveloper' exporterVersion='12.1.3.0.0'/>
+ <uml:Enumeration xmi:type='uml:Enumeration' xmi:uuid='urn:uuid:356e0e2d-7f08-4008-a4ad-530341eaf7e5'
+   isAbstract='false'
+   isFinalSpecialization='false'
+   isLeaf='false'
+   name='Category'
+   visibility='public'>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:aed88ea0-4d8d-4cd1-ba8e-ad9085143790'
+    name='Sensor'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:30772f3e-e898-4acc-94c6-546a7a320286'
+    name='Actuator'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:5fb3fdbb-bc7e-404a-8335-d511fe085bef'
+    name='Gateway'
+    visibility='public'/>
+ </uml:Enumeration>
+</xmi:XMI>

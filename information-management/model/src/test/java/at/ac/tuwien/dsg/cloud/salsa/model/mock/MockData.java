@@ -10,16 +10,13 @@ import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Co
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint.InvokeProtocol;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.DataPoint;
-import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.DataStream.DataStream;
-import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.DataStream.ObservedProperty;
-import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.SoftwareDefineGateway;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.SoftwareDefinedGateway;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.AccessPoint;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.NetworkService;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.VNF;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.VNFForwardGraph;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  *
@@ -28,7 +25,7 @@ import java.util.List;
 public class MockData {
 
     public static void main(String[] arg) throws Exception {
-        SoftwareDefineGateway gateway = new SoftwareDefineGateway();
+        SoftwareDefinedGateway gateway = new SoftwareDefinedGateway();
         
         Capability control1 = new ControlPoint("changeSensorRate", "change data rate", InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/changeRate/parameters/{1}", null);
         Capability control2 = new ControlPoint("setProtocolMQTT", "change to MQTT mode", InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolMQTT", null);
@@ -40,8 +37,8 @@ public class MockData {
         gateway.getCapabilities().add(connectivity1);
         gateway.getCapabilities().add(connectivity2);
 
-        Capability data1 = new DataPoint("temperature1", "temperature of room1", "temperature", "C", "5");
-        Capability data2 = new DataPoint("humidity1", "humidity of room1", "humidity", "%", "60");        
+        Capability data1 = new DataPoint("temperature1", "temperature of room1", "temperature", "C", 5);
+        Capability data2 = new DataPoint("humidity1", "humidity of room1", "humidity", "%", 60);        
         gateway.getCapabilities().add(data1);
         gateway.getCapabilities().add(data2);
         

@@ -1,0 +1,1 @@
+{"mFifoMaxEventCount":168,"mFifoReservedEventCount":0,"mFlags":0,"mHandle":53,"mMaxDelay":60014652,"mMaxRange":1.0,"mMinDelay":20000,"mName":"GeoMagnetic Rotation Vector","mPower":0.36997986,"mRequiredPermission":"","mResolution":5.9604645E-8,"mStringType":"android.sensor.geomagnetic_rotation_vector","mType":20,"mVendor":"QTI","mVersion":2}

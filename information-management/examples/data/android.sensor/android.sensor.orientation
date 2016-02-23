@@ -1,0 +1,1 @@
+{"mFifoMaxEventCount":356,"mFifoReservedEventCount":0,"mFlags":0,"mHandle":49,"mMaxDelay":60014652,"mMaxRange":360.0,"mMinDelay":8333,"mName":"Orientation","mPower":5.36998,"mRequiredPermission":"","mResolution":0.1,"mStringType":"android.sensor.orientation","mType":3,"mVendor":"QTI","mVersion":2}

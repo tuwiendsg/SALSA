@@ -1,0 +1,35 @@
+{
+    "data": {
+        "DeviceProps": {
+            "commandURL": "",
+            "lastIP": "195.97.103.225",
+            "commands": true
+        },
+        "asset": {
+            "name": "00:3b:B6:Temperature-Patras000001",
+            "description": "asset model protocol",
+            "location": {
+                "altitude": "",
+                "latitude": "",
+                "longitude": ""
+            }
+        },
+        "creationTime": "2015-04-16T15:39:58Z",
+        "isConcentrator": false,
+        "model": "SENSOR_TEMP",
+        "name": "00:3b:B6:Sensor1",
+        "registrationTime": "2015-04-16T15:39:58Z",
+        "status": "Active",
+        "commands": [],
+        "sensorData": [
+            {
+                "ms": {
+                    "v": 26,
+                    "p": "Temperature",
+                    "u": "celsius"
+                },
+                "st": "2015-04-16T13:44:29Z"
+            }
+        ]
+    }
+}

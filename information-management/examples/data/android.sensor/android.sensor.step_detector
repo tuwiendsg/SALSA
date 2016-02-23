@@ -1,0 +1,1 @@
+{"mFifoMaxEventCount":392,"mFifoReservedEventCount":0,"mFlags":6,"mHandle":43,"mMaxDelay":0,"mMaxRange":1.0,"mMinDelay":0,"mName":"Step Detector","mPower":0.12998962,"mRequiredPermission":"","mResolution":1.0,"mStringType":"android.sensor.step_detector","mType":18,"mVendor":"QTI","mVersion":2}

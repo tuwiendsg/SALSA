@@ -1,0 +1,1 @@
+{"mFifoMaxEventCount":1500,"mFifoReservedEventCount":0,"mFlags":0,"mHandle":3,"mMaxDelay":1000000,"mMaxRange":1100.0,"mMinDelay":33333,"mName":"BMP280 Pressure","mPower":0.007,"mRequiredPermission":"","mResolution":0.009994507,"mStringType":"android.sensor.pressure","mType":6,"mVendor":"BOSCH","mVersion":1}

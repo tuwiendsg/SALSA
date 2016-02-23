@@ -1,0 +1,35 @@
+{
+    "data": {
+        "DeviceProps": {
+            "commandURL": "",
+            "lastIP": "152.255.150.53",
+            "commands": true
+        },
+        "asset": {
+            "name": "3F:2A:1A:Hum_CPBR8",
+            "description": "asset model protocol",
+            "location": {
+                "altitude": "",
+                "latitude": "",
+                "longitude": ""
+            }
+        },
+        "creationTime": "2015-02-04T20:47:41Z",
+        "isConcentrator": false,
+        "model": "SENSOR_HUM",
+        "name": "3F:2A:1A:Sensor1",
+        "registrationTime": "2015-02-04T20:47:42Z",
+        "status": "Active",
+        "commands": [],
+        "sensorData": [
+            {
+                "ms": {
+                    "v": 60,
+                    "p": "Humidity",
+                    "u": "percent"
+                },
+                "st": "2015-02-04T19:48:43Z"
+            }
+        ]
+    }
+}

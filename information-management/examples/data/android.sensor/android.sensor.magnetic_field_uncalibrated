@@ -1,0 +1,1 @@
+{"mFifoMaxEventCount":1500,"mFifoReservedEventCount":0,"mFlags":0,"mHandle":11,"mMaxDelay":1000000,"mMaxRange":4911.9995,"mMinDelay":20000,"mName":"AK09911 Magnetometer Uncalibrated","mPower":0.24,"mRequiredPermission":"","mResolution":0.5996704,"mStringType":"android.sensor.magnetic_field_uncalibrated","mType":14,"mVendor":"AKM","mVersion":1}

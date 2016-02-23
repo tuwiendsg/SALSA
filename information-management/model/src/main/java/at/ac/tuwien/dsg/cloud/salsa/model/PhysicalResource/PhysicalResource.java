@@ -8,22 +8,38 @@ public class PhysicalResource {
      * The resource can be sensor/actuator/gateway/field device
      *
      */
-    private PhysicalResourceType type;
+    private ResourceCategory category;
 
-    private String location;
+    private ResourceType type;
 
     private Map<String, String> attributes;
-    
-    private String domainModel;
+
+    /**
+     * The actual information, e.g. a sensor. Note: It is not the list, but a single instance of resource
+     */
+    private String domainInfo;
+
+    /**
+     * The name of the model, which is used for the transformation This should be equal to the transformation
+     */
+    private String domainModelName;
 
     public PhysicalResource() {
     }
 
-    public PhysicalResourceType getType() {
+    public ResourceCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(ResourceCategory category) {
+        this.category = category;
+    }
+
+    public ResourceType getType() {
         return type;
     }
 
-    public void setType(PhysicalResourceType type) {
+    public void setType(ResourceType type) {
         this.type = type;
     }
 
@@ -35,12 +51,20 @@ public class PhysicalResource {
         this.attributes = attributes;
     }
 
-    public String getLocation() {
-        return location;
+    public String getDomainInfo() {
+        return domainInfo;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setDomainInfo(String domainInfo) {
+        this.domainInfo = domainInfo;
+    }
+
+    public String getDomainModelName() {
+        return domainModelName;
+    }
+
+    public void setDomainModelName(String domainModelName) {
+        this.domainModelName = domainModelName;
     }
 
 }

@@ -2,32 +2,32 @@ package at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource;
 
 
 public class Relationship {
-    private SoftwareDefineGateway source;
-    private SoftwareDefineGateway target;
+    private SoftwareDefinedGateway source;
+    private SoftwareDefinedGateway target;
     private RelationshipType type;
 
     public Relationship() {
     }
 
-    public Relationship(SoftwareDefineGateway source, SoftwareDefineGateway target, RelationshipType type) {
+    public Relationship(SoftwareDefinedGateway source, SoftwareDefinedGateway target, RelationshipType type) {
         this.source = source;
         this.target = target;
         this.type = type;
     }
 
-    public SoftwareDefineGateway getSource() {
+    public SoftwareDefinedGateway getSource() {
         return source;
     }
 
-    public void setSource(SoftwareDefineGateway source) {
+    public void setSource(SoftwareDefinedGateway source) {
         this.source = source;
     }
 
-    public SoftwareDefineGateway getTarget() {
+    public SoftwareDefinedGateway getTarget() {
         return target;
     }
 
-    public void setTarget(SoftwareDefineGateway target) {
+    public void setTarget(SoftwareDefinedGateway target) {
         this.target = target;
     }
 

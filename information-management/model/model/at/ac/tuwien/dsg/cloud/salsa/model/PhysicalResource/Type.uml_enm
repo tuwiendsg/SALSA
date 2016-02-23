@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<xmi:XMI xmlns:xmi='http://www.omg.org/spec/XMI/20110701' xmlns:uml='http://www.omg.org/spec/UML/20110701'>
+ <documentation exporter='Oracle JDeveloper' exporterVersion='12.1.3.0.0'/>
+ <uml:Enumeration xmi:type='uml:Enumeration' xmi:uuid='urn:uuid:25f59e6d-ac42-4dd0-8126-72fe66396c3c'
+   isAbstract='false'
+   isFinalSpecialization='false'
+   isLeaf='false'
+   name='Type'
+   visibility='public'>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:953f02cf-adbb-4e21-a4ea-cafbde04c207'
+    name='Accelerometer'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:8e764c55-2e63-4015-af82-13b64877d7b4'
+    name='GPS'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:b7129fd1-c51b-4448-bc18-39cdbbacbf95'
+    name='Temperature'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:5be51930-a620-442f-8a10-a79b8df11135'
+    name='Humidity'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:ca2cef17-81d3-49e7-9f49-17ad23a9e1b7'
+    name='Presure'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:7e3d86de-6545-43cf-abfe-c01d08ad2499'
+    name='Light'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:4fd47d7b-22a9-4f37-8c4e-c84c8674d6af'
+    name='Magnetic_field'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:54e491f9-c9ee-4120-857d-a1fbac184670'
+    name='Step_counter'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:d7a5a7e9-9951-4edb-913b-038342e3865b'
+    name='Significant_motion'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:e3e8685f-0b9a-4a2a-babb-82f223188ca4'
+    name='Button'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:ca859537-50f3-417d-ab32-b6b928f594a6'
+    name='Led'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:6cb40567-3bb7-4bf5-833a-0ad17c06101c'
+    name='Raspberry_Pi'
+    visibility='public'/>
+  <ownedLiteral xmi:type='uml:EnumerationLiteral' xmi:uuid='urn:uuid:2ea0cdde-8d01-4782-8d28-74314ef86913'
+    name='ODROID'
+    visibility='public'/>
+ </uml:Enumeration>
+</xmi:XMI>
