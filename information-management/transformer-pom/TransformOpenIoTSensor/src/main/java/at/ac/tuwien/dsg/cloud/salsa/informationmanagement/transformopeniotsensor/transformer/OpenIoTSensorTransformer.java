@@ -5,21 +5,24 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.informationmanagement.transformopeniotsensor.transformer;
 
-import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.abstracttransformer.DataPointTransformerInterface;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.transformopeniotsensor.OpenIoTSensor;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.transformopeniotsensor.OpenIoTSensorWrapper;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.DataPoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.CloudConnectivity;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ExecutionEnvironment;
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.abstracttransformer.GatewayResourceDiscoveryInterface;
 
 /**
  *
  * @author hungld
  */
-public class OpenIoTSensorTransformer implements DataPointTransformerInterface<OpenIoTSensorWrapper> {
+public class OpenIoTSensorTransformer implements GatewayResourceDiscoveryInterface<OpenIoTSensorWrapper> {
 
     @Override
-    public OpenIoTSensorWrapper toDomainInfo(String data) {
+    public OpenIoTSensorWrapper validateAndConvertToDomainModel(String data) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(data, OpenIoTSensorWrapper.class);
@@ -45,6 +48,21 @@ public class OpenIoTSensorTransformer implements DataPointTransformerInterface<O
 //            datapoint.setMeasurementUnit(data.getSensorData().getMs().getU());
 //        }
         return datapoint;
+    }
+
+    @Override
+    public ControlPoint toControlPoint(OpenIoTSensorWrapper data) {
+        return null;
+    }
+
+    @Override
+    public ExecutionEnvironment toExecutionEnvironment(OpenIoTSensorWrapper data) {
+        return null;
+    }
+
+    @Override
+    public CloudConnectivity toCloudConnectivity(OpenIoTSensorWrapper data) {
+        return null;
     }
 
 }

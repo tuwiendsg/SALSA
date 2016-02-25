@@ -1,0 +1,124 @@
+DEBUG 16:20:05,155 [main] (DeliseClient.java:51) - Start syn delise...
+DEBUG 16:20:05,190 [main] (DeliseClient.java:66) - Will subscribeing to the topic
+DEBUG 16:20:05,192 [main] (AMQPConnector.java:58) - Trying to connect to AMQP broker: 128.130.172.191
+DEBUG 16:20:38,272 [main] (DeliseClient.java:51) - Start syn delise...
+DEBUG 16:20:38,297 [main] (DeliseClient.java:66) - Will subscribeing to the topic
+DEBUG 16:20:38,300 [main] (AMQPConnector.java:58) - Trying to connect to AMQP broker: 128.130.172.215
+DEBUG 16:21:36,759 [main] (DeliseClient.java:51) - Start syn delise...
+DEBUG 16:21:36,787 [main] (DeliseClient.java:66) - Will subscribeing to the topic
+DEBUG 16:21:36,789 [main] (AMQPConnector.java:58) - Trying to connect to AMQP broker: amqp://128.130.172.215
+DEBUG 16:21:36,915 [main] (AMQPConnector.java:68) - AMQP connected. Connection: ---, Channel: 1
+DEBUG 16:21:36,931 [main] (DeliseClient.java:68) - Subscribe done, now waiting for SYN message
+DEBUG 16:21:36,931 [Thread-0] (AMQPSubscribe.java:78) - Inside the queue subscribing thread, process is continueing...
+DEBUG 16:21:36,932 [Thread-0] (AMQPSubscribe.java:81) - Looping and waiting for the message 
+DEBUG 16:21:36,933 [main] (DeliseClient.java:72) - Client starts to send SYN message to many DESLISE...
+DEBUG 16:21:36,933 [main] (AMQPConnector.java:58) - Trying to connect to AMQP broker: amqp://128.130.172.215
+DEBUG 16:21:36,950 [main] (AMQPConnector.java:68) - AMQP connected. Connection: ---, Channel: 1
+DEBUG 16:21:36,951 [main] (AMQPPublish.java:49) - Content: SalsaMessage{MsgType=SYN_REQUEST, payload=}
+DEBUG 16:21:36,951 [main] (AMQPPublish.java:53) - EXCHANGE_NAME: ac.at.tuwien.dsg.cloud.delise.request
+ERROR 16:21:42,215 [Thread-0] (AMQPSubscribe.java:95) - Interrupt during the subscribing to topic: null
+com.rabbitmq.client.ShutdownSignalException: clean channel shutdown; protocol method: #method<channel.close>(reply-code=200, reply-text=OK, class-id=0, method-id=0)
+	at com.rabbitmq.client.QueueingConsumer.handle(QueueingConsumer.java:203)
+	at com.rabbitmq.client.QueueingConsumer.nextDelivery(QueueingConsumer.java:220)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.AMQPAdaptor.AMQPSubscribe$ThreadQueueSubscribe.run(AMQPSubscribe.java:82)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: com.rabbitmq.client.ShutdownSignalException: clean channel shutdown; protocol method: #method<channel.close>(reply-code=200, reply-text=OK, class-id=0, method-id=0)
+	at com.rabbitmq.client.impl.ChannelN.close(ChannelN.java:554)
+	at com.rabbitmq.client.impl.ChannelN.close(ChannelN.java:509)
+	at com.rabbitmq.client.impl.ChannelN.close(ChannelN.java:503)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.AMQPAdaptor.AMQPConnector.disconnect(AMQPConnector.java:82)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.DeliseClient.synDelise(DeliseClient.java:79)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.testMessage.main(testMessage.java:15)
+DEBUG 16:23:19,053 [main] (DeliseClient.java:51) - Start syn delise...
+DEBUG 16:23:19,083 [main] (DeliseClient.java:66) - Will subscribeing to the topic
+DEBUG 16:23:19,085 [main] (AMQPConnector.java:58) - Trying to connect to AMQP broker: amqp://128.130.172.215
+DEBUG 16:23:19,223 [main] (AMQPConnector.java:68) - AMQP connected. Connection: ---, Channel: 1
+DEBUG 16:23:19,240 [main] (DeliseClient.java:68) - Subscribe done, now waiting for SYN message
+DEBUG 16:23:19,240 [Thread-0] (AMQPSubscribe.java:78) - Inside the queue subscribing thread, process is continueing...
+DEBUG 16:23:19,240 [Thread-0] (AMQPSubscribe.java:81) - Looping and waiting for the message 
+DEBUG 16:23:19,242 [main] (DeliseClient.java:72) - Client starts to send SYN message to many DESLISE...
+DEBUG 16:23:19,242 [main] (AMQPConnector.java:58) - Trying to connect to AMQP broker: amqp://128.130.172.215
+DEBUG 16:23:19,251 [main] (AMQPConnector.java:68) - AMQP connected. Connection: ---, Channel: 1
+DEBUG 16:23:19,251 [main] (AMQPPublish.java:49) - Content: SalsaMessage{MsgType=SYN_REQUEST, payload=}
+DEBUG 16:23:19,251 [main] (AMQPPublish.java:53) - EXCHANGE_NAME: ac.at.tuwien.dsg.cloud.delise.request
+DEBUG 16:23:19,683 [Thread-0] (AMQPSubscribe.java:83) - A message arrived 
+DEBUG 16:23:19,683 [Thread-0] (AMQPSubscribe.java:85) - {"msgType":"SYN_REPLY","fromSalsa":"8ad3d3e5-2d30-498d-986d-0cbbb6d11a26","topic":"ac.at.tuwien.dsg.cloud.delise.sync","feedbackTopic":"","payload":"{\"uuid\":\"8ad3d3e5-2d30-498d-986d-0cbbb6d11a26\",\"ip\":\"128.131.172.59\",\"unicastTopic\":\"ac.at.tuwien.dsg.cloud.delise.request.8ad3d3e5-2d30-498d-986d-0cbbb6d11a26\"}","timeStamp":1456413799640}
+DEBUG 16:23:19,710 [Thread-0] (AMQPSubscribe.java:89) - A message arrived. From: 8ad3d3e5-2d30-498d-986d-0cbbb6d11a26. MsgType: SYN_REPLY. Payload: {"uuid":"8ad3d3e5-2d30-498d-986d-0cbbb6d11a26","ip":"128.131.172.59","unicastTopic":"ac.at.tuwien.dsg.cloud.delise.request.8ad3d3e5-2d30-498d-986d-0cbbb6d11a26"}
+DEBUG 16:23:19,710 [Thread-0] (AMQPSubscribe.java:81) - Looping and waiting for the message 
+DEBUG 16:23:19,710 [Thread-1] (AMQPSubscribe.java:113) - Inside the handling thread, process is continueing...
+DEBUG 16:23:19,712 [Thread-1] (DeliseClient.java:57) - A message arrive, from: 8ad3d3e5-2d30-498d-986d-0cbbb6d11a26, type: SYN_REPLY, topic: ac.at.tuwien.dsg.cloud.delise.sync 
+ERROR 16:23:24,464 [Thread-0] (AMQPSubscribe.java:95) - Interrupt during the subscribing to topic: ac.at.tuwien.dsg.cloud.delise.sync
+com.rabbitmq.client.ShutdownSignalException: clean channel shutdown; protocol method: #method<channel.close>(reply-code=200, reply-text=OK, class-id=0, method-id=0)
+	at com.rabbitmq.client.QueueingConsumer.handle(QueueingConsumer.java:203)
+	at com.rabbitmq.client.QueueingConsumer.nextDelivery(QueueingConsumer.java:220)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.AMQPAdaptor.AMQPSubscribe$ThreadQueueSubscribe.run(AMQPSubscribe.java:82)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: com.rabbitmq.client.ShutdownSignalException: clean channel shutdown; protocol method: #method<channel.close>(reply-code=200, reply-text=OK, class-id=0, method-id=0)
+	at com.rabbitmq.client.impl.ChannelN.close(ChannelN.java:554)
+	at com.rabbitmq.client.impl.ChannelN.close(ChannelN.java:509)
+	at com.rabbitmq.client.impl.ChannelN.close(ChannelN.java:503)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.AMQPAdaptor.AMQPConnector.disconnect(AMQPConnector.java:82)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.DeliseClient.synDelise(DeliseClient.java:79)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.testMessage.main(testMessage.java:15)
+DEBUG 16:24:53,589 [main] (DeliseClient.java:51) - Start syn delise...
+DEBUG 16:24:53,619 [main] (DeliseClient.java:66) - Will subscribeing to the topic
+DEBUG 16:24:53,621 [main] (AMQPConnector.java:58) - Trying to connect to AMQP broker: amqp://128.130.172.215
+DEBUG 16:24:53,740 [main] (AMQPConnector.java:68) - AMQP connected. Connection: ---, Channel: 1
+DEBUG 16:24:53,759 [main] (DeliseClient.java:68) - Subscribe done, now waiting for SYN message
+DEBUG 16:24:53,762 [main] (DeliseClient.java:72) - Client starts to send SYN message to many DESLISE...
+DEBUG 16:24:53,762 [main] (AMQPConnector.java:58) - Trying to connect to AMQP broker: amqp://128.130.172.215
+DEBUG 16:24:53,766 [Thread-0] (AMQPSubscribe.java:78) - Inside the queue subscribing thread, process is continueing...
+DEBUG 16:24:53,766 [Thread-0] (AMQPSubscribe.java:81) - Looping and waiting for the message 
+DEBUG 16:24:53,774 [main] (AMQPConnector.java:68) - AMQP connected. Connection: ---, Channel: 1
+DEBUG 16:24:53,774 [main] (AMQPPublish.java:49) - Content: SalsaMessage{MsgType=SYN_REQUEST, payload=}
+DEBUG 16:24:53,774 [main] (AMQPPublish.java:53) - EXCHANGE_NAME: ac.at.tuwien.dsg.cloud.delise.request
+DEBUG 16:24:54,020 [Thread-0] (AMQPSubscribe.java:83) - A message arrived 
+DEBUG 16:24:54,020 [Thread-0] (AMQPSubscribe.java:85) - {"msgType":"SYN_REPLY","fromSalsa":"8ad3d3e5-2d30-498d-986d-0cbbb6d11a26","topic":"ac.at.tuwien.dsg.cloud.delise.sync","feedbackTopic":"","payload":"{\"uuid\":\"8ad3d3e5-2d30-498d-986d-0cbbb6d11a26\",\"ip\":\"128.131.172.59\",\"unicastTopic\":\"ac.at.tuwien.dsg.cloud.delise.request.8ad3d3e5-2d30-498d-986d-0cbbb6d11a26\"}","timeStamp":1456413894011}
+DEBUG 16:24:54,049 [Thread-0] (AMQPSubscribe.java:89) - A message arrived. From: 8ad3d3e5-2d30-498d-986d-0cbbb6d11a26. MsgType: SYN_REPLY. Payload: {"uuid":"8ad3d3e5-2d30-498d-986d-0cbbb6d11a26","ip":"128.131.172.59","unicastTopic":"ac.at.tuwien.dsg.cloud.delise.request.8ad3d3e5-2d30-498d-986d-0cbbb6d11a26"}
+DEBUG 16:24:54,050 [Thread-0] (AMQPSubscribe.java:81) - Looping and waiting for the message 
+DEBUG 16:24:54,050 [Thread-1] (AMQPSubscribe.java:113) - Inside the handling thread, process is continueing...
+DEBUG 16:24:54,053 [Thread-1] (DeliseClient.java:57) - A message arrive, from: 8ad3d3e5-2d30-498d-986d-0cbbb6d11a26, type: SYN_REPLY, topic: ac.at.tuwien.dsg.cloud.delise.sync 
+ERROR 16:24:59,014 [Thread-0] (AMQPSubscribe.java:95) - Interrupt during the subscribing to topic: ac.at.tuwien.dsg.cloud.delise.sync
+com.rabbitmq.client.ShutdownSignalException: clean channel shutdown; protocol method: #method<channel.close>(reply-code=200, reply-text=OK, class-id=0, method-id=0)
+	at com.rabbitmq.client.QueueingConsumer.handle(QueueingConsumer.java:203)
+	at com.rabbitmq.client.QueueingConsumer.nextDelivery(QueueingConsumer.java:220)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.AMQPAdaptor.AMQPSubscribe$ThreadQueueSubscribe.run(AMQPSubscribe.java:82)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: com.rabbitmq.client.ShutdownSignalException: clean channel shutdown; protocol method: #method<channel.close>(reply-code=200, reply-text=OK, class-id=0, method-id=0)
+	at com.rabbitmq.client.impl.ChannelN.close(ChannelN.java:554)
+	at com.rabbitmq.client.impl.ChannelN.close(ChannelN.java:509)
+	at com.rabbitmq.client.impl.ChannelN.close(ChannelN.java:503)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.AMQPAdaptor.AMQPConnector.disconnect(AMQPConnector.java:82)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.DeliseClient.synDelise(DeliseClient.java:79)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.testMessage.main(testMessage.java:17)
+DEBUG 16:26:31,824 [main] (DeliseClient.java:51) - Start syn delise...
+DEBUG 16:26:31,852 [main] (DeliseClient.java:66) - Will subscribeing to the topic
+DEBUG 16:26:31,855 [main] (AMQPConnector.java:58) - Trying to connect to AMQP broker: amqp://128.130.172.215
+DEBUG 16:26:31,973 [main] (AMQPConnector.java:68) - AMQP connected. Connection: ---, Channel: 1
+DEBUG 16:26:31,994 [main] (DeliseClient.java:68) - Subscribe done, now waiting for SYN message
+DEBUG 16:26:31,995 [Thread-0] (AMQPSubscribe.java:78) - Inside the queue subscribing thread, process is continueing...
+DEBUG 16:26:31,995 [Thread-0] (AMQPSubscribe.java:81) - Looping and waiting for the message 
+DEBUG 16:26:31,996 [main] (DeliseClient.java:72) - Client starts to send SYN message to many DESLISE...
+DEBUG 16:26:31,997 [main] (AMQPConnector.java:58) - Trying to connect to AMQP broker: amqp://128.130.172.215
+DEBUG 16:26:32,006 [main] (AMQPConnector.java:68) - AMQP connected. Connection: ---, Channel: 1
+DEBUG 16:26:32,007 [main] (AMQPPublish.java:49) - Content: SalsaMessage{MsgType=SYN_REQUEST, payload=}
+DEBUG 16:26:32,007 [main] (AMQPPublish.java:53) - EXCHANGE_NAME: ac.at.tuwien.dsg.cloud.delise.request
+DEBUG 16:26:32,240 [Thread-0] (AMQPSubscribe.java:83) - A message arrived 
+DEBUG 16:26:32,241 [Thread-0] (AMQPSubscribe.java:85) - {"msgType":"SYN_REPLY","fromSalsa":"8ad3d3e5-2d30-498d-986d-0cbbb6d11a26","topic":"ac.at.tuwien.dsg.cloud.delise.sync","feedbackTopic":"","payload":"{\"uuid\":\"8ad3d3e5-2d30-498d-986d-0cbbb6d11a26\",\"ip\":\"128.131.172.59\",\"unicastTopic\":\"ac.at.tuwien.dsg.cloud.delise.request.8ad3d3e5-2d30-498d-986d-0cbbb6d11a26\"}","timeStamp":1456413992230}
+DEBUG 16:26:32,279 [Thread-0] (AMQPSubscribe.java:89) - A message arrived. From: 8ad3d3e5-2d30-498d-986d-0cbbb6d11a26. MsgType: SYN_REPLY. Payload: {"uuid":"8ad3d3e5-2d30-498d-986d-0cbbb6d11a26","ip":"128.131.172.59","unicastTopic":"ac.at.tuwien.dsg.cloud.delise.request.8ad3d3e5-2d30-498d-986d-0cbbb6d11a26"}
+DEBUG 16:26:32,280 [Thread-0] (AMQPSubscribe.java:81) - Looping and waiting for the message 
+DEBUG 16:26:32,280 [Thread-1] (AMQPSubscribe.java:113) - Inside the handling thread, process is continueing...
+DEBUG 16:26:32,282 [Thread-1] (DeliseClient.java:57) - A message arrive, from: 8ad3d3e5-2d30-498d-986d-0cbbb6d11a26, type: SYN_REPLY, topic: ac.at.tuwien.dsg.cloud.delise.sync 
+ERROR 16:26:37,237 [Thread-0] (AMQPSubscribe.java:95) - Interrupt during the subscribing to topic: ac.at.tuwien.dsg.cloud.delise.sync
+com.rabbitmq.client.ShutdownSignalException: clean channel shutdown; protocol method: #method<channel.close>(reply-code=200, reply-text=OK, class-id=0, method-id=0)
+	at com.rabbitmq.client.QueueingConsumer.handle(QueueingConsumer.java:203)
+	at com.rabbitmq.client.QueueingConsumer.nextDelivery(QueueingConsumer.java:220)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.AMQPAdaptor.AMQPSubscribe$ThreadQueueSubscribe.run(AMQPSubscribe.java:82)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: com.rabbitmq.client.ShutdownSignalException: clean channel shutdown; protocol method: #method<channel.close>(reply-code=200, reply-text=OK, class-id=0, method-id=0)
+	at com.rabbitmq.client.impl.ChannelN.close(ChannelN.java:554)
+	at com.rabbitmq.client.impl.ChannelN.close(ChannelN.java:509)
+	at com.rabbitmq.client.impl.ChannelN.close(ChannelN.java:503)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.AMQPAdaptor.AMQPConnector.disconnect(AMQPConnector.java:82)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.DeliseClient.synDelise(DeliseClient.java:79)
+	at at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.testMessage.main(testMessage.java:17)

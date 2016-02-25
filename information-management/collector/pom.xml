@@ -20,6 +20,11 @@
             <artifactId>AbstractTransformer</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa.InformationManagement</groupId>
+            <artifactId>Communication</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
     
     <build>

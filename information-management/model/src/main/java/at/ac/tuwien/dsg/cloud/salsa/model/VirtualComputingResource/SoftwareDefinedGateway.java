@@ -2,17 +2,25 @@ package at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource;
 
 import at.ac.tuwien.dsg.cloud.salsa.model.PhysicalResource.PhysicalResource;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Capability;
+import static at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.CapabilityType.CloudConnectivity;
+import static at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.CapabilityType.ExecutionEnvironment;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.CloudConnectivity;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.DataPoint;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ExecutionEnvironment;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.AccessPoint;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 
 import java.util.List;
 import java.util.Map;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class SoftwareDefinedGateway {
 
@@ -110,14 +118,22 @@ public class SoftwareDefinedGateway {
     public void setAccessPoints(List<AccessPoint> accessPoints) {
         this.accessPoints = accessPoints;
     }
-    
-    
-    
-    public String toJson(){
+
+    public String toJson() {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(this);
         } catch (JsonProcessingException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public static SoftwareDefinedGateway fromJson(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(json, SoftwareDefinedGateway.class);
+        } catch (IOException ex) {
             ex.printStackTrace();
             return null;
         }

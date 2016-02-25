@@ -6,6 +6,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
+        <slf4j.version>1.7.5</slf4j.version>
     </properties>
 
     <groupId>at.ac.tuwien.dsg.cloud.salsa.InformationManagement</groupId>
@@ -20,6 +21,23 @@
         <module>model</module>
         <module>collector</module>
         <module>transformer-pom</module>
+        <module>Communication</module>
+        <module>Client</module>
     </modules>
+    
+    
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+    </dependencies>
   
 </project>

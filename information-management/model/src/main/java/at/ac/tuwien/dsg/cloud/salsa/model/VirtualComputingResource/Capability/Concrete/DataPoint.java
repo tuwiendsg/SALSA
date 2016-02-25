@@ -31,15 +31,15 @@ public class DataPoint extends Capability {
     String managementClass;
 
     public DataPoint() {
-        type = CapabilityType.DataPointManagement;
+        type = CapabilityType.DataPoint;
     }
 
     public DataPoint(String name, String description) {
-        super(name, CapabilityType.DataPointManagement, description);
+        super(name, CapabilityType.DataPoint, description);
     }
 
     public DataPoint(String name, String description, String datatype, String measurementUnit, int rate) {
-        super(name, CapabilityType.DataPointManagement, description);
+        super(name, CapabilityType.DataPoint, description);
         this.datatype = datatype;
         this.measurementUnit = measurementUnit;
         this.rate = rate;

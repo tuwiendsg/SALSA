@@ -12,5 +12,6 @@
         <module>AndroidSensorTranform</module>
         <module>AbstractTransformer</module>
         <module>TransformOpenIoTSensor</module>
+        <module>TransformWeaveRouter</module>
     </modules>
 </project>

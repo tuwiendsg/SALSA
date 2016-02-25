@@ -9,16 +9,20 @@ import android.hardware.AndroidSensor;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.DataPoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.abstracttransformer.DataPointTransformerInterface;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.CloudConnectivity;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ExecutionEnvironment;
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.abstracttransformer.GatewayResourceDiscoveryInterface;
 
 /**
- *
+ * The transformer (should be renamed to DataPoint constructor later) 
+ * that get data from the domain model and build the DataPoint
  * @author hungld
  */
-public class AndroidSensorTransformer implements DataPointTransformerInterface<AndroidSensor>{
+public class AndroidSensorTransformer implements GatewayResourceDiscoveryInterface<AndroidSensor>{
 
     @Override
-    public AndroidSensor toDomainInfo(String data) {
+    public AndroidSensor validateAndConvertToDomainModel(String data) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(data, AndroidSensor.class);
@@ -35,6 +39,22 @@ public class AndroidSensorTransformer implements DataPointTransformerInterface<A
         datapoint.setRate(data.getmMinDelay());
         datapoint.setDatatype("type:"+data.getmType());
         return datapoint;
+    }
+
+    // return null that means the resource have no such capability
+    @Override
+    public ControlPoint toControlPoint(AndroidSensor data) {
+        return null;
+    }
+
+    @Override
+    public ExecutionEnvironment toExecutionEnvironment(AndroidSensor data) {
+        return null;
+    }
+
+    @Override
+    public CloudConnectivity toCloudConnectivity(AndroidSensor data) {
+        return null;
     }
 
   

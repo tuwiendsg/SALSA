@@ -1,8 +1,13 @@
 package at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource;
 
-
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Capability;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class VNF {
 
@@ -25,6 +30,8 @@ public class VNF {
      * List of live hosts that are allocated. This can hints of which hosts is being routed via this router
      */
     List<String> dns;
+
+    private List<Capability> capabilities;
 
     /**
      * List of interface which can be configured as access point
@@ -71,6 +78,9 @@ public class VNF {
     }
 
     public List<VNF> getPeers() {
+        if (peers == null) {
+            this.peers = new ArrayList<>();
+        }
         return peers;
     }
 
@@ -79,6 +89,9 @@ public class VNF {
     }
 
     public List<String> getDns() {
+        if (dns == null) {
+            dns = new ArrayList<>();
+        }
         return dns;
     }
 
@@ -87,11 +100,43 @@ public class VNF {
     }
 
     public List<AccessPoint> getNetworkInterface() {
+        if (networkInterface == null) {
+            networkInterface = new ArrayList<>();
+        }
         return networkInterface;
     }
 
     public void setNetworkInterface(List<AccessPoint> networkInterface) {
         this.networkInterface = networkInterface;
+    }
+
+    public List<Capability> getCapabilities() {
+        if (capabilities == null) {
+            capabilities = new ArrayList<>();
+        }
+        return capabilities;
+    }
+
+    public void setCapabilities(List<Capability> capabilities) {
+        this.capabilities = capabilities;
+    }
+
+    public String toJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(this);
+        } catch (JsonProcessingException ex) {
+            return null;
+        }
+    }
+
+    public static VNF fromJson(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(json, VNF.class);
+        } catch (IOException ex) {
+            return null;
+        }
     }
 
 }
