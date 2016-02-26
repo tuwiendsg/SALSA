@@ -23,7 +23,7 @@ import java.util.List;
 public class OpenIoTSensorTransformer implements GatewayResourceDiscoveryInterface<OpenIoTSensorWrapper> {
 
     @Override
-    public OpenIoTSensorWrapper validateAndConvertToDomainModel(String data) {
+    public OpenIoTSensorWrapper validateAndConvertToDomainModel(String data, String dataSource) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(data, OpenIoTSensorWrapper.class);

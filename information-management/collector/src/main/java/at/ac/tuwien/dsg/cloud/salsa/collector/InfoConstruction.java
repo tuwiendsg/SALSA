@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.abstracttransformer.GatewayResourceDiscoveryInterface;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 import java.util.Iterator;
@@ -54,26 +55,26 @@ public class InfoConstruction {
 
         // collect one time, give the SoftwareDefinedGateway to a file
         SoftwareDefinedGateway gw = new SoftwareDefinedGateway();
-        List<DataPoint> dps = runAllDataPointTransformer(settings);
-        gw.getCapabilities().addAll(dps);
+        getAllPossibleCapabilities(settings, gw);
+        //gw.getCapabilities().addAll(dps);
         System.out.println(gw.toJson());
         return gw;
     }
 
-    public static List<DataPoint> runAllDataPointTransformer(InfoSourceSettings settings) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public static SoftwareDefinedGateway getAllPossibleCapabilities(InfoSourceSettings settings, SoftwareDefinedGateway gw) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         System.out.println("Executing all the transformer...");
         if (settings == null || settings.getSource().isEmpty()) {
             System.out.println("ERROR: No source information found. Please check configuration file.");
             return null;
         }
-        List<DataPoint> dps = new ArrayList<>();
+        
         for (InfoSourceSettings.InfoSource source : settings.getSource()) {
             System.out.println("Checking resource: " + source.getType());
             switch (source.getType()) {
                 case FILE: {
                     String mainFolder = source.getEndpoint();
                     System.out.println("Checking folder:" + mainFolder);
-                    // scan and read all file in dir recursively                    
+                    // scan and read all file in dir recursively
                     
                     List<String> fileNames = new ArrayList<>();
                     getFileNames(fileNames, Paths.get(mainFolder));
@@ -84,6 +85,7 @@ public class InfoConstruction {
                     }
                     
                     System.out.println("There are " + fileNames.size() + " files in the folder to read !");
+                    // each file contains info of single sensor/actuator
                     for (String filePath : fileNames) {                        
                         System.out.println("Reading file: " + filePath);
                         String json = new String(Files.readAllBytes(Paths.get(filePath)));
@@ -96,10 +98,13 @@ public class InfoConstruction {
                         System.out.println("Created tranformer instance done: ");
 
                         //DataPointTransformerInterface
-                        Object domain = t.validateAndConvertToDomainModel(json);
+                        Object domain = t.validateAndConvertToDomainModel(json, filePath);
                         DataPoint dp = t.toDataPoint(domain);
-                        System.out.println("Tranformation done:" + dp.getName());
-                        dps.add(dp);
+                        List<ControlPoint> cps = t.toControlPoint(domain);                        
+                        
+                        gw.getCapabilities().add(dp);
+                        gw.getCapabilities().addAll(cps);
+                        
                     }
                     break;
                 }
@@ -114,8 +119,8 @@ public class InfoConstruction {
             }
 
         }
-        System.out.println("Getting information done. Number of datapoint: " + dps.size());
-        return dps;
+        System.out.println("Getting information done. Number of datapoint: " + gw.getCapabilities().size());
+        return gw;
     }
 
     //Simply read a file     

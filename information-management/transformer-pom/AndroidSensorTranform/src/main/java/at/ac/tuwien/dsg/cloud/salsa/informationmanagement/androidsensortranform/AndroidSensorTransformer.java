@@ -23,7 +23,7 @@ import java.util.List;
 public class AndroidSensorTransformer implements GatewayResourceDiscoveryInterface<AndroidSensor>{
 
     @Override
-    public AndroidSensor validateAndConvertToDomainModel(String data) {
+    public AndroidSensor validateAndConvertToDomainModel(String data, String sourceData) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(data, AndroidSensor.class);

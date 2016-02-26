@@ -26,9 +26,10 @@ import java.util.logging.Logger;
 public class SDSensorTranformer implements GatewayResourceDiscoveryInterface<SDSensorMeta> {
 
     @Override
-    public SDSensorMeta validateAndConvertToDomainModel(String rawData) {
+    public SDSensorMeta validateAndConvertToDomainModel(String rawData, String sensorMetaFilePath) {
         Properties p = new Properties();
         StringReader reader = new StringReader(rawData);
+        String baseDir=sensorMetaFilePath.substring(0,sensorMetaFilePath.lastIndexOf("/"));
         try {
             p.load(reader);
             SDSensorMeta meta = new SDSensorMeta(p.getProperty("name"), p.getProperty("type"), p.getProperty("rate"), p.getProperty("protocol"));
@@ -36,7 +37,7 @@ public class SDSensorTranformer implements GatewayResourceDiscoveryInterface<SDS
                 String key = (String) keyObj;
                 if (key.startsWith("action.")) {
                     String actionName = key.substring(key.indexOf(".") + 1);
-                    meta.getActions().put(actionName, p.getProperty(key));
+                    meta.getActions().put(actionName, baseDir+"/"+p.getProperty(key));
                 }
             }
             return meta;
@@ -48,7 +49,7 @@ public class SDSensorTranformer implements GatewayResourceDiscoveryInterface<SDS
 
     @Override
     public DataPoint toDataPoint(SDSensorMeta data) {
-        DataPoint dp = new DataPoint("unknown", data.getName(), "SD Sensor", data.getType(), "N/A", Integer.parseInt(data.getRate()));
+        DataPoint dp = new DataPoint(data.getName(), "DataPoint_"+data.getName(), "SD Sensor", data.getType(), "N/A", Integer.parseInt(data.getRate()));
         return dp;
     }
 
@@ -56,7 +57,7 @@ public class SDSensorTranformer implements GatewayResourceDiscoveryInterface<SDS
     public List<ControlPoint> toControlPoint(SDSensorMeta data) {
         List<ControlPoint> cps = new ArrayList<>();
         for(String key: data.getActions().keySet()){
-            ControlPoint cp = new ControlPoint("undefined", key, "Action " + key, ControlPoint.InvokeProtocol.LOCAL_EXECUTE, data.getActions().get(key), "");
+            ControlPoint cp = new ControlPoint(data.getName(), key, "Action " + key, ControlPoint.InvokeProtocol.LOCAL_EXECUTE, data.getActions().get(key), "");
             cps.add(cp);
         }
         return cps;

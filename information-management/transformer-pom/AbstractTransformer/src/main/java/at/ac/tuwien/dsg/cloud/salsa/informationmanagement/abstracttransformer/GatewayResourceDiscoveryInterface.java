@@ -30,7 +30,7 @@ public interface GatewayResourceDiscoveryInterface<ResourceDomainClass> extends 
      * @param rawData is raw information read from the Driver
      * @return a DomainClass to use later
      */
-    public ResourceDomainClass validateAndConvertToDomainModel(String rawData);
+    public ResourceDomainClass validateAndConvertToDomainModel(String rawData, String dataSource);
 
     /**
      * Then how to convert the data to the Capabilities
