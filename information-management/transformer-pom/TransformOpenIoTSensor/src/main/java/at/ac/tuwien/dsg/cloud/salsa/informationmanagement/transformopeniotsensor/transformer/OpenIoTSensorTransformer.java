@@ -14,6 +14,7 @@ import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Co
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ExecutionEnvironment;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.abstracttransformer.GatewayResourceDiscoveryInterface;
+import java.util.List;
 
 /**
  *
@@ -42,7 +43,7 @@ public class OpenIoTSensorTransformer implements GatewayResourceDiscoveryInterfa
         if (data==null){
             System.out.println("Something happen, data is null");
         }
-        DataPoint datapoint = new DataPoint(data.getAsset().getName(), data.getAsset().getDescription());
+        DataPoint datapoint = new DataPoint(data.getAsset().getName(), data.getAsset().getName(), data.getAsset().getDescription());
         datapoint.setDatatype(data.getModel().toString());
 //        if (data.getSensorData() != null && data.getSensorData().getMs() != null) {
 //            datapoint.setMeasurementUnit(data.getSensorData().getMs().getU());
@@ -51,7 +52,7 @@ public class OpenIoTSensorTransformer implements GatewayResourceDiscoveryInterfa
     }
 
     @Override
-    public ControlPoint toControlPoint(OpenIoTSensorWrapper data) {
+    public List<ControlPoint> toControlPoint(OpenIoTSensorWrapper data) {
         return null;
     }
 

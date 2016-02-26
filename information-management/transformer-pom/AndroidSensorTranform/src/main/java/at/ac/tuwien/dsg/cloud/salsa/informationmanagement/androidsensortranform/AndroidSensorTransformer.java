@@ -13,6 +13,7 @@ import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Co
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ExecutionEnvironment;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.abstracttransformer.GatewayResourceDiscoveryInterface;
+import java.util.List;
 
 /**
  * The transformer (should be renamed to DataPoint constructor later) 
@@ -34,7 +35,7 @@ public class AndroidSensorTransformer implements GatewayResourceDiscoveryInterfa
 
     @Override
     public DataPoint toDataPoint(AndroidSensor data) {        
-        DataPoint datapoint = new DataPoint(data.getmName(), "type:" + data.getmType()+ ",version:"+data.getmVersion());
+        DataPoint datapoint = new DataPoint(data.getmName(), data.getmName(), "type:" + data.getmType()+ ",version:"+data.getmVersion());
         datapoint.setMeasurementUnit("default_unit_for_android_type:"+data.getmType());
         datapoint.setRate(data.getmMinDelay());
         datapoint.setDatatype("type:"+data.getmType());
@@ -43,7 +44,7 @@ public class AndroidSensorTransformer implements GatewayResourceDiscoveryInterfa
 
     // return null that means the resource have no such capability
     @Override
-    public ControlPoint toControlPoint(AndroidSensor data) {
+    public List<ControlPoint> toControlPoint(AndroidSensor data) {
         return null;
     }
 

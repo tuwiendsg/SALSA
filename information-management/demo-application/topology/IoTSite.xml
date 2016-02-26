@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:Definitions id="IoTSensors" name="IoTSensors" xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12">
+    <ns2:ServiceTemplate id="IoTTopology">
+        <ns2:TopologyTemplate>
+            <ns2:RelationshipTemplate id="SensorOnDocker" type="HOSTON">
+                <ns2:SourceElement ref="sensorUnit"/>
+                <ns2:TargetElement ref="gatewayDocker"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="MqttQueueVM_Reference_onVM" type="HOSTON">
+                <ns2:SourceElement ref="MqttQueueVM"/>
+                <ns2:TargetElement ref="cloudSiteVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="dockerOnVM" type="HOSTON">
+                <ns2:SourceElement ref="gatewayDocker"/>
+                <ns2:TargetElement ref="IoTSiteVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="QueueUnitOnMqttQueueVM" type="HOSTON">
+                <ns2:SourceElement ref="QueueUnit"/>
+                <ns2:TargetElement ref="MqttQueueVM"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement"/>
+            </ns2:RelationshipTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="IoTSiteVM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="30" id="sensorUnit" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_90e3c027-64a8-4f81-b2d7-938074e38264" artifactType="salsa:misc" artifactRef="Artifact_90e3c027-64a8-4f81-b2d7-938074e38264" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_d645cf62-122c-40e3-afd5-2bc6672fb86e" artifactType="salsa:metadata" artifactRef="Artifact_d645cf62-122c-40e3-afd5-2bc6672fb86e" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_66e92a28-52fe-47bf-aa92-978e979129c7" artifactType="salsa:sh" artifactRef="Artifact_66e92a28-52fe-47bf-aa92-978e979129c7" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="50" id="gatewayDocker" type="docker">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">localhost</property>
+                            <property name="instanceType">000000512</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="dockerFileArtifact" artifactType="salsa:dockerfile" artifactRef="dockerFileArtifact" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate reference="ElasticIoTPlatform/cloudSiteVM" minInstances="1" maxInstances="2147483647" id="cloudSiteVM" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">dsg@openstack</property>
+                            <property name="instanceType">000001920</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate reference="ElasticIoTPlatform/MqttQueueVM" minInstances="1" maxInstances="2147483647" id="MqttQueueVM" type="docker">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">localhost</property>
+                            <property name="instanceType">000000512</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate reference="ElasticIoTPlatform/QueueUnit" minInstances="1" maxInstances="1" id="QueueUnit" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities>
+                    <ns2:Capability id="brokerIp_Capability" type="variable"/>
+                </ns2:Capabilities>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    <ns2:ArtifactTemplate id="Artifact_90e3c027-64a8-4f81-b2d7-938074e38264" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/sensors/GPSSensor/sensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_d645cf62-122c-40e3-afd5-2bc6672fb86e" type="metadata">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/sensors/GPSSensor/sensor.meta"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_66e92a28-52fe-47bf-aa92-978e979129c7" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/sensors/GPSSensor/runSensor_gps1279_gp1279.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="dockerFileArtifact" type="dockerfile">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="http://128.130.172.215/iCOMOTTutorial/files/gateway-delise/Dockerfile"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+</ns2:Definitions>

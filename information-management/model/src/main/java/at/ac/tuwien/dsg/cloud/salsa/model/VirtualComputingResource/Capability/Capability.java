@@ -25,6 +25,11 @@ public class Capability {
     protected String name;
 
     /**
+     * The ID of the resource, e.g. capability of which sensor/actuator
+     */
+    protected String resourceID;
+
+    /**
      * The type of the capability
      */
     protected CapabilityType type;
@@ -40,7 +45,8 @@ public class Capability {
     public Capability() {
     }
 
-    public Capability(String name, CapabilityType type, String description) {
+    public Capability(String resourceID, String name, CapabilityType type, String description) {
+        this.resourceID = resourceID;
         this.name = name;
         this.type = type;
         this.description = description;
@@ -64,6 +70,14 @@ public class Capability {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getResourceID() {
+        return resourceID;
+    }
+
+    public void setResourceID(String resourceID) {
+        this.resourceID = resourceID;
     }
 
     public void setDescription(String description) {

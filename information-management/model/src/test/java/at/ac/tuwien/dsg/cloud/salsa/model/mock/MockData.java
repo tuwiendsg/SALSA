@@ -27,18 +27,18 @@ public class MockData {
     public static void main(String[] arg) throws Exception {
         SoftwareDefinedGateway gateway = new SoftwareDefinedGateway();
         
-        Capability control1 = new ControlPoint("changeSensorRate", "change data rate", InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/changeRate/parameters/{1}", null);
-        Capability control2 = new ControlPoint("setProtocolMQTT", "change to MQTT mode", InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolMQTT", null);
-        Capability control3 = new ControlPoint("setProtocolDRY", "change DRY mode", InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolDRY", null);
+        Capability control1 = new ControlPoint("sensor1","changeSensorRate", "change data rate", InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/changeRate/parameters/{1}", null);
+        Capability control2 = new ControlPoint("sensor1","setProtocolMQTT", "change to MQTT mode", InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolMQTT", null);
+        Capability control3 = new ControlPoint("sensor1","setProtocolDRY", "change DRY mode", InvokeProtocol.POST, "http://128.130.172.216:8080/salsa-engine/rest/services/IoTSensors/nodes/SensorUnit/instances/1/action_queue/setProtocolDRY", null);
         gateway.getCapabilities().addAll(Arrays.asList(control1, control2, control3));
 
-        CloudConnectivity connectivity1 = new CloudConnectivity("3G", "3G connection", "172.17.0.150", "");
-        CloudConnectivity connectivity2 = new CloudConnectivity("WIFI", "WIFI connection", "10.32.0.2", "");
+        CloudConnectivity connectivity1 = new CloudConnectivity("sensor1","3G", "3G connection", "172.17.0.150", "");
+        CloudConnectivity connectivity2 = new CloudConnectivity("sensor1","WIFI", "WIFI connection", "10.32.0.2", "");
         gateway.getCapabilities().add(connectivity1);
         gateway.getCapabilities().add(connectivity2);
 
-        Capability data1 = new DataPoint("temperature1", "temperature of room1", "temperature", "C", 5);
-        Capability data2 = new DataPoint("humidity1", "humidity of room1", "humidity", "%", 60);        
+        Capability data1 = new DataPoint("sensor1","temperature1", "temperature of room1", "temperature", "C", 5);
+        Capability data2 = new DataPoint("sensor1","humidity1", "humidity of room1", "humidity", "%", 60);        
         gateway.getCapabilities().add(data1);
         gateway.getCapabilities().add(data2);
         

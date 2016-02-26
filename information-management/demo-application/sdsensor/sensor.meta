@@ -7,6 +7,7 @@ action.setProtocolCOAP=capabilities/setProtocolCOAP.sh
 action.redirect=capabilities/redirect.sh
 
 name=testSensor
-location=room1
-type=Temprature
+type=GPS
+protocol=DRY
+rate=5
 

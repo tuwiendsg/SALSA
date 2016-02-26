@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.abstracttransformer.GatewayResourceDiscoveryInterface;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Path;
+import java.util.Iterator;
 import org.slf4j.Logger;
 
 /**
@@ -70,18 +73,18 @@ public class InfoConstruction {
                 case FILE: {
                     String mainFolder = source.getEndpoint();
                     System.out.println("Checking folder:" + mainFolder);
-                    // scan and read all file in dir
-                    File file = new File(mainFolder);
-                    String[] jsonFiles = file.list(new FilenameFilter() {
-                        @Override
-                        public boolean accept(File dir, String name) {
-                            return true;
-                            //return name.endsWith(".json");
-                        }
-                    });
-                    System.out.println("There are " + jsonFiles.length + " files in the folder to read !");
-                    for (String fileName : jsonFiles) {
-                        String filePath = mainFolder + "/" + fileName;
+                    // scan and read all file in dir recursively                    
+                    
+                    List<String> fileNames = new ArrayList<>();
+                    getFileNames(fileNames, Paths.get(mainFolder));
+                    
+                    final String nameFilter = source.getSettings();
+                    if (nameFilter!=null && !nameFilter.isEmpty()){
+                        filterFileNames(fileNames, nameFilter);
+                    }
+                    
+                    System.out.println("There are " + fileNames.size() + " files in the folder to read !");
+                    for (String filePath : fileNames) {                        
                         System.out.println("Reading file: " + filePath);
                         String json = new String(Files.readAllBytes(Paths.get(filePath)));
                         System.out.println("OK, Loaded the Json file content: \n " + json);
@@ -124,5 +127,46 @@ public class InfoConstruction {
     private String readDomainDataFromREST(String restEndpoint) throws IOException {
         // TODO: implement this
         return null;
+    }
+    
+    
+
+    static private List<String> getFileNames(List<String> fileNames, Path dir) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+            for (Path path : stream) {
+                if (path.toFile().isDirectory()) {
+                    getFileNames(fileNames, path);
+                } else {
+                    fileNames.add(path.toAbsolutePath().toString());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileNames;
+    }
+
+    static private void filterFileNames(List<String> fileNames, String endWith) {
+        Iterator<String> ite = fileNames.iterator();
+        while (ite.hasNext()) {
+            File f = new File(ite.next());
+            if (f.isDirectory() || (!f.getName().endsWith(endWith))) {
+                ite.remove();
+            }
+        }
+    }
+    
+    
+
+    public static void main(String[] args) {
+        List<String> files = new ArrayList<>();
+        
+        files = getFileNames(files, Paths.get("/home/hungld/workspace/SALSA/information-management/"));
+        filterFileNames(files, "sensor.meta");
+
+        System.out.println("YOOOOOOO");
+        for (String f : files) {
+            System.out.println(f);
+        }
     }
 }

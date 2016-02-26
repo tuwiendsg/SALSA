@@ -30,16 +30,21 @@ public class DataPoint extends Capability {
      */
     String managementClass;
 
+    /**
+     * List of capability if available
+     */
+    ControlPoint controlChangeRate = null;
+
     public DataPoint() {
         type = CapabilityType.DataPoint;
     }
 
-    public DataPoint(String name, String description) {
-        super(name, CapabilityType.DataPoint, description);
+    public DataPoint(String resourceID, String name, String description) {
+        super(resourceID, name, CapabilityType.DataPoint, description);
     }
 
-    public DataPoint(String name, String description, String datatype, String measurementUnit, int rate) {
-        super(name, CapabilityType.DataPoint, description);
+    public DataPoint(String resourceID, String name, String description, String datatype, String measurementUnit, int rate) {
+        super(resourceID, name, CapabilityType.DataPoint, description);
         this.datatype = datatype;
         this.measurementUnit = measurementUnit;
         this.rate = rate;
@@ -75,6 +80,14 @@ public class DataPoint extends Capability {
 
     public void setManagementClass(String managementClass) {
         this.managementClass = managementClass;
+    }
+
+    public ControlPoint getControlChangeRate() {
+        return controlChangeRate;
+    }
+
+    public void setControlChangeRate(ControlPoint controlChangeRate) {
+        this.controlChangeRate = controlChangeRate;
     }
 
 }

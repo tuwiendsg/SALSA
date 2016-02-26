@@ -21,14 +21,10 @@ public class CloudConnectivity extends Capability {
     // the endpoint of the cloud service it connect to
     String cloudEndpoint;
 
-    // the connectivity is on or off
-    String status;
+    String protocol;
 
-//    public abstract void changeEndpoint(String newEndpoint);
-//
-//    public abstract void changeConnectivityMode(String newConnectivityMode);
-//
-//    public abstract void reconfigureNetwork(String configuration);
+    ControlPoint controlChangeProtocol = null;
+
     /**
      * **************
      * GETER/SETTER * **************
@@ -37,12 +33,12 @@ public class CloudConnectivity extends Capability {
         type = CapabilityType.CloudConnectivity;
     }
 
-    public CloudConnectivity(String name, String description) {
-        super(name, CapabilityType.CloudConnectivity, description);
+    public CloudConnectivity(String resourceID, String name, String description) {
+        super( resourceID, name, CapabilityType.CloudConnectivity, description);
     }
 
-    public CloudConnectivity(String name, String description, String defautGateway, String cloudEndpoint) {
-        super(name, CapabilityType.CloudConnectivity, description);
+    public CloudConnectivity(String resourceID, String name, String description, String defautGateway, String cloudEndpoint) {
+        super(resourceID, name, CapabilityType.CloudConnectivity, description);
         this.cloudEndpoint = cloudEndpoint;
         this.defaultGateway = defautGateway;
     }
@@ -63,12 +59,20 @@ public class CloudConnectivity extends Capability {
         this.defaultGateway = defaultGateway;
     }
 
-    public String getStatus() {
-        return status;
+    public String getProtocol() {
+        return protocol;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public ControlPoint getControlChangeProtocol() {
+        return controlChangeProtocol;
+    }
+
+    public void setControlChangeProtocol(ControlPoint controlChangeProtocol) {
+        this.controlChangeProtocol = controlChangeProtocol;
     }
 
 }

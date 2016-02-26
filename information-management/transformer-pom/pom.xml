@@ -13,5 +13,6 @@
         <module>AbstractTransformer</module>
         <module>TransformOpenIoTSensor</module>
         <module>TransformWeaveRouter</module>
+        <module>TranformSDSensor</module>
     </modules>
 </project>

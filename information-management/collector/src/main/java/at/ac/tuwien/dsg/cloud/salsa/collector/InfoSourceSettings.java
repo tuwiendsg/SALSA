@@ -20,7 +20,12 @@ import java.util.List;
 public class InfoSourceSettings {
 
     public static enum InformationSourceType {
-        FILE, REST
+        // FILE type scan all the files in one folder
+        FILE,
+        // search for filename in recursive
+        FILE_WALK,
+        // call the REST endpoint
+        REST
     }
 
     // by default
@@ -43,14 +48,16 @@ public class InfoSourceSettings {
         InformationSourceType type;
         String endpoint;
         String transformerClass;
+        String settings;
 
         public InfoSource() {
         }
 
-        public InfoSource(InformationSourceType type, String endpoint, String transformerClass) {
+        public InfoSource(InformationSourceType type, String endpoint, String transformerClass, String settings) {
             this.type = type;
             this.endpoint = endpoint;
             this.transformerClass = transformerClass;
+            this.settings = settings;
         }
 
         public InformationSourceType getType() {
@@ -75,6 +82,14 @@ public class InfoSourceSettings {
 
         public void setTransformerClass(String transformerClass) {
             this.transformerClass = transformerClass;
+        }
+
+        public String getSettings() {
+            return settings;
+        }
+
+        public void setSettings(String settings) {
+            this.settings = settings;
         }
 
     }
@@ -113,11 +128,12 @@ public class InfoSourceSettings {
     public static InfoSourceSettings loadDefaultFile() {
         return InfoSourceSettings.loadFile(DEFAULT_CONFIG_FILE);
     }
-    
-    public static void main(String[] args){
+
+    public static void main(String[] args) {
         InfoSourceSettings settings = new InfoSourceSettings();
-        settings.getSource().add(new InfoSource(InformationSourceType.FILE, "/home/hungld/test/SENSOR_TEST/android.sensor", "at.ac.tuwien.dsg.cloud.salsa.informationmanagement.androidsensortranform.AndroidSensorTransformer"));
-        settings.getSource().add(new InfoSource(InformationSourceType.FILE, "/home/hungld/test/SENSOR_TEST/OpenIoT", "at.ac.tuwien.dsg.cloud.salsa.informationmanagement.transformopeniotsensor.transformer.OpenIoTSensorTransformer"));
+        settings.getSource().add(new InfoSource(InformationSourceType.FILE, "/home/hungld/test/SENSOR_TEST/android.sensor", "at.ac.tuwien.dsg.cloud.salsa.informationmanagement.androidsensortranform.AndroidSensorTransformer", null));
+        settings.getSource().add(new InfoSource(InformationSourceType.FILE, "/home/hungld/test/SENSOR_TEST/OpenIoT", "at.ac.tuwien.dsg.cloud.salsa.informationmanagement.transformopeniotsensor.transformer.OpenIoTSensorTransformer", null));
+        settings.getSource().add(new InfoSource(InformationSourceType.FILE, "/opt/iCOMOT/bin/compact/workspace/iCOMOT-Platform/", "at.ac.tuwien.dsg.cloud.salsa.informationmanagement.tranformsdsensor.SDSensorTranformer", "sensor.meta"));
         System.out.println(settings.toJson());
     }
 

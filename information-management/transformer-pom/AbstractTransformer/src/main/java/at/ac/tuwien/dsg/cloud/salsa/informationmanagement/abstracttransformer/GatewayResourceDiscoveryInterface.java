@@ -9,6 +9,7 @@ import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Co
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.DataPoint;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ExecutionEnvironment;
+import java.util.List;
 
 /**
  * The transformer convert the data (in text format like JSON, XML) into the model The implementation of transformer may need to include its model by itself
@@ -39,7 +40,7 @@ public interface GatewayResourceDiscoveryInterface<ResourceDomainClass> extends 
      */
     public DataPoint toDataPoint(ResourceDomainClass data);
     
-    public ControlPoint toControlPoint(ResourceDomainClass data);
+    public List<ControlPoint> toControlPoint(ResourceDomainClass data);
     
     public ExecutionEnvironment toExecutionEnvironment(ResourceDomainClass data);
     

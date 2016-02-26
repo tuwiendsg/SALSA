@@ -18,7 +18,8 @@ import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Ca
 public class ControlPoint extends Capability {
 
     public static enum InvokeProtocol {
-        GET, POST, DELETE, PUT
+        GET, POST, DELETE, PUT,
+        LOCAL_EXECUTE
     }
     /**
      * How to call the capability
@@ -45,12 +46,12 @@ public class ControlPoint extends Capability {
         type = CapabilityType.ControlPoint;
     }
     
-    public ControlPoint(String name, String description) {        
-        super(name, CapabilityType.ControlPoint, description);
+    public ControlPoint(String resourceID, String name, String description) {        
+        super(resourceID, name, CapabilityType.ControlPoint, description);
     }
 
-    public ControlPoint(String name, String description, InvokeProtocol invokeProtocol, String reference, String postData) {
-        super(name, CapabilityType.ControlPoint, description);
+    public ControlPoint(String resourceID, String name, String description, InvokeProtocol invokeProtocol, String reference, String postData) {
+        super(resourceID, name, CapabilityType.ControlPoint, description);
         this.invokeProtocol = invokeProtocol;
         this.reference = reference;
         this.postData = postData;

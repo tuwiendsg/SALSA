@@ -40,12 +40,12 @@ public class ExecutionEnvironment extends Capability {
         type = CapabilityType.ExecutionEnvironment;
     }
 
-    public ExecutionEnvironment(String name, String description) {
-        super(name, CapabilityType.ExecutionEnvironment, description);
+    public ExecutionEnvironment(String resourceID, String name, String description) {
+        super(resourceID,name, CapabilityType.ExecutionEnvironment, description);
     }
 
-    public ExecutionEnvironment(String name, String description, EnvironmentType envType) {
-        super(name, CapabilityType.ExecutionEnvironment, description);
+    public ExecutionEnvironment(String resourceID, String name, String description, EnvironmentType envType) {
+        super(resourceID, name, CapabilityType.ExecutionEnvironment, description);
         this.env = envType;
     }
 
