@@ -13,6 +13,7 @@ import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messageI
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.DeliseMessage;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.DeliseMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.SoftwareDefinedGateway;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.VNF;
 import org.slf4j.Logger;
 
 /**
@@ -48,11 +49,25 @@ public class Main {
             public void handleMessage(DeliseMessage msg) {
                 if (msg.getMsgType().equals(DeliseMessage.MESSAGE_TYPE.RPC_QUERY_SDGATEWAY_LOCAL)) {
                     logger.debug("Server get request for SDG information");
-                    String payload = msg.getPayload(); // dont care at the moment, just send back the SDGateway
                     try {
                         // response
-                        SoftwareDefinedGateway gw = InfoConstruction.getGatewayInfo();
+                        SoftwareDefinedGateway gw = InfoCollector.getGatewayInfo();
                         String replyPayload = gw.toJson();
+                        DeliseMessage replyMsg = new DeliseMessage(DeliseMessage.MESSAGE_TYPE.UPDATE_INFORMATION, DeliseConfiguration.getMyUUID(), msg.getFeedbackTopic(), "", replyPayload);
+                        pub.pushMessage(replyMsg);
+                        return;
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        logger.error(ex.getMessage());
+                    }
+                }
+
+                if (msg.getMsgType().equals(DeliseMessage.MESSAGE_TYPE.RPC_QUERY_NFV_LOCAL)) {
+                    logger.debug("Server get request for SDG information");
+                    try {
+                        // response
+                        VNF vnf = InfoCollector.getRouterInfo();
+                        String replyPayload = vnf.toJson();
                         DeliseMessage replyMsg = new DeliseMessage(DeliseMessage.MESSAGE_TYPE.UPDATE_INFORMATION, DeliseConfiguration.getMyUUID(), msg.getFeedbackTopic(), "", replyPayload);
                         pub.pushMessage(replyMsg);
                         return;
@@ -65,8 +80,7 @@ public class Main {
 
         });
         subscribeClientUniCast.subscribe(DeliseMessageTopic.getCollectorTopicByID(DeliseConfiguration.getMyUUID()));
-        
-        
+
         logger.debug("DELISE is ready. UUID: " + DeliseConfiguration.getMyUUID());
 
     }

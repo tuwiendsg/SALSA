@@ -1,14 +1,21 @@
 package at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource;
 
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Capability;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = Capability.class, name = "Capability"),
+    @JsonSubTypes.Type(value = ControlPoint.class, name = "ControlPoint")
+})
 public class VNF {
 
     /**
@@ -31,7 +38,7 @@ public class VNF {
      */
     List<String> dns;
 
-    private List<Capability> capabilities;
+    List<ControlPoint> controlPoints;
 
     /**
      * List of interface which can be configured as access point
@@ -110,15 +117,16 @@ public class VNF {
         this.networkInterface = networkInterface;
     }
 
-    public List<Capability> getCapabilities() {
-        if (capabilities == null) {
-            capabilities = new ArrayList<>();
+    public List<ControlPoint> getControlPoints() {
+        if (controlPoints == null) {
+            controlPoints = new ArrayList<>();
         }
-        return capabilities;
+        return controlPoints;
     }
 
-    public void setCapabilities(List<Capability> capabilities) {
-        this.capabilities = capabilities;
+    public void setControlPoints(List<ControlPoint> controlPoints) {        
+        this.controlPoints = new ArrayList<>();
+        this.controlPoints.addAll(controlPoints);        
     }
 
     public String toJson() {

@@ -1,0 +1,68 @@
+{
+    "type": "VNF",
+    "name": "virtualrouter-36:f6:51:34:8d:55",
+    "routingProtocol": "weave",
+    "peers": [],
+    "dns": [],
+    "controlPoints": [
+        {
+            "type": "ControlPoint",
+            "name": "virtualrouter-36:f6:51:34:8d:55",
+            "resourceID": "36:f6:51:34:8d:55",
+            "description": "stop",
+            "invokeProtocol": "LOCAL_EXECUTE",
+            "reference": "/usr/local/bin/weave stop",
+            "postData": ""
+        },
+        {
+            "type": "ControlPoint",
+            "name": "virtualrouter-36:f6:51:34:8d:55",
+            "resourceID": "36:f6:51:34:8d:55",
+            "description": "launch",
+            "invokeProtocol": "LOCAL_EXECUTE",
+            "reference": "/usr/local/bin/weave launch",
+            "postData": ""
+        },
+        {
+            "type": "ControlPoint",
+            "name": "virtualrouter-36:f6:51:34:8d:55",
+            "resourceID": "36:f6:51:34:8d:55",
+            "description": "connect",
+            "invokeProtocol": "LOCAL_EXECUTE",
+            "reference": "/usr/local/bin/weave connect",
+            "postData": "peerIP"
+        },
+        {
+            "type": "ControlPoint",
+            "name": "virtualrouter-36:f6:51:34:8d:55",
+            "resourceID": "36:f6:51:34:8d:55",
+            "description": "forget",
+            "invokeProtocol": "LOCAL_EXECUTE",
+            "reference": "/usr/local/bin/weave forget",
+            "postData": "peerIP"
+        },
+        {
+            "type": "ControlPoint",
+            "name": "virtualrouter-36:f6:51:34:8d:55",
+            "resourceID": "36:f6:51:34:8d:55",
+            "description": "attach",
+            "invokeProtocol": "LOCAL_EXECUTE",
+            "reference": "/usr/local/bin/weave attach",
+            "postData": "deviceIP"
+        },
+        {
+            "type": "ControlPoint",
+            "name": "virtualrouter-36:f6:51:34:8d:55",
+            "resourceID": "36:f6:51:34:8d:55",
+            "description": "detach",
+            "invokeProtocol": "LOCAL_EXECUTE",
+            "reference": "/usr/local/bin/weave attach",
+            "postData": "deviceIP"
+        }
+    ],
+    "networkInterface": [
+        {
+            "networkAddress": "10.99.0.56"
+        }
+    ]
+}

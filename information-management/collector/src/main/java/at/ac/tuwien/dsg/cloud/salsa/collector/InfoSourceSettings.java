@@ -20,14 +20,14 @@ import java.util.List;
 public class InfoSourceSettings {
 
     public static enum InformationSourceType {
-        // FILE type scan all the files in one folder
-        FILE,
-        // search for filename in recursive
-        FILE_WALK,
+        // FILE type scan all the files in one folder, recursively
+        FILE,        
         // call the REST endpoint
-        REST
+        REST,
+        // run system command and get result
+        SYSCMD
     }
-
+    
     // by default
     static final String DEFAULT_CONFIG_FILE = "./info-source.conf";
     List<InfoSource> source = new ArrayList<>();
@@ -44,8 +44,7 @@ public class InfoSourceSettings {
     }
 
     public static class InfoSource {
-
-        InformationSourceType type;
+        InformationSourceType type;        
         String endpoint;
         String transformerClass;
         String settings;
