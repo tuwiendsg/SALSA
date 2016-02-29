@@ -18,7 +18,7 @@ package at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.discov
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.rSYBL.deploymentDescription.DeploymentDescription;
 import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.rSYBL.deploymentDescription.DeploymentUnit;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.api.Discovery;
-import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.discovery.ADiscovery;
+import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.DiscoverySettings;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -37,12 +37,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class LightweightSalsaDiscovery extends ADiscovery implements Discovery {
+public class LightweightSalsaDiscovery implements Discovery {
 
-	private Config config;
+	private DiscoverySettings config;
 	private final String restCommand = "/salsa-engine/rest/services/tosca/{serviceId}/sybl";
 
-	public LightweightSalsaDiscovery(Config config) {
+	public LightweightSalsaDiscovery(DiscoverySettings config) {
 		this.config = config;
 	}
 
@@ -51,26 +51,31 @@ public class LightweightSalsaDiscovery extends ADiscovery implements Discovery {
 		return this.discoverHost(this.config.getServiceName());
 	}
 
-	@Override
 	public String discoverHost(String serviceName) {
 		try {
 			URI statusUri = UriBuilder.fromPath(restCommand).build(serviceName);
 			HttpGet method = new HttpGet(statusUri);
-			HttpHost host = new HttpHost(this.config.getDiscoveryIp(), this.config.getDiscoveryPort());
+			HttpHost host = new HttpHost(this.config.getIp(), 
+					this.config.getPort());
 			HttpClient client = new DefaultHttpClient();
 			HttpResponse response = client.execute(host, method);
 			
 			if (response.getStatusLine().getStatusCode() == 200) {
 				try {
-					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+					ByteArrayOutputStream outputStream = 
+							new ByteArrayOutputStream();
 					response.getEntity().writeTo(outputStream);
-					String serviceDescription = new String(outputStream.toByteArray());
+					String serviceDescription = 
+							new String(outputStream.toByteArray());
 					
-					JAXBContext a = JAXBContext.newInstance(DeploymentDescription.class);
+					JAXBContext a = JAXBContext
+							.newInstance(DeploymentDescription.class);
 					Unmarshaller u = a.createUnmarshaller();
 					if (!serviceDescription.equalsIgnoreCase("")) {
-						Object object = u.unmarshal(new StringReader(serviceDescription));
-						DeploymentDescription deploymentInfo = (DeploymentDescription) object;
+						Object object = u.unmarshal(
+								new StringReader(serviceDescription));
+						DeploymentDescription deploymentInfo = 
+								(DeploymentDescription) object;
 						
 						for(DeploymentUnit unit: deploymentInfo.getDeployments()) {
 							if(unit.getServiceUnitID().contains("RabbitServer")) {
@@ -86,6 +91,6 @@ public class LightweightSalsaDiscovery extends ADiscovery implements Discovery {
 			//todo: log
 		}
 		
-		return super.discoverHost(null);
+		return null;
 	}
 }
