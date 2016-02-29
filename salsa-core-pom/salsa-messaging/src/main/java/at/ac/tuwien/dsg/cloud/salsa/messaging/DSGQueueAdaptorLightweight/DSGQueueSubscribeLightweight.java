@@ -34,7 +34,8 @@ public class DSGQueueSubscribeLightweight extends DSGQueueConnector implements M
     @Override
     public void subscribe(String topic) {
         Consumer consumer = ComotMessagingFactory.getRabbitMqConsumer(new LightweightSalsaDiscovery(config));
-        consumer.addMessageReceivedListener((Message message) -> {
+        consumer.withType(topic);
+		consumer.addMessageReceivedListener((Message message) -> {
             //handler.handleMessage(SalsaMessage.fromJson(message.getMessage()));
             new Thread(new AsynHandleMessages(SalsaMessage.fromJson(message.getMessage()))).start();
         });
