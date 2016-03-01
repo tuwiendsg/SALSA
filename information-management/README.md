@@ -2,9 +2,12 @@
 
 **What:** This framework enables user to discover, connect and resource the information of IoT resources and the underlying network. It aims to a high level view of the IoT cloud system, provides extensibile architecture to integrate different information models, and supports distributed management by loose-couple communication protocol via message queue.
 
-**User:** Software agent (edge/cloud app) or administrator can take advantage of the tool. An API and a client-utility will be provided.
+**User:**
+
+ Software agent (edge/cloud app) or administrator can take advantage of the tool. An API and a client-utility will be provided.
 
 **Feature:**
+
 1. Information of IoT resources and network is abstracted by means of two main entities:
   * Software-defined gateway: give information of data, control and connectivity, reflect IoT devices connecting to the gateway. E.g. the information about data from many sensors transfering through the gateway.
   * Virtual router: give information about the network link. In support virtual router, the higher information about network graph, and end-to-end network service can be generate.
@@ -25,6 +28,7 @@
 
 
 **Usecase**
+
 The flow of using the framework as following:
 1. User deploy the local resource management on the gateway, then configure the type of resources.
 2. User deploy the local resource management on cloud and configure some other providers.
