@@ -12,7 +12,7 @@ import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.VNF;
  * @author hungld
  * @param <ResourceDomainClass> Depending on the router
  */
-public interface RouterResourceDiscoveryInterface<ResourceDomainClass> extends DriverInterface{
+public interface RouterResourceDiscoveryInterface<ResourceDomainClass> {
     
     public ResourceDomainClass validateAndConvertToDomainModel(String rawData);
     

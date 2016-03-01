@@ -17,7 +17,7 @@ import java.util.List;
  * @author hungld
  * @param <ResourceDomainClass> the class to tranform from
  */
-public interface GatewayResourceDiscoveryInterface<ResourceDomainClass> extends DriverInterface{
+public interface GatewayResourceDiscoveryInterface<ResourceDomainClass> {
 
     /**
      * This is a general processes to read raw information for all transformers

@@ -109,6 +109,21 @@ public class DeliseClient {
         System.out.println("Get VNF info: \n" + vnfInfo);
         return VNF.fromJson(vnfInfo);
     }
+    
+    public List<SoftwareDefinedGateway> querySoftwareDefinedGatewayBroadcast(){
+        // TODO: implement this
+        return null;
+    }
+    
+    public List<VNF> queryVNFBroadcast(){
+        // TODO: implement this
+        return null;
+    }
+    
+    public void redirectGateway(SoftwareDefinedGateway gw, VNF vnf){
+        // TODO: implement this
+    }
+    
 
     public List<DeliseMeta> getListOfDelise() {
         return listOfDelise;
