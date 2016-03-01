@@ -1,24 +1,25 @@
 ## Distributed Resource Management for IoT Cloud Systems (may it have a name?)
 
-**What:** This framework enables user to discover, connect and resource the information of IoT resources and the underlying network. It aims to a high level view of the IoT cloud system, provides extensibile architecture to integrate different information models, and supports distributed management by loose-couple communication protocol via message queue.
 
-**User:**
+**User:**  Software agent (edge/cloud app) or administrator can take advantage of the tool. An API for application and a client-utility for human will be provided.
 
- Software agent (edge/cloud app) or administrator can take advantage of the tool. An API and a client-utility will be provided.
+**Features:**
 
-**Feature:**
-
-1. Information of IoT resources and network is abstracted by means of two main entities:
+1. Capture information of IoT and network resources is abstracted by means of two main entities:
   * Software-defined gateway: give information of data, control and connectivity, reflect IoT devices connecting to the gateway. E.g. the information about data from many sensors transfering through the gateway.
-  * Virtual router: give information about the network link. In support virtual router, the higher information about network graph, and end-to-end network service can be generate.
+  * Virtual router: give information about the network link. In support virtual router, the information about network graph, and end-to-end network service can be generated.
   
-*Status:* We have base model entities. TODO: extend the details of the model to cover more domain-specific information
+*Status:* We have base model entities, we can extend the details of the model to cover more domain-specific information.
 
-2. Query management: users can query only needed information. E.g.: to get SD Gateway and its capabilities list related to camera in such a location/building. 
+*Issues:* How do we capture information of network graph and network service? They should be specified or we generate based on router.
 
-*Status:* How the query look like? Should we reuse a language like SPARQL (it supports RDF, thus we need to upgrade the implementation of the model), but I don't know how yet, need sometimes to check.
+2. Query management: users can query only needed information. E.g.: to query SD Gateways and their capabilities about temperature data/control in such a location/building. 
 
-3. Distributed communication: the framework suppports both broadcast and unicast message, both synchronous (RPC call) and asynchorous (public/subscribe) communication.
+*Status:* No development yet. 
+
+*Issues*: How the query look like? Should we reuse a language like SPARQL (it supports RDF, thus we need to upgrade the implementation of the model), but I don't know how yet.
+
+3. Distributed communication: the framework suppports both broadcast and unicast message, both synchronous (RPC call) and asynchorous (public/subscribe) communication. List of message see at the end of the document.
 
 *Status:* Having the communication management. More message can be added quickly to the protocol.
 
@@ -26,10 +27,13 @@
 
 *Status:* Having base interface of the Collect&Validation and the Transformer. Testing on three information source: Android sensors(API/file-based), OpenIOT service (API/file-based), weave-virtual-router (commandline output)
 
+5. Capture the relationships. User can query at the global resource management, receive the list of relationships between component. Base on the type of relationship, we can form a graph between resources. The graph can be drawn by D3JS (java script, generate on web, enable interaction) or graphviz (static, simple then faster implemented)
+
+**Issue:** Do we really need the graph. The software-based user do not need graph. Human-based user can use the graph to have an overview. Anyway, the information can only be retrieved via commandline.
 
 **Usecase**
 
-The flow of using the framework as following:
+The flow of usage the framework as following:
 1. User deploy the local resource management on the gateway, then configure the type of resources.
 2. User deploy the local resource management on cloud and configure some other providers.
 3. User run the global resource management on the cloud or laptop, which communication with other local resource management.
@@ -40,3 +44,21 @@ The flow of using the framework as following:
 ![Architecture](https://raw.githubusercontent.com/tuwiendsg/SALSA/master/information-management/architecture.png "The architecture of the tools")
 
 
+Apendix:
+1. The list of the message 
+```java
+        // broadcast: client->local/global: a syn message to check status of local/global managements
+        SYN_REQUEST,
+        SYN_REPLY,        
+        // unicast: Client->local, query information from local regarding to SD Gateway or NVF
+        RPC_QUERY_SDGATEWAY_LOCAL,
+        RPC_QUERY_NFV_LOCAL,
+        // unicast: Client->global, query information from global (which include relationship)
+        RPC_QUERY_INFORMATION_GLOBAL,
+        // unicast: Client->local, send a control command to local
+        RPC_CONTROL_LOCAL,
+        // unicast: Client->global, send a control command to global
+        RPC_CONTROL_GLOBAL,
+        // unicast: local/global --> client: send back the response
+        UPDATE_INFORMATION
+```
