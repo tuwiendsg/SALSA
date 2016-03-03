@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class ChangeNetworkFunction {
     public static void main(String[] arg){
-        DeliseClient client = new DeliseClient("myClient", "amqp://128.130.172.215", "amqp");
+        QueryManager client = new QueryManager("myClient", "amqp://128.130.172.215", "amqp");
         client.getListOfDelise();
         
         List<VNF> vnfs = client.queryVNFBroadcast();

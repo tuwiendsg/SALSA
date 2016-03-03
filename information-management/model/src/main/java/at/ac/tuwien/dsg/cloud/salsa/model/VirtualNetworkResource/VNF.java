@@ -1,23 +1,30 @@
 package at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource;
 
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Capability;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.CloudConnectivity;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ControlPoint;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.DataPoint;
+import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.ExecutionEnvironment;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY, property = "type")
 @JsonSubTypes({
+//    @JsonSubTypes.Type(value = VNF.class, name = "VNF"),
+    @JsonSubTypes.Type(value = AccessPoint.class, name = "AccessPoint"),
     @JsonSubTypes.Type(value = Capability.class, name = "Capability"),
-    @JsonSubTypes.Type(value = ControlPoint.class, name = "ControlPoint")
+    @JsonSubTypes.Type(value = ControlPoint.class, name = "ControlPoint"),
+    @JsonSubTypes.Type(value = CloudConnectivity.class, name = "CloudConnectivity")
 })
 public class VNF {
 
+    String uuid;
     /**
      * The VNF usually takes the same name of VM or container.
      */
@@ -39,6 +46,8 @@ public class VNF {
     List<String> dns;
 
     List<ControlPoint> controlPoints;
+
+    List<CloudConnectivity> connectivities;
 
     /**
      * List of interface which can be configured as access point
@@ -124,13 +133,34 @@ public class VNF {
         return controlPoints;
     }
 
-    public void setControlPoints(List<ControlPoint> controlPoints) {        
+    public void setControlPoints(List<ControlPoint> controlPoints) {
         this.controlPoints = new ArrayList<>();
-        this.controlPoints.addAll(controlPoints);        
+        this.controlPoints.addAll(controlPoints);
+    }
+
+    public List<CloudConnectivity> getConnectivities() {
+        if (this.connectivities == null) {
+            this.connectivities = new ArrayList<>();
+        }
+        return connectivities;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public void setConnectivities(List<CloudConnectivity> connectivities) {
+        this.connectivities = connectivities;
     }
 
     public String toJson() {
         ObjectMapper mapper = new ObjectMapper();
+//        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//        mapper.registerSubtypes(Capability.class, CloudConnectivity.class, ControlPoint.class, DataPoint.class, ExecutionEnvironment.class);
         try {
             return mapper.writeValueAsString(this);
         } catch (JsonProcessingException ex) {
@@ -140,9 +170,12 @@ public class VNF {
 
     public static VNF fromJson(String json) {
         ObjectMapper mapper = new ObjectMapper();
+//        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//        mapper.registerSubtypes(Capability.class, CloudConnectivity.class, ControlPoint.class, DataPoint.class, ExecutionEnvironment.class);
         try {
             return mapper.readValue(json, VNF.class);
         } catch (IOException ex) {
+            ex.printStackTrace();
             return null;
         }
     }

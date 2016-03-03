@@ -51,7 +51,7 @@ public class SoftwareDefinedGateway {
     private Map<String, String> meta;
 
     private List<AccessPoint> accessPoints;
-
+    
     /**
      * Construction and get/set
      */

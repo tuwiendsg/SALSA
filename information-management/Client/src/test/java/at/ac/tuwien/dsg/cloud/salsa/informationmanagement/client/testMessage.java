@@ -6,10 +6,8 @@
 package at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client;
 
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messagePayloads.DeliseMeta;
-import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.SoftwareDefinedGateway;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.VNF;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 
 /**
  *
@@ -21,7 +19,7 @@ public class testMessage {
         /**
          * This part connect the client to the message queue, get the list of DElise
          */
-        DeliseClient client = new DeliseClient("myClient", "amqp://128.130.172.215", "amqp");
+        QueryManager client = new QueryManager("myClient", "amqp://128.130.172.215", "amqp");
         client.synDelise(2000);
 
         ObjectMapper mapper = new ObjectMapper();

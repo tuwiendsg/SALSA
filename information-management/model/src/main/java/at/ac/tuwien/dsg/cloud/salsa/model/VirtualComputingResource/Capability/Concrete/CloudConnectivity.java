@@ -9,20 +9,30 @@ import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Ca
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.CapabilityType;
 
 /**
+ * It define the network which this component is following
  *
  * @author hungld
  */
 public class CloudConnectivity extends Capability {
 
-    // note the "name" can be used to define connection mode: 3G, 4G, WIFI, 
+    // note the "name" of this capability is the network interface, e.g. eth0, etc
+    // connection mode: 3G, 4G, WIFI, 
+    String mode;
+
     // the IP and port of the gateway/router that the resource link to
+    // this somehow define the routing strategy of this connection
     String defaultGateway;
 
-    // the endpoint of the cloud service it connect to
-    String cloudEndpoint;
+    // the IPv4 of the interface
+    String IP;
 
-    String protocol;
+    // the MAC to identify the device
+    String MAC;
+    
+    // store subnet mask, to determine subnetwork
+    String network;
 
+    // some control to turn on/off the device
     ControlPoint controlChangeProtocol = null;
 
     /**
@@ -34,21 +44,13 @@ public class CloudConnectivity extends Capability {
     }
 
     public CloudConnectivity(String resourceID, String name, String description) {
-        super( resourceID, name, CapabilityType.CloudConnectivity, description);
-    }
-
-    public CloudConnectivity(String resourceID, String name, String description, String defautGateway, String cloudEndpoint) {
         super(resourceID, name, CapabilityType.CloudConnectivity, description);
-        this.cloudEndpoint = cloudEndpoint;
-        this.defaultGateway = defautGateway;
     }
 
-    public String getCloudEndpoint() {
-        return cloudEndpoint;
-    }
-
-    public void setCloudEndpoint(String cloudEndpoint) {
-        this.cloudEndpoint = cloudEndpoint;
+    public CloudConnectivity(String resourceID, String name, String description, String IP, String MAC) {
+        super(resourceID, name, CapabilityType.CloudConnectivity, description);
+        this.IP = IP;
+        this.MAC = MAC;
     }
 
     public String getDefaultGateway() {
@@ -59,20 +61,36 @@ public class CloudConnectivity extends Capability {
         this.defaultGateway = defaultGateway;
     }
 
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-
     public ControlPoint getControlChangeProtocol() {
         return controlChangeProtocol;
     }
 
     public void setControlChangeProtocol(ControlPoint controlChangeProtocol) {
         this.controlChangeProtocol = controlChangeProtocol;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public String getIP() {
+        return IP;
+    }
+
+    public void setIP(String IP) {
+        this.IP = IP;
+    }
+
+    public String getMAC() {
+        return MAC;
+    }
+
+    public void setMAC(String MAC) {
+        this.MAC = MAC;
     }
 
 }

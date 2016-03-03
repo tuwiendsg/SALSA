@@ -52,6 +52,7 @@ public class Main {
                     try {
                         // response
                         SoftwareDefinedGateway gw = InfoCollector.getGatewayInfo();
+                        gw.getCapabilities().addAll(InfoCollector.getGatewayConnectivity());
                         String replyPayload = gw.toJson();
                         DeliseMessage replyMsg = new DeliseMessage(DeliseMessage.MESSAGE_TYPE.UPDATE_INFORMATION, DeliseConfiguration.getMyUUID(), msg.getFeedbackTopic(), "", replyPayload);
                         pub.pushMessage(replyMsg);
@@ -67,6 +68,7 @@ public class Main {
                     try {
                         // response
                         VNF vnf = InfoCollector.getRouterInfo();
+                        vnf.getConnectivities().addAll(InfoCollector.getGatewayConnectivity());
                         String replyPayload = vnf.toJson();
                         DeliseMessage replyMsg = new DeliseMessage(DeliseMessage.MESSAGE_TYPE.UPDATE_INFORMATION, DeliseConfiguration.getMyUUID(), msg.getFeedbackTopic(), "", replyPayload);
                         pub.pushMessage(replyMsg);

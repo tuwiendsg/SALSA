@@ -41,7 +41,7 @@ public class WeaveRouterResourceDiscovery implements RouterResourceDiscoveryInte
         }
 
         String id = weave.getRouter().getName();
-        String name = weave.getRouter().getNickName() + "-" + weave.getRouter().getName();
+        String name = weave.getRouter().getNickName();
         String protocol = weave.getRouter().getProtocol();
         AccessPoint ap = new AccessPoint(Utils.getEth0Address());
 

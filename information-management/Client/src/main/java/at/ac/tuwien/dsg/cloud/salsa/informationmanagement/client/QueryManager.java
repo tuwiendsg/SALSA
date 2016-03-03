@@ -14,8 +14,10 @@ import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.DeliseMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.SoftwareDefinedGateway;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.VNF;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author hungld
  */
-public class DeliseClient {
+public class QueryManager {
 
     MessageClientFactory FACTORY;
     /**
@@ -36,7 +38,7 @@ public class DeliseClient {
     List<DeliseMeta> listOfDelise = new ArrayList<>();
     String name;
 
-    public DeliseClient(String name, String broker, String brokerType) {
+    public QueryManager(String name, String broker, String brokerType) {
         this.name = name;
         this.FACTORY = new MessageClientFactory(broker, brokerType);
     }
@@ -65,7 +67,7 @@ public class DeliseClient {
             }
         });
         logger.debug("Will subscribe to the topic");
-        sub.subscribe(DeliseMessageTopic.REGISTER_AND_HEARBEAT,timeout);
+        sub.subscribe(DeliseMessageTopic.REGISTER_AND_HEARBEAT, timeout);
         logger.debug("Subscribe done, now waiting for SYN message");
 
         MessagePublishInterface pub = FACTORY.getMessagePublisher();
@@ -77,8 +79,33 @@ public class DeliseClient {
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-        logger.debug("Done, should close the subscribe now.. ");        
+        logger.debug("Done, should close the subscribe now.. ");
+        // write to cache
+        try {
+            (new Cache(Cache.CacheInfo.delise)).writeListOfObjects(listOfDelise);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
         return listOfDelise;
+    }
+
+    public List<DeliseMeta> ReadCacheOrSyncDElise() {
+        Cache<DeliseMeta> dliseCache = new Cache<>(Cache.CacheInfo.delise);
+        List<DeliseMeta> list = dliseCache.loadDelisesCache();
+        if (list == null || list.isEmpty()) {
+            // return the syn command
+            logger.debug("There is no d-elise cache found, try to run a query ...");
+            synDelise(3000);
+        }
+        // second try        
+        list = dliseCache.loadDelisesCache();
+        if (list == null || list.isEmpty()) {
+            logger.debug("No D-Elise found. Cannot send query");
+            return null;
+        }
+        this.listOfDelise.clear();
+        this.listOfDelise = list;
+        return this.listOfDelise;
     }
 
     public SoftwareDefinedGateway querySoftwareDefinedGateway(String deliseUUID) {
@@ -92,6 +119,10 @@ public class DeliseClient {
         DeliseMessage responseMessage = pub.callFunction(queryMessage);
         logger.debug("Query done !");
         String gatewayInfo = responseMessage.getPayload();
+        if (gatewayInfo.equals("null")) {
+            logger.debug("Delise " + deliseUUID + " does not return a gateway info");
+            return null;
+        }
         logger.debug("Get SDG info: \n" + gatewayInfo);
         System.out.println("Get SDG info: \n" + gatewayInfo);
         return SoftwareDefinedGateway.fromJson(gatewayInfo);
@@ -105,25 +136,56 @@ public class DeliseClient {
         DeliseMessage queryMessage = new DeliseMessage(DeliseMessage.MESSAGE_TYPE.RPC_QUERY_NFV_LOCAL, name, unicastDeliseTopic, "", "");
         DeliseMessage responseMessage = pub.callFunction(queryMessage);
         String vnfInfo = responseMessage.getPayload();
+        if (vnfInfo.equals("null")) {
+            logger.debug("Delise " + deliseUUID + " does not return a gateway info");
+            return null;
+        }
         logger.debug("Get VNF info: \n" + vnfInfo);
         System.out.println("Get VNF info: \n" + vnfInfo);
         return VNF.fromJson(vnfInfo);
     }
-    
-    public List<SoftwareDefinedGateway> querySoftwareDefinedGatewayBroadcast(){
-        // TODO: implement this
-        return null;
+
+    public List<SoftwareDefinedGateway> querySoftwareDefinedGatewayBroadcast() {
+        List<DeliseMeta> delises = ReadCacheOrSyncDElise();
+        List<SoftwareDefinedGateway> gateways = new ArrayList<>();
+        System.out.println("Number of gateway syn: " + delises.size() + ". Now start unicast querying information...");
+
+        for (DeliseMeta delise : delises) {
+            logger.debug("Querying gateway id: " + delise.getUuid() + ", ip: " + delise.getIp());
+            SoftwareDefinedGateway g = querySoftwareDefinedGateway(delise.getUuid());
+            gateways.add(g);
+        }
+        try {
+            logger.debug("Now start to write the list of gateway to cache ....");
+            (new Cache<SoftwareDefinedGateway>(Cache.CacheInfo.sdgateway)).writeListOfObjects(gateways);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return gateways;
     }
-    
-    public List<VNF> queryVNFBroadcast(){
-        // TODO: implement this
-        return null;
+
+    public List<VNF> queryVNFBroadcast() {
+        List<DeliseMeta> delises = ReadCacheOrSyncDElise();
+        List<VNF> routers = new ArrayList<>();
+        System.out.println("Number of router syn: " + delises.size() + ". Now start unicast querying information...");
+        for (DeliseMeta delise : delises) {
+            logger.debug("Querying router id: " + delise.getUuid() + ", ip: " + delise.getIp());
+            VNF g = queryVNF(delise.getUuid());
+            routers.add(g);
+        }
+        try {
+            logger.debug("Now start to write the list of router to cache ....");
+            (new Cache<VNF>(Cache.CacheInfo.router)).writeListOfObjects(routers);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return routers;
+
     }
-    
-    public void redirectGateway(SoftwareDefinedGateway gw, VNF vnf){
+
+    public void redirectGateway(SoftwareDefinedGateway gw, VNF vnf) {
         // TODO: implement this
     }
-    
 
     public List<DeliseMeta> getListOfDelise() {
         return listOfDelise;
