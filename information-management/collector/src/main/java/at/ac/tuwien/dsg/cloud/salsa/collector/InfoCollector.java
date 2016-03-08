@@ -5,6 +5,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.collector;
 
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.InfoSourceSettings;
 import at.ac.tuwien.dsg.cloud.salsa.collector.ResourceDriverImp.RawInfoCollectorFactory;
 import at.ac.tuwien.dsg.cloud.salsa.collector.utils.DeliseConfiguration;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.Capability.Concrete.DataPoint;

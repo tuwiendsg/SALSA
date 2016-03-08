@@ -23,6 +23,9 @@
         <module>transformer-pom</module>
         <module>Communication</module>
         <module>Client</module>
+    <module>ClientWebUI</module>
+    <module>ClientGUI</module>
+        <module>ClientConsole</module>
     </modules>
     
     

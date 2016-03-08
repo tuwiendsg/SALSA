@@ -5,6 +5,10 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client;
 
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.cache.Cache;
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.cache.CacheDelises;
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.cache.CacheGateway;
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.cache.CacheVNF;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messageInterface.MessageClientFactory;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messageInterface.MessagePublishInterface;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messageInterface.MessageSubscribeInterface;
@@ -12,6 +16,7 @@ import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messageI
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messagePayloads.DeliseMeta;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.DeliseMessage;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.DeliseMessageTopic;
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.InfoSourceSettings;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.SoftwareDefinedGateway;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.VNF;
 import java.io.IOException;
@@ -81,16 +86,14 @@ public class QueryManager {
         }
         logger.debug("Done, should close the subscribe now.. ");
         // write to cache
-        try {
-            (new Cache(Cache.CacheInfo.delise)).writeListOfObjects(listOfDelise);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+
+        (new CacheDelises()).writeDeliseCache(listOfDelise);
+
         return listOfDelise;
     }
 
     public List<DeliseMeta> ReadCacheOrSyncDElise() {
-        Cache<DeliseMeta> dliseCache = new Cache<>(Cache.CacheInfo.delise);
+        CacheDelises dliseCache = new CacheDelises();
         List<DeliseMeta> list = dliseCache.loadDelisesCache();
         if (list == null || list.isEmpty()) {
             // return the syn command
@@ -151,16 +154,24 @@ public class QueryManager {
         System.out.println("Number of gateway syn: " + delises.size() + ". Now start unicast querying information...");
 
         for (DeliseMeta delise : delises) {
-            logger.debug("Querying gateway id: " + delise.getUuid() + ", ip: " + delise.getIp());
-            SoftwareDefinedGateway g = querySoftwareDefinedGateway(delise.getUuid());
-            gateways.add(g);
+            logger.debug("Checking delise id: " + delise.getUuid() + ", ip: " + delise.getIp());
+            InfoSourceSettings settings = InfoSourceSettings.fromJson(delise.getSettings());
+            if (settings.getSource() != null && !settings.getSource().isEmpty()) {
+                InfoSourceSettings.InfoSource firstSource = settings.getSource().get(0);
+                if (firstSource.isGatewayResource()) {
+                    logger.debug("It is a gateway, the delise id: " + delise.getUuid() + ", ip: " + delise.getIp());
+                    SoftwareDefinedGateway g = querySoftwareDefinedGateway(delise.getUuid());
+                    gateways.add(g);
+                } else {
+                    logger.debug("Delise is: " + delise.getUuid() + " is not a gateway !");
+                }
+            }
+
         }
-        try {
-            logger.debug("Now start to write the list of gateway to cache ....");
-            (new Cache<SoftwareDefinedGateway>(Cache.CacheInfo.sdgateway)).writeListOfObjects(gateways);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+
+        logger.debug("Now start to write the list of gateway to cache ....");
+        (new CacheGateway()).writeGatewayCache(gateways);
+
         return gateways;
     }
 
@@ -168,17 +179,25 @@ public class QueryManager {
         List<DeliseMeta> delises = ReadCacheOrSyncDElise();
         List<VNF> routers = new ArrayList<>();
         System.out.println("Number of router syn: " + delises.size() + ". Now start unicast querying information...");
+
         for (DeliseMeta delise : delises) {
-            logger.debug("Querying router id: " + delise.getUuid() + ", ip: " + delise.getIp());
-            VNF g = queryVNF(delise.getUuid());
-            routers.add(g);
+            logger.debug("Checking router id: " + delise.getUuid() + ", ip: " + delise.getIp());
+            InfoSourceSettings settings = InfoSourceSettings.fromJson(delise.getSettings());
+            if (settings.getSource() != null && !settings.getSource().isEmpty()) {
+                InfoSourceSettings.InfoSource firstSource = settings.getSource().get(0);
+                if (firstSource.isVNFResource()) {
+                    logger.debug("It is a router, the delise id: " + delise.getUuid() + ", ip: " + delise.getIp());
+                    VNF g = queryVNF(delise.getUuid());
+                    routers.add(g);
+                } else {
+                    logger.debug("Delise is: " + delise.getUuid() + " is not a gateway !");
+                }
+            }
+
         }
-        try {
-            logger.debug("Now start to write the list of router to cache ....");
-            (new Cache<VNF>(Cache.CacheInfo.router)).writeListOfObjects(routers);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+
+        logger.debug("Now start to write the list of router to cache ....");
+        (new CacheVNF()).writeGatewayCache(routers);
         return routers;
 
     }

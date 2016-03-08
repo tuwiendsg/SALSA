@@ -24,3 +24,5 @@ config_TOSCA/
 .externalToolBuilders/
 *.ini
 *.pem
+/information-management/ClientJavaGUI/nbproject/private/
+/information-management/JavaFXApplication2/nbproject/private/

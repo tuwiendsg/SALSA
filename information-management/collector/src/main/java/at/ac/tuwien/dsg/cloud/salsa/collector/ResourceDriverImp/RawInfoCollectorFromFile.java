@@ -5,7 +5,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.collector.ResourceDriverImp;
 
-import at.ac.tuwien.dsg.cloud.salsa.collector.InfoSourceSettings;
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.InfoSourceSettings;
 import at.ac.tuwien.dsg.cloud.salsa.collector.RawInfoCollector;
 import at.ac.tuwien.dsg.cloud.salsa.collector.utils.DeliseConfiguration;
 import java.io.File;

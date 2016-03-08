@@ -5,6 +5,8 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.collector.utils;
 
+import at.ac.tuwien.dsg.cloud.salsa.collector.InfoCollector;
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.InfoSourceSettings;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.Utils.DeliseUtils;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messagePayloads.DeliseMeta;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.DeliseMessageTopic;
@@ -31,7 +33,10 @@ public class DeliseConfiguration {
     private static final String myUUID = UUID.randomUUID().toString();
 
     public static DeliseMeta getMeta() {
-        return new DeliseMeta(myUUID, DeliseUtils.getEth0Address(), DeliseMessageTopic.getCollectorTopicByID(myUUID));
+        DeliseMeta meta = new DeliseMeta(myUUID, DeliseUtils.getEth0Address(), DeliseMessageTopic.getCollectorTopicByID(myUUID));        
+        InfoSourceSettings settings = InfoSourceSettings.loadDefaultFile();
+        meta.setSettings(settings.toJson());
+        return meta;
     }
 
     public static String getBroker() {

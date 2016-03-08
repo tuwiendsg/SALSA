@@ -5,6 +5,7 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.collector;
 
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.InfoSourceSettings;
 import java.util.List;
 import java.util.Map;
 

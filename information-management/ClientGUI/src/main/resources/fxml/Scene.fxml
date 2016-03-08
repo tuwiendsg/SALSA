@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--prefHeight="600.0" prefWidth="800.0" style="-fx-pref-width: 800; -fx-pref-height: 600;"-->
+
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" style="-fx-pref-width: 800; -fx-pref-height: 600;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.ac.tuwien.dsg.cloud.salsa.informationmanagement.clientgui.globalmanager.FXMLController">
+    <children>
+      <BorderPane id="mainPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <top>
+            <HBox BorderPane.alignment="CENTER">
+               <children>
+<!--                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="34.0" prefWidth="552.0" text="IoT resource management" textAlignment="CENTER">
+                     <font>
+                        <Font size="28.0" />
+                     </font>
+                  </Label>-->
+               </children>
+            </HBox>
+         </top>
+         <bottom>
+            <TextArea prefHeight="65.0" prefWidth="554.0" BorderPane.alignment="CENTER" />
+         </bottom>
+         <left>
+            <ToolBar orientation="VERTICAL" prefHeight="40.0" prefWidth="200.0" style="-fx-pref-width: 90; -fx-pref-height: 200;" BorderPane.alignment="CENTER">
+              <items>
+                <Button mnemonicParsing="false" prefHeight="67.0" prefWidth="110.0" text="Global Resource Manager" textAlignment="CENTER" wrapText="true" />
+                  <Button mnemonicParsing="false" prefHeight="67.0" prefWidth="110.0" text="Global Query Manager" textAlignment="CENTER" wrapText="true" />
+                  <Button mnemonicParsing="false" prefHeight="67.0" prefWidth="110.0" text="Global NFV Controller" textAlignment="CENTER" wrapText="true" />
+                  <Button mnemonicParsing="false" prefHeight="67.0" prefWidth="110.0" text="Relationship Manager" textAlignment="CENTER" wrapText="true" />
+                  <Button mnemonicParsing="false" onAction="#handleButtonAction_GatewayManager" prefHeight="67.0" prefWidth="110.0" text="Gateways" textAlignment="CENTER" wrapText="true" />
+                  <Button mnemonicParsing="false" prefHeight="67.0" prefWidth="110.0" text="Global repository" textAlignment="CENTER" wrapText="true" />
+              </items>
+            </ToolBar>
+         </left>
+         <center>
+            <AnchorPane fx:id="mainPane" prefHeight="535.0" prefWidth="636.0" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+    </children>
+</AnchorPane>

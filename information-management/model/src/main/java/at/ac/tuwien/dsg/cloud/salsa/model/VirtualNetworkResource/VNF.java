@@ -14,14 +14,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY, property = "type")
-@JsonSubTypes({
-//    @JsonSubTypes.Type(value = VNF.class, name = "VNF"),
-    @JsonSubTypes.Type(value = AccessPoint.class, name = "AccessPoint"),
-    @JsonSubTypes.Type(value = Capability.class, name = "Capability"),
-    @JsonSubTypes.Type(value = ControlPoint.class, name = "ControlPoint"),
-    @JsonSubTypes.Type(value = CloudConnectivity.class, name = "CloudConnectivity")
-})
+//@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY, property = "type")
+//@JsonSubTypes({
+////    @JsonSubTypes.Type(value = VNF.class, name = "VNF"),
+//    @JsonSubTypes.Type(value = AccessPoint.class, name = "AccessPoint"),
+//    @JsonSubTypes.Type(value = Capability.class, name = "Capability"),
+//    @JsonSubTypes.Type(value = ControlPoint.class, name = "ControlPoint"),
+//    @JsonSubTypes.Type(value = CloudConnectivity.class, name = "CloudConnectivity")
+//})
 public class VNF {
 
     String uuid;

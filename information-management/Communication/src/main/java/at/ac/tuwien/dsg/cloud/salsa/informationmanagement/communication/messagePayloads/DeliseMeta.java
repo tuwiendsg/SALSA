@@ -20,6 +20,7 @@ public class DeliseMeta {
     String uuid;
     String ip;
     String unicastTopic;
+    String settings;
 
     public DeliseMeta() {
     }
@@ -52,6 +53,14 @@ public class DeliseMeta {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getSettings() {
+        return settings;
+    }
+
+    public void setSettings(String settings) {
+        this.settings = settings;
     }
 
     public String toJson() {

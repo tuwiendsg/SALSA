@@ -5,7 +5,10 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client;
 
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.cache.Cache;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.RelationshipManagement.NetworkGraphGenerator;
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.cache.CacheGateway;
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.cache.CacheVNF;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.SoftwareDefinedGateway;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.VNF;
 import java.util.ArrayList;
@@ -21,28 +24,43 @@ public class TestBroadCast {
         QueryManager client = new QueryManager("myClient", "amqp://128.130.172.215", "amqp");
         client.synDelise(3000);
 
+        List<SoftwareDefinedGateway> gateways = client.querySoftwareDefinedGatewayBroadcast();
+        (new CacheGateway()).writeGatewayCache(gateways);
+
+        List<VNF> routers = client.queryVNFBroadcast();
+        (new CacheVNF()).writeGatewayCache(routers);
+        System.out.println("Gateway number: " + gateways.size());
+        System.out.println("Router number: " + routers.size());
+
+        NetworkGraphGenerator generator = new NetworkGraphGenerator();
+        String graph = generator.generateGraph(gateways, routers);
+        System.out.println(graph);
+    }
+
+    public static void main1(String[] args) throws Exception {
+        QueryManager client = new QueryManager("myClient", "amqp://128.130.172.215", "amqp");
+        client.synDelise(3000);
+
 //        List<SoftwareDefinedGateway> gateways = client.querySoftwareDefinedGatewayBroadcast();
         List<SoftwareDefinedGateway> gateways = new ArrayList<>();
-        SoftwareDefinedGateway g1 = client.querySoftwareDefinedGateway("e0e37e06-f6fc-41ca-a46d-3ea40174be31");
-        SoftwareDefinedGateway g2 = client.querySoftwareDefinedGateway("80624381-9188-4b7f-a0f6-ca8c03e7682f");
+        SoftwareDefinedGateway g1 = client.querySoftwareDefinedGateway("2fb8ecfa-3a8c-4d23-b9e3-0757a8121c9b");
+        SoftwareDefinedGateway g2 = client.querySoftwareDefinedGateway("3db5d4ed-0d9b-4ad2-90c8-98466ec38140");
         gateways.add(g1);
         gateways.add(g2);
-        (new Cache<SoftwareDefinedGateway>(Cache.CacheInfo.sdgateway)).writeListOfGateways(gateways);
+
+        (new CacheGateway()).writeGatewayCache(gateways);
 //        List<VNF> routers = client.queryVNFBroadcast();
         List<VNF> routers = new ArrayList<>();
-        VNF r1 = client.queryVNF("8039876f-a733-4a59-b1c2-1d2ad9dadfba"); // cloud        
-        VNF r2 = client.queryVNF("bb629dbf-0d2c-4060-9553-a1c64e368ef8"); // virtual router 1
-        VNF r3 = client.queryVNF("b95b485e-8962-40d9-a4e4-730d8bcdf16d"); // iot site 1
+        VNF r1 = client.queryVNF("ed45039e-a5dc-4c08-b960-b41c47577310"); // cloud        
+        VNF r2 = client.queryVNF("ded3f818-f05c-42ea-904b-3e01ef1f154f"); // virtual router 1
+        VNF r3 = client.queryVNF("e7a0bdc3-2151-432b-93f3-4e1c9082a88b"); // iot site 1
         routers.add(r1);
         routers.add(r2);
         routers.add(r3);
-        (new Cache<VNF>(Cache.CacheInfo.router)).writeListOfRouter(routers);
+        (new CacheVNF()).writeGatewayCache(routers);
         System.out.println("Gateway number: " + gateways.size());
         System.out.println("Router number: " + routers.size());
-        
-        
-        
-        
+
         NetworkGraphGenerator generator = new NetworkGraphGenerator();
         String graph = generator.generateGraph(gateways, routers);
         System.out.println(graph);

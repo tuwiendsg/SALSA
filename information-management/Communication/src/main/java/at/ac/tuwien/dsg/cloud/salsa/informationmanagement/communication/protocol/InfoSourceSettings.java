@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.ac.tuwien.dsg.cloud.salsa.collector;
+package at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -89,6 +90,18 @@ public class InfoSourceSettings {
 
         public void setSettings(String settings) {
             this.settings = settings;
+        }
+        // below functions are hack for the simplicity
+        public boolean isVNFResource(){
+            String[] values = new String[] {"WeaveRouterResourceDiscovery"};
+            String tranformClassName = transformerClass.substring(transformerClass.lastIndexOf(".") + 1);
+            return Arrays.asList(values).contains(tranformClassName);
+        }
+        
+        public boolean isGatewayResource(){
+            String[] values = new String[] {"SDSensorTranformer","AndroidSensorTransformer","OpenIoTSensorTransformer"};
+            String tranformClassName = transformerClass.substring(transformerClass.lastIndexOf(".") + 1);
+            return Arrays.asList(values).contains(tranformClassName);
         }
 
     }
