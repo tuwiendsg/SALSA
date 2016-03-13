@@ -86,7 +86,7 @@ public class AMQPSubscribe extends AMQPConnector implements MessageSubscribeInte
 
         @Override
         public void run() {
-            logger.debug("Inside the queue subscribing thread, process is continueing...");
+            //logger.debug("Inside the queue subscribing thread, process is continueing...");
             try {
                 while (true) {
                     logger.debug("Looping and waiting for the message, timeout: " + timeout);
@@ -103,15 +103,13 @@ public class AMQPSubscribe extends AMQPConnector implements MessageSubscribeInte
                         break;
                     }
 
-                    logger.debug("A message arrived ");
-
-                    String mm = new String(delivery.getBody());
+                    String mm = new String(delivery.getBody());                    
                     
-                    logger.debug(mm);
                     ObjectMapper mapper = new ObjectMapper();
                     DeliseMessage em = (DeliseMessage) mapper.readValue(mm, DeliseMessage.class);
                     this.topic = em.getTopic();
-                    logger.debug("A message arrived. From: " + em.getFromSalsa() + ". MsgType: " + em.getMsgType() + ". Payload: " + em.getPayload());
+                    //logger.debug("A message arrived. From: " + em.getFromSalsa() + ". MsgType: " + em.getMsgType() + ". Payload: " + em.getPayload());
+                    logger.debug("A message arrived. From: " + em.getFromSalsa() + ". MsgType: " + em.getMsgType());
                     new Thread(new HandlingThread(handler, em)).start();
                     logger.debug("If handle message done, it must exit and show this");
                     // quit if timeout
@@ -132,7 +130,7 @@ public class AMQPSubscribe extends AMQPConnector implements MessageSubscribeInte
             } catch (InterruptedException | ShutdownSignalException | ConsumerCancelledException ex) {
                 logger.error("Interrupt during the subscribing to topic: {}", topic, ex);
             }
-            logger.debug("ThreadQueueSubscribe should exit here !");
+            //logger.debug("ThreadQueueSubscribe should exit here !");
         }
     }
 
@@ -148,9 +146,9 @@ public class AMQPSubscribe extends AMQPConnector implements MessageSubscribeInte
 
         @Override
         public void run() {
-            logger.debug("Inside the handling thread, process is continueing...");
+            //logger.debug("Inside the handling thread, process is continueing...");
             this.handler.handleMessage(em);
-            logger.debug("Handle message done !");
+            //logger.debug("Handle message done !");
         }
 
     }

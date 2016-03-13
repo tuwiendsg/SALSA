@@ -124,7 +124,7 @@ public class FXMLLocalController implements Initializable {
                 QueryManager client = UserSettings.getQueryManager();
 
                 System.out.println("Querying individual gateway information, id: " + deliseInfo.uuidProperty().get());
-                SoftwareDefinedGateway gateway = client.querySoftwareDefinedGateway(deliseInfo.uuidProperty().get());
+                SoftwareDefinedGateway gateway = client.querySoftwareDefinedGateway_Unicast(deliseInfo.uuidProperty().get());
                 showGatewayDetails(gateway);
 
                 infoLabel.setText("The gateway information is updated at: " + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date()));

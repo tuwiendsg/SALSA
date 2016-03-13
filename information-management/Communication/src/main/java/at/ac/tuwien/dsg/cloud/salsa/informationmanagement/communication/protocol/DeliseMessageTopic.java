@@ -36,6 +36,10 @@ public class DeliseMessageTopic {
     public static String getCollectorTopicByID(String pioneerID) {
         return CLIENT_REQUEST_DELISE + "." + pioneerID;
     }
+    
+    public static String getCollectorTopicBroadcast() {
+        return CLIENT_REQUEST_DELISE + ".DELISE_BROADCAST";
+    }
 
     public static String getTemporaryTopic() {
         return PREFIX + "temp." + UUID.randomUUID().toString();

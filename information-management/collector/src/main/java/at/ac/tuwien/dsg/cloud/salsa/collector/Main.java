@@ -10,6 +10,7 @@ import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messageI
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messageInterface.MessagePublishInterface;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messageInterface.MessageSubscribeInterface;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messageInterface.SalsaMessageHandling;
+import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.messagePayloads.UpdateGatewayStatus;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.DeliseMessage;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.DeliseMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.SoftwareDefinedGateway;
@@ -78,10 +79,31 @@ public class Main {
                         logger.error(ex.getMessage());
                     }
                 }
+
+                if (msg.getMsgType().equals(DeliseMessage.MESSAGE_TYPE.SUBSCRIBE_SDGATEWAY_LOCAL)) {
+                    logger.debug("Client wants to subscribe to this collector");
+                    InfoMonitor mon = new InfoMonitor();
+                    // this will loop forever, thus need to be implement more, e.g. the timeout
+                    while (true) {
+                        UpdateGatewayStatus update = mon.getSimulatedUpdate();
+                        DeliseMessage replyMsg = new DeliseMessage(DeliseMessage.MESSAGE_TYPE.UPDATE_INFORMATION, DeliseConfiguration.getMyUUID(), msg.getFeedbackTopic(), "", update.toJson());
+                        pub.pushMessage(replyMsg);
+                    }
+                }
+
+                if (msg.getMsgType().equals(DeliseMessage.MESSAGE_TYPE.SUBSCRIBE_SDGATEWAY_LOCAL_SET_PARAM)) {
+                    logger.debug("Set parameter for the subscription");
+                    // assume that the payload is: rate;simulatedRatio, e.g. 5;0.2
+                    String[] settings = msg.getPayload().split(";");
+                    InfoMonitor.monitorRate = Integer.parseInt(settings[0]);
+                    InfoMonitor.simulatedChangeRatio = Double.parseDouble(settings[1]);
+
+                }
             }
 
         });
         subscribeClientUniCast.subscribe(DeliseMessageTopic.getCollectorTopicByID(DeliseConfiguration.getMyUUID()));
+        subscribeClientUniCast.subscribe(DeliseMessageTopic.getCollectorTopicBroadcast());
 
         logger.debug("DELISE is ready. UUID: " + DeliseConfiguration.getMyUUID());
 

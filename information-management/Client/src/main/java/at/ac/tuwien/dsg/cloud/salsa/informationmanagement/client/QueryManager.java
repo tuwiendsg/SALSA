@@ -5,7 +5,6 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client;
 
-import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.cache.Cache;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.cache.CacheDelises;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.cache.CacheGateway;
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.client.cache.CacheVNF;
@@ -19,10 +18,15 @@ import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol
 import at.ac.tuwien.dsg.cloud.salsa.informationmanagement.communication.protocol.InfoSourceSettings;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualComputingResource.SoftwareDefinedGateway;
 import at.ac.tuwien.dsg.cloud.salsa.model.VirtualNetworkResource.VNF;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +115,7 @@ public class QueryManager {
         return this.listOfDelise;
     }
 
-    public SoftwareDefinedGateway querySoftwareDefinedGateway(String deliseUUID) {
+    public SoftwareDefinedGateway querySoftwareDefinedGateway_Unicast(String deliseUUID) {
         logger.debug("Trying to query DELISE with ID: " + deliseUUID);
         String unicastDeliseTopic = DeliseMessageTopic.getCollectorTopicByID(deliseUUID);
 
@@ -131,7 +135,7 @@ public class QueryManager {
         return SoftwareDefinedGateway.fromJson(gatewayInfo);
     }
 
-    public VNF queryVNF(String deliseUUID) {
+    public VNF queryVNF_Unicast(String deliseUUID) {
         String unicastDeliseTopic = DeliseMessageTopic.getCollectorTopicByID(deliseUUID);
 
         MessagePublishInterface pub = FACTORY.getMessagePublisher();
@@ -148,7 +152,7 @@ public class QueryManager {
         return VNF.fromJson(vnfInfo);
     }
 
-    public List<SoftwareDefinedGateway> querySoftwareDefinedGatewayBroadcast() {
+    public List<SoftwareDefinedGateway> querySoftwareDefinedGateway_Multicast() {
         List<DeliseMeta> delises = ReadCacheOrSyncDElise();
         List<SoftwareDefinedGateway> gateways = new ArrayList<>();
         System.out.println("Number of gateway syn: " + delises.size() + ". Now start unicast querying information...");
@@ -160,7 +164,7 @@ public class QueryManager {
                 InfoSourceSettings.InfoSource firstSource = settings.getSource().get(0);
                 if (firstSource.isGatewayResource()) {
                     logger.debug("It is a gateway, the delise id: " + delise.getUuid() + ", ip: " + delise.getIp());
-                    SoftwareDefinedGateway g = querySoftwareDefinedGateway(delise.getUuid());
+                    SoftwareDefinedGateway g = querySoftwareDefinedGateway_Unicast(delise.getUuid());
                     gateways.add(g);
                 } else {
                     logger.debug("Delise is: " + delise.getUuid() + " is not a gateway !");
@@ -175,7 +179,7 @@ public class QueryManager {
         return gateways;
     }
 
-    public List<VNF> queryVNFBroadcast() {
+    public List<VNF> queryVNF_Multicast() {
         List<DeliseMeta> delises = ReadCacheOrSyncDElise();
         List<VNF> routers = new ArrayList<>();
         System.out.println("Number of router syn: " + delises.size() + ". Now start unicast querying information...");
@@ -187,7 +191,7 @@ public class QueryManager {
                 InfoSourceSettings.InfoSource firstSource = settings.getSource().get(0);
                 if (firstSource.isVNFResource()) {
                     logger.debug("It is a router, the delise id: " + delise.getUuid() + ", ip: " + delise.getIp());
-                    VNF g = queryVNF(delise.getUuid());
+                    VNF g = queryVNF_Unicast(delise.getUuid());
                     routers.add(g);
                 } else {
                     logger.debug("Delise is: " + delise.getUuid() + " is not a gateway !");
@@ -199,7 +203,96 @@ public class QueryManager {
         logger.debug("Now start to write the list of router to cache ....");
         (new CacheVNF()).writeGatewayCache(routers);
         return routers;
+    }
 
+    /**
+     * This function broadcast a message and wait for a few seconds Also, it record the last message to log file
+     *
+     * @return
+     */
+    public List<SoftwareDefinedGateway> querySoftwareDefinedGateway_Broadcast(long timeout) {
+        System.out.println("Start broadcasting the query...");
+        File dir = new File("log/queries/data");
+        dir.mkdirs();
+        System.out.println("Data is stored in: " + dir.getAbsolutePath());
+        final long startTimeStamp = (new Date()).getTime();
+
+        String eventFileName = "log/queries/" + startTimeStamp + ".event";
+        String dataFileName = "log/queries/data/" + startTimeStamp + ".data";
+        //final List<SoftwareDefinedGateway> gateways = new ArrayList<>();
+        final List<String> gatewayInfo = new ArrayList<>();
+        final List<String> events = new LinkedList<>();
+
+        MessagePublishInterface pub = FACTORY.getMessagePublisher();
+        // note that when using callFunction, no need to declare the feedbackTopic. This will be filled by the call
+        String feedBackTopic = DeliseMessageTopic.getTemporaryTopic();
+
+        MessageSubscribeInterface sub = FACTORY.getMessageSubscriber(new SalsaMessageHandling() {
+            long latestTime = 0;
+            long quantity = 0;
+            long currentSum = 0;
+
+            @Override
+            public void handleMessage(DeliseMessage message) {
+                System.out.println("Get a response message from " + message.getFromSalsa());
+                SoftwareDefinedGateway gw = SoftwareDefinedGateway.fromJson(message.getPayload());
+                if (gw == null) {
+                    System.out.println("Payload is null, or cannot be converted");
+                    return;
+                }
+                Long currentTS = (new Date()).getTime();
+
+                latestTime = currentTS - startTimeStamp;
+                currentSum = currentSum + latestTime;
+                quantity += 1;
+                double avg = (double) currentSum / (double) quantity;
+                String eventStr = gw.getUuid() + "," + currentTS + "," + latestTime + "," + String.format("%.3f", avg) + "," + quantity;
+                System.out.println("Got an event: " + eventStr);
+
+                events.add(eventStr);
+//                gateways.add(gw);
+                String gwStr = gw.toJson();
+                gatewayInfo.add("Gateway " + gw.getUuid() + ", capas: " + gw.getCapabilities().size() + ", size: " + gwStr.length() + "," + String.format("%.3f", (double) gwStr.length() / 1024 / 1024) + " MB");
+
+            }
+        });
+        sub.subscribe(feedBackTopic, timeout);
+
+        DeliseMessage queryMessage = new DeliseMessage(DeliseMessage.MESSAGE_TYPE.RPC_QUERY_SDGATEWAY_LOCAL, name, DeliseMessageTopic.getCollectorTopicBroadcast(), feedBackTopic, "");
+        pub.pushMessage(queryMessage);
+
+        // wait for a few second
+        try {
+            System.out.println("Wait for " + timeout + " miliseconds ...........");
+            Thread.sleep(timeout);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(eventFileName, true)))) {
+            System.out.println("Now saving events to file: " + eventFileName);
+            for (String s : events) {
+                out.println(s);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // write result to cache        
+        //CacheGateway gwCache = new CacheGateway();
+        //gwCache.setFileName(dataFileName);        
+        //gwCache.writeGatewayCache(gateways);
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(dataFileName, true)))) {
+            System.out.println("Gateway ");
+            for (String s : gatewayInfo) {
+                out.println(s);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public void redirectGateway(SoftwareDefinedGateway gw, VNF vnf) {

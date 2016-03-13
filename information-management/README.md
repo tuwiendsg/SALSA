@@ -1,7 +1,7 @@
-## Distributed Resource Management for IoT Cloud Systems (may it have a name?)
+## Distributed Resource Management for IoT Cloud Systems (name it D-Elise)
 
 
-**User:**  Software agent (edge/cloud app) or administrator can take advantage of the tool. An API for application and a client-utility for human will be provided.
+**Target users:**  Software agents (edge/cloud app), global management services (resource provisioner) and developers/administrators. 
 
 **Features:**
 
@@ -11,13 +11,13 @@
   
 *Status:* We have base model entities, we can extend the details of the model to cover more domain-specific information.
 
-*Issues:* How do we capture information of network graph and network service? They should be specified or we generate based on router.
+*Issues:* How to abstract the low level resources (sensors, actuators) into higher level: data point, control point? Currently the model uses simple mapping mechanism.
 
-2. Query management: users can query only needed information. E.g.: to query SD Gateways and their capabilities about temperature data/control in such a location/building. 
+2. Query management: users can query only needed information. E.g.: to query SD Gateways and their capabilities about temperature data/control in such a location/building. User can use one-time query or subscription to get changes.
 
-*Status:* No development yet. 
+*Status:* We have protocol for both query types. But the query must be improved based on the model.
 
-*Issues*: How the query look like? Should we reuse a language like SPARQL (it supports RDF, thus we need to upgrade the implementation of the model), but I don't know how yet.
+*Issues*: How the query look like? Should we reuse a language like SPARQL (it supports RDF, thus we need to upgrade the implementation of the model). This is not developed yet.
 
 3. Distributed communication: the framework suppports both broadcast and unicast message, both synchronous (RPC call) and asynchorous (public/subscribe) communication. List of message see at the end of the document.
 

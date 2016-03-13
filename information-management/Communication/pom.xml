@@ -28,6 +28,12 @@
             <version>2.7.0</version>
         </dependency>
         
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.cloud.salsa.InformationManagement</groupId>                        
+            <artifactId>model</artifactId>
+            <version>1.0</version>
+        </dependency>
+        
         
     </dependencies>
 </project>

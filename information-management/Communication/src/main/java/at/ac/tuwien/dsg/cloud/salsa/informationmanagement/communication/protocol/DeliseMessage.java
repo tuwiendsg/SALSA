@@ -69,6 +69,10 @@ public class DeliseMessage {
         RPC_CONTROL_LOCAL,
         // unicast: Client->global, send a control command to global
         RPC_CONTROL_GLOBAL,
+        // unicast/broadcast: Client--> local: subscribe the changes in the gateway
+        SUBSCRIBE_SDGATEWAY_LOCAL,
+        SUBSCRIBE_SDGATEWAY_LOCAL_SET_PARAM,
+        
         // unicast: local/global --> client: send back the response
         UPDATE_INFORMATION
 

@@ -102,7 +102,7 @@ public class AMQPPublish extends AMQPConnector implements MessagePublishInterfac
             logger.debug("Got it, the msg in topic: " + replyTopicName);
             String response = new String(delivery.getBody());
             DeliseMessage responseMsg = DeliseMessage.fromJson(response);
-            logger.debug("Response string: " + responseMsg.toJson());
+            //logger.debug("Response string: " + responseMsg.toJson());
             return responseMsg;
 
         } catch (IOException ex) {

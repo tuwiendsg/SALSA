@@ -23,6 +23,7 @@ public class Cache {
     }
 
     CacheInfo cacheInfo;
+    String fileName = null;
 
     public Cache(CacheInfo cacheInfo) {
         this.cacheInfo = cacheInfo;
@@ -32,13 +33,17 @@ public class Cache {
         Files.write(Paths.get(fileName), data.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
-    protected String getFileName() {
+    public String getFileName() {
+        if (fileName != null) {
+            return fileName;
+        }
         String dir = "/tmp/delise/";
         File fDir = new File(dir);
         if (!fDir.exists()) {
             fDir.mkdirs();
         }
-        return dir + this.cacheInfo + ".cache";
+        fileName = dir + this.cacheInfo + ".cache";
+        return fileName;
     }
 
     public CacheInfo getCacheInfo() {
@@ -47,6 +52,10 @@ public class Cache {
 
     public void setCacheInfo(CacheInfo cacheInfo) {
         this.cacheInfo = cacheInfo;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
 }
