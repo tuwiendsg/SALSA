@@ -17,6 +17,8 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.master.RESTService;
 
+import at.ac.tuwien.dsg.cloud.elise.model.relationships.ConnectToRelationshipInstance;
+import at.ac.tuwien.dsg.cloud.elise.model.relationships.HostOnRelationshipInstance;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -110,6 +112,17 @@ public interface UnitInstanceInfoManagement {
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     String addUnitInstance(UnitInstance unitInstance);
+    
+    @POST
+    @Path("/relationship/hoston")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void addRelationshipHostOn(HostOnRelationshipInstance hostOnRela);
+    
+    
+    @POST
+    @Path("/relationship/connectto")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void addRelationshipConnectTo(ConnectToRelationshipInstance connectToRela);
 
     /**
      * Delete unit by ID

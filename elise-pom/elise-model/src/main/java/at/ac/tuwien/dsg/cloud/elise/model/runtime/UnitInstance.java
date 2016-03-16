@@ -20,6 +20,8 @@ package at.ac.tuwien.dsg.cloud.elise.model.runtime;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Metric;
+import at.ac.tuwien.dsg.cloud.elise.model.relationships.ConnectToRelationshipInstance;
+import at.ac.tuwien.dsg.cloud.elise.model.relationships.HostOnRelationshipInstance;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
 import java.io.IOException;
@@ -30,8 +32,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.neo4j.graphdb.Direction;
+import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.annotation.RelatedToVia;
 
 /**
  * The instance managed by different cloud and management services
@@ -48,12 +52,19 @@ public class UnitInstance extends ServiceUnit {
     // the configuration state. The state of the unit is in the domainInfo (see generic ServiceUnit.class)
     protected State state;
 
-    @RelatedTo(type = "HostOnRelationshipInstance", direction = Direction.OUTGOING)
+    @RelatedTo(type = "HostOn", direction = Direction.OUTGOING)
+    @Fetch
     protected UnitInstance hostedOn;
 
-    @RelatedTo(type = "ConnectToRelationshipInstance", direction = Direction.OUTGOING)
+    @RelatedTo(type = "ConnectTo", direction = Direction.OUTGOING)
+    @Fetch
     protected Set<UnitInstance> connectTo = new HashSet<>();
 
+//    @RelatedToVia(type = "HostOn", direction = Direction.OUTGOING)
+//    HostOnRelationshipInstance hostOnRela;
+//
+//    @RelatedToVia(type = "ConnectTo", direction = Direction.OUTGOING)
+//    Set<ConnectToRelationshipInstance> connectToRela;
     public UnitInstance() {
     }
 
@@ -62,6 +73,7 @@ public class UnitInstance extends ServiceUnit {
     }
 
     public void hostedOnInstance(UnitInstance hostedInst) {
+//        this.hostOnRela = new HostOnRelationshipInstance(this, hostedInst);
         this.hostedOn = hostedInst;
     }
 
@@ -69,6 +81,7 @@ public class UnitInstance extends ServiceUnit {
         if (this.connectTo == null) {
             this.connectTo = new HashSet<>();
         }
+//        this.connectToRela.add(new ConnectToRelationshipInstance(this, connectedToInst, ""));
         this.connectTo.add(connectedToInst);
     }
 
@@ -89,7 +102,7 @@ public class UnitInstance extends ServiceUnit {
         this.identification = identification;
     }
 
-    public Set<Metric> findAllMetricValues() {        
+    public Set<Metric> findAllMetricValues() {
         return new HashSet<>();
     }
 
@@ -122,6 +135,22 @@ public class UnitInstance extends ServiceUnit {
             this.extendedInfo = entities.toJson();
         }
         //  this.getDomainInfo().addAll(otherInstance.getDomainInfo());
+    }
+
+    public UnitInstance getHostedOn() {
+        return hostedOn;
+    }
+
+    public void setHostedOn(UnitInstance hostedOn) {
+        this.hostedOn = hostedOn;
+    }
+
+    public Set<UnitInstance> getConnectTo() {
+        return connectTo;
+    }
+
+    public void setConnectTo(Set<UnitInstance> connectTo) {
+        this.connectTo = connectTo;
     }
 
 }

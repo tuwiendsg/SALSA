@@ -1,1 +1,0 @@
-{"mFifoMaxEventCount":1500,"mFifoReservedEventCount":0,"mFlags":0,"mHandle":0,"mMaxDelay":1000000,"mMaxRange":39.226593,"mMinDelay":5000,"mName":"BMA2X2 Accelerometer/Temperature/Double-tap","mPower":0.13,"mRequiredPermission":"","mResolution":0.01914978,"mStringType":"android.sensor.accelerometer","mType":1,"mVendor":"BOSCH","mVersion":1}

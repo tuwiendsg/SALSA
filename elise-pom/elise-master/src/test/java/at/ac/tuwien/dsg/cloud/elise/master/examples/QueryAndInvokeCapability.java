@@ -6,7 +6,7 @@
 package at.ac.tuwien.dsg.cloud.elise.master.examples;
 
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.CapabilityManagement;
-import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseCommunicationInterface;
+import at.ac.tuwien.dsg.cloud.elise.master.RESTImp.EliseCommunicationInterface;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceInfoManagement;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;

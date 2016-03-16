@@ -34,7 +34,7 @@ import org.springframework.data.neo4j.annotation.StartNode;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
-@RelationshipEntity(type = "ConnectToRelationshipTemplate")
+@RelationshipEntity(type = "ConnectToTemplate")
 public class ConnectToRelationshipTemplate {
     @GraphId
     private Long graphId;

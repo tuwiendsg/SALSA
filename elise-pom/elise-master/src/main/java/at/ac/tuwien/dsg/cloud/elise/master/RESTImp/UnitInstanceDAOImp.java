@@ -17,6 +17,8 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.master.RESTImp;
 
+import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.ConnectToInstanceRelationshipRepository;
+import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.HostOnInstanceRelationshipRepository;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.UnitInstanceRepository;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
@@ -25,6 +27,8 @@ import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceInfoManagemen
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryRule;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Metric;
+import at.ac.tuwien.dsg.cloud.elise.model.relationships.ConnectToRelationshipInstance;
+import at.ac.tuwien.dsg.cloud.elise.model.relationships.HostOnRelationshipInstance;
 
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
@@ -55,6 +59,12 @@ public class UnitInstanceDAOImp implements UnitInstanceInfoManagement {
 
     @Autowired
     UnitInstanceRepository repo;
+
+    @Autowired
+    ConnectToInstanceRelationshipRepository connectToRepo;
+
+    @Autowired
+    HostOnInstanceRelationshipRepository hostOnRepo;
 
     @Override
     public Set<UnitInstance> getUnitInstanceList() {
@@ -220,13 +230,13 @@ public class UnitInstanceDAOImp implements UnitInstanceInfoManagement {
 
         logger.debug("Filter " + instances.size() + " of the category: " + query.getCategory().toString());
         int rulefulfill = 0;    // 0: N/A, 1: fulfill, -1: violate
-        
+
         for (UnitInstance u : instances) {
             logger.debug("Checking instance: " + u.getId() + "/" + u.getName());
-            
-            Map<String, String> extra = u.getExtra();            
-          
-            for (Map.Entry<String, String> entry : extra.entrySet()) {
+
+            Map<String, Object> extra = u.getExtra();
+
+            for (Map.Entry<String, Object> entry : extra.entrySet()) {
 //            for (Metric value : u.findAllMetricValues()) {
                 for (EliseQueryRule rule : query.getRules()) {
                     logger.debug("Comparing unit(" + entry.getKey() + "=" + entry.getValue() + " with the rule " + rule.toString());
@@ -264,6 +274,28 @@ public class UnitInstanceDAOImp implements UnitInstanceInfoManagement {
         } else {
             logger.debug("Cannot delete the instance unit from GraphDB with ID: {}", uniqueID);
         }
+    }
+
+    @Override
+    public void addRelationshipHostOn(HostOnRelationshipInstance hostOnRela) {
+        logger.debug("Saving relationship between: " + hostOnRela.getFrom().getId() + " and " + hostOnRela.getTo().getId() + ". Json: " + hostOnRela.toJson());
+//        this.hostOnRepo.createRelationshipBetween(hostOnRela.getFrom(), hostOnRela.getTo(), HostOnRelationshipInstance.class, "HostOn");
+        if (this.hostOnRepo == null) {
+            logger.error("hostOnRepo is null !!");
+            return;
+        }
+        this.hostOnRepo.save(hostOnRela);
+    }
+
+    @Override
+    public void addRelationshipConnectTo(ConnectToRelationshipInstance connectToRela) {
+        logger.debug("Saving relationship between: " + connectToRela.getFrom().getId() + " and " + connectToRela.getTo().getId() + ". Json: " + connectToRela.toJson());
+//        this.connectToRepo.createRelationshipBetween(connectToRela.getFrom(), connectToRela.getTo(), ConnectToRelationshipInstance.class, "ConnectTo");
+        if (this.connectToRepo == null) {
+            logger.error("connectToRepo is null !!");
+            return;
+        }
+        this.connectToRepo.save(connectToRela);
     }
 
 }

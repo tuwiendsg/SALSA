@@ -1,1 +1,0 @@
-{"mFifoMaxEventCount":0,"mFifoReservedEventCount":0,"mFlags":5,"mHandle":47,"mMaxDelay":0,"mMaxRange":1.0,"mMinDelay":-1,"mName":"Significant Motion Detector","mPower":0.12998962,"mRequiredPermission":"","mResolution":1.0,"mStringType":"android.sensor.significant_motion","mType":17,"mVendor":"QTI","mVersion":2}

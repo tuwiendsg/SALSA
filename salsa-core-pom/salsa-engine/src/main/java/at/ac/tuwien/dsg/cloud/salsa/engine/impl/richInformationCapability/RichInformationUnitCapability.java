@@ -78,23 +78,6 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         // create unit instance and add several simple domainInfo getting from SALSA
         logger.debug("Creating unit instance");
         UnitInstance unitInst = makeUnitInstance(service, unit, instance);
-        // find the hostedOn instance
-        if (!unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
-            ServiceUnit hostedUnit = service.getComponentById(unit.getHostedId());
-            ServiceInstance hostedInstance = hostedUnit.getInstanceById(instance.getHostedId_Integer());
-            UnitInstance hostedUnitInst = makeUnitInstance(service, hostedUnit, hostedInstance);
-            unitInst.hostedOnInstance(hostedUnitInst);
-        }
-
-        // find the connectedTo instance
-        for (String connecttoID : unit.getConnecttoId()) {
-            ServiceUnit conUnit = service.getComponentById(connecttoID);
-            if (!conUnit.getInstancesList().isEmpty()) {
-                ServiceInstance conInstance = conUnit.getInstancesList().get(0);
-                UnitInstance conInst = makeUnitInstance(service, conUnit, conInstance);
-                unitInst.connectToInstance(conInst);
-            }
-        }
 
         unitInst.hasExtra("salsaID", service.getId() + "/" + unit.getId() + "/" + instance.getInstanceId());
 
@@ -160,9 +143,54 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         } else {
             logger.error("Cannot contact to ELISE");
         }
+
         UnitInstanceInfoManagement unitInstanceDAO = (UnitInstanceInfoManagement) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceInfoManagement.class, Collections.singletonList(new JacksonJsonProvider()));
+
         if (unitInstanceDAO != null) {
             logger.debug("unitInstanceDao is not null, prepare to add");
+
+            // get the hoston and connect-to unit in the database if exist, then add to the unitInst
+            // persist relationship after unit
+            logger.debug("Adding relationship to persist data");
+            ServiceInstance hostedServiceInstance = service.getInstanceById(unit.getHostedId(), instance.getHostedId_Integer());
+            if (hostedServiceInstance != null) {
+                logger.debug("Found a instance of host-on relationship: instance " + unit.getHostedId() + "/" + hostedServiceInstance.getInstanceId());
+                UnitInstance hostedUnitInstance = unitInstanceDAO.getUnitInstanceByID(hostedServiceInstance.getUuid().toString());
+                if (hostedUnitInstance != null) {
+                    logger.debug(" --> and yes we found it in the database, phew: " + hostedUnitInstance.getId() + "/" + hostedUnitInstance.getName());
+                    hostedUnitInstance.setCapabilities(null); // ortherwise salsa will persist many capabilities                    
+                    unitInst.hostedOnInstance(hostedUnitInstance);
+//                    HostOnRelationshipInstance newRela = new HostOnRelationshipInstance(unitInst, hostedUnitInstance);
+//                    logger.debug(" --> new host-on relationship is created: " + unitInst.getId() +" and " + hostedUnitInstance.getId());
+//                    unitInstanceDAO.addRelationshipHostOn(newRela);
+                } else {
+                    logger.debug(" --> but do not find such instance in the database");
+                }
+            } else {
+                logger.debug("Hosted unit is null, it should be OS instance: " + unit.getType());
+            }
+
+            for (String connectedID : unit.getConnecttoId()) {
+                ServiceUnit connectedUnit = service.getComponentById(connectedID);
+                if (connectedUnit != null && connectedUnit.getInstancesList().size() > 0) {
+                    logger.debug("The unit is connect-to: " + connectedUnit.getId());
+                    ServiceInstance connectedServiceInstance = connectedUnit.getInstancesList().get(0);
+                    logger.debug(" --> and we will check if the instance is exist in the db, id: " + connectedServiceInstance.getUuid());
+                    UnitInstance connectedUnitInstance = unitInstanceDAO.getUnitInstanceByID(connectedServiceInstance.getUuid().toString());
+                    if (connectedUnitInstance != null) {
+                        logger.debug("  ----> yes the instance is exist, save it: " + connectedUnitInstance.getId());
+                        connectedUnitInstance.setCapabilities(null);
+                        unitInst.connectToInstance(connectedUnitInstance);
+//                        ConnectToRelationshipInstance newRela = new ConnectToRelationshipInstance(unitInst, connectedUnitInstance, "");
+//                        logger.debug(" --> new connectto relationship is created: " + unitInst.getId() +" and " + connectedUnitInstance.getId());
+//                        unitInstanceDAO.addRelationshipConnectTo(newRela);
+                    } else {
+                        logger.debug("  ----> no, the instance is not found in database");
+                    }
+                } else {
+                    logger.debug("Some error should happen, no service unit is found with id : " + connectedID);
+                }
+            }
             unitInstanceDAO.addUnitInstance(unitInst);
         } else {
             logger.error("Cannot connect to the elise DB");

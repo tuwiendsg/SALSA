@@ -32,7 +32,7 @@ import org.springframework.data.neo4j.annotation.StartNode;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
-@RelationshipEntity(type = "HostOnRelationshipTemplate")
+@RelationshipEntity(type = "HostOnTemplate")
 public class HostOnRelationshipTemplate {
     public enum RelationshipType {
         ConnectTo, HostedOn, Locally

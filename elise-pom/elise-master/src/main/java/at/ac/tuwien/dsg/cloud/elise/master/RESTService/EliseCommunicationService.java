@@ -17,6 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.master.RESTService;
 
+import at.ac.tuwien.dsg.cloud.elise.master.RESTImp.EliseCommunicationInterface;
 import at.ac.tuwien.dsg.cloud.elise.master.Communication.QueryManager;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.EliseQueueTopic;
 
@@ -79,8 +80,9 @@ public class EliseCommunicationService implements EliseCommunicationInterface {
      *
      * @return The description of all conductors.
      */
-    @GET
-    @Path("/count")
+//    @GET
+//    @Path("/count")
+    @Override
     public String count() {
         String uuid = UUID.randomUUID().toString();
         final List<ConductorDescription> conductors = new ArrayList<>();
@@ -133,9 +135,10 @@ public class EliseCommunicationService implements EliseCommunicationInterface {
      * @param isNotified The change will be notify to the topic
      * @return An UUID of the query, which can be used to trace the status of this query.
      */
-    @POST
-    @Path("/queryUnitInstance")
-    @Consumes(MediaType.APPLICATION_JSON)
+//    @POST
+//    @Path("/queryUnitInstance")
+//    @Consumes(MediaType.APPLICATION_JSON)
+    @Override
     public String querySetOfInstance(EliseQuery query,
             @DefaultValue("false") @QueryParam("isUpdated") final boolean isUpdated,
             @DefaultValue("false") @QueryParam("notify") final boolean isNotified) {
@@ -318,9 +321,10 @@ public class EliseCommunicationService implements EliseCommunicationInterface {
      * @param queryUUID The UUID of the query
      * @return A list of conductors that are working for this query and the status of each
      */
-    @GET
-    @Path("/query/{queryUUID}")
-    @Produces(MediaType.APPLICATION_JSON)
+//    @GET
+//    @Path("/query/{queryUUID}")
+//    @Produces(MediaType.APPLICATION_JSON)
+    @Override
     public String getQueryProcessStatus(String queryUUID) {
         logger.debug("Writing query management info to Json");
         Map<String, EliseQueryProcessNotification.QueryProcessStatus> map = QueryManager.getQueryStatusAll(queryUUID);

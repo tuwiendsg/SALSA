@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
-<xmi:XMI xmlns:xmi='http://www.omg.org/spec/XMI/20110701' xmlns:uml='http://www.omg.org/spec/UML/20110701'>
- <documentation exporter='Oracle JDeveloper' exporterVersion='12.1.3.0.0'/>
- <uml:Package xmi:type='uml:Package' xmi:uuid='urn:uuid:1ec8db45-1859-42f9-bfe7-66eb0031a0e4'
-   name='tuwien'
-   visibility='public'/>
-</xmi:XMI>

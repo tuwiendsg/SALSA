@@ -36,6 +36,7 @@ import org.codehaus.jackson.annotate.JsonMethod;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
 /**
@@ -50,6 +51,9 @@ public class Capability {
 
     @GraphId
     private Long graphID;
+
+    @Indexed(unique = true)
+    protected String id;
 
     protected String name;
     protected String executedBy;
@@ -139,10 +143,10 @@ public class Capability {
         try {
             ObjectMapper mapper = new ObjectMapper();
             switch (this.executionMethod) {
-            case Script:
-                return mapper.readValue(this.executionModel, ScriptExecution.class);
-            case REST:
-                return mapper.readValue(this.executionModel, RestExecution.class);
+                case Script:
+                    return mapper.readValue(this.executionModel, ScriptExecution.class);
+                case REST:
+                    return mapper.readValue(this.executionModel, RestExecution.class);
             }
             return null;
         } catch (IOException ex) {
@@ -187,6 +191,14 @@ public class Capability {
 
     public Set<CapabilityEffect> getEffects() {
         return effects;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

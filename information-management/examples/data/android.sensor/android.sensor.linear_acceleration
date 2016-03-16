@@ -1,1 +1,0 @@
-{"mFifoMaxEventCount":228,"mFifoReservedEventCount":0,"mFlags":0,"mHandle":30,"mMaxDelay":60014652,"mMaxRange":39.226593,"mMinDelay":8333,"mName":"Linear Acceleration","mPower":5.1299896,"mRequiredPermission":"","mResolution":0.01914978,"mStringType":"android.sensor.linear_acceleration","mType":10,"mVendor":"QTI","mVersion":2}

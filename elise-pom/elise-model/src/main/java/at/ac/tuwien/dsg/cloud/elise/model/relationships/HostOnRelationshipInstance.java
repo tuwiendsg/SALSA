@@ -18,9 +18,11 @@
 package at.ac.tuwien.dsg.cloud.elise.model.relationships;
 
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
+import java.io.IOException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.data.neo4j.annotation.EndNode;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.RelationshipEntity;
@@ -28,12 +30,14 @@ import org.springframework.data.neo4j.annotation.StartNode;
 
 /**
  * Define a UnitInstance is hosted by which
+ *
  * @author Duc-Hung LE
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
-@RelationshipEntity(type = "HostOnRelationshipInstance")
+@RelationshipEntity(type = "HostOn")
 public class HostOnRelationshipInstance {
+
     @GraphId
     Long graphId;
 
@@ -41,7 +45,7 @@ public class HostOnRelationshipInstance {
     protected UnitInstance from;
     @EndNode
     protected UnitInstance to;
-    
+
     public HostOnRelationshipInstance() {
     }
 
@@ -49,7 +53,7 @@ public class HostOnRelationshipInstance {
         this.from = from;
         this.to = to;
     }
-    
+
     public UnitInstance getFrom() {
         return from;
     }
@@ -66,5 +70,14 @@ public class HostOnRelationshipInstance {
         this.to = to;
     }
 
-    
+    public String toJson() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(this);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
 }

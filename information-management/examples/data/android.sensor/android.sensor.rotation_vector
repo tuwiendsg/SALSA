@@ -1,1 +1,0 @@
-{"mFifoMaxEventCount":356,"mFifoReservedEventCount":0,"mFlags":0,"mHandle":36,"mMaxDelay":60014652,"mMaxRange":1.0,"mMinDelay":8333,"mName":"Rotation Vector","mPower":5.36998,"mRequiredPermission":"","mResolution":5.9604645E-8,"mStringType":"android.sensor.rotation_vector","mType":11,"mVendor":"QTI","mVersion":2}

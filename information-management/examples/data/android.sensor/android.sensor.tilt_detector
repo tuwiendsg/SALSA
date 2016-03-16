@@ -1,1 +1,0 @@
-{"mFifoMaxEventCount":400,"mFifoReservedEventCount":0,"mFlags":7,"mHandle":55,"mMaxDelay":0,"mMaxRange":1.0,"mMinDelay":0,"mName":"Tilt Detector","mPower":0.12998962,"mRequiredPermission":"","mResolution":1.0,"mStringType":"android.sensor.tilt_detector","mType":22,"mVendor":"QTI","mVersion":2}

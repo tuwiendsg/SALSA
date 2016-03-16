@@ -1,1 +1,0 @@
-{"mFifoMaxEventCount":2400,"mFifoReservedEventCount":0,"mFlags":0,"mHandle":2,"mMaxDelay":1000000,"mMaxRange":34.906586,"mMinDelay":5000,"mName":"BMG160 Gyroscope","mPower":5.0,"mRequiredPermission":"","mResolution":0.0010681152,"mStringType":"android.sensor.gyroscope","mType":4,"mVendor":"BOSCH","mVersion":1}

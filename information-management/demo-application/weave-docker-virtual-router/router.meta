@@ -1,7 +1,0 @@
-action.launch=./launch.sh
-action.stop=./stop.sh
-action.list-connected-devices=./list-connected-devices.sh
-action.peer-with=./peer-with.sh
-action.unpeer-with=./unpeer-with.sh
-
-

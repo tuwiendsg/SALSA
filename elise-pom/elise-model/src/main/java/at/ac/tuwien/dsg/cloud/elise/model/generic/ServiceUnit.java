@@ -45,6 +45,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
+import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
+import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 
 /**
  *
@@ -54,8 +56,8 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
  * and UnitInstance
  *
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
+//@XmlAccessorType(XmlAccessType.FIELD)
+//@XmlRootElement
 @NodeEntity
 public class ServiceUnit implements HasUniqueId {
 
@@ -79,7 +81,8 @@ public class ServiceUnit implements HasUniqueId {
     /**
      * Blind properties, just let it be custom
      */
-    protected Map<String, String> extra;
+//    protected Map<String, String> extra;
+    DynamicProperties extra = new DynamicPropertiesContainer();
 
     /**
      * Known information model. This contains a set of Domain info I (23/07/2015) don't know how to use neo4j to store a generic class. Then the domain model is
@@ -95,13 +98,13 @@ public class ServiceUnit implements HasUniqueId {
     /**
      * All the action can be executed
      */
-    @RelatedTo(direction = Direction.OUTGOING, type = "INTERNAL")
+    @RelatedTo(direction = Direction.OUTGOING, type = "HAS_CAPA")
     @Fetch
-    protected Set<Capability> capabilities = new HashSet<>();
+    protected Set<Capability> capabilities ;
 
     public Capability getCapabilityByName(String name) {
-        for(Capability capa: capabilities){
-            if (capa.getName().equals(name)){
+        for (Capability capa : capabilities) {
+            if (capa.getName().equals(name)) {
                 return capa;
             }
         }
@@ -121,6 +124,7 @@ public class ServiceUnit implements HasUniqueId {
         if (this.capabilities == null) {
             this.capabilities = new HashSet<>();
         }
+        primitive.setId(this.getId()+"."+primitive.getName());
         this.capabilities.add(primitive);
         return this;
     }
@@ -128,6 +132,9 @@ public class ServiceUnit implements HasUniqueId {
     public ServiceUnit hasCapabilities(Set<Capability> primitives) {
         if (this.capabilities == null) {
             this.capabilities = new HashSet<>();
+        }
+        for (Capability capa: primitives){
+            capa.setId(this.getId()+"."+capa.getName());
         }
         this.capabilities.addAll(primitives);
         return this;
@@ -156,9 +163,11 @@ public class ServiceUnit implements HasUniqueId {
 
     public ServiceUnit hasExtra(String key, String value) {
         if (this.extra == null) {
-            this.extra = new HashMap<>();
+//            this.extra = new HashMap<>();   
+            this.extra = new DynamicPropertiesContainer();
         }
-        this.extra.put(key, value);
+//        this.extra.asMap().put(key, value);
+        this.extra.setProperty(key, value);
         return this;
     }
 
@@ -250,12 +259,12 @@ public class ServiceUnit implements HasUniqueId {
         this.category = category;
     }
 
-    public Map<String, String> getExtra() {
-        return extra;
+    public Map<String, Object> getExtra() {
+        return extra.asMap();
     }
 
-    public void setExtra(HashMap<String, String> extra) {
-        this.extra = extra;
+    public void setExtra(Map<String, Object> extra) {
+        this.extra.setPropertiesFrom(extra);
     }
 
     public String getDomainInfo() {
