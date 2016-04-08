@@ -71,202 +71,27 @@ p.small {
       </header>
       <section>
       
+<br/>
+<p><strong>WARNING: ISSUE TO BUILD THE SOURCE CODE BY INACCESSIBLE REPOSITORY</p>
+
+<p>Due to a recent update of security policy in our data center, the repository (repo.infosys.tuwien.ac.at) is no longer to be accessed from outside of our institute. We will address this issue soon by moving the dependencies to a public place. Meanwhile, we recommend who are interested in using SALSA to download the release artifacts instead!</strong></p>
       
 <h1><a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>SALSA 2.0</h1>
-SALSA 2.0 improve the communication via message queue and provide rich repository API.
+<p>SALSA 2.0 improve the communication via message queue and provide rich repository API. To run SALSA you need to put salsa-engine.jar and salsa-pioneer.jar in the same folder and run "java -jar salsa-engine.jar" (see the documentation for more details). Salsa client can be used as command line or imported into your project to interact with SALSA.</p>
 
-Source: <a href="https://github.com/tuwiendsg/SALSA/zipball/master">zip</a>, <a href="https://github.com/tuwiendsg/SALSA">View on github</a>
+<p>Source: <a href="https://github.com/tuwiendsg/SALSA/zipball/master">zip</a>, <a href="https://github.com/tuwiendsg/SALSA">View on github</a></p>
 
-Release:
+<p>Release:</p>
 <ul>
-  <li>Salsa Engine: <a href="files/salsa-engine.jar">jar</a>  </li>
-  <li>Salsa Pioneer:<a href="files/salsa-pioneer.jar">jar</a>  </li>
-  <li>Salsa Client:<a href="files/salsa-client.jar">jar</a>  </li>
+  <li>Salsa Engine: <a href="files/salsa-engine.jar">salsa-engine.jar</a>  </li>
+  <li>Salsa Pioneer:<a href="files/salsa-pioneer.jar">salsa-pioneer.jar</a>  </li>
+  <li>Salsa Client:<a href="files/salsa-client.jar">salsa-client.jar</a>  </li>
 </ul>
 
+
 <h1><a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>SALSA 1.0</h1>
-<p>SALSA 1.0 is outdate, which is not available to download.</p>
 
-<p>This page provides extra materials for the paper <b>"Managing On-demand Sensing Resources in  IoT Cloud Systems"</b>. </p>
-
-<p>At the moment, ELISE is integrated in SALSA, towards providing information of IoT Cloud Systems for the configuration processes. By the integration, ELISE reuses some of concepts and designs in SALSA, as well as automatically captures deployment information from SALSA by default, such as the cloud service structure and cloud infrastructure information.</p>
-
-<h1><a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>ELISE API</h1>
-
-<h3>API for managing information</h3>
-<p>In current version, the information of provider and cloud service structure is static collected, thus it can be query dirrectly in ELISE. The unit instances are dynamically create/remove and being distributed over infrastructures, thus the collection process can take time. To deal with this, ELISE provides a separate API to start the queries and an API to get the information.</p>
-
-<table class="tg" style="undefined;table-layout: fixed; width: 676px">
-<colgroup>
-<col style="width: 27px">
-<col style="width: 430px">
-<col style="width: 470px">
-</colgroup>
-  <tr>
-    <th class="tg-hgcj">#</th>
-    <th class="tg-hgcj">APIs</th>
-    <th class="tg-amwm">Description</th>
-  </tr>
-
-  <tr>
-    <td class="tg-baqh">1</td>
-    <td class="tg-yw4l">GET /provider</td>
-    <td class="tg-yw4l">Get list of providers</td>
-  </tr> 
-  
-  <tr>
-    <td class="tg-baqh">2</td>
-    <td class="tg-yw4l">GET /provider/{uniqueID}</td>
-    <td class="tg-yw4l">Get list of offered service from a provider</td>
-  </tr> 
-  
-  <tr>
-    <td class="tg-baqh">4</td>
-    <td class="tg-yw4l">GET /cloudservice</td>
-    <td class="tg-yw4l">Get list of cloud services</td>
-  </tr> 
-  
-  <tr>
-    <td class="tg-baqh">3</td>
-    <td class="tg-yw4l">GET /cloudservice/{uniqueID}</td>
-    <td class="tg-yw4l">Get cloud service's structure</td>
-  </tr> 
-  
-  <tr>
-    <td class="tg-baqh">4</td>
-    <td class="tg-yw4l">POST /communication/queryUnitInstance</td>
-    <td class="tg-yw4l">Start a query by forwarding request to collectors. This consume a query string and return an ID of the query to check</td>
-  </tr> 
-  
-  <tr>
-    <td class="tg-baqh">5</td>
-    <td class="tg-yw4l">GET /communication/query/{queryUUID}</td>
-    <td class="tg-yw4l">Return status of a query: how many collectors are involving to get information for that query, what is the status of the collection process</td>
-  </tr> 
-  
-   <tr>
-    <td class="tg-baqh">6</td>
-    <td class="tg-yw4l">POST /unitinstance/{uniqueID}</td>
-    <td class="tg-yw4l">Get details the information of single instance</td>
-  </tr> 
-  
-</table>
-
-<h3>API for managing ELISE components</h3>
-<table class="tg" style="undefined;table-layout: fixed; width: 676px">
-<colgroup>
-<col style="width: 27px">
-<col style="width: 430px">
-<col style="width: 470px">
-</colgroup>
-  <tr>
-    <th class="tg-hgcj">#</th>
-    <th class="tg-hgcj">APIs</th>
-    <th class="tg-amwm">Description</th>
-  </tr>
-  <tr>
-    <td class="tg-baqh">1</td>
-    <td class="tg-yw4l">GET /manager/count</td>
-    <td class="tg-yw4l">Get the description of running collectors</td>
-  </tr> 
-  <tr>
-    <td class="tg-baqh">2</td>
-    <td class="tg-yw4l">POST /manager/conductor/salsa/{pioneerID}</td>
-    <td class="tg-yw4l">Request SALSA to deploy a conductor (which host collector artifact)</td>
-  </tr> 
-  <tr>
-    <td class="tg-baqh">3</td>
-    <td class="tg-yw4l">POST /manager/conductor/{conductorID}/collector/{collectorName}</td>
-    <td class="tg-yw4l">Push a collector artifact to a conductor</td>
-  </tr> 
-  <tr>
-    <td class="tg-baqh">4</td>
-    <td class="tg-yw4l">GET /manager/collector</td>
-    <td class="tg-yw4l">Get the list of supported collectors which can be deployed</td>
-  </tr>  
-  <tr>
-    <td class="tg-baqh">5</td>
-    <td class="tg-yw4l">POST /manager/conductor/resyn</td>
-    <td class="tg-yw4l">Synchronize the collectors with elise master</td>
-  </tr> 
-</table>
-
-<h1><a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>Managing ELISE components</h1>
-<h3>Populate the collectors and adaptors</h3>
-<p>
-A collector is the combination of a hosted component name conductor and a set of adaptors. The conductors and adaptors are .jar artifact, where conductor.jar is executable. The figure below shows how to inject adaptors to a conductor. When receiving a query, the conductor will scan all the <i>extensions</i> folder for the adaptors and execute appropriate functions. The custom settings for the adaptors can be put in the adaptor.conf.
-</p>
-
-<p>The conductor can be execute via normal java: "java -jar conductor.jar"</p>
-<img src="images/ss-populate-output.png" alt="Populate the collectors" width="70%" height="70%">
-<p>
-Above folder structure can be created manually or using salsa-client. Salsa-client will inform salsa-pioneer to deploy the conductor as a normal software component on the infrastructure.
-</p>
-
-
-<h3>Using the salsa-client</h3>
-<p>Sys-admin can use Salsa-client to manage the system. Available commands is shown via --help option:</p>
-<code><pre>
-./salsa-client --help
-Usage: java -jar salsa-client.jar
-SALSA Java command-line client
-
- -a (--address) &ltaddress&gt : The address of the salsa engine (default:
-                            128.130.172.216)
- -h (--help)              : Print the help and exit (default: true)
- -p (--port) &ltport&gt       : The port of the salsa engine (default: 8080)
-
-Type 'java -jar salsa-client.jar help &ltcommand&gt' for help on a specific command.
-
-Available commands:
-  conductor-list-collector: Get the list of available collector plugins. 
-  conductor-push-collector: Add a collector plugin to conductor to collect information. 
-  conductor-start     : Start a conductor to collect the information 
-  conductor-stop      : Stop a conductor by ID or at salsa-engine 
-  instance-deploy     : Deploy one or more instances of a service unit. 
-  instance-info-collect: Ask collector to start gathering the information. The process may take time. 
-  instance-query      : Get the information of an instance by ID. 
-  instance-remove     : Remove an running instance. 
-  meta                : Get metadata of the SALSA which is connected. 
-  service-list        : List the current managed cloud services 
-  service-remove      : Undeploy all components and remove the cloud services. 
-  service-status      : Get all the list of instances 
-  service-submit      : Submit a TOSCA to start a deployment. 
-  subscribe-queue     : Subscribe queue to get SALSA actions 
-  syn                 : Send message the synchronize pioneers.
-</pre></code>
-Beside the commands that manage the system, some commands are for populating the adaptor and configuring with external services to collecting external capabilities. Conductor manages adaptors and communicates with salsa-engine. The salsa-client can send the request to salsa-engine or salsa-pioneer to start/stop a collector.
-
-
-
-
-<h1><a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>Examples</h1>
-
-<p>We provide in the repository <a href="https://github.com/tuwiendsg/SALSA/tree/master/examples/ELISE" target="_blank">the examples of the service description and result of queries</a>. The service description can be found in <a href="http://tuwiendsg.github.io/iCOMOT/demo.html#javaDevPerspective" target="_blank">Java domain-specific language</a> or <a href="http://docs.oasis-open.org/tosca/TOSCA/v1.0/os/TOSCA-v1.0-os.html" target="_blank">TOSCA file</a> in XML format</p>
-
-<h3>ELISE supports Java programming</h3>
-ELISE provide a set of API to enable Java developer to query information, examine the service instances and call capabilities accordingly. Some examples are on <a href="https://github.com/tuwiendsg/SALSA/tree/master/elise-pom/elise-master/src/test/java/at/ac/tuwien/dsg/cloud/elise/master/examples">github</a>. A simple flow is shown below.
-<pre><code>
-    String endpoint = "http://[IP:port/path, where elise-master is deployed]/rest/elise/";
-
-    // the 1st proxy to manage the queries
-    EliseCommunicationInterface manageProxy = JAXRSClientFactory.create(endpoint, EliseCommunicationInterface.class);
-    EliseQuery query = new EliseQuery(ServiceCategory.Gateway)
-            .hasRule("location", "building1", EliseQueryRule.OPERATION.EQUAL);
-    String queryID = manageProxy.querySetOfInstances(query);
-    manageProxy.getQueryProcessStatus(queryID); // block
-
-    // the 2nd proxy to manage the information
-    UnitInstanceInfoManagement localProxy = JAXRSClientFactory.create(endpoint, UnitInstanceInfoManagement.class, Collections.singletonList(new JacksonJsonProvider()));
-    Set<UnitInstance> instances = localProxy.queryUnitInstance(query);
-    for (UnitInstance instance : instances) {
-        Capability c = instance.getCapabilityByName("changeRate");
-        if (c != null) {
-            CapabilityManagement.execute(c, new String[]{"5"});
-        }
-     }
-</pre></code>
-
+<p>SALSA 1.0 is not available to download.</p>
 
 <h1><a name="contact" class="anchor" href="#contact"><span class="octicon octicon-link"></span></a>Contact</h1>
 
