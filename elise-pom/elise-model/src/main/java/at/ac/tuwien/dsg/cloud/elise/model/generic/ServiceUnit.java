@@ -17,36 +17,24 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.generic;
 
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.Indexed;
-
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonMethod;
 import org.codehaus.jackson.map.ObjectMapper;
-
+import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
-import org.springframework.data.neo4j.fieldaccess.DynamicProperties;
-import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
 
 /**
  *
@@ -56,51 +44,29 @@ import org.springframework.data.neo4j.fieldaccess.DynamicPropertiesContainer;
  * and UnitInstance
  *
  */
-//@XmlAccessorType(XmlAccessType.FIELD)
-//@XmlRootElement
 @NodeEntity
 public class ServiceUnit implements HasUniqueId {
 
     @GraphId
     private Long graphID;
-
     /**
      * This is the global ID in ELISE, is assigned at the time a service unit is created. The particular DomainID is stored in the DomainEntity of the
      * domain-models
      */
-    @Indexed(unique = true)
-    protected String id;
+    protected String uuid;
 
     protected String name;
 
     protected ServiceCategory category;
 
-    // the concrete unit types to match with SALSA Instance type, e.g. os, software, tomcat, dockker
-    protected String unitType;
+    protected Set<Capability> capabilities;
 
-    /**
-     * Blind properties, just let it be custom
-     */
-//    protected Map<String, String> extra;
-    DynamicProperties extra = new DynamicPropertiesContainer();
-
-    /**
-     * Known information model. This contains a set of Domain info I (23/07/2015) don't know how to use neo4j to store a generic class. Then the domain model is
-     * translate into json. Using the parseDomainInfo method to translate back The domainInfo class: DomainEntity.class
-     */
-    protected String domainInfo;
-
-    /**
-     * This contain other domain info, e.g information from other service like govops, mela, sybl The extendedDomainInfo class: DomainEntities.class
-     */
-    protected String extendedInfo;
-
-    /**
-     * All the action can be executed
-     */
-    @RelatedTo(direction = Direction.OUTGOING, type = "HAS_CAPA")
+    // the actual model of the service unit, using by SALSa
     @Fetch
-    protected Set<Capability> capabilities ;
+    protected DomainEntity domain;
+
+    // other extended model like contract, licensing, etc
+    protected Set<ExtensibleModel> extra;
 
     public Capability getCapabilityByName(String name) {
         for (Capability capa : capabilities) {
@@ -115,7 +81,7 @@ public class ServiceUnit implements HasUniqueId {
     }
 
     public ServiceUnit(String name, ServiceCategory category) {
-        this.id = "TMP:" + UUID.randomUUID().toString();
+        this.uuid = "TMP:" + UUID.randomUUID().toString();
         this.name = name;
         this.category = category;
     }
@@ -124,7 +90,7 @@ public class ServiceUnit implements HasUniqueId {
         if (this.capabilities == null) {
             this.capabilities = new HashSet<>();
         }
-        primitive.setId(this.getId()+"."+primitive.getName());
+        primitive.setUuid(this.getUuid() + "." + primitive.getName());
         this.capabilities.add(primitive);
         return this;
     }
@@ -133,24 +99,19 @@ public class ServiceUnit implements HasUniqueId {
         if (this.capabilities == null) {
             this.capabilities = new HashSet<>();
         }
-        for (Capability capa: primitives){
-            capa.setId(this.getId()+"."+capa.getName());
+        for (Capability capa : primitives) {
+            capa.setUuid(this.getUuid() + "." + capa.getName());
         }
         this.capabilities.addAll(primitives);
         return this;
     }
 
-    public String getUnitType() {
-        return unitType;
-    }
-
-    public void setUnitType(String unitType) {
-        this.unitType = unitType;
-    }
-
-    @Override
-    public String getId() {
-        return id;
+    public ServiceUnit hasExtra(ExtensibleModel extra) {
+        if (this.extra == null) {
+            this.extra = new HashSet<>();
+        }
+        this.extra.add(extra);
+        return this;
     }
 
     public Set<String> findAllCapabilities() {
@@ -161,46 +122,22 @@ public class ServiceUnit implements HasUniqueId {
         return names;
     }
 
-    public ServiceUnit hasExtra(String key, String value) {
-        if (this.extra == null) {
-//            this.extra = new HashMap<>();   
-            this.extra = new DynamicPropertiesContainer();
-        }
-//        this.extra.asMap().put(key, value);
-        this.extra.setProperty(key, value);
-        return this;
-    }
-
-    public DomainEntity parseDomainInfo() {
-        if (domainInfo == null) {
-            return null;
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.readValue(domainInfo, DomainEntity.class);
-        } catch (IOException ex) {
-            Logger.getLogger("DomainModel").log(Level.SEVERE, "Cannot parse the domain info. Data to parse: {0}", domainInfo);
-        }
-        return null;
-    }
-
-    public DomainEntities parseExtendInfo() {
-        if (extendedInfo == null) {
-            return null;
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.readValue(extendedInfo, DomainEntities.class);
-        } catch (IOException ex) {
-            Logger.getLogger("DomainModel").log(Level.SEVERE, "Cannot parse the domain info. Data to parse: {0}", extendedInfo);
-        }
-        return null;
-    }
-
+//    public DomainEntity parseExtendInfo() {
+//        if (domain == null) {
+//            return null;
+//        }
+//        ObjectMapper mapper = new ObjectMapper();
+//        try {
+//            return mapper.readValue(domain, domainClazz);
+//        } catch (IOException ex) {
+//            Logger.getLogger("DomainModel").log(Level.SEVERE, "Cannot parse the domain info. Data to parse: {0}", domain);
+//        }
+//        return null;
+//    }
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 13 * hash + Objects.hashCode(this.id);
+        hash = 13 * hash + Objects.hashCode(this.uuid);
         hash = 13 * hash + Objects.hashCode(this.name);
         hash = 13 * hash + Objects.hashCode(this.category);
         return hash;
@@ -215,7 +152,7 @@ public class ServiceUnit implements HasUniqueId {
             return false;
         }
         final ServiceUnit other = (ServiceUnit) obj;
-        if (!Objects.equals(this.id, other.id)) {
+        if (!Objects.equals(this.uuid, other.uuid)) {
             return false;
         }
         if (!Objects.equals(this.name, other.name)) {
@@ -239,12 +176,17 @@ public class ServiceUnit implements HasUniqueId {
     }
 
     // other getters/setters
-    public String getName() {
-        return name;
+    @Override
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
@@ -259,36 +201,28 @@ public class ServiceUnit implements HasUniqueId {
         this.category = category;
     }
 
-    public Map<String, Object> getExtra() {
-        return extra.asMap();
-    }
-
-    public void setExtra(Map<String, Object> extra) {
-        this.extra.setPropertiesFrom(extra);
-    }
-
-    public String getDomainInfo() {
-        return domainInfo;
-    }
-
-    public void setDomainInfo(String domainInfo) {
-        this.domainInfo = domainInfo;
-    }
-
-    public String getExtendedInfo() {
-        return extendedInfo;
-    }
-
-    public void setExtendedInfo(String extendedInfo) {
-        this.extendedInfo = extendedInfo;
-    }
-
     public Set<Capability> getCapabilities() {
         return capabilities;
     }
 
     public void setCapabilities(Set<Capability> capabilities) {
         this.capabilities = capabilities;
+    }
+
+    public DomainEntity getDomain() {
+        return domain;
+    }
+
+    public void setDomain(DomainEntity domain) {
+        this.domain = domain;
+    }
+
+    public Set<ExtensibleModel> getExtra() {
+        return extra;
+    }
+
+    public void setExtra(Set<ExtensibleModel> extra) {
+        this.extra = extra;
     }
 
 }

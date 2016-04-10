@@ -17,23 +17,21 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
 
 /**
  * Additional parameters for executing capability via script
+ *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
-public class ScriptExecution extends PrimitiveToStringConverable {
+public class ScriptExecution extends ExtensibleModel {
 
     protected String scriptname;
     protected String workingFolder;
     protected String environment;
 
     public ScriptExecution() {
+        super(ScriptExecution.class);
     }
 
     /**
@@ -43,6 +41,7 @@ public class ScriptExecution extends PrimitiveToStringConverable {
      * @param env additional environment
      */
     public ScriptExecution(String scriptName, String work, String env) {
+        super(ScriptExecution.class);
         this.scriptname = scriptName;
         this.workingFolder = work;
         this.environment = env;

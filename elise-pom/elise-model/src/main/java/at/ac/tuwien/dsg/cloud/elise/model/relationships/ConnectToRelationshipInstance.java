@@ -19,11 +19,6 @@ package at.ac.tuwien.dsg.cloud.elise.model.relationships;
 
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.data.neo4j.annotation.EndNode;
 import org.springframework.data.neo4j.annotation.GraphId;
@@ -35,14 +30,11 @@ import org.springframework.data.neo4j.annotation.StartNode;
  *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
-@RelationshipEntity(type = "ConnectTo")
+@RelationshipEntity
 public class ConnectToRelationshipInstance {
 
     @GraphId
-    Long graphId;
-
+    private Long graphID;
     @StartNode
     protected UnitInstance from;
     @EndNode

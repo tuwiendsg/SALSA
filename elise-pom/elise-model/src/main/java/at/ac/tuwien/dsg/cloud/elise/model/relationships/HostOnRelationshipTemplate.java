@@ -17,10 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.relationships;
 
-import at.ac.tuwien.dsg.cloud.elise.model.structure.ServiceUnitTemplate;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import at.ac.tuwien.dsg.cloud.elise.model.provider.ServiceTemplate;
 import org.springframework.data.neo4j.annotation.EndNode;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.RelationshipEntity;
@@ -28,45 +25,43 @@ import org.springframework.data.neo4j.annotation.StartNode;
 
 /**
  * Define a ServiceUnitTemplate is hosted by which
+ *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
-@RelationshipEntity(type = "HostOnTemplate")
+@RelationshipEntity
 public class HostOnRelationshipTemplate {
+
     public enum RelationshipType {
         ConnectTo, HostedOn, Locally
     }
-
     @GraphId
-    private Long graphId;
-
+    private Long graphID;
     @StartNode
-    protected ServiceUnitTemplate from;
+    protected ServiceTemplate from;
     @EndNode
-    protected ServiceUnitTemplate to;
-    
+    protected ServiceTemplate to;
+
     public HostOnRelationshipTemplate() {
     }
 
-    public HostOnRelationshipTemplate(ServiceUnitTemplate from, ServiceUnitTemplate to) {
+    public HostOnRelationshipTemplate(ServiceTemplate from, ServiceTemplate to) {
         this.from = from;
         this.to = to;
     }
 
-    public ServiceUnitTemplate getFrom() {
+    public ServiceTemplate getFrom() {
         return from;
     }
 
-    public void setFrom(ServiceUnitTemplate from) {
+    public void setFrom(ServiceTemplate from) {
         this.from = from;
     }
 
-    public ServiceUnitTemplate getTo() {
+    public ServiceTemplate getTo() {
         return to;
     }
 
-    public void setTo(ServiceUnitTemplate to) {
+    public void setTo(ServiceTemplate to) {
         this.to = to;
     }
 }

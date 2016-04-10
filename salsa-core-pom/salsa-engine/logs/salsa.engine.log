@@ -7082,3 +7082,39 @@ DEBUG 23:29:17,354 [main] (DynamicPlacementHelper.java:119) - Checking metric na
 DEBUG 23:29:17,354 [main] (DynamicPlacementHelper.java:119) - Checking metric name: bytes_out ...
 DEBUG 23:29:17,354 [main] (DynamicPlacementHelper.java:119) - Checking metric name: swap_total ...
 DEBUG 23:29:17,354 [main] (DynamicPlacementHelper.java:119) - Checking metric name: mem_free ...
+DEBUG 23:42:24,026 [main] (UnitInstanceManagementImpl.java:95) - Save UnitInstance: test
+ERROR 23:42:24,113 [main] (EliseConfiguration.java:149) - Cannot find listening port of salsa-engine service. return 8080 as default
+DEBUG 23:42:24,135 [main] (UnitInstanceManagementImpl.java:167) - Updating identification for instance: test
+DEBUG 23:42:24,151 [main] (UnitInstanceManagementImpl.java:168) - Local ID extracted: {"assignedBy":"me","category":"Docker","idItems":{"key":"idenItem"}}
+DEBUG 23:42:24,235 [main] (UnitInstanceManagementImpl.java:176) - Global ID after query: 1 IDs
+DEBUG 23:42:24,236 [main] (UnitInstanceManagementImpl.java:102) - Found an instance can be merged with UUID: TMP:5f864713-e1de-4029-be42-1bf499b9510e
+DEBUG 23:44:27,774 [main] (UnitInstanceManagementImpl.java:95) - Save UnitInstance: test
+ERROR 23:44:27,851 [main] (EliseConfiguration.java:149) - Cannot find listening port of salsa-engine service. return 8080 as default
+DEBUG 23:44:27,868 [main] (UnitInstanceManagementImpl.java:167) - Updating identification for instance: test
+DEBUG 23:44:27,874 [main] (UnitInstanceManagementImpl.java:168) - Local ID extracted: {"assignedBy":"me","category":"Docker","idItems":{"key":"idenItem"}}
+DEBUG 23:44:27,937 [main] (UnitInstanceManagementImpl.java:176) - Global ID after query: 1 IDs
+DEBUG 23:44:27,938 [main] (UnitInstanceManagementImpl.java:102) - Found an instance can be merged with UUID: TMP:5f864713-e1de-4029-be42-1bf499b9510e
+DEBUG 23:44:50,019 [main] (UnitInstanceManagementImpl.java:97) - Save UnitInstance: test
+ERROR 23:44:50,075 [main] (EliseConfiguration.java:149) - Cannot find listening port of salsa-engine service. return 8080 as default
+DEBUG 23:44:50,095 [main] (UnitInstanceManagementImpl.java:169) - Updating identification for instance: test
+DEBUG 23:44:50,104 [main] (UnitInstanceManagementImpl.java:170) - Local ID extracted: {"assignedBy":"me","category":"Docker","idItems":{"key":"idenItem"}}
+DEBUG 23:44:50,172 [main] (UnitInstanceManagementImpl.java:178) - Global ID after query: 1 IDs
+DEBUG 23:44:50,172 [main] (UnitInstanceManagementImpl.java:104) - Found an instance can be merged with UUID: TMP:5f864713-e1de-4029-be42-1bf499b9510e
+DEBUG 23:45:14,166 [main] (UnitInstanceManagementImpl.java:99) - Save UnitInstance: test
+ERROR 23:45:14,222 [main] (EliseConfiguration.java:149) - Cannot find listening port of salsa-engine service. return 8080 as default
+DEBUG 23:45:14,240 [main] (UnitInstanceManagementImpl.java:171) - Updating identification for instance: test
+DEBUG 23:45:14,247 [main] (UnitInstanceManagementImpl.java:172) - Local ID extracted: {"assignedBy":"me","category":"Docker","idItems":{"key":"idenItem"}}
+DEBUG 23:45:14,309 [main] (UnitInstanceManagementImpl.java:180) - Global ID after query: 1 IDs
+DEBUG 23:45:14,310 [main] (UnitInstanceManagementImpl.java:106) - Found an instance can be merged with UUID: TMP:5f864713-e1de-4029-be42-1bf499b9510e
+DEBUG 13:56:02,524 [main] (EliseRepositoryImpl.java:108) - Save UnitInstance: test
+ERROR 13:56:02,593 [main] (EliseConfiguration.java:149) - Cannot find listening port of salsa-engine service. return 8080 as default
+DEBUG 13:56:02,614 [main] (EliseRepositoryImpl.java:185) - Updating identification for instance: test
+DEBUG 13:56:02,623 [main] (EliseRepositoryImpl.java:186) - Local ID extracted: {"assignedBy":"me","category":"Docker","idItems":{"key":"idenItem"}}
+DEBUG 13:56:02,732 [main] (EliseRepositoryImpl.java:194) - Global ID after query: 1 IDs
+DEBUG 13:56:02,732 [main] (EliseRepositoryImpl.java:115) - Found an instance can be merged with UUID: myUUID
+DEBUG 13:57:04,792 [main] (EliseRepositoryImpl.java:108) - Save UnitInstance: test
+ERROR 13:57:04,845 [main] (EliseConfiguration.java:149) - Cannot find listening port of salsa-engine service. return 8080 as default
+DEBUG 13:57:04,865 [main] (EliseRepositoryImpl.java:185) - Updating identification for instance: test
+DEBUG 13:57:04,872 [main] (EliseRepositoryImpl.java:186) - Local ID extracted: {"assignedBy":"me","category":"Docker","idItems":{"key":"idenItem"}}
+DEBUG 13:57:04,936 [main] (EliseRepositoryImpl.java:194) - Global ID after query: 1 IDs
+DEBUG 13:57:04,936 [main] (EliseRepositoryImpl.java:115) - Found an instance can be merged with UUID: myUUID

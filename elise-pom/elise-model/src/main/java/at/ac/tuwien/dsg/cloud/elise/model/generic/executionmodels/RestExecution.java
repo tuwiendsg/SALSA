@@ -17,23 +17,24 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels;
 
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
 /**
  * Additional parameters for executing capability via REST call
+ *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
-public class RestExecution extends PrimitiveToStringConverable {
+public class RestExecution extends ExtensibleModel {
 
     protected String endpoint;
     protected RestMethod method;
     protected String data;
 
     public RestExecution() {
+        super(RestExecution.class);
     }
 
     @XmlType
@@ -43,12 +44,13 @@ public class RestExecution extends PrimitiveToStringConverable {
     }
 
     /**
-     * 
+     *
      * @param endpoint URL of the REST service
      * @param method the HTTP method
      * @param data the possible data to send to the REST
      */
     public RestExecution(String endpoint, RestMethod method, String data) {
+        super(RestExecution.class);
         this.endpoint = endpoint;
         this.method = method;
         this.data = data;

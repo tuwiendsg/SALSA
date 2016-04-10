@@ -19,7 +19,6 @@ package at.ac.tuwien.dsg.cloud.elise.master.Communication;
 
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseManager;
-import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceInfoManagement;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.elise.model.wrapper.UnitInstanceWrapper;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
@@ -35,6 +34,7 @@ import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.slf4j.Logger;
+import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseRepository;
 
 /**
  *
@@ -95,10 +95,10 @@ public class EliseListener {
                 switch (message.getMsgType()) {
                     case elise_instanceInfoUpdate: {
                         logger.debug("Received a message to update unit instances information");
-                        UnitInstanceInfoManagement unitInstanceDAO = (UnitInstanceInfoManagement) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceInfoManagement.class, Collections.singletonList(new JacksonJsonProvider()));
+                        EliseRepository unitInstanceDAO = (EliseRepository) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseRepository.class, Collections.singletonList(new JacksonJsonProvider()));
                         UnitInstanceWrapper wrapper = UnitInstanceWrapper.fromJson(message.getPayload());
                         for (UnitInstance unit : wrapper.getUnitInstances()) {
-                            unitInstanceDAO.addUnitInstance(unit);
+                            unitInstanceDAO.saveUnitInstance(unit);
                         }
                     }
                     default: {

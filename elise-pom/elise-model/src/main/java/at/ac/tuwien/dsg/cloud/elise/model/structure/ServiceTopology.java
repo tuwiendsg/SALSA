@@ -17,13 +17,13 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.structure;
 
+import at.ac.tuwien.dsg.cloud.elise.model.generic.ServiceUnit;
+import at.ac.tuwien.dsg.cloud.elise.model.provider.ServiceTemplate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
 /**
@@ -31,30 +31,24 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
  *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
 @NodeEntity
-public class ServiceTopology extends ServiceEntity {
+public class ServiceTopology extends ServiceUnit {
 
-    protected Set<ServiceUnitTemplate> serviceUnits = new HashSet<>();
+
+    protected Set<ServiceTemplate> serviceUnits = new HashSet<>();
     protected Set<ServiceTopology> serviceTopologies = new HashSet<>();
 
     public ServiceTopology() {
     }
 
-    public ServiceTopology(String id) {
-        super(id);
-    }
-
     public ServiceTopology(
-            String id,
-            Set<ServiceUnitTemplate> serviceUnits,
+            Set<ServiceTemplate> serviceUnits,
             Set<ServiceTopology> serviceTopologies) {
         this.serviceUnits = serviceUnits;
         this.serviceTopologies = serviceTopologies;
     }
 
-    public void addServiceUnit(ServiceUnitTemplate serviceUnit) {
+    public void addServiceUnit(ServiceTemplate serviceUnit) {
         if (serviceUnits == null) {
             serviceUnits = new HashSet<>();
         }
@@ -72,11 +66,11 @@ public class ServiceTopology extends ServiceEntity {
         return new ArrayList<>(serviceTopologies);
     }
 
-    public List<ServiceUnitTemplate> getServiceUnitsList() {
+    public List<ServiceTemplate> getServiceUnitsList() {
         return new ArrayList<>(serviceUnits);
     }
 
-    public List<ServiceUnitTemplate> getServiceUnitList() {
+    public List<ServiceTemplate> getServiceUnitList() {
         return new ArrayList<>(serviceUnits);
     }
 
@@ -85,11 +79,11 @@ public class ServiceTopology extends ServiceEntity {
         return serviceTopologies;
     }
 
-    public Set<ServiceUnitTemplate> getServiceUnits() {
+    public Set<ServiceTemplate> getServiceUnits() {
         return serviceUnits;
     }
 
-    public void setServiceUnits(Set<ServiceUnitTemplate> serviceUnits) {
+    public void setServiceUnits(Set<ServiceTemplate> serviceUnits) {
         this.serviceUnits = serviceUnits;
     }
 

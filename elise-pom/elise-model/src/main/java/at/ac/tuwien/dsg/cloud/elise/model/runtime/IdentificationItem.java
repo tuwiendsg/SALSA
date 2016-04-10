@@ -18,16 +18,12 @@
 package at.ac.tuwien.dsg.cloud.elise.model.runtime;
 
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  * One property which is used for the identification
+ *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
 public class IdentificationItem {
 
     protected String name;
@@ -35,14 +31,12 @@ public class IdentificationItem {
     protected EnvIDType type;
     protected EnvIDScope scope;
 
-    @XmlType
     public enum EnvIDType {
         IPv4,
         UUID,
         DomainID
     }
-    
-    @XmlType
+
     public enum EnvIDScope {
         DOMAIN, CONTEXT
     }

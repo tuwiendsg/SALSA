@@ -42,11 +42,13 @@ public class SalsaConfiguration {
     }
 
     public static String getBroker() {
-        return getGenericParameter("BROKER", "tcp://iot.eclipse.org:1883");
+        // tcp://iot.eclipse.org:1883
+        // amqp://128.130.172.215
+        return getGenericParameter("BROKER", "tcp://iot.eclipse.org:1883");  
     }
 
     public static String getBrokerType() {
-        return getGenericParameter("BROKER_TYPE", "mqtt");
+        return getGenericParameter("BROKER_TYPE", "mqtt"); //mqtt, amqp
     }
 
     public static String getBrokerExport() {

@@ -17,28 +17,27 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels;
 
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  * Additional parameters for executing capability via docker container.
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
-public class DockerExecution extends PrimitiveToStringConverable {
+
+public class DockerExecution extends ExtensibleModel {
 
     protected List<String> exposedPort = new ArrayList<>();
 
     public DockerExecution() {
+        super(DockerExecution.class);
     }
 
     
     public DockerExecution(String... exposes) {
+        super(DockerExecution.class);
         this.exposedPort.addAll(Arrays.asList(exposes));               
     }
 

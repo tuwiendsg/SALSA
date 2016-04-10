@@ -17,47 +17,33 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.runtime;
 
+import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Metric;
-import at.ac.tuwien.dsg.cloud.elise.model.relationships.ConnectToRelationshipInstance;
-import at.ac.tuwien.dsg.cloud.elise.model.relationships.HostOnRelationshipInstance;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntities;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.neo4j.graphdb.Direction;
-import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.NodeEntity;
-import org.springframework.data.neo4j.annotation.RelatedTo;
-import org.springframework.data.neo4j.annotation.RelatedToVia;
 
 /**
  * The instance managed by different cloud and management services
  *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
 @NodeEntity
 public class UnitInstance extends ServiceUnit {
 
-    protected String identification;
+    protected GlobalIdentification identification;
 
     // the configuration state. The state of the unit is in the domainInfo (see generic ServiceUnit.class)
     protected State state;
 
-    @RelatedTo(type = "HostOn", direction = Direction.OUTGOING)
-    @Fetch
+    // the unit is hosted on other unit. It should be object to realy link in the graphDB
     protected UnitInstance hostedOn;
 
-    @RelatedTo(type = "ConnectTo", direction = Direction.OUTGOING)
-    @Fetch
     protected Set<UnitInstance> connectTo = new HashSet<>();
 
 //    @RelatedToVia(type = "HostOn", direction = Direction.OUTGOING)
@@ -94,11 +80,11 @@ public class UnitInstance extends ServiceUnit {
         this.state = state;
     }
 
-    public String getIdentification() {
+    public GlobalIdentification getIdentification() {
         return identification;
     }
 
-    public void setIdentification(String identification) {
+    public void setIdentification(GlobalIdentification identification) {
         this.identification = identification;
     }
 
@@ -119,22 +105,39 @@ public class UnitInstance extends ServiceUnit {
 
     public void mergeWith(UnitInstance otherInstance) {
         // TODO: if this and otherInstance are the same category, merge the DomainInfo, not the ExtendInfo
-
         if (otherInstance == null) {
             return;
         }
-
-        this.getCapabilities().addAll(otherInstance.getCapabilities());
-        DomainEntity newEntity = otherInstance.parseDomainInfo();
-        if (newEntity != null) {
-            DomainEntities entities = this.parseExtendInfo();
-            if (entities == null) {
-                entities = new DomainEntities();
-            }
-            entities.hasDomainEntity(newEntity);
-            this.extendedInfo = entities.toJson();
+        System.out.println(otherInstance.getCapabilities());
+        System.out.println(this.getCapabilities());
+        if (otherInstance.getCategory() != null) {
+            this.category = otherInstance.getCategory();
         }
-        //  this.getDomainInfo().addAll(otherInstance.getDomainInfo());
+        if (otherInstance.getName() != null) {
+            this.name = otherInstance.getName();
+        }
+        if (otherInstance.getDomain() != null) {
+            this.domain = otherInstance.getDomain();
+        }
+
+        if (otherInstance.getState() != null) {
+            this.state = otherInstance.getState();
+        }
+
+        if (otherInstance.getCapabilities() != null) {
+            if (this.getCapabilities() == null) {
+                this.setCapabilities(new HashSet<Capability>());
+            }
+            this.getCapabilities().addAll(otherInstance.getCapabilities());
+        }
+
+        if (otherInstance.getExtra() != null) {
+            if (this.getExtra() == null) {
+                this.setExtra(new HashSet<ExtensibleModel>());
+            }
+            this.getExtra().addAll(otherInstance.getExtra());
+        }
+
     }
 
     public UnitInstance getHostedOn() {

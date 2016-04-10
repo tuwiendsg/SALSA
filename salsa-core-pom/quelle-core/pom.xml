@@ -29,17 +29,17 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
+            
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
+            
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
+            
         </dependency>
 
         <!-- SLF4J dependencies -->
@@ -57,7 +57,7 @@
     </dependencies>
  
     <repositories>
-        <repository>
+<!--        <repository>
             <id>infosys-maven-ext</id>
             <name>infosys-maven-releases</name>
             <url>http://repo.infosys.tuwien.ac.at/artifactory/ext</url>
@@ -67,7 +67,7 @@
             <id>infosys-maven-comot</id>
             <name>infosys-maven-releases</name>
             <url>http://repo.infosys.tuwien.ac.at/artifactory/comot</url>
-        </repository>
+        </repository>-->
 
     </repositories>
 

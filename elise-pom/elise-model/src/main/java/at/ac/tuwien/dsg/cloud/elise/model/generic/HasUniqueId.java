@@ -17,18 +17,12 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.generic;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * The entity which require a unique ID and cannot be duplicated in the ecosystem need to implement this class.
  *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(namespace = "http://infosys.tuwien.ac.at/elise/model")
 public interface HasUniqueId {
 
-    public String getId();
+    public String getUuid();
 }

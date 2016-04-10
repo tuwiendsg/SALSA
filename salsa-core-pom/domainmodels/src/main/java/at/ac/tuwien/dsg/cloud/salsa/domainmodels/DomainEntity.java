@@ -47,7 +47,7 @@ import java.util.logging.Logger;
     @JsonSubTypes.Type(value = SystemServiceInfo.class, name = "App_SystemService"),
     @JsonSubTypes.Type(value = WebAppInfo.class, name = "App_WebApp")
 })
-public class DomainEntity {
+public class DomainEntity extends ExtensibleModel{
 
     protected String domainID;
     protected String name;
@@ -56,9 +56,11 @@ public class DomainEntity {
     protected String currentState;
 
     public DomainEntity() {
+        super(DomainEntity.class);
     }
 
     public DomainEntity(ServiceCategory category, String domainID, String name, String... states) {
+        super(DomainEntity.class);
         this.category = category;
         this.domainID = domainID;
         this.name = name;

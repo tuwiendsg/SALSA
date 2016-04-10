@@ -22,17 +22,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  * The LocalIdentification is any kind of ID, assigned by a particular management service
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
+
 public class LocalIdentification {
 
     protected String assignedBy = null;

@@ -7,8 +7,8 @@ package at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface;
 
 import at.ac.tuwien.dsg.cloud.salsa.messaging.AMQPAdaptor.AMQPPublish;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.AMQPAdaptor.AMQPSubscribe;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.DSGQueuePublishLightweight;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.DSGQueueSubscribeLightweight;
+//import at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.DSGQueuePublishLightweight;
+//import at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.DSGQueueSubscribeLightweight;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor.MQTTPublish;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor.MQTTSubscribe;
 
@@ -39,8 +39,8 @@ public class MessageClientFactory {
                 return new MQTTPublish(getBroker());
             case "amqp":
                 return new AMQPPublish(getBroker());
-            case "dsg":
-                return new DSGQueuePublishLightweight(getBroker());
+//            case "dsg":
+//                return new DSGQueuePublishLightweight(getBroker());
             default:
                 return null;
         }
@@ -52,8 +52,8 @@ public class MessageClientFactory {
                 return new MQTTSubscribe(getBroker(), handler);
             case "amqp":
                 return new AMQPSubscribe(getBroker(), handler);
-            case "dsg":
-                return new DSGQueueSubscribeLightweight(getBroker(), handler);
+//            case "dsg":
+//                return new DSGQueueSubscribeLightweight(getBroker(), handler);
             default:
                 return null;
         }

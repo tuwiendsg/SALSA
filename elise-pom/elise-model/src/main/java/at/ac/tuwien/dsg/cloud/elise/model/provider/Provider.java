@@ -20,57 +20,53 @@ package at.ac.tuwien.dsg.cloud.elise.model.provider;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.data.neo4j.annotation.Indexed;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-
 import at.ac.tuwien.dsg.cloud.elise.model.generic.HasUniqueId;
 import java.io.IOException;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.NodeEntity;
 
 /**
  * Describe a provider, which include multiples Offered Service Unit
  *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
 @NodeEntity
 public class Provider implements HasUniqueId {
 
     @GraphId
     private Long graphID;
-    @Indexed(unique = true)
-    protected String id;
+
+    protected String uuid;
     protected String name;
     protected ProviderType providerType = ProviderType.IAAS;
-    protected Set<OfferedServiceUnit> offering = new HashSet();
+    protected Set<ServiceTemplate> offering = new HashSet();
+
+    public static enum ProviderType {
+        IAAS, PAAS, USERDEFINED;
+    }
 
     public Provider() {
     }
 
     public Provider(String name) {
         this.name = name;
-        this.id = ("Provider:" + name);
+        this.uuid = ("Provider:" + name);
     }
 
     public Provider(String name, ProviderType type) {
         this.name = name;
         this.providerType = type;
-        this.id = name;
+        this.uuid = ("Provider:" + name);
     }
 
-    public Provider hasOfferedServiceUnit(OfferedServiceUnit offered) {
+    public Provider hasOfferedServiceUnit(ServiceTemplate offered) {
         addOfferedServiceUnit(offered);
         return this;
     }
 
-    public void addOfferedServiceUnit(OfferedServiceUnit offered) {
-        offered.setId(getId() + "." + offered.getName());
+    public void addOfferedServiceUnit(ServiceTemplate offered) {
+        offered.setUuid(getUuid() + "." + offered.getName());
         this.offering.add(offered);
     }
 
@@ -81,34 +77,25 @@ public class Provider implements HasUniqueId {
     public String getName() {
         return name;
     }
-    
-    public Set<OfferedServiceUnit> getOffering() {
+
+    public Set<ServiceTemplate> getOffering() {
         return this.offering;
     }
 
     @Override
-    public String getId() {
-        return this.id;
+    public String getUuid() {
+        return this.uuid;
     }
 
     public void setId(String id) {
-        this.id = id;
-    }
-
-    @XmlType
-    public static enum ProviderType {
-
-        IAAS, PAAS, CUSTOM;
-
-        private ProviderType() {
-        }
+        this.uuid = id;
     }
 
     public void setProviderType(ProviderType providerType) {
         this.providerType = providerType;
     }
 
-    public void setOffering(Set<OfferedServiceUnit> offering) {
+    public void setOffering(Set<ServiceTemplate> offering) {
         this.offering = offering;
     }
 

@@ -33,8 +33,8 @@ public interface UnitInstanceRepository extends GraphRepository<UnitInstance> {
     @Query("match (n:UnitInstance) return n")
     Set<UnitInstance> listUnitInstance();
 
-    @Query("match (n:UnitInstance) where n.id={id} return n")
-    UnitInstance findByUniqueID(@Param(value = "id") String id);
+    @Query("match (n:UnitInstance) where n.uuid={uuid} return n")
+    UnitInstance findByUniqueID(@Param(value = "uuid") String uuid);
 
     @Query("match (n:UnitInstance) where n.name={name} return n")
     UnitInstance findByName(@Param(value = "name") String name);

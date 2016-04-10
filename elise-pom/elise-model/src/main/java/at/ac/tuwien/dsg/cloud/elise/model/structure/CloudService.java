@@ -17,23 +17,21 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.structure;
 
+import at.ac.tuwien.dsg.cloud.elise.model.generic.ServiceUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
 /**
  * The whole cloud service
+ *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
 @NodeEntity
-public class CloudService extends ServiceEntity {
+public class CloudService extends ServiceUnit {
 
     protected String accessIp;
 
@@ -44,12 +42,8 @@ public class CloudService extends ServiceEntity {
     public CloudService() {
     }
 
-    public CloudService(String id) {
-        super(id);
-    }
-
-    public CloudService(String id, String name, Long dateCreated) {
-        super(id, name);
+    public CloudService(String name, Long dateCreated) {
+        this.setName(name);
         this.dateCreated = dateCreated;
     }
 
@@ -64,7 +58,7 @@ public class CloudService extends ServiceEntity {
         return new ArrayList<>(serviceTopologies);
     }
 
-	// GENERATED METHODS
+    // GENERATED METHODS
     public Set<ServiceTopology> getServiceTopologies() {
         return serviceTopologies;
     }

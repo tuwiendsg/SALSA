@@ -17,58 +17,53 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.relationships;
 
-import at.ac.tuwien.dsg.cloud.elise.model.structure.ServiceUnitTemplate;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
-
+import at.ac.tuwien.dsg.cloud.elise.model.provider.ServiceTemplate;
 import org.springframework.data.neo4j.annotation.EndNode;
 import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.RelationshipEntity;
+import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.StartNode;
 
 /**
  * The connection between two ServiceUnitTemplate
+ *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
-@RelationshipEntity(type = "ConnectToTemplate")
+@NodeEntity
 public class ConnectToRelationshipTemplate {
-    @GraphId
-    private Long graphId;
 
+    @GraphId
+    private Long graphID;
     @StartNode
-    protected ServiceUnitTemplate from;
+    protected ServiceTemplate from;
     @EndNode
-    protected ServiceUnitTemplate to;
-    
+    protected ServiceTemplate to;
+
     // currently we use the format : metric1=value1;metric2=value2;...
     protected String properties;
 
     public ConnectToRelationshipTemplate() {
     }
 
-    public ConnectToRelationshipTemplate(ServiceUnitTemplate from, ServiceUnitTemplate to, String properties) {
+    public ConnectToRelationshipTemplate(ServiceTemplate from, ServiceTemplate to, String properties) {
         this.from = from;
         this.to = to;
         this.properties = properties;
     }
-    
-    public ServiceUnitTemplate getFrom() {
+
+    public ServiceTemplate getFrom() {
         return from;
     }
 
-    public void setFrom(ServiceUnitTemplate from) {
+    public void setFrom(ServiceTemplate from) {
         this.from = from;
     }
 
-    public ServiceUnitTemplate getTo() {
+    public ServiceTemplate getTo() {
         return to;
     }
 
-    public void setTo(ServiceUnitTemplate to) {
+    public void setTo(ServiceTemplate to) {
         this.to = to;
-    }   
+    }
+
 }

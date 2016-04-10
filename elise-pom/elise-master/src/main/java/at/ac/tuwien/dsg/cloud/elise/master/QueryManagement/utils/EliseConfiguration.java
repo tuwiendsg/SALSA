@@ -215,10 +215,12 @@ public class EliseConfiguration {
     }
 
     public static String getBroker() {
-        return getSalsaGenericParameter("BROKER", "tcp://iot.eclipse.org:1883");
+        // tcp://iot.eclipse.org:1883
+        // amqp://128.130.172.215
+        return getSalsaGenericParameter("BROKER", "tcp://iot.eclipse.org:1883"); 
     }
 
     public static String getBrokerType() {
-        return getSalsaGenericParameter("BROKER_TYPE", "mqtt");
+        return getSalsaGenericParameter("BROKER_TYPE", "mqtt"); //mqtt ,  amqp
     }
 }

@@ -11,7 +11,6 @@
     <name>elise-pom</name>
     <modules>
         <module>elise-model</module>
-        <module>elise-model-plain</module>
         <module>elise-master</module>
         <module>elise-extensions</module>
         <module>elise-conductor</module>
@@ -21,18 +20,15 @@
         <!-- JACKSON -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-jaxrs</artifactId>
-            <version>1.9.13</version>
+            <artifactId>jackson-jaxrs</artifactId>            
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>1.9.13</version>
+            <artifactId>jackson-core-asl</artifactId>            
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-xc</artifactId>
-            <version>1.9.13</version>
+            <artifactId>jackson-xc</artifactId>            
         </dependency> 
         
         

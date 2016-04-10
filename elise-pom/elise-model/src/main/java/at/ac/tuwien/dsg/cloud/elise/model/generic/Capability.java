@@ -27,16 +27,10 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonMethod;
 import org.codehaus.jackson.map.ObjectMapper;
-
 import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.Indexed;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
 /**
@@ -44,34 +38,27 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
  *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
 @NodeEntity
-public class Capability {
+public class Capability implements HasUniqueId {
 
     @GraphId
     private Long graphID;
-
-    @Indexed(unique = true)
-    protected String id;
+    protected String uuid;
 
     protected String name;
     protected String executedBy;
     protected ExecutionMethod executionMethod;
 
     /**
-     * The execution model is store as String and will be (un)marshal via JSON
+     * The execution model is store as String and will be (un)marshal via JSON This should be replaced by the API manage
      */
     protected String executionModel;
     protected Set<String> parameters = new HashSet<>();
-    protected Set<CapabilityEffect> effects = new HashSet<>();
 
     public Capability() {
     }
 
-    @XmlType
     public static enum ExecutionMethod {
-
         Script,
         REST,
         Dockerfile,
@@ -95,11 +82,6 @@ public class Capability {
             this.parameters = new HashSet<>();
         }
         this.parameters.addAll(Arrays.asList(args));
-        return this;
-    }
-
-    public Capability hasCapabilityEffect(CapabilityEffect effect) {
-        this.effects.add(effect);
         return this;
     }
 
@@ -189,16 +171,13 @@ public class Capability {
         return parameters;
     }
 
-    public Set<CapabilityEffect> getEffects() {
-        return effects;
+    @Override
+    public String getUuid() {
+        return uuid;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
 }

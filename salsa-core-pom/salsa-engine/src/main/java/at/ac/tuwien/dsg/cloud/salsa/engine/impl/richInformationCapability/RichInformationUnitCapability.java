@@ -19,7 +19,6 @@ package at.ac.tuwien.dsg.cloud.salsa.engine.impl.richInformationCapability;
 
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseManager;
-import at.ac.tuwien.dsg.cloud.elise.master.RESTService.UnitInstanceInfoManagement;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
@@ -49,6 +48,8 @@ import java.util.List;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.slf4j.Logger;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.State;
+import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseRepository;
 
 /**
  * This enhance the action by adding information into ELISE database
@@ -79,12 +80,11 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         logger.debug("Creating unit instance");
         UnitInstance unitInst = makeUnitInstance(service, unit, instance);
 
-        unitInst.hasExtra("salsaID", service.getId() + "/" + unit.getId() + "/" + instance.getInstanceId());
-
-        GlobalIdentification globalID = new GlobalIdentification(unitInst.getCategory());
+//        unitInst.hasExtra("salsaID", service.getId() + "/" + unit.getId() + "/" + instance.getInstanceId());
+        GlobalIdentification globalID = new GlobalIdentification();
         globalID.setUuid(instance.getUuid().toString());
         LocalIdentification id = new LocalIdentification(unitInst.getCategory(), "SALSA");
-        logger.debug("Setting identification with salsaID=" + unitInst.getExtra().get("salsaID"));
+//        logger.debug("Setting identification with salsaID=" + unitInst.getExtra().get("salsaID"));
         id.hasIdentification(IDType.SALSA_SERVICE.toString(), serviceId);
         id.hasIdentification(IDType.SALSA_TOPOLOGY.toString(), serviceId + "/" + topo.getId());
         id.hasIdentification(IDType.SALSA_UNIT.toString(), serviceId + "/" + nodeId);
@@ -92,7 +92,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
 
         // in the case it is a sensor (name started with sensor ??) and hosted on docker ==> we may have GovOps        
         if (unit.getId().toLowerCase().startsWith("sensor") && !unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
-            logger.debug("Instance {} is a sensor, checking IP_PORT identification", unitInst.getExtra().get("salsaID"));
+//            logger.debug("Instance {} is a sensor, checking IP_PORT identification", unitInst.getExtra().get("salsaID"));
             ServiceUnit hostedUnit = service.getComponentById(unit.getHostedId());
             // get port map of Docker
             if (hostedUnit != null && hostedUnit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
@@ -123,7 +123,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
 
         globalID.addLocalIdentification(id);
         logger.debug("adding localIdentification for node: {}/{} with id: {}", nodeId, instanceId, globalID.toJson());
-        unitInst.setIdentification(globalID.toJson());
+        unitInst.setIdentification(globalID);
         logger.debug("Prepare to connect to EliseManager service: {}", EliseConfiguration.getRESTEndpointLocal());
         // TODO: add more local identification here to adapt with other management tool: SYBL, rtGovOps?
         // save the UnitInstance into the graph DB
@@ -144,7 +144,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             logger.error("Cannot contact to ELISE");
         }
 
-        UnitInstanceInfoManagement unitInstanceDAO = (UnitInstanceInfoManagement) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceInfoManagement.class, Collections.singletonList(new JacksonJsonProvider()));
+        EliseRepository unitInstanceDAO = (EliseRepository) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseRepository.class, Collections.singletonList(new JacksonJsonProvider()));
 
         if (unitInstanceDAO != null) {
             logger.debug("unitInstanceDao is not null, prepare to add");
@@ -155,9 +155,9 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             ServiceInstance hostedServiceInstance = service.getInstanceById(unit.getHostedId(), instance.getHostedId_Integer());
             if (hostedServiceInstance != null) {
                 logger.debug("Found a instance of host-on relationship: instance " + unit.getHostedId() + "/" + hostedServiceInstance.getInstanceId());
-                UnitInstance hostedUnitInstance = unitInstanceDAO.getUnitInstanceByID(hostedServiceInstance.getUuid().toString());
+                UnitInstance hostedUnitInstance = unitInstanceDAO.readUnitInstance(hostedServiceInstance.getUuid().toString());
                 if (hostedUnitInstance != null) {
-                    logger.debug(" --> and yes we found it in the database, phew: " + hostedUnitInstance.getId() + "/" + hostedUnitInstance.getName());
+                    logger.debug(" --> and yes we found it in the database, phew: " + hostedUnitInstance.getUuid() + "/" + hostedUnitInstance.getName());
                     hostedUnitInstance.setCapabilities(null); // ortherwise salsa will persist many capabilities                    
                     unitInst.hostedOnInstance(hostedUnitInstance);
 //                    HostOnRelationshipInstance newRela = new HostOnRelationshipInstance(unitInst, hostedUnitInstance);
@@ -176,9 +176,9 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
                     logger.debug("The unit is connect-to: " + connectedUnit.getId());
                     ServiceInstance connectedServiceInstance = connectedUnit.getInstancesList().get(0);
                     logger.debug(" --> and we will check if the instance is exist in the db, id: " + connectedServiceInstance.getUuid());
-                    UnitInstance connectedUnitInstance = unitInstanceDAO.getUnitInstanceByID(connectedServiceInstance.getUuid().toString());
+                    UnitInstance connectedUnitInstance = unitInstanceDAO.readUnitInstance(connectedServiceInstance.getUuid().toString());
                     if (connectedUnitInstance != null) {
-                        logger.debug("  ----> yes the instance is exist, save it: " + connectedUnitInstance.getId());
+                        logger.debug("  ----> yes the instance is exist, save it: " + connectedUnitInstance.getUuid());
                         connectedUnitInstance.setCapabilities(null);
                         unitInst.connectToInstance(connectedUnitInstance);
 //                        ConnectToRelationshipInstance newRela = new ConnectToRelationshipInstance(unitInst, connectedUnitInstance, "");
@@ -191,7 +191,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
                     logger.debug("Some error should happen, no service unit is found with id : " + connectedID);
                 }
             }
-            unitInstanceDAO.addUnitInstance(unitInst);
+            unitInstanceDAO.saveUnitInstance(unitInst);
         } else {
             logger.error("Cannot connect to the elise DB");
         }
@@ -202,7 +202,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
     @Override
     public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {
         logger.debug("Trying to remove information of {}/{}/{} from ELISE database...", serviceId, nodeId, instanceId);
-        UnitInstanceInfoManagement unitInstanceDAO = (UnitInstanceInfoManagement) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceInfoManagement.class, Collections.singletonList(new JacksonJsonProvider()));
+        EliseRepository unitInstanceDAO = (EliseRepository) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseRepository.class, Collections.singletonList(new JacksonJsonProvider()));
         SalsaCenterConnector centerCon = new SalsaCenterConnector(SalsaConfiguration.getSalsaCenterEndpointLocalhost(), "/tmp", EngineLogger.logger);
 
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
@@ -221,7 +221,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             if (unitInstanceDAO != null) {
                 logger.debug("Trying to delete unit with UUID: {}" + instance.getUuid());
                 try {
-                    unitInstanceDAO.deleteUnitInstanceByID(instance.getUuid().toString());
+                    unitInstanceDAO.deleteUnitInstance(instance.getUuid().toString());
                     EliseManager eliseManager = ((EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider())));
                     logger.debug("Now deleting the unit identification: " + instance.getUuid().toString());
                     eliseManager.deleteGlobalIdentification(instance.getUuid().toString());
@@ -242,9 +242,10 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         logger.debug("Making unit instance: {}/{}/{}", service.getId(), unit.getId(), ins.getInstanceId());
         UnitInstance unitInst = new UnitInstance(unit.getId(), null);
         ServiceTopology topo = service.getTopologyOfNode(unit.getId());
-        unitInst.hasExtra("salsaID", service.getId() + "/" + topo.getId() + "/" + unit.getId() + "/" + ins.getInstanceId());
-        unitInst.hasExtra("salsaState", ins.getState().getNodeStateString());
-        unitInst.setId(ins.getUuid().toString());
+//        unitInst.hasExtra("salsaID", service.getId() + "/" + topo.getId() + "/" + unit.getId() + "/" + ins.getInstanceId());
+//        unitInst.hasExtra("salsaState", ins.getState().getNodeStateString());
+        unitInst.setState(State.valueOf(ins.getState().toString()));
+        unitInst.setUuid(ins.getUuid().toString());
 
         /**
          * MAKE INITIAL DOMAIN INFO
@@ -260,7 +261,8 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             if (VMInfo.getPackagesDependencies() != null && VMInfo.getPackagesDependencies().getPackageDependency() != null) {
                 VMInfo.getPackagesDependencies().getPackageDependency().addAll(vmDescription.getPackagesDependenciesList().getPackageDependency());
             }
-            unitInst.setDomainInfo(VMInfo.toJson());
+            unitInst.setDomain(VMInfo);
+//            unitInst.setDomainClazz(VMInfo.getClass());
         } else if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
             logger.debug("Making App container domain info: {}/{}/{}", service.getId(), unit.getId(), ins.getInstanceId());
             unitInst.setCategory(ServiceCategory.Docker);
@@ -269,7 +271,8 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             if (dockerDescription != null) {
                 logger.debug("Adding docker feature ...");
                 DockerInfo dockerInfo = new DockerInfo("docker", dockerDescription.getInstanceId(), dockerDescription.getDockername());
-                unitInst.setDomainInfo(dockerInfo.toJson());
+                unitInst.setDomain(dockerInfo);
+//                unitInst.setDomainClazz(dockerInfo.getClass());
             }
 
         } else if (unit.getType().equals(SalsaEntityType.TOMCAT.getEntityTypeString())) {
@@ -283,12 +286,13 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             if (ins.getProperties() != null) {
                 SalsaInstanceDescription_SystemProcess sysProcess = (SalsaInstanceDescription_SystemProcess) ins.getProperties().getAny();
                 SystemServiceInfo systemServiceInfo = new SystemServiceInfo(sysProcess.getName(), sysProcess.getName());
-                unitInst.setDomainInfo(systemServiceInfo.toJson());
+                unitInst.setDomain(systemServiceInfo);
+//                unitInst.setDomainClazz(systemServiceInfo.getClass());
             }
         } else {
             unitInst.setCategory(ServiceCategory.ExecutableApp);
         }
-        unitInst.setUnitType(unit.getType());
+        unitInst.setCategory(ServiceCategory.valueOf(unit.getType().toString()));
 
         List<at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.PrimitiveOperation> pos = ins.getPrimitive();
         boolean existedDeploy = false;

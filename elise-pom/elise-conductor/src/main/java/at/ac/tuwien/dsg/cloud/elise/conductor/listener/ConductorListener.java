@@ -40,7 +40,6 @@ import org.apache.commons.io.FileUtils;
 
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
@@ -271,11 +270,11 @@ public class ConductorListener {
                         logger.debug("All the collection has done !");
                         if (tmpVar != null && !tmpVar.isEmpty()) {
                             for (UnitInstance i : tmpVar) {
-                                System.out.println("Adding unit instance ID for: " + i.getName() + "/" + i.getId());
+                                System.out.println("Adding unit instance ID for: " + i.getName() + "/" + i.getUuid());
                                 LocalIdentification si = collector.identify(i);
-                                GlobalIdentification gi = new GlobalIdentification(si.getCategory());   // the instance contain a globalID, but null uuid and has 1 localID
+                                GlobalIdentification gi = new GlobalIdentification();   // the instance contain a globalID, but null uuid and has 1 localID
                                 gi.addLocalIdentification(si);
-                                i.setIdentification(gi.toJson());
+                                i.setIdentification(gi);
                             }
 
                             unitInstances.addAll(tmpVar);
@@ -314,11 +313,11 @@ public class ConductorListener {
         UnitInstanceWrapper instances = new UnitInstanceWrapper(aCollector.collectAllInstance());
         logger.debug("Prepare to send items, Number: " + instances.getUnitInstances().size());
         for (UnitInstance i : instances.getUnitInstances()) {
-            System.out.println("Adding local identification for instance: " + i.getName() + "/" + i.getId());
+            System.out.println("Adding local identification for instance: " + i.getName() + "/" + i.getUuid());
             LocalIdentification si = aCollector.identify(i);
-            GlobalIdentification gi = new GlobalIdentification(si.getCategory());   // the instance contain a globalID, but null uuid and has 1 localID
+            GlobalIdentification gi = new GlobalIdentification();   // the instance contain a globalID, but null uuid and has 1 localID
             gi.addLocalIdentification(si);
-            i.setIdentification(gi.toJson());
+            i.setIdentification(gi);
         }
         MessagePublishInterface publish = factory.getMessagePublisher();
         SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.elise_instanceInfoUpdate, ConductorConfiguration.getConductorID(), EliseQueueTopic.FEEDBACK_TOPIC, "", instances.toJson());
@@ -331,9 +330,9 @@ public class ConductorListener {
         UnitInstanceWrapper wrapper = new UnitInstanceWrapper();
         UnitInstance instance = aCollector.collectInstanceByID(domainID);
         LocalIdentification si = aCollector.identify(instance);
-        GlobalIdentification gi = new GlobalIdentification(si.getCategory());   // the instance contain a globalID, but null uuid and has 1 localID
+        GlobalIdentification gi = new GlobalIdentification();   // the instance contain a globalID, but null uuid and has 1 localID
         gi.addLocalIdentification(si);
-        instance.setIdentification(gi.toJson());
+        instance.setIdentification(gi);
 
         wrapper.hasInstance(instance);
 

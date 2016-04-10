@@ -17,16 +17,11 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.runtime;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 /**
  * The states of the configuration. The actual state of the unit instance can only retrieved in the DomainInfo
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
+
 public enum State {
     UNDEPLOYED,
     ALLOCATING,

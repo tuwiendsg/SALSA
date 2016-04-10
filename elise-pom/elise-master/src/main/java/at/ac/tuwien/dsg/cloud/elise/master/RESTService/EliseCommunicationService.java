@@ -239,9 +239,9 @@ public class EliseCommunicationService implements EliseCommunicationInterface {
             UnitInstanceWrapper wrapper = (UnitInstanceWrapper) mapper.readValue(message.getPayload(), UnitInstanceWrapper.class);
             Set<UnitInstance> uis = wrapper.getUnitInstances();
             logger.debug("Recieved " + uis.size() + " unitinstance. Saving....");
-            UnitInstanceInfoManagement unitInstanceDAO = (UnitInstanceInfoManagement) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), UnitInstanceInfoManagement.class, Collections.singletonList(new JacksonJsonProvider()));
+            EliseRepository unitInstanceDAO = (EliseRepository) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseRepository.class, Collections.singletonList(new JacksonJsonProvider()));
             for (UnitInstance u : uis) {
-                unitInstanceDAO.addUnitInstance(u);
+                unitInstanceDAO.saveUnitInstance(u);
             }
             long now = Calendar.getInstance().getTimeInMillis();
             long responseTime = now - startTime;

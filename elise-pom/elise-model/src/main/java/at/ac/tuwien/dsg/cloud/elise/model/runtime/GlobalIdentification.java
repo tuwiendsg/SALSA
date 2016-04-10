@@ -17,12 +17,8 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.runtime;
 
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
@@ -30,22 +26,14 @@ import org.codehaus.jackson.map.ObjectMapper;
  *
  * @author Duc-Hung LE
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
 public class GlobalIdentification {
 
     protected String uuid;
-
-    protected ServiceCategory category;
 
     // note: cannot use Set. These LocalIdentifications are all equal due to the hashcode and equal functions.
     protected ArrayList<LocalIdentification> localIDs = new ArrayList<>();
 
     public GlobalIdentification() {
-    }
-
-    public GlobalIdentification(ServiceCategory category) {
-        this.category = category;
     }
 
     public GlobalIdentification hasLocalIdentification(LocalIdentification local) {
@@ -63,10 +51,6 @@ public class GlobalIdentification {
 
     public ArrayList<LocalIdentification> getLocalIDs() {
         return localIDs;
-    }
-
-    public ServiceCategory getCategory() {
-        return category;
     }
 
     /**

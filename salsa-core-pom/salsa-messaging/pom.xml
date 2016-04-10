@@ -26,14 +26,16 @@
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.utilities</groupId>
             <artifactId>messaging-lightweight</artifactId>
-            <version>0.0.1-20151001.094612-1</version>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.utilities</groupId>
             <artifactId>messaging-api</artifactId>
-            <version>0.0.1-20151001.094612-1</version>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        
+        
         
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
@@ -70,6 +72,14 @@
             <id>Eclipse Paho Repo</id>
             <url>https://repo.eclipse.org/content/repositories/paho-releases/</url>
         </repository>
+<!--        <repository>
+            <id>salsa-mymaven-repository</id>
+            <name>salsa-mymaven-repository</name>
+            <url>https://mymavenrepo.com/repo/eYjnHcp57UrjNnt7Nzvu/</url>
+        </repository>-->
+        
+        
+        
         <repository>
             <id>infosys-maven-dev</id>
             <name>infosys-maven-releases</name>

@@ -17,25 +17,15 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.generic;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
-import org.springframework.data.neo4j.annotation.GraphId;
-import org.springframework.data.neo4j.annotation.NodeEntity;
-
-
 
 /**
  * This represents arbitrary metric types and value
- * @author Duc-Hung Le 
+ *
+ * @author Duc-Hung Le
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType
-@NodeEntity
 public class Metric {
 
-    @GraphId Long graphID;
-    
     protected String name;
     protected String measurementUnit;
     protected MetricType metricType;
@@ -87,7 +77,5 @@ public class Metric {
     public void setValue(Object value) {
         this.value = value;
     }
-    
-    
 
 }

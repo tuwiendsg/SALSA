@@ -53,8 +53,8 @@ public class IdentificationManager {
         }
         return new IdentificationDB();
     }
-    
-    public void deleteAndUpdate(String globalID){
+
+    public void deleteAndUpdate(String globalID) {
         IdentificationDB currentDB = load();
         currentDB.removeGlobalID(globalID);
     }
@@ -65,32 +65,32 @@ public class IdentificationManager {
         List<GlobalIdentification> existGlobals = new ArrayList<>();
         for (GlobalIdentification ite : currentDB.getIdentifications()) {
             if (ite.addLocalIdentification(entityComposedID)) {
-                existGlobals.add(ite);                
+                existGlobals.add(ite);
             }
         }
 
         // update        
         if (existGlobals.isEmpty()) {  // if there is no existSI in the DB, create one
-            System.out.println("There is no exist SI match with Identification, generating one...:" + entityComposedID);            
-            GlobalIdentification newGlobal = new GlobalIdentification(entityComposedID.getCategory());
+            System.out.println("There is no exist SI match with Identification, generating one...:" + entityComposedID);
+            GlobalIdentification newGlobal = new GlobalIdentification();
             newGlobal.setUuid(possibleGlobalID);
             newGlobal.addLocalIdentification(entityComposedID); // add again
             existGlobals.add(newGlobal);
             currentDB.hasIdentification(newGlobal);
-        }        
+        }
 
         // and save to file        
         try {
             mapper.writeValue(storage, currentDB);
         } catch (IOException ex) {
             logger.error("Cannot save Identification. Error: " + ex);
-            ex.printStackTrace();            
+            ex.printStackTrace();
         }
         return existGlobals;
 
     }
 
-  //  private synchronized void save(IdentificationDB idb)
+    //  private synchronized void save(IdentificationDB idb)
 //  {
 //    IdentificationDB currentDB = load();
 //    currentDB.getIdentifications().addAll(idb.getIdentifications());

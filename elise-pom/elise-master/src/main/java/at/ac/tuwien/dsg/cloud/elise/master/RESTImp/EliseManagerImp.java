@@ -19,7 +19,6 @@ package at.ac.tuwien.dsg.cloud.elise.master.RESTImp;
 
 import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.CollectorDescription;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseManager;
-import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.OfferedServiceRepository;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.IdentificationManager;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
@@ -41,6 +40,7 @@ import javax.ws.rs.core.Response;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.ServiceTemplateRepository;
 
 /**
  *
@@ -167,7 +167,7 @@ public class EliseManagerImp implements EliseManager {
 
     // FOR GENERAL TASKS
     @Autowired
-    OfferedServiceRepository surepo;
+    ServiceTemplateRepository surepo;
 
     @Override
     public String health() {

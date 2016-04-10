@@ -211,7 +211,20 @@
             <name>infosys-maven-releases</name>
             <url>http://repo.infosys.tuwien.ac.at/artifactory/comot</url>
         </repository>
+        
+<!--         <repository>
+            <id>infosys-maven-comot</id>
+            <name>infosys-maven-releases</name>
+            <url>https://mymavenrepo.com/repo/eYjnHcp57UrjNnt7Nzvu/</url>
+        </repository>-->
     </repositories>
+    
+<!--    <distributionManagement>
+        <repository>
+            <id>mymaven.repo</id>
+            <url>https://mymavenrepo.com/repo/1nOwDrpLIJraVvWNCbCD/</url>
+        </repository>
+    </distributionManagement>-->
 
 
 </project>
