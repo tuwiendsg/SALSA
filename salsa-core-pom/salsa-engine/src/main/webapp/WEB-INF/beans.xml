@@ -15,7 +15,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
             <ref bean="engineBean" />
             <ref bean="viewBean" />
             <ref bean="InternalManagement" />
-            <ref bean="QuelleBean" />
+            <!--<ref bean="QuelleBean" />-->
             <ref bean="SmartDeploymentBean" />
             <ref bean="EngineListener" />
         </jaxrs:serviceBeans>
@@ -27,7 +27,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
     <bean id="engineBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineImplAll" />
     <bean id="viewBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.ViewGenerator" />
     <bean id="InternalManagement" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.InternalManagement" />    
-    <bean id="QuelleBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.QuelleService" />
+    <!--<bean id="QuelleBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.QUELLE.QuelleService" />-->
     <bean id="SmartDeploymentBean" class="at.ac.tuwien.dsg.cloud.salsa.engine.smartdeployment.main.SmartDeploymentService" />
     <bean id="EngineListener" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaEngineListener" />
     <bean id="ExceptionMapper" class="at.ac.tuwien.dsg.cloud.salsa.engine.services.SalsaExceptionResponseMapper" />

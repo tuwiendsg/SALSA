@@ -200,23 +200,7 @@
             <url>http://repo.spring.io/libs-release</url>
         </repository>
         
-        <repository>
-            <id>infosys-maven-ext</id>
-            <name>infosys-maven-releases</name>
-            <url>http://repo.infosys.tuwien.ac.at/artifactory/ext</url>
-        </repository>
-        
-        <repository>
-            <id>infosys-maven-comot</id>
-            <name>infosys-maven-releases</name>
-            <url>http://repo.infosys.tuwien.ac.at/artifactory/comot</url>
-        </repository>
-        
-<!--         <repository>
-            <id>infosys-maven-comot</id>
-            <name>infosys-maven-releases</name>
-            <url>https://mymavenrepo.com/repo/eYjnHcp57UrjNnt7Nzvu/</url>
-        </repository>-->
+      
     </repositories>
     
 <!--    <distributionManagement>

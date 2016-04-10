@@ -17,7 +17,6 @@
     <modules>
         <module>salsa-common</module>
         <module>salsa-engine</module>
-        <module>quelle-core</module>
         <module>salsa-messaging</module>
         <module>salsa-pioneer</module>
         <module>domainmodels</module>

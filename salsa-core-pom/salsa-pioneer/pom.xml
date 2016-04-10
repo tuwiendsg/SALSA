@@ -38,6 +38,13 @@
         </dependency>
         
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+        
+        <dependency>
             <!-- Just for its CircularFifoBuffer... -->
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>

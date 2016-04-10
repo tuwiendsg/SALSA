@@ -23,17 +23,17 @@
             <type>jar</type>
         </dependency>
         
-        <dependency>
+<!--        <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.utilities</groupId>
             <artifactId>messaging-lightweight</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+        </dependency>-->
         
-        <dependency>
+<!--        <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.utilities</groupId>
             <artifactId>messaging-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+        </dependency>-->
         
         
         
@@ -80,7 +80,7 @@
         
         
         
-        <repository>
+<!--        <repository>
             <id>infosys-maven-dev</id>
             <name>infosys-maven-releases</name>
             <url>http://repo.infosys.tuwien.ac.at/artifactory/dev</url>
@@ -89,6 +89,6 @@
             <id>infosys-maven-comot</id>
             <name>infosys-maven-releases</name>
             <url>http://repo.infosys.tuwien.ac.at/artifactory/comot</url>
-        </repository>
+        </repository>-->
     </repositories>
 </project>
