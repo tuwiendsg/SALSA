@@ -62,10 +62,10 @@ public interface EliseRepository {
 
     /* UNIT INSTANCE MANAGEMENT */
     /**
-     * Get the instance. The DomainInfo is parsing based on the category of the service
+     * Read an unit instance from the database and all its extensions
      *
-     * @param uniqueID
-     * @return an unit instance
+     * @param uniqueID The uuid of the unit
+     * @return An unit instance object
      */
     @GET
     @Path("/instance/{uniqueID}")
@@ -73,13 +73,14 @@ public interface EliseRepository {
     UnitInstance readUnitInstance(@PathParam("uniqueID") String uniqueID);
 
     /**
-     * Get the instance base on some basic metadata, managed by ELISE The metadata can be null
+     * Get the unit instance base on some basic metadata, managed by ELISE.
+     * The metadata can be null if not available.
      *
-     * @param name
-     * @param category
-     * @param state
-     * @param hostedOnID
-     * @return
+     * @param name Name of the service instance, e.g. LoadBalancerUnit
+     * @param category The category, e.g. docker
+     * @param state The state, e.g. to get all "error" instance
+     * @param hostedOnID To find all instances which is hosted by an instance
+     * @return A list of unit instances.
      */
     @GET
     @Path("/instance/")
@@ -92,9 +93,9 @@ public interface EliseRepository {
 
     /**
      * Get the list of instance with external model info, e.g. location at xyz
-     *
-     * @param extra
-     * @return
+     * The matching of extended info is similar search.
+     * @param extra The template of extra information
+     * @return A list of unit instances with similar extra info.
      */
     @POST
     @Path("/instance/querymeta")
@@ -102,10 +103,10 @@ public interface EliseRepository {
     Set<UnitInstance> readUnitInstanceByExtension(List<ExtensibleModel> extra);
 
     /**
-     * Add new or update an instance
+     * Add new or update an unit instance.
      *
-     * @param unitInstance
-     * @return the ID of the added instance, or null if failed
+     * @param unitInstance The instance to be saved
+     * @return The object of the instance include DB id, or null if failed
      */
     @POST
     @Path("/instance")
@@ -113,20 +114,28 @@ public interface EliseRepository {
     @Produces(MediaType.APPLICATION_JSON)
     UnitInstance saveUnitInstance(UnitInstance unitInstance);
 
+    /**
+     * To save a relationship between two instances
+     * @param hostOnRela The relationship type
+     */
     @POST
     @Path("/instance/relationship/hoston")
     @Consumes(MediaType.APPLICATION_JSON)
     void saveRelationshipHostOn(HostOnRelationshipInstance hostOnRela);
 
+    /**
+     * To save a relationship between two instances
+     * @param connectToRela The relationship type
+     */
     @POST
     @Path("/instance/relationship/connectto")
     @Consumes(MediaType.APPLICATION_JSON)
     void saveRelationshipConnectTo(ConnectToRelationshipInstance connectToRela);
 
     /**
-     * Delete unit by ID
+     * Delete unit instance by ID
      *
-     * @param uniqueID
+     * @param uniqueID The ID of the unit
      */
     @DELETE
     @Path("/instance/{uniqueID}")
@@ -135,62 +144,102 @@ public interface EliseRepository {
     /**
      * Filter unit instance by an ID
      *
-     * @param query A filter to query the result
-     * @return a set of unit instancess
+     * @param query A filter to query the result.
+     * This functions will be replated by the readUnitInstanceByExtension function
+     * @return A set of unit instancess
      */
     @POST
     @Path("/instance/query")
     @Consumes(MediaType.APPLICATION_JSON)
     public Set<UnitInstance> query(EliseQuery query);
 
+    /** CRUD for providers **/
+    
     /**
-     * CRUD for providers
+     * Read information about provider
+     * @param uniqueID the uuid of provider
+     * @return An provider object
      */
     @GET
     @Path("/provider/{uniqueID}")
     @Produces(MediaType.APPLICATION_JSON)
     Provider readProvider(@PathParam("uniqueID") String uniqueID);
 
+    /**
+     * Get a list of all available provider
+     * @return A list of providers
+     */
     @GET
     @Path("/provider")
     @Produces(MediaType.APPLICATION_JSON)
     Set<Provider> readAllProviders();
 
+    /**
+     * To save a provider
+     * @param provider the information
+     * @return the assigned id of provider 
+     */
     @POST
     @Path("/provider")
     @Consumes(MediaType.APPLICATION_JSON)
     String saveProvider(Provider provider);
 
+    /**
+     * Delete information of provider from DB
+     * @param uniqueID The id of the provider to be deleted
+     */
     @DELETE
     @Path("/provider/{uniqueID}")
     @Produces(MediaType.APPLICATION_JSON)
     void deleteProvider(@PathParam("uniqueID") String uniqueID);
 
+    /** CRUD for service template  **/
+    
     /**
-     * CRUD for service template
+     * To read service template     
+     * @param uniqueID The uuid of the template
+     * @return an service template object
      */
     @GET
     @Path("/servicetemplate/{uniqueID}")
     @Produces(MediaType.APPLICATION_JSON)
     ServiceTemplate readServiceTemplate(@PathParam("uniqueID") String uniqueID);
 
+    /**
+     * Get all the list of service template
+     * @return A set of service templates
+     */
     @GET
     @Path("/servicetemplate")
     @Produces(MediaType.APPLICATION_JSON)
     Set<ServiceTemplate> readAllServiceTemplates();
 
+    /**
+     * Create new or update a service template
+     * @param serviceTemplate the service template to be saved
+     * @return The object with ID from the DB
+     */
     @POST
     @Path("/servicetemplate")
     @Consumes(MediaType.APPLICATION_JSON)
-    String saveServiceTemplate(ServiceTemplate provider);
-
-    @DELETE
-    @Path("/servicetemplate/{uniqueID}")
     @Produces(MediaType.APPLICATION_JSON)
-    String deleteServiceTemplate(@PathParam("uniqueID") String uniqueID);
+    ServiceTemplate saveServiceTemplate(ServiceTemplate serviceTemplate);
 
     /**
-     * ARTIFACT REPOSITORY
+     * Delete the service template from DB
+     * @param uniqueID The uuid of the template
+     */
+    @DELETE
+    @Path("/servicetemplate/{uniqueID}")
+    void deleteServiceTemplate(@PathParam("uniqueID") String uniqueID);
+
+    /**  ARTIFACT REPOSITORY **/
+    /**
+     * Read the artifact information. The parameters are optional.
+     * @param name E.g. haproxy.sh
+     * @param version E.g. v1.0
+     * @param type E.g. shellscript
+     * @return The list of the artifacts
      */
     @GET
     @Path("/artifact/")
@@ -200,11 +249,21 @@ public interface EliseRepository {
             @QueryParam("version") String version,
             @QueryParam("type") String type);
 
+    /**
+     * To create new or update artifacts
+     * @param artifact the information
+     * @return the object from DB
+     */
     @POST
     @Path("/artifact")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     Artifact saveArtifact(Artifact artifact);
 
+    /**
+     * To delete the artifact
+     * @param artifact The artifact object
+     */
     @DELETE
     @Path("/artifact")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -213,15 +272,20 @@ public interface EliseRepository {
     /**
      * SOME STATIC INFORMATION *
      */
+    
     /**
-     * Return a list of supported service unit types.
-     *
+     * Return a list of supported service unit types. 
+     * This information is static in SALS
      * @return A list of categories of service units
      */
     @GET
     @Path("/categories")
     public Set<String> getUnitCategory();
 
+    /**
+     * To check the availability of this RESTful API. Use for testing.
+     * @return A quick message
+     */
     @GET
     @Path("/health")
     public String health();

@@ -5,18 +5,18 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper;
 
-import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
+import at.ac.tuwien.dsg.cloud.elise.model.provider.Artifact;
 import org.springframework.core.convert.converter.Converter;
 
 /**
  *
  * @author hungld
  */
-public class StringToGlobalIdentification implements Converter<String, GlobalIdentification> {
+public class ArtifactToString implements Converter<Artifact, String> {
 
     @Override
-    public GlobalIdentification convert(String s) {
-        return GlobalIdentification.fromJson(s);
+    public String convert(Artifact s) {
+        return s.writeToJson();
     }
     
 }

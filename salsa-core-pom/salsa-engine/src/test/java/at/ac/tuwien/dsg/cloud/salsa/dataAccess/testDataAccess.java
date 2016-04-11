@@ -92,8 +92,14 @@ public class testDataAccess {
         System.out.println("\n READING SERVICE TEMPLATE >>>>>>>>>>>>>>>");
         System.out.println(mng.readServiceTemplate("templateUUID").toJson());
         
+        System.out.println("\n 7--- EDIT Service Template");
+        template.setName("HAProxy1111");
+        mng.saveServiceTemplate(template);
+        System.out.println("\n READING SERVICE TEMPLATE >>>>>>>>>>>>>>>");
+        System.out.println(mng.readServiceTemplate("templateUUID").toJson());
         
-        System.out.println("\n 7--- ADDING Artifact to template");
+        
+        System.out.println("\n 8--- ADDING Artifact to template");
         template.hasArtifact(art);
         mng.saveServiceTemplate(template);
         System.out.println("\n READING SERVICE TEMPLATE >>>>>>>>>>>>>>>");

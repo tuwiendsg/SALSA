@@ -19,29 +19,24 @@ package at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess;
 
 
 import at.ac.tuwien.dsg.cloud.elise.model.generic.ServiceUnit;
+import at.ac.tuwien.dsg.cloud.elise.model.provider.ServiceTemplate;
 import java.util.Set;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.repository.query.Param;
 
 
-public interface ServiceTemplateRepository extends GraphRepository<ServiceUnit> {
+public interface ServiceTemplateRepository extends GraphRepository<ServiceTemplate> {
 //, RelationshipOperationsRepository<OfferedServiceUnit> {
         
-        @Query("match (n:OfferedServiceUnit) return n")
-	Set<ServiceUnit> listServiceUnit();
+        @Query("match (n:ServiceTemplate) return n")
+	Set<ServiceTemplate> listServiceTemplate();
 	
-	@Query("match (n:OfferedServiceUnit) where n.name={name} return n")
-	Set<ServiceUnit> findByName(@Param(value = "name") String name);
+	@Query("match (n:ServiceTemplate) where n.name={name} return n")
+	Set<ServiceTemplate> findByName(@Param(value = "name") String name);
         
-        @Query("match (n:OfferedServiceUnit) where n.id={id} return n")
-	ServiceUnit findByUniqueID(@Param(value = "id") String id);
-	
-        @Query("match (p:Provider)-->(n:OfferedServiceUnit) where p.id={providerID} return n")
-        Set<ServiceUnit> findByProviderID(@Param(value = "providerID") String providerID);        
-        
-	@Query("match (n:OfferedServiceUnit) where n.subcategory={subcategory} return n")
-	Set<ServiceUnit> findBySubcategory(@Param(value = "subcategory") String subcategory);   
+        @Query("match (n:ServiceTemplate) where n.uuid={uuid} return n")
+	ServiceTemplate findByUniqueID(@Param(value = "uuid") String uuid);	
         	
 	@Query("match (n) optional match (n)-[r]-() delete n,r")
 	void cleanDataBase();

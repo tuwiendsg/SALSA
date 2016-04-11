@@ -5,18 +5,21 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper;
 
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
 import org.springframework.core.convert.converter.Converter;
 
 /**
  *
  * @author hungld
  */
-public class StringToExtensibleModel implements Converter<String, ExtensibleModel>{
+public class ClassFromString  implements Converter<String, Class> {
 
     @Override
-    public ExtensibleModel convert(String s) {        
-        return (ExtensibleModel)ExtensibleModel.fromJson(s);
+    public Class convert(String s) {
+        try {
+            return Class.forName(s);
+        } catch (ClassNotFoundException ex) {
+            return null;
+        }
     }
     
 }

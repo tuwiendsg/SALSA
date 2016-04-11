@@ -37,14 +37,16 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
     <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <set>
-                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.DomainEntityToString"/>
-                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.StringToDomainEntity"/>
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.ArtifactFromString"/>
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.ArtifactToString"/>
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.ClassFromString"/>
                 <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.ClassToString"/>
-                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.StringToClass"/>
-                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.GlobalIdentificationToString"/>
-                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.StringToGlobalIdentification"/>
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.DomainEntityFromString"/>
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.DomainEntityToString"/>
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.ExtensibleModelFromString"/>
                 <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.ExtensibleModelToString"/>
-                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.StringToExtensibleModel"/>
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.GlobalIdentificationFromString"/>
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.GlobalIdentificationToString"/>
             </set>
         </property>
     </bean>

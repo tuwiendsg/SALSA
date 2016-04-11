@@ -5,21 +5,18 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper;
 
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
 import org.springframework.core.convert.converter.Converter;
 
 /**
  *
  * @author hungld
  */
-public class StringToClass  implements Converter<String, Class> {
+public class GlobalIdentificationFromString implements Converter<String, GlobalIdentification> {
 
     @Override
-    public Class convert(String s) {
-        try {
-            return Class.forName(s);
-        } catch (ClassNotFoundException ex) {
-            return null;
-        }
+    public GlobalIdentification convert(String s) {
+        return GlobalIdentification.fromJson(s);
     }
     
 }

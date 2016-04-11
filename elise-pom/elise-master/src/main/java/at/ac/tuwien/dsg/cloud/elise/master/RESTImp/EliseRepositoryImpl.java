@@ -21,6 +21,7 @@ import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.ArtifactR
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.ConnectToInstanceRelationshipRepository;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.HostOnInstanceRelationshipRepository;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.ProviderRepository;
+import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.ServiceTemplateRepository;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.UnitInstanceRepository;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
@@ -73,9 +74,12 @@ public class EliseRepositoryImpl implements EliseRepository {
 
     @Autowired
     ProviderRepository pdrepo;
-    
+
     @Autowired
     ArtifactRepository artifactRepo;
+
+    @Autowired
+    ServiceTemplateRepository serviceTemplateRepo;
 
     @Override
     public Set<UnitInstance> readAllUnitInstances(String name, String category, String state, String hostedOnID) {
@@ -137,7 +141,7 @@ public class EliseRepositoryImpl implements EliseRepository {
 
             logger.debug("Start saving. Json: " + existedInstance.toJson());
 
-            UnitInstance u = this.repo.save(existedInstance);            
+            UnitInstance u = this.repo.save(existedInstance);
 
             logger.debug("Saved ...");
             if (u != null) {
@@ -315,39 +319,39 @@ public class EliseRepositoryImpl implements EliseRepository {
     public void deleteProvider(String uniqueID) {
         this.pdrepo.deleteProviderCompletelyByID(uniqueID);
     }
-    
-    
 
     @Override
     public ServiceTemplate readServiceTemplate(String uniqueID) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return serviceTemplateRepo.findByUniqueID(uniqueID);
     }
 
     @Override
     public Set<ServiceTemplate> readAllServiceTemplates() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return serviceTemplateRepo.listServiceTemplate();
     }
 
     @Override
-    public String saveServiceTemplate(ServiceTemplate provider) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ServiceTemplate saveServiceTemplate(ServiceTemplate serviceTemplate) {
+        return serviceTemplateRepo.save(serviceTemplate);
     }
 
     @Override
-    public String deleteServiceTemplate(String uniqueID) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void deleteServiceTemplate(String uniqueID) {
+        ServiceTemplate s = serviceTemplateRepo.findByUniqueID(uniqueID);
+        if (s != null) {
+            serviceTemplateRepo.delete(s);
+        }
     }
-    
-    
-    /** MANAGE ARTIFACT **/
-    
-    
+
+    /**
+     * MANAGE ARTIFACT *
+     */
     @Override
     public Set<Artifact> readArtifact(String name, String version, String type) {
         Set<Artifact> arts = artifactRepo.findByName(name);
-        for(Artifact a: arts){
-            if ((version!=null && !version.equals(a.getVersion()))
-                || (type !=null && !type.equals(a.getType().toString()))){
+        for (Artifact a : arts) {
+            if ((version != null && !version.equals(a.getVersion()))
+                    || (type != null && !type.equals(a.getType().toString()))) {
                 arts.remove(a);
             }
         }
@@ -356,6 +360,8 @@ public class EliseRepositoryImpl implements EliseRepository {
 
     @Override
     public Artifact saveArtifact(Artifact artifact) {
+        System.out.println("Saving artifact...: " + artifact.writeToJson());
+        logger.debug("Saving artifact...: " + artifact.writeToJson());
         return artifactRepo.save(artifact);
     }
 
@@ -363,13 +369,9 @@ public class EliseRepositoryImpl implements EliseRepository {
     public void deleteArtifact(Artifact artifact) {
         artifactRepo.delete(artifact);
     }
-    
-    
-    
-    public String health(){
+
+    public String health() {
         return "Service is alive !";
     }
-
-    
 
 }

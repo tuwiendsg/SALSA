@@ -12,7 +12,7 @@ import org.springframework.core.convert.converter.Converter;
  *
  * @author hungld
  */
-public class StringToDomainEntity implements Converter<String, DomainEntity>{
+public class DomainEntityFromString implements Converter<String, DomainEntity>{
 
     @Override
     public DomainEntity convert(String s) {

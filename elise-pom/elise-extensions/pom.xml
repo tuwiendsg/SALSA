@@ -8,14 +8,13 @@
     </parent>
     <artifactId>elise-extensions</artifactId>
     <packaging>pom</packaging>
-    <modules>
-        <!-- <module>SalsaInfoCollector</module> -->
+    <modules>        
         <module>CollectorInterfaces</module>
-        <module>openstack-collector</module>
-        <module>SystemServiceCollector</module>
-        <module>operating-system-collector</module>
-        <module>govops-collector</module>
-        <module>rSYBL-collector</module>
-        <module>MELA-collector</module>
+        <!--<module>openstack-collector</module>-->
+        <!--<module>SystemServiceCollector</module>-->
+        <!--<module>operating-system-collector</module>-->
+        <!--<module>govops-collector</module>-->
+        <!--<module>rSYBL-collector</module>-->
+        <!--<module>MELA-collector</module>-->
     </modules>
 </project>

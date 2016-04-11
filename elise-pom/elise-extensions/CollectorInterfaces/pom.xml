@@ -12,7 +12,7 @@
     <dependencies>
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
-            <artifactId>elise-model-plain</artifactId>
+            <artifactId>elise-model</artifactId>
             <version>2.0</version>
         </dependency>
     </dependencies>
