@@ -1,4 +1,5 @@
 at.ac.tuwien.dsg.cloud.elise.master.RESTService
+at.ac.tuwien.dsg.cloud.elise.model.extra
 at.ac.tuwien.dsg.cloud.elise.model.generic
 at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels
 at.ac.tuwien.dsg.cloud.elise.model.provider
