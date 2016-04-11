@@ -82,103 +82,13 @@ p.small {
 
 <h1><a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>ELISE API</h1>
 
-<h3>API for managing information</h3>
-<p>In current version, the information of provider and cloud service structure is static collected, thus it can be query dirrectly in ELISE. The unit instances are dynamically create/remove and being distributed over infrastructures, thus the collection process can take time. To deal with this, ELISE provides a separate API to start the queries and an API to get the information.</p>
+ELISE provides three types of APIs:
+<ol>
+  <li>Repository API: Enables to manage IoT cloud components regarding the ELISE information model. First, the API covers generic components such as cloud provider, service template, service instance, artifact, capabilities, etc. Second, the API enables extensible models such as domain model of IoT and cloud, quality, contract, licensing. The list of the API is shown here: <a href="http://tuwiendsg.github.io/SALSA/apidocs/at/ac/tuwien/dsg/cloud/elise/master/RESTService/EliseRepository.html">Repository API</a></li>
+  <li>Management API: Enables to orchestrate ELISE collectors to interface with different providers. The API is shown here: <a href="http://tuwiendsg.github.io/SALSA/apidocs/at/ac/tuwien/dsg/cloud/elise/master/RESTService/EliseManager.html">Management API</a></li>
+  <li>Communication API: Enables to split and send queries to multiple the collectors, which then update information to the repository. The API is shown here: <a href="http://tuwiendsg.github.io/SALSA/apidocs/at/ac/tuwien/dsg/cloud/elise/master/RESTService/EliseCommunicationService.html">Communication API</a> </li>
+</ol>
 
-<table class="tg" style="undefined;table-layout: fixed; width: 676px">
-<colgroup>
-<col style="width: 27px">
-<col style="width: 430px">
-<col style="width: 470px">
-</colgroup>
-  <tr>
-    <th class="tg-hgcj">#</th>
-    <th class="tg-hgcj">APIs</th>
-    <th class="tg-amwm">Description</th>
-  </tr>
-
-  <tr>
-    <td class="tg-baqh">1</td>
-    <td class="tg-yw4l">GET /provider</td>
-    <td class="tg-yw4l">Get list of providers</td>
-  </tr> 
-  
-  <tr>
-    <td class="tg-baqh">2</td>
-    <td class="tg-yw4l">GET /provider/{uniqueID}</td>
-    <td class="tg-yw4l">Get list of offered service from a provider</td>
-  </tr> 
-  
-  <tr>
-    <td class="tg-baqh">4</td>
-    <td class="tg-yw4l">GET /cloudservice</td>
-    <td class="tg-yw4l">Get list of cloud services</td>
-  </tr> 
-  
-  <tr>
-    <td class="tg-baqh">3</td>
-    <td class="tg-yw4l">GET /cloudservice/{uniqueID}</td>
-    <td class="tg-yw4l">Get cloud service's structure</td>
-  </tr> 
-  
-  <tr>
-    <td class="tg-baqh">4</td>
-    <td class="tg-yw4l">POST /communication/queryUnitInstance</td>
-    <td class="tg-yw4l">Start a query by forwarding request to collectors. This consume a query string and return an ID of the query to check</td>
-  </tr> 
-  
-  <tr>
-    <td class="tg-baqh">5</td>
-    <td class="tg-yw4l">GET /communication/query/{queryUUID}</td>
-    <td class="tg-yw4l">Return status of a query: how many collectors are involving to get information for that query, what is the status of the collection process</td>
-  </tr> 
-  
-   <tr>
-    <td class="tg-baqh">6</td>
-    <td class="tg-yw4l">POST /unitinstance/{uniqueID}</td>
-    <td class="tg-yw4l">Get details the information of single instance</td>
-  </tr> 
-  
-</table>
-
-<h3>API for managing ELISE components</h3>
-<table class="tg" style="undefined;table-layout: fixed; width: 676px">
-<colgroup>
-<col style="width: 27px">
-<col style="width: 430px">
-<col style="width: 470px">
-</colgroup>
-  <tr>
-    <th class="tg-hgcj">#</th>
-    <th class="tg-hgcj">APIs</th>
-    <th class="tg-amwm">Description</th>
-  </tr>
-  <tr>
-    <td class="tg-baqh">1</td>
-    <td class="tg-yw4l">GET /manager/count</td>
-    <td class="tg-yw4l">Get the description of running collectors</td>
-  </tr> 
-  <tr>
-    <td class="tg-baqh">2</td>
-    <td class="tg-yw4l">POST /manager/conductor/salsa/{pioneerID}</td>
-    <td class="tg-yw4l">Request SALSA to deploy a conductor (which host collector artifact)</td>
-  </tr> 
-  <tr>
-    <td class="tg-baqh">3</td>
-    <td class="tg-yw4l">POST /manager/conductor/{conductorID}/collector/{collectorName}</td>
-    <td class="tg-yw4l">Push a collector artifact to a conductor</td>
-  </tr> 
-  <tr>
-    <td class="tg-baqh">4</td>
-    <td class="tg-yw4l">GET /manager/collector</td>
-    <td class="tg-yw4l">Get the list of supported collectors which can be deployed</td>
-  </tr>  
-  <tr>
-    <td class="tg-baqh">5</td>
-    <td class="tg-yw4l">POST /manager/conductor/resyn</td>
-    <td class="tg-yw4l">Synchronize the collectors with elise master</td>
-  </tr> 
-</table>
 
 <h1><a name="abstract" class="anchor" href="#abstract"><span class="octicon octicon-link"></span></a>Managing ELISE components</h1>
 <h3>Populate the collectors and adaptors</h3>
