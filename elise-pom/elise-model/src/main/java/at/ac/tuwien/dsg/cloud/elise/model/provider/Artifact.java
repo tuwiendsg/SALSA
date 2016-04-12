@@ -17,9 +17,8 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.provider;
 
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
+import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
-import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
 /**
@@ -29,10 +28,7 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
  * @author Duc-Hung LE
  */
 @NodeEntity
-public class Artifact extends ExtensibleModel{
-
-    @GraphId
-    Long graphID;
+public class Artifact extends ExtensibleModel {
 
     protected String name;
     protected String version;

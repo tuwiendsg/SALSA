@@ -17,7 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels;
 
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
+import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

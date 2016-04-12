@@ -5,18 +5,20 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper;
 
-import at.ac.tuwien.dsg.cloud.elise.model.provider.Artifact;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.springframework.core.convert.converter.Converter;
 
 /**
  *
  * @author hungld
  */
-public class ArtifactToString implements Converter<Artifact, String> {
+public class DateToString implements Converter<Date, String> {
 
     @Override
-    public String convert(Artifact s) {
-        return s.writeToJson();
+    public String convert(Date s) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(s);
     }
-    
+
 }

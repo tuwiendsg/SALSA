@@ -34,7 +34,7 @@ import at.ac.tuwien.dsg.cloud.elise.model.relationships.HostOnRelationshipInstan
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
+import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
 import java.util.ArrayList;
 
 import java.util.Collections;
@@ -332,6 +332,10 @@ public class EliseRepositoryImpl implements EliseRepository {
 
     @Override
     public ServiceTemplate saveServiceTemplate(ServiceTemplate serviceTemplate) {
+        ServiceTemplate existed = serviceTemplateRepo.findByUniqueID(serviceTemplate.getUuid());
+        if (existed != null) {
+            serviceTemplate.setGraphID(existed.getGraphID());
+        }
         return serviceTemplateRepo.save(serviceTemplate);
     }
 

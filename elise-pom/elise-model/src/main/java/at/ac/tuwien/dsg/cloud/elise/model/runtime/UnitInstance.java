@@ -21,7 +21,7 @@ import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Metric;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
+import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;

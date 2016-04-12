@@ -3,19 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.ac.tuwien.dsg.cloud.salsa.domainmodels;
+package at.ac.tuwien.dsg.cloud.elise.model.generic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.NodeEntity;
 
 /**
  *
  * @author hungld
  */
+@NodeEntity
 public class ExtensibleModel {
 
+    @GraphId
+    Long graphID;
     Class clazz;
+
+    public ExtensibleModel() {
+
+    }
 
     public ExtensibleModel(Class clazz) {
         this.clazz = clazz;
@@ -29,8 +38,8 @@ public class ExtensibleModel {
             return null;
         }
     }
-    
-    public static ExtensibleModel fromJson(String json){
+
+    public static ExtensibleModel fromJson(String json) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(json, ExtensibleModel.class);

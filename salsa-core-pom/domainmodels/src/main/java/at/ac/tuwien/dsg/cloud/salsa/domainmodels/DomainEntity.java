@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
  *
  * @author Duc-Hung LE
@@ -47,7 +46,7 @@ import java.util.logging.Logger;
     @JsonSubTypes.Type(value = SystemServiceInfo.class, name = "App_SystemService"),
     @JsonSubTypes.Type(value = WebAppInfo.class, name = "App_WebApp")
 })
-public class DomainEntity extends ExtensibleModel{
+public class DomainEntity {
 
     protected String domainID;
     protected String name;
@@ -56,11 +55,11 @@ public class DomainEntity extends ExtensibleModel{
     protected String currentState;
 
     public DomainEntity() {
-        super(DomainEntity.class);
+
     }
 
     public DomainEntity(ServiceCategory category, String domainID, String name, String... states) {
-        super(DomainEntity.class);
+
         this.category = category;
         this.domainID = domainID;
         this.name = name;
@@ -69,14 +68,14 @@ public class DomainEntity extends ExtensibleModel{
         // add if the domain does not include this
         hasState("undeployed");
         hasState("error");
-        
+
         if (states.length > 0) {
             this.states = new HashSet(Arrays.asList(states));
         }
     }
-    
-    public void updateStateList(Object[] theStates){
-        for (Object s: theStates){
+
+    public void updateStateList(Object[] theStates) {
+        for (Object s : theStates) {
             this.hasState(s.toString());
         }
     }
@@ -120,7 +119,7 @@ public class DomainEntity extends ExtensibleModel{
     public void setCurrentState(String currentState) {
         this.currentState = currentState;
     }
-    
+
     public String toJson() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
@@ -174,6 +173,4 @@ public class DomainEntity extends ExtensibleModel{
         return true;
     }
 
-    
-    
 }

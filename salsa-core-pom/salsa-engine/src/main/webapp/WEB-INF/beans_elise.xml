@@ -9,7 +9,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
      
    
-   <context:component-scan base-package="at.ac.tuwien.dsg.cloud.elise" />
+    <context:component-scan base-package="at.ac.tuwien.dsg.cloud.elise" />
   
     <jaxrs:server id="EliseService" address="/elise">  
         <jaxrs:serviceBeans>    	            
@@ -20,7 +20,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
             <ref bean="conversionService" />
             <!--      <ref bean="neo4jBean" />-->
         </jaxrs:serviceBeans>
-         <jaxrs:providers>
+        <jaxrs:providers>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
         </jaxrs:providers>
         <!--        <jaxrs:providers>
@@ -37,19 +37,17 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
     <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <set>
-                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.ArtifactFromString"/>
-                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.ArtifactToString"/>
                 <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.ClassFromString"/>
                 <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.ClassToString"/>
                 <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.DomainEntityFromString"/>
                 <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.DomainEntityToString"/>
-                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.ExtensibleModelFromString"/>
-                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.ExtensibleModelToString"/>
                 <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.GlobalIdentificationFromString"/>
                 <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.GlobalIdentificationToString"/>
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.DateFromString"/>
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.DateToString"/>
             </set>
         </property>
     </bean>
-<!--    <bean id="neo4jBean" class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.AppContext" />-->
+    <!--    <bean id="neo4jBean" class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.AppContext" />-->
    
 </beans>

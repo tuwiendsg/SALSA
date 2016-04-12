@@ -15,7 +15,7 @@ import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseRepository;
 import at.ac.tuwien.dsg.cloud.elise.model.provider.Artifact;
 import at.ac.tuwien.dsg.cloud.elise.model.provider.ServiceTemplate;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
+import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.VirtualMachineInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.application.WebAppInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
@@ -72,7 +72,8 @@ public class testDataAccess {
 
         System.out.println("\n 4--- ADDING Extra >>>>>>>>>>>>>>>>>>");
         AddressInfo address = new AddressInfo("Vienna", "Karlsplatz");
-        unit.hasExtra(address);
+//        unit.hasExtra(address);
+        mng.saveUnitInstance(unit);
 
         readAndShow(mng);
 
@@ -94,6 +95,7 @@ public class testDataAccess {
         
         System.out.println("\n 7--- EDIT Service Template");
         template.setName("HAProxy1111");
+        
         mng.saveServiceTemplate(template);
         System.out.println("\n READING SERVICE TEMPLATE >>>>>>>>>>>>>>>");
         System.out.println(mng.readServiceTemplate("templateUUID").toJson());

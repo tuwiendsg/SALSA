@@ -17,7 +17,7 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels;
 
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
+import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
 
 /**
  * Additional parameters for executing capability via script

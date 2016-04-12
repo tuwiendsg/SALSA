@@ -17,11 +17,11 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.generic;
 
+import at.ac.tuwien.dsg.cloud.elise.model.extra.contract.Contract;
 import java.util.HashSet;
 import java.util.Set;
 
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 
 import java.io.IOException;
@@ -35,6 +35,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
 
 /**
  *
@@ -65,7 +66,11 @@ public class ServiceUnit implements HasUniqueId {
     @Fetch
     protected DomainEntity domain;
 
-    // other extended model like contract, licensing, etc
+    @RelatedTo
+    @Fetch
+    protected Contract contract;
+
+    // other extended model in one block (no graph persistent)
     protected Set<ExtensibleModel> extra;
 
     public Capability getCapabilityByName(String name) {
@@ -221,8 +226,33 @@ public class ServiceUnit implements HasUniqueId {
         return extra;
     }
 
+    public ExtensibleModel getExtraByClass(Class clazz) {
+        for (ExtensibleModel model : extra) {
+            if (model.getClass().equals(clazz)) {
+                return model;
+            }
+        }
+        return null;
+    }
+
     public void setExtra(Set<ExtensibleModel> extra) {
         this.extra = extra;
+    }
+
+    public Long getGraphID() {
+        return graphID;
+    }
+
+    public void setGraphID(Long graphID) {
+        this.graphID = graphID;
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 
 }

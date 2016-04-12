@@ -23,7 +23,7 @@ import at.ac.tuwien.dsg.cloud.elise.model.provider.ServiceTemplate;
 import at.ac.tuwien.dsg.cloud.elise.model.relationships.ConnectToRelationshipInstance;
 import at.ac.tuwien.dsg.cloud.elise.model.relationships.HostOnRelationshipInstance;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.ExtensibleModel;
+import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.VirtualMachineInfo;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
