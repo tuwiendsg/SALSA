@@ -54,6 +54,7 @@
         </dependency>
         
         <!-- pack also some default collector -->
+        <!--
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>                                    
             <version>2.0</version>                                    
@@ -87,7 +88,7 @@
             <version>2.0</version>    
             <artifactId>MELA-collector</artifactId>                            
         </dependency>
-        
+        -->
     </dependencies>
     
     
@@ -145,6 +146,7 @@
                                 
                                 <!-- Collectors -->
 
+<!--
                                 <artifactItem>
                                     <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>                                    
                                     <version>2.0</version>
@@ -198,6 +200,7 @@
                                     <artifactId>MELA-collector</artifactId>
                                     <destFileName>MELA-collector.jar</destFileName>
                                 </artifactItem>
+-->
                                 
                             </artifactItems>
 
