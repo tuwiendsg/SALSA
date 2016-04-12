@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.ac.tuwien.dsg.cloud.salsa.dataAccess;
+package at.ac.tuwien.dsg.cloud.salsa.examples.dataaccess;
 
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
@@ -17,21 +17,14 @@ import at.ac.tuwien.dsg.cloud.elise.model.provider.Artifact;
 import at.ac.tuwien.dsg.cloud.elise.model.provider.ServiceTemplate;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.VirtualMachineInfo;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.application.WebAppInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
 import java.util.Set;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author hungld
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration
-@Transactional
+
 public class testDataAccess {
 
     public static void main(String[] args) {

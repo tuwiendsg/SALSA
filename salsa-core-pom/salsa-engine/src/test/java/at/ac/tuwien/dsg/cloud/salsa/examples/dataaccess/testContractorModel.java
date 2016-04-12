@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.ac.tuwien.dsg.cloud.salsa.dataAccess;
+package at.ac.tuwien.dsg.cloud.salsa.examples.dataaccess;
 
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseRepository;
 import at.ac.tuwien.dsg.cloud.elise.model.provider.ServiceTemplate;
