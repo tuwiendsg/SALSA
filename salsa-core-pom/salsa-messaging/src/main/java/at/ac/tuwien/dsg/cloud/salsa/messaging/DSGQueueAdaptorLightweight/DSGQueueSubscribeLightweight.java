@@ -5,7 +5,6 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight;
 
-import at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.discovery.LightweightSalsaDiscovery;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.MQTTAdaptor.MQTTConnector;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageSubscribeInterface;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandling;
@@ -33,7 +32,7 @@ public class DSGQueueSubscribeLightweight extends DSGQueueConnector implements M
 
     @Override
     public void subscribe(String topic) {
-        Consumer consumer = ComotMessagingFactory.getRabbitMqConsumer(new LightweightSalsaDiscovery(config));
+        Consumer consumer = ComotMessagingFactory.getRabbitMqConsumer(config);
         consumer.withType(topic);
 		consumer.addMessageReceivedListener((Message message) -> {
             //handler.handleMessage(SalsaMessage.fromJson(message.getMessage()));

@@ -5,7 +5,6 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight;
 
-import at.ac.tuwien.dsg.cloud.salsa.messaging.DSGQueueAdaptorLightweight.discovery.LightweightSalsaDiscovery;
 import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.DiscoverySettings;
 
 /**
@@ -14,7 +13,6 @@ import at.ac.tuwien.dsg.cloud.utilities.messaging.lightweight.util.DiscoverySett
  */
 public class DSGQueueConnector {
 
-	LightweightSalsaDiscovery instance;
 	DiscoverySettings config = new DiscoverySettings();
 
 	public DSGQueueConnector(String broker) {
@@ -29,7 +27,6 @@ public class DSGQueueConnector {
 			config.setIp(confs[0]);
 			config.setPort(Integer.parseInt(confs[1]));
 			config.setServiceName(confs[2]);
-			this.instance = new LightweightSalsaDiscovery(config);
 		} catch (NumberFormatException e) {
 			config = null;
 			System.out.println("Cannot parse DSG queue configuration, it should be salsaIP:salsaPort:serviceName:NumOfInstances");

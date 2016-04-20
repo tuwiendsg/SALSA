@@ -24,7 +24,6 @@
         <module>standalone</module>
         <module>elise-pom</module>
         <module>salsa-client</module>
-        <module>salsa-discovery-service</module>
     </modules>
     
     <dependencyManagement>
@@ -202,16 +201,19 @@
         </repository>
         
         <repository>
-            <id>infosys-maven-ext</id>
-            <name>infosys-maven-releases</name>
-            <url>http://repo.infosys.tuwien.ac.at/artifactory/ext</url>
-        </repository>
-        
-        <repository>
-            <id>infosys-maven-comot</id>
-            <name>infosys-maven-releases</name>
-            <url>http://repo.infosys.tuwien.ac.at/artifactory/comot</url>
-        </repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>central</id>
+			<name>libs-release</name>
+			<url>http://lilith.infosys.tuwien.ac.at:8081/artifactory/libs-release</url>
+		</repository>
+		<repository>
+			<snapshots />
+			<id>snapshots</id>
+			<name>libs-snapshot</name>
+			<url>http://lilith.infosys.tuwien.ac.at:8081/artifactory/libs-snapshot</url>
+		</repository>
     </repositories>
 
 
