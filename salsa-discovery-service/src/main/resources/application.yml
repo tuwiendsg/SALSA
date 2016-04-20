@@ -1,0 +1,18 @@
+## Application properties for gateway registry
+---
+# IP + Port of SALSA + the name of the rabbitMqClusterService
+salsa:
+    ip: 128.130.172.215
+    port: 8080
+    serviceName: ManualTestRabbitService
+
+# Port on which the gateway registry will be available
+server:
+    port: 8580
+
+# Log levels
+logging:
+    level:
+        at:
+            ac:
+                tuwien: TRACE
