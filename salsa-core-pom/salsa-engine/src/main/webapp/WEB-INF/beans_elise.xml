@@ -44,7 +44,9 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
                 <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.GlobalIdentificationFromString"/>
                 <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.GlobalIdentificationToString"/>
                 <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.DateFromString"/>
-                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.DateToString"/>
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.DateToString"/>                
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.VirtualMachineInfoFromString"/>
+                <bean class="at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper.VirtualMachineInfoToString"/>
             </set>
         </property>
     </bean>

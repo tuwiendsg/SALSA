@@ -25,6 +25,7 @@ package at.ac.tuwien.dsg.cloud.elise.model.runtime;
 public enum State {
     UNDEPLOYED,
     ALLOCATING,
+    STAGING,
     CONFIGURING,
     DEPLOYED,
     RUNNING,

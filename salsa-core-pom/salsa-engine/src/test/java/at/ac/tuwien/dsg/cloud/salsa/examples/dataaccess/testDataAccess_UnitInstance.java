@@ -13,11 +13,16 @@ import java.util.Arrays;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseRepository;
+import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
 import at.ac.tuwien.dsg.cloud.elise.model.provider.Artifact;
 import at.ac.tuwien.dsg.cloud.elise.model.provider.ServiceTemplate;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
+import at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.State;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.VirtualMachineInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -25,7 +30,7 @@ import java.util.Set;
  * @author hungld
  */
 
-public class testDataAccess {
+public class testDataAccess_UnitInstance {
 
     public static void main(String[] args) {
         String endpoint = "http://localhost:9000/salsa-engine/rest/elise/";
@@ -34,72 +39,43 @@ public class testDataAccess {
         
         
 
-        UnitInstance unit = new UnitInstance("test", ServiceCategory.Docker);
+        UnitInstance unit = new UnitInstance("test", ServiceCategory.os);
+        unit.setName("Localhost");
+        unit.setUuid("73628b66-f93f-4623-97d9-c5edf8e748a9");
+        
+        Capability capa1 = new Capability("deploy", Capability.ExecutionMethod.REST, new RestExecution("http://example1.com", RestExecution.RestMethod.POST, ""));
+        Capability capa2 = new Capability("undeploy", Capability.ExecutionMethod.REST, new RestExecution("http://example2.com", RestExecution.RestMethod.DELETE, ""));
+        unit.setCapabilities(new HashSet<Capability>());
+        unit.getCapabilities().add(capa1);
+//        unit.getCapabilities().add(capa2);
+        
+        VirtualMachineInfo domain = new VirtualMachineInfo("localhost", "my-laptop", "VM:localhost");
+        domain.setPublicIp("publicIP");
+        domain.setPrivateIp("privateIP");
+        
+//        DomainEntity testDomain = new DomainEntity(ServiceCategory.Gateway, "domainID", "domainName", "started", "stopped");
+//        unit.setDomain(testDomain);
+        unit.setDomain(domain);
+        unit.setState(State.CONFIGURING);
+                
         GlobalIdentification iden = new GlobalIdentification();
         iden.addLocalIdentification((new LocalIdentification(ServiceCategory.Docker, "me")).hasIdentification("key", "idenItem"));
         unit.setIdentification(iden);
         unit.setUuid("myUUID");
+        
+        
 
         System.out.println("\n CHECKING HEALTH >>>>>>>>>>>>>>>>>>>>>>>S");
         System.out.println(mng.health());
 //        System.out.println(mng.getUnitCategory());
 
         System.out.println("\n 1--- SAVING 1 >>>>>>>>>>>>>>>>>>>>>>>");
+        System.out.println(unit.toJson());
         mng.saveUnitInstance(unit);
 
         readAndShow(mng);
 
-        System.out.println("\n 2---- SAVING 2 >>>>>>>>>>>>>>>>>>>>>>>");
-        unit.setCategory(ServiceCategory.ExecutableApp);
-
-        readAndShow(mng);
-
-        System.out.println("\n 3---- ADDING DOMAIN >>>>>>>>>>>>>>>>>>");        
-        VirtualMachineInfo vmInfo = new VirtualMachineInfo("openstack", "randomInstanceID", "LoadBalancer");
-        unit.setDomain(vmInfo);
-//        WebAppInfo webAppInfo = new WebAppInfo("domainWebappID", "webappEndpoint");
-//        unit.setDomain(webAppInfo);
-//        unit.setDomainClazz(webAppInfo.getClass());
-        mng.saveUnitInstance(unit);
-
-        readAndShow(mng);
-
-        System.out.println("\n 4--- ADDING Extra >>>>>>>>>>>>>>>>>>");
-        AddressInfo address = new AddressInfo("Vienna", "Karlsplatz");
-//        unit.hasExtra(address);
-        mng.saveUnitInstance(unit);
-
-        readAndShow(mng);
-
-        System.out.println("\n 5--- ADDING Artifact");
-        Artifact art = new Artifact("haproxy.sh", SalsaArtifactType.sh, "1.0", "http://localhost/files/haproxy.sh");
-        mng.saveArtifact(art);
-        System.out.println("\n READING >>>>>>>>>>>>>>>");
-        Set<Artifact> arts = mng.readArtifact("haproxy.sh", null, null);
-        for (Artifact a: arts){
-            System.out.println(a.writeToJson());
-        }
         
-        System.out.println("\n 6--- ADDING Service Template");
-        ServiceTemplate template = new ServiceTemplate("HAProxy", ServiceCategory.SystemService);
-        template.setUuid("templateUUID");
-        mng.saveServiceTemplate(template);
-        System.out.println("\n READING SERVICE TEMPLATE >>>>>>>>>>>>>>>");
-        System.out.println(mng.readServiceTemplate("templateUUID").toJson());
-        
-        System.out.println("\n 7--- EDIT Service Template");
-        template.setName("HAProxy1111");
-        
-        mng.saveServiceTemplate(template);
-        System.out.println("\n READING SERVICE TEMPLATE >>>>>>>>>>>>>>>");
-        System.out.println(mng.readServiceTemplate("templateUUID").toJson());
-        
-        
-        System.out.println("\n 8--- ADDING Artifact to template");
-        template.hasArtifact(art);
-        mng.saveServiceTemplate(template);
-        System.out.println("\n READING SERVICE TEMPLATE >>>>>>>>>>>>>>>");
-        System.out.println(mng.readServiceTemplate("templateUUID").toJson());
 
     }
 

@@ -46,19 +46,19 @@
             <artifactId>cxf-rt-transports-http-hc</artifactId>
         </dependency>
 		
-        <!--         		<dependency> 
+                 		<dependency> 
           <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId> 
           <artifactId>flexiant-jade-user</artifactId> 
           <version>0.0.1-SNAPSHOT</version> 
           <scope>system</scope> 
           <systemPath>${project.basedir}/lib/flexiant-jade-user-0.0.1-SNAPSHOT.jar</systemPath> 
-        </dependency> -->
+        </dependency> 
 		
-        <dependency>
+        <!-- <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
             <artifactId>flexiant-jade-user</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+            <version>0.0.1-SNAPSHOT</version> 
+        </dependency>  -->
 
     </dependencies>
 
@@ -80,11 +80,11 @@
             <name>infosys-maven-snapshots</name>
             <url>http://repo.infosys.tuwien.ac.at/artifactory/ext</url>
         </repository>            -->
-        <repository>
+<!--        <repository>
             <id>my-maven</id>
             <name>my-maven</name>
             <url>https://mymavenrepo.com/repo/eYjnHcp57UrjNnt7Nzvu/</url>
-        </repository>            
+        </repository>            -->
         
     </repositories>	
 </project>

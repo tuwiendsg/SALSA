@@ -60,10 +60,12 @@ public class ServiceUnit implements HasUniqueId {
 
     protected ServiceCategory category;
 
+    @RelatedTo
+    @Fetch
     protected Set<Capability> capabilities;
 
-    // the actual model of the service unit, using by SALSa
-    @Fetch
+    // the actual model of the service unit, using by SALSA
+    
     protected DomainEntity domain;
 
     @RelatedTo
@@ -71,6 +73,8 @@ public class ServiceUnit implements HasUniqueId {
     protected Contract contract;
 
     // other extended model in one block (no graph persistent)
+    @RelatedTo
+    @Fetch
     protected Set<ExtensibleModel> extra;
 
     public Capability getCapabilityByName(String name) {

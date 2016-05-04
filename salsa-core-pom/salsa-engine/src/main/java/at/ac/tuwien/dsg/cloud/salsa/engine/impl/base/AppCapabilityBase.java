@@ -41,7 +41,6 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Salsa.SalsaMsgConfigureArtifact;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessageClientFactory;
 import at.ac.tuwien.dsg.cloud.salsa.engine.dataprocessing.ToscaStructureQuery;
 import at.ac.tuwien.dsg.cloud.salsa.engine.utils.EventPublisher;
@@ -54,7 +53,6 @@ import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.core.Response;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * The class contain functionalities for preparing the task at salsa center, then request pioneer to execute it

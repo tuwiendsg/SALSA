@@ -144,8 +144,13 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             logger.error("Cannot contact to ELISE");
         }
 
+        logger.debug("EliseConfiguration.getRESTEndpointLocal() = " + EliseConfiguration.getRESTEndpointLocal());
         EliseRepository unitInstanceDAO = (EliseRepository) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseRepository.class, Collections.singletonList(new JacksonJsonProvider()));
-
+        if (unitInstanceDAO == null){
+            logger.debug("unitInstanceDAO is null");
+        } else {
+            logger.debug("unitInstanceDAO is NOT null");
+        }
         if (unitInstanceDAO != null) {
             logger.debug("unitInstanceDao is not null, prepare to add");
 
@@ -169,29 +174,37 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             } else {
                 logger.debug("Hosted unit is null, it should be OS instance: " + unit.getType());
             }
-
-            for (String connectedID : unit.getConnecttoId()) {
-                ServiceUnit connectedUnit = service.getComponentById(connectedID);
-                if (connectedUnit != null && connectedUnit.getInstancesList().size() > 0) {
-                    logger.debug("The unit is connect-to: " + connectedUnit.getId());
-                    ServiceInstance connectedServiceInstance = connectedUnit.getInstancesList().get(0);
-                    logger.debug(" --> and we will check if the instance is exist in the db, id: " + connectedServiceInstance.getUuid());
-                    UnitInstance connectedUnitInstance = unitInstanceDAO.readUnitInstance(connectedServiceInstance.getUuid().toString());
-                    if (connectedUnitInstance != null) {
-                        logger.debug("  ----> yes the instance is exist, save it: " + connectedUnitInstance.getUuid());
-                        connectedUnitInstance.setCapabilities(null);
-                        unitInst.connectToInstance(connectedUnitInstance);
+            if (unit.getConnecttoId() != null && !unit.getConnecttoId().isEmpty()) {
+                for (String connectedID : unit.getConnecttoId()) {
+                    ServiceUnit connectedUnit = service.getComponentById(connectedID);
+                    if (connectedUnit != null && connectedUnit.getInstancesList().size() > 0) {
+                        logger.debug("The unit is connect-to: " + connectedUnit.getId());
+                        ServiceInstance connectedServiceInstance = connectedUnit.getInstancesList().get(0);
+                        logger.debug(" --> and we will check if the instance is exist in the db, id: " + connectedServiceInstance.getUuid());
+                        UnitInstance connectedUnitInstance = unitInstanceDAO.readUnitInstance(connectedServiceInstance.getUuid().toString());
+                        if (connectedUnitInstance != null) {
+                            logger.debug("  ----> yes the instance is exist, save it: " + connectedUnitInstance.getUuid());
+                            connectedUnitInstance.setCapabilities(null);
+                            unitInst.connectToInstance(connectedUnitInstance);
 //                        ConnectToRelationshipInstance newRela = new ConnectToRelationshipInstance(unitInst, connectedUnitInstance, "");
 //                        logger.debug(" --> new connectto relationship is created: " + unitInst.getId() +" and " + connectedUnitInstance.getId());
 //                        unitInstanceDAO.addRelationshipConnectTo(newRela);
+                        } else {
+                            logger.debug("  ----> no, the instance is not found in database");
+                        }
                     } else {
-                        logger.debug("  ----> no, the instance is not found in database");
+                        logger.debug("Some error should happen, no service unit is found with id : " + connectedID);
                     }
-                } else {
-                    logger.debug("Some error should happen, no service unit is found with id : " + connectedID);
                 }
+            } else {
+                logger.debug(unit.getId() + " has not any connection to relationships");
             }
+            System.out.println("Saving unit instance: "+ unitInst.toJson());
+           
+            // TODO: this remove the domain info temporary, will be added later
+//            unitInst.setDomain(null);
             unitInstanceDAO.saveUnitInstance(unitInst);
+            System.out.println("Save unit instance DONE !" + unitInst.getUuid());
         } else {
             logger.error("Cannot connect to the elise DB");
         }
@@ -261,7 +274,8 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             if (VMInfo.getPackagesDependencies() != null && VMInfo.getPackagesDependencies().getPackageDependency() != null) {
                 VMInfo.getPackagesDependencies().getPackageDependency().addAll(vmDescription.getPackagesDependenciesList().getPackageDependency());
             }
-            unitInst.setDomain(VMInfo);
+            // TODO: the domain info is NOT set, or DB persistance does not work, make it later
+//            unitInst.setDomain(VMInfo);
 //            unitInst.setDomainClazz(VMInfo.getClass());
         } else if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
             logger.debug("Making App container domain info: {}/{}/{}", service.getId(), unit.getId(), ins.getInstanceId());
@@ -271,7 +285,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             if (dockerDescription != null) {
                 logger.debug("Adding docker feature ...");
                 DockerInfo dockerInfo = new DockerInfo("docker", dockerDescription.getInstanceId(), dockerDescription.getDockername());
-                unitInst.setDomain(dockerInfo);
+//                unitInst.setDomain(dockerInfo);
 //                unitInst.setDomainClazz(dockerInfo.getClass());
             }
 
@@ -286,7 +300,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             if (ins.getProperties() != null) {
                 SalsaInstanceDescription_SystemProcess sysProcess = (SalsaInstanceDescription_SystemProcess) ins.getProperties().getAny();
                 SystemServiceInfo systemServiceInfo = new SystemServiceInfo(sysProcess.getName(), sysProcess.getName());
-                unitInst.setDomain(systemServiceInfo);
+//                unitInst.setDomain(systemServiceInfo);
 //                unitInst.setDomainClazz(systemServiceInfo.getClass());
             }
         } else {
