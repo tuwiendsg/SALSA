@@ -21,8 +21,10 @@ import at.ac.tuwien.dsg.cloud.elise.model.generic.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import java.util.HashSet;
 import java.util.Set;
+import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
 
 /**
  * Describe a service unit provided by cloud provider. The service need to be initiated to run.
@@ -33,6 +35,8 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 public class ServiceTemplate extends ServiceUnit {
 
     protected String providerID;
+    @RelatedTo
+    @Fetch
     protected Set<Artifact> artifacts = new HashSet<>();
 
     public ServiceTemplate() {

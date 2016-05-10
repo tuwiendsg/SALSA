@@ -13,6 +13,8 @@ import at.ac.tuwien.dsg.cloud.elise.model.extra.contract.Contract;
 import at.ac.tuwien.dsg.cloud.elise.model.extra.contract.ContractItem;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
+import at.ac.tuwien.dsg.cloud.elise.model.provider.Artifact;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,6 +52,9 @@ public class testContractorModel {
         serviceTemplate.setUuid(uuid);
         
         serviceTemplate.setContract(contract);  
+        
+        Artifact artifact = new Artifact("MyArtifact", SalsaArtifactType.misc, "1.0", "http://github.com/...");
+        serviceTemplate.hasArtifact(artifact);
         
         /** CREATE PROXY TO THE REPOSITORY SERVICE AND SAVE THE SERVICE TEMPLATE **/
         String endpoint = "http://localhost:8080/salsa-engine/rest/elise/";
