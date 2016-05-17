@@ -20,7 +20,7 @@ package at.ac.tuwien.dsg.cloud.salsa.domainmodels.types;
 public enum ServiceCategory {
 
     VirtualMachine(ServiceStack.Infrastructure),// provide operating system to run other programs    
-    Docker(ServiceStack.Infrastructure), // can deploy middleware or app, a container behaviors similar like VM
+    docker(ServiceStack.Infrastructure), // can deploy middleware or app, a container behaviors similar like VM
     
     os(ServiceStack.Infrastructure), // the os stack, similar to VirtualMachine but for higher level view
     software(ServiceStack.Application), // generic type to be compatible with SALSA

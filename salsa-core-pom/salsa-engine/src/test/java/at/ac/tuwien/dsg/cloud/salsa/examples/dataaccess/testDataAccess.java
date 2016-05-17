@@ -34,9 +34,9 @@ public class testDataAccess {
         
         
 
-        UnitInstance unit = new UnitInstance("test", ServiceCategory.Docker);
+        UnitInstance unit = new UnitInstance("test", ServiceCategory.docker);
         GlobalIdentification iden = new GlobalIdentification();
-        iden.addLocalIdentification((new LocalIdentification(ServiceCategory.Docker, "me")).hasIdentification("key", "idenItem"));
+        iden.addLocalIdentification((new LocalIdentification(ServiceCategory.docker, "me")).hasIdentification("key", "idenItem"));
         unit.setIdentification(iden);
         unit.setUuid("myUUID");
 

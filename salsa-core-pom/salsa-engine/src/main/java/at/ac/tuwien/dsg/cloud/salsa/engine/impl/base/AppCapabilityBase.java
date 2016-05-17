@@ -283,6 +283,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
             } // otherwise SALSA tries to detect via Artifact type
             else {
                 for (ServiceUnit.Artifacts art : unit.getArtifacts()) {
+                    EngineLogger.logger.debug("Debug1605: artifact reference is: "+art.getReference());
                     command.hasArtifact(art.getName(), art.getType(), art.getReference());
                     EngineLogger.logger.debug("Comparing artifact type (" + art.getType() + ") and unit artifact type (" + unit.getArtifactType() + ")");
                     if (art.getType().equals(unit.getArtifactType()) && runByMe.isEmpty()) {

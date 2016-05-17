@@ -27,7 +27,7 @@ public class InstanceQuery implements CommandHandler {
 
     @Override
     public void execute() {
-        String path = "/unitinstance/" + instanceID;
+        String path = "/instance/" + instanceID;
         String result = RestHandler.callRest(Main.getEliseAPI(path), RestHandler.HttpVerb.GET, null, null, MediaType.APPLICATION_JSON, true);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonParser jp = new JsonParser();

@@ -969,6 +969,8 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
                 node.addPrimitiveOperation(PrimitiveOperation.newCommandType(entry.getKey(), entry.getValue()));
             }            
             SalsaXmlDataProcess.writeCloudServiceToFile(service, serviceFile);
+            
+            // save to the ELISE database
 
         } catch (JAXBException | IOException ex) {
             EngineLogger.logger.error(ex.getMessage());
@@ -1101,7 +1103,7 @@ public class SalsaEngineImplAll implements SalsaEngineServiceIntenal {
                     LOGGER.debug("The command will be sent is: " + preRunByMe + " and undeploy following: " + runByMe + ". Undeploy apply for node type: " + InfoParser.mapOldAndNewCategory(SalsaEntityType.fromString(nodeData.getType())));
                 }
                 // to undeploy Docker, we send the DockerID into runByMe
-                if (theCategory == ServiceCategory.Docker) {
+                if (theCategory == ServiceCategory.docker) {
                     EngineLogger.logger.debug("The instance {}/{}/{} is Docker, checking docker property", serviceId, nodeId, instanceId);
                     if (instance.getProperties() != null) {
                         SalsaInstanceDescription_Docker vm = (SalsaInstanceDescription_Docker) instance.getProperties().getAny();

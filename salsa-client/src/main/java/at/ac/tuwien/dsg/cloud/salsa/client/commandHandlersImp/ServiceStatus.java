@@ -111,7 +111,7 @@ public class ServiceStatus implements CommandHandler {
             case EXECUTABLE:
                 return ServiceCategory.ExecutableApp;
             case DOCKER:
-                return ServiceCategory.Docker;
+                return ServiceCategory.docker;
             case TOMCAT:
                 return ServiceCategory.TomcatContainer;
             case OPERATING_SYSTEM:
@@ -133,7 +133,7 @@ public class ServiceStatus implements CommandHandler {
                 return SalsaEntityType.SOFTWARE;
             case JavaWebApp:
                 return SalsaEntityType.WAR;
-            case Docker:
+            case docker:
                 return SalsaEntityType.DOCKER;
             case TomcatContainer:
                 return SalsaEntityType.TOMCAT;

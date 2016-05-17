@@ -120,6 +120,7 @@ public class ToscaEnricherSALSA {
                 //cleanEmptyProperties(nodeLst);
                 cleanLOCALRelationship(topo);
 
+//                enrichArtifactRepo(SalsaConfiguration.getRepoPrefix() + "/" + toscaDef.getId());
                 enrichArtifactRepo(SalsaConfiguration.getRepoPrefix() + "/" + toscaDef.getId());
                 addOSNodeConfig(topo);
                 createComplexRelationship(SalsaRelationshipType.CONNECTTO, this.toscaDef);
@@ -226,7 +227,7 @@ public class ToscaEnricherSALSA {
             nextNode.setProperties(new Properties());
         }
 
-        try {
+//        try {
             //		SalsaMappingProperties operProps = (SalsaMappingProperties)nextNode.getProperties().getAny();
 //		SalsaMappingProperties.SalsaMappingProperty map = new SalsaMappingProperties.SalsaMappingProperty();
 //		map.setPropType("operations");
@@ -237,10 +238,10 @@ public class ToscaEnricherSALSA {
 //			operProps.getProperties().add(map);
 //		}
             //some debug
-            ToscaXmlProcess.writeToscaDefinitionToFile(toscaDef, "/tmp/salsa/" + counter + ".xml");
-        } catch (JAXBException | IOException ex) {
-            throw new ServicedataProcessingException(toscaDef.getId(), ex);
-        }
+//            ToscaXmlProcess.writeToscaDefinitionToFile(toscaDef, "/tmp/salsa/" + counter + ".xml");
+//        } catch (JAXBException | IOException ex) {
+//            throw new ServicedataProcessingException(toscaDef.getId(), ex);
+//        }
 
         // recursive
         addHostonNodeForOneNodeTemplate(nextNode, topo);
@@ -594,7 +595,7 @@ public class ToscaEnricherSALSA {
                 if (((TArtifactTemplate) ee).getArtifactReferences() != null) {
                     for (TArtifactReference ref : ((TArtifactTemplate) ee).getArtifactReferences().getArtifactReference()) {
                         String refstr = ref.getReference();
-                        if (!refstr.startsWith("http://") && !refstr.startsWith("file://")) {
+                        if (!refstr.startsWith("http://") && !refstr.startsWith("https://") && !refstr.startsWith("file://")) {
                             refstr = refstr.startsWith("/") ? refstr.substring(1) : refstr;
                             ref.setReference(prefixRepo + "/" + refstr);
                         }

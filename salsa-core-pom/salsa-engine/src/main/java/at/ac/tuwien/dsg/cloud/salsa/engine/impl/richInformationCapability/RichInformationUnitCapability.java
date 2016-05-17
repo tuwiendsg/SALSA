@@ -279,7 +279,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
 //            unitInst.setDomainClazz(VMInfo.getClass());
         } else if (unit.getType().equals(SalsaEntityType.DOCKER.getEntityTypeString())) {
             logger.debug("Making App container domain info: {}/{}/{}", service.getId(), unit.getId(), ins.getInstanceId());
-            unitInst.setCategory(ServiceCategory.Docker);
+            unitInst.setCategory(ServiceCategory.docker);
             // get basic docker info
             SalsaInstanceDescription_Docker dockerDescription = getDockerUnit(service, topo, unit, ins);
             if (dockerDescription != null) {

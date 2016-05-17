@@ -83,18 +83,19 @@ public class EliseRepositoryImpl implements EliseRepository {
 
     @Override
     public Set<UnitInstance> readAllUnitInstances(String name, String category, String state, String hostedOnID) {
-        Set<UnitInstance> theSet = repo.listUnitInstance();
-        if (theSet != null) {
-            logger.debug("Getting list of the instance, size: {}", theSet.size());
-            for (UnitInstance instance : theSet) {
-                if ((name != null && !instance.getName().equals(name))
-                        || (category != null && !instance.getCategory().toString().equals(category))
-                        || (state != null && !instance.getState().toString().toLowerCase().equals(state))
-                        || (hostedOnID != null && instance.getHostedOn() != null && !instance.getHostedOn().getUuid().equals(hostedOnID))) {
-                    theSet.remove(instance);
+        Set<UnitInstance> theFullSet = repo.listUnitInstance();
+        Set<UnitInstance> theResult = new HashSet<>();
+        if (theFullSet != null) {
+            logger.debug("Getting list of the instance, size: {}", theFullSet.size());
+            for (UnitInstance instance : theFullSet) {
+                if ((name != null && instance.getName().equals(name))
+                        || (category != null && instance.getCategory().toString().equals(category))
+                        || (state != null && instance.getState().toString().toLowerCase().equals(state))
+                        || (hostedOnID != null && instance.getHostedOn() != null && instance.getHostedOn().getUuid().equals(hostedOnID))) {
+                    theResult.add(instance);
                 }
             }
-            return theSet;
+            return theResult;
         } else {
             logger.error("Getting list of the instance: FAILED.");
             return null;

@@ -92,7 +92,7 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
     @Override
     public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {
         waitForCooledDown();
-        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.STARTED, "VMCapabilityBase", "Start to deploy new VM");        
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.STARTED, "VMCapabilityBase", "Start to deploy new VM");
         //TDefinitions def = centerCon.getToscaDescription(serviceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         String topologyId = service.getTopologyOfNode(nodeId).getId();
@@ -130,10 +130,8 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
         // update the instance property from cloud specific to SALSA format
         if (indes == null) {
             throw new VMProvisionException(instanceDesc.getProvider(), serviceId, nodeId, instanceId, VMProvisionException.VMProvisionError.CLOUD_FAILURE, "Cloud connector does not send back the VM information after called, the instance description is null.");
-        } else {
-            if (indes.getPrivateIp() == null || indes.getPrivateIp().toString().isEmpty()) {
-                throw new VMProvisionException(instanceDesc.getProvider(), serviceId, nodeId, instanceId, VMProvisionException.VMProvisionError.CLOUD_FAILURE, "The VM does not have an IP");
-            }
+        } else if (indes.getPrivateIp() == null || indes.getPrivateIp().toString().isEmpty()) {
+            throw new VMProvisionException(instanceDesc.getProvider(), serviceId, nodeId, instanceId, VMProvisionException.VMProvisionError.CLOUD_FAILURE, "The VM does not have an IP");
         }
 
         if (indes.getState().equals(VMStates.Failed)) {
@@ -148,7 +146,7 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
         centerCon.updateInstanceUnitProperty(serviceId, topologyId, nodeId, instanceId, instanceDesc);
         EngineLogger.logger.debug("Updated VM info for node: " + nodeId);
 
-        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.DONE, "VMCapabilityBase", "A new VM is created with IP: " + instanceDesc.getPrivateIp());        
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.DONE, "VMCapabilityBase", "A new VM is created with IP: " + instanceDesc.getPrivateIp());
         return repData;
     }
 
@@ -231,13 +229,15 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
             List<String> lstPkgs = tprop.getPackagesDependenciesList().getPackageDependency();
             if (!lstPkgs.isEmpty()) {
                 for (String pkg : lstPkgs) {
-                    EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, replica), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.PROCESSING, "VMCapabilityBase", "Installing package " + pkg);                    
-                    // TODO: should change, now just support Ubuntu image			
-                    userDataBuffer.append("apt-get -q -y install ").append(pkg).append(" \n");
+                    if (!pkg.trim().isEmpty()) {
+                        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, replica), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.PROCESSING, "VMCapabilityBase", "Installing package " + pkg);
+                        // TODO: should change, now just support Ubuntu image			                    
+                        userDataBuffer.append("apt-get -q -y install ").append(pkg).append(" \n");
+                    }
                 }
             }
         }
-		// install ganglia client for monitoring this VM
+        // install ganglia client for monitoring this VM
         // userDataBuffer.append("apt-get -y install ganglia-monitor gmetad \n");
 
         // execute Pioneer        
@@ -256,16 +256,15 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         EngineLogger.logger.debug("Get Service info when undeploying: {}/{}/{}....", serviceId, nodeId, instanceId);
         ServiceUnit node = service.getComponentById(nodeId);
-    EngineLogger.logger.debug("Get node info when undeploying: {}/{}/{}....", serviceId, nodeId, instanceId);
-        
-        
+        EngineLogger.logger.debug("Get node info when undeploying: {}/{}/{}....", serviceId, nodeId, instanceId);
+
         if (!node.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
             EngineLogger.logger.error("Remove VM on a non VM node: " + serviceId + "/" + nodeId + "/" + instanceId);
             throw new IllegalConfigurationAPICallException("Remove VM on a non VM node: " + serviceId + "/" + nodeId + "/" + instanceId);
         }
 
         ServiceInstance vm = node.getInstanceById(instanceId);
-        if (vm.getProperties()==null){
+        if (vm.getProperties() == null) {
             EngineLogger.logger.error("VM properties is null: " + serviceId + "/" + nodeId + "/" + instanceId);
             throw new VMRemoveException(VMRemoveException.Cause.VM_DATA_NOT_FOUND);
         }
@@ -280,7 +279,7 @@ public class VMCapabilityBase implements UnitCapabilityInterface {
         String pioneerID = PioneerManager.getPioneerID(SalsaConfiguration.getUserName(), serviceId, nodeId, instanceId);
         EngineLogger.logger.debug("Pioneer ID is: " + pioneerID);
         (new InternalManagement()).shutdownPioneer(pioneerID);
-        
+
         // maybe the pioneer is not shutdown yet, but it is not the problem :)
         MultiCloudConnector cloudCon = new MultiCloudConnector(EngineLogger.logger, configFile);
         String providerName = vmProps.getProvider();

@@ -72,7 +72,7 @@ public class SalsaInstanceDescription_VM {
     @XmlElement(name = "quota")
     protected int quota;
 
-    @XmlElement(name = "Packages")
+    @XmlElement(name = "packages")
     protected PackagesDependencies packagesDependencies;
 
     public SalsaInstanceDescription_VM() {

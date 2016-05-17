@@ -308,7 +308,7 @@ public class InfoParser {
             case EXECUTABLE:
                 return ServiceCategory.ExecutableApp;
             case DOCKER:
-                return ServiceCategory.Docker;
+                return ServiceCategory.docker;
             case TOMCAT:
                 return ServiceCategory.TomcatContainer;
             case OPERATING_SYSTEM:

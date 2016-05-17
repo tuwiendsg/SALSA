@@ -373,7 +373,7 @@ public class Main {
             logger.debug("Recieve command to remove node: " + cmd.getUnit() + "/" + cmd.getInstance());
 
             // TODO: more detail model for specific DOCKER. Here we assume that AppContainer is DOCKER
-            if (cmd.getUnitType() == ServiceCategory.Docker) {
+            if (cmd.getUnitType() == ServiceCategory.docker) {
                 logger.debug("This node is a docker container, start to remove it !");
                 DockerConfigurator docker = new DockerConfigurator();
                 docker.removeDockerContainer(cmd.getRunByMe().trim());

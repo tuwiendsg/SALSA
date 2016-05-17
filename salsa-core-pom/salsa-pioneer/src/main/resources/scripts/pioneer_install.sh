@@ -26,7 +26,7 @@ else
     echo "no java"
 fi
 
-REQUIRE_JAVA=1.8.0_51
+REQUIRE_JAVA=1.7
 
 if [[ "$_java" ]]; then
     version=$("$_java" -version 2>&1 | awk -F '"' '/version/ {print $2}')
@@ -35,20 +35,21 @@ if [[ "$_java" ]]; then
         echo version is more than $REQUIRE_JAVA, it will be used
     else         
         echo version is less than $REQUIRE_JAVA, attempt to install new jre
+
+        cd /opt
+
+        wget -q --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u60-b27/jre-8u60-linux-x64.tar.gz"
+        tar -xzf jre-8u60-linux-x64.tar.gz
+        cd jre1.8.0_60/
+
+        update-alternatives --install /usr/bin/java java /opt/jre1.8.0_60/bin/java 100
+        sudo update-alternatives --set java /opt/jre1.8.0_60/bin/java
+
+        export JRE_HOME=/opt/jre1.8.0_60
+        export PATH=$PATH:/opt/java/jdk1.8.0_45/bin:/opt/java/jdk1.8.0_45/jre/bin
     fi
 fi
 
-cd /opt
-
-wget -q --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u60-b27/jre-8u60-linux-x64.tar.gz"
-tar -xzf jre-8u60-linux-x64.tar.gz
-cd jre1.8.0_60/
-
-update-alternatives --install /usr/bin/java java /opt/jre1.8.0_60/bin/java 100
-sudo update-alternatives --set java /opt/jre1.8.0_60/bin/java
-
-export JRE_HOME=/opt/jre1.8.0_60
-export PATH=$PATH:/opt/java/jdk1.8.0_45/bin:/opt/java/jdk1.8.0_45/jre/bin
 
 
 TMPFILE=salsa.variables.$DOCKER_NODE_ID.$DOCKER_INSTANCE_ID
