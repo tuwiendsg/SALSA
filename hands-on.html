@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Download SALSA</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <style>
+		p.justify{
+				text-align: justify;
+		}
+		p.margined{
+				text-align: justify;
+				margin-left: 35px;
+		}
+
+
+.tg  {border-collapse:collapse;border-spacing:0;border-color:#ccc;}
+.tg td{line-height: 100%;font-family:Arial, sans-serif;font-size:12px;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:break-word;border-color:#ccc;color:#333;background-color:#fff;}
+.tg th{line-height: 100%;font-family:Arial, sans-serif;font-size:12px;font-weight:normal;padding:5px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#ccc;color:#333;background-color:#f0f0f0;}
+.tg .tg-baqh{text-align:center;vertical-align:top}
+.tg .tg-hgcj{font-weight:bold;text-align:center}
+.tg .tg-amwm{font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-yw4l{vertical-align:top}
+p.small {
+    line-height: 70%;
+}
+
+		</style>
+		
+		
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+            <script src="scripts/jquery-1.3.2.debug.js" type="text/javascript"></script>
+        <script src="scripts/json.debug.js" type="text/javascript"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    
+  </head>
+  <body>
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-27052073-2', 'auto');
+    ga('send', 'pageview');
+  </script>
+ 
+    
+    <div class="wrapper">
+      <header>
+        <h1 class="header">SALSA Hands-ons</h1> 
+        <h2 class="header">Navigation</h2>
+        
+        <ul>
+          <li><a class="buttons javadoc" href="index.html">SALSA</a></li>
+          <li><a class="buttons javadoc" href="elise.html">ELISE</a></li>
+        </ul>
+        
+        <p class="header">Maintained by <a class="header name" href="https://github.com/tuwiendsg">tuwiendsg</a></p>
+
+      </header>
+      <section>
+      
+<br/>
+
+
+
+<h1><a name="abstract" class="anchor" href="#sensingResources"><span class="octicon octicon-link"></span></a>Deploy and query sensoring resources</h1>
+<p>
+This hands-on aims to show the functionality of SALSA in deployment and query sensoring resources.
+<p>
+The hands-on is on one machine with docker. You can do it on a virtual machine (recommendation) or directly on you laptop. If working on the laptop, Docker may leaves some images on your system after finishing, which you need to delete manually later on.
+<p>
+<strong>Step 1: Install a message queue for SALSA (Optional)</strong>
+<p>By default, SALSA will connect to mqtt://iot.eclipse.org to transfer the message. However it is not stable. The best way is to install rabbitmq-server on the localhost. With Ubuntu, the following command does it:
+
+<pre><code>sudo apt-get install rabbitmq-server</code></pre>
+
+RabbitMQ is lightweight and automatically start up after installion.
+
+
+<p>
+<strong>Step 2: Install Docker (Optional)</strong>
+<p> SALSA can automatically install Docker on the target system. However you can install manually to make later process faster.
+<pre><code>curl https://get.docker.com/ | sudo sh -</code></pre>
+<p> SALSA can automatically pull the default docker image. However for faster deployment process later, you can pull the image manually as following. This image is ubuntu with jre environment.
+<pre><code>sudo docker pull leduchung/ubuntu:14.04-jre8</code></pre>
+
+
+
+<p>
+<strong>Step 3: Installing SALSA</strong>
+<ol>
+  <li>Download salsa-engine.jar and salsa-pioneer.jar. Please see <a href="http://tuwiendsg.github.io/SALSA/download.html">this link</a>. The command as below:
+  <pre><code>mkdir salsa
+wget https://www.dropbox.com/s/a41x1p35f6q6395/salsa-engine.jar
+wget https://www.dropbox.com/s/jiqfznsbi2lqt7w/salsa-pioneer.jar</code></pre>
+
+  <li> Get your current IP address. This is important because salsa-pioneer need the actual address rather than loopback IP (this will be obmitted on a next SALSA version). Use following command. Note that the interface can be eth0 or wlan0, which also work.
+  <pre><code>ifconfig
+...
+wlan0     Link encap:Ethernet  HWaddr 24:77:03:f9:b1:90  
+          inet addr:<strong>10.0.0.1</strong>  Bcast:10.155.211.255  Mask:255.255.252.0
+...
+  </code></pre>
+
+  <li>Create a file name "salsa.engine.properties" in the same folder (using nano/vi/gedit) with the content below. Consider to remove BROKER and BROKER_TYPE if you do not have RabbitMQ on you machine.
+  <pre><code>SALSA_CENTER_IP=[your IP address above]
+SALSA_CENTER_PORT=8080
+SALSA_CENTER_WORKING_DIR=/tmp/salsa-engine
+SALSA_PIONEER_WORKING_DIR=/tmp/salsa-pioneer
+BROKER=amqp://[your IP address above]
+BROKER_TYPE=amqp</code></pre>
+  
+  <li> Run the SALSA server by following command. Note that we need root to run docker. If you do not want to use root, please refer to Docker documentation to see how to enable Docker with regular user.
+  <pre><code>sudo java -jar salsa-engine.jar</code></pre>
+  
+  <li> Open the webpage on your browser: http://localhost:8080/salsa-engine
+</ol>
+
+
+<p>
+<strong>Step 4: Submit the topology and wait for the deployment done</strong>
+<ol>
+  <li> Download the <a href="https://raw.githubusercontent.com/tuwiendsg/SALSA/stable/examples/SALSA/input/A2-2-sensors-on-docker-localhost.xml">TOSCA description</a>.
+  <li> During the deployment, SALSA will download artifacts of the sensors <a href="https://www.dropbox.com/sh/n6wxn1vpfhho8h3/AACwfeddcX5_fIF2LaPTtmKFa">from here</a>. Note that the capabilities are defined in the "sensor.meta" while the actual scripts are packed in the achieve.
+  <li> Submit the TOSCA via the SALSA web interface and wait for the deployment.
+  <li> Checking the deployment status via SALSA web interface, in the service list.
+  <li> When the deployment is done, we run following command to retrieve the informatio:
+  <pre><code>curl http://localhost:8080/salsa-engine/rest/elise/instance?name=sensorUnit</code></pre>
+  <li>The output will be a JSON. An example of the output is <a href="https://github.com/tuwiendsg/SALSA/blob/stable/examples/SALSA/output/A2-2-sensors-on-docker-localhost.ELISE.json">from here</a>.
+</ol>
+
+
+  </body>
+</html>
+
