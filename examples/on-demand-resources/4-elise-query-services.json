@@ -1,0 +1,108 @@
+{
+  "id": "IoTSensors",
+  "state": "DEPLOYED",
+  "children": [
+    {
+      "id": "SensorTopology",
+      "state": "DEPLOYED",
+      "properties": {
+        "Number of service units": "5"
+      },
+      "children": [
+        {
+          "id": "PersonalMachine_1",
+          "uuid": "b7657a87-0fc4-436c-8350-39de4fb0cdd3",
+          "state": "DEPLOYED",
+          "properties": {
+            "instanceType": "",
+            "privateIp": "localhost",
+            "extra": "Pioneer is deployed",
+            "instanceId": "Hung-Laptop",
+            "provider": "localhost",
+            "publicIp": "localhost",
+            "baseImage": ""
+          },
+          "children": [
+            {
+              "id": "SensorDocker_1",
+              "uuid": "0c7920a7-66b4-4002-a285-5b323d36193c",
+              "state": "DEPLOYED",
+              "properties": {
+                "privateIp": "172.17.0.2",
+                "extra": "Docker container is created.",
+                "instanceId": "6080c6de65b9415a9bad77b94386780778c8bd5230e7de7a8351e8e62eca1827",
+                "provider": "local@dockerhost",
+                "portmap": "",
+                "dockername": "/SensorDocker_1_180_19_21_57",
+                "publicIp": "172.17.0.2",
+                "baseImage": "salsa.ubuntu"
+              },
+              "children": [
+                {
+                  "id": "sensorUnit_0",
+                  "uuid": "1610edf9-8ed2-4f43-8891-82de4b74aee6",
+                  "state": "DEPLOYED",
+                  "properties": {
+                    "extra": "Configure script DONE: runSensor_gps1279_location.sh"
+                  },
+                  "isAbstract": false,
+                  "nodeType": "software",
+                  "artifactType": "sh",
+                  "connectto": [
+                    "QueueUnit_0"
+                  ]
+                }
+              ],
+              "isAbstract": false,
+              "nodeType": "docker",
+              "artifactType": "dockerfile",
+              "connectto": []
+            },
+            {
+              "id": "MqttDocker_1",
+              "uuid": "17838cba-1bbb-45c8-ab70-de0c33dea97f",
+              "state": "DEPLOYED",
+              "properties": {
+                "privateIp": "172.17.0.3",
+                "extra": "Pioneer is deployed",
+                "instanceId": "dfef05787b5a5d3ad5e377d567d6320fdb8b70da7be7c6397e79fced66551b70",
+                "provider": "local@dockerhost",
+                "portmap": "",
+                "dockername": "/MqttDocker_1_180_19_21_57",
+                "publicIp": "172.17.0.3",
+                "baseImage": "salsa.ubuntu"
+              },
+              "children": [
+                {
+                  "id": "QueueUnit_0",
+                  "uuid": "0ca76d95-5609-440f-a8fa-e10eae56660b",
+                  "state": "DEPLOYED",
+                  "properties": {
+                    "Capability[brokerIp_Capability]": "172.17.0.3",
+                    "extra": "Configure script DONE: run_mqtt_broker.sh"
+                  },
+                  "isAbstract": false,
+                  "nodeType": "software",
+                  "artifactType": "sh",
+                  "connectto": []
+                }
+              ],
+              "isAbstract": false,
+              "nodeType": "docker",
+              "artifactType": "dockerfile",
+              "connectto": []
+            }
+          ],
+          "isAbstract": false,
+          "nodeType": "os",
+          "connectto": []
+        }
+      ],
+      "isAbstract": true,
+      "nodeType": "TOPOLOGY",
+      "connectto": []
+    }
+  ],
+  "isAbstract": true,
+  "nodeType": "CLOUD SERVICE",
+  "connectto": []

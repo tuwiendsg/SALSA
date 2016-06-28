@@ -1,0 +1,132 @@
+{
+    "graphID": 9,
+    "uuid": "1610edf9-8ed2-4f43-8891-82de4b74aee6",
+    "name": "sensorUnit",
+    "category": "software",
+    "capabilities": [
+        {
+            "uuid": "1610edf9-8ed2-4f43-8891-82de4b74aee6.start",
+            "name": "start",
+            "executedBy": "SALSA",
+            "executionMethod": "REST",
+            "executionModel": "{\"graphID\":null,\"clazz\":\"at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution\",\"endpoint\":\"http://10.155.211.77:8080/salsa-engine/rest/services/sensorTopo/nodes/sensorUnit/instances/0/action_queue/start\",\"method\":\"POST\",\"data\":\"\"}",
+            "parameters": []
+        },
+        {
+            "uuid": "1610edf9-8ed2-4f43-8891-82de4b74aee6.setProtocolDry",
+            "name": "setProtocolDry",
+            "executedBy": "SALSA",
+            "executionMethod": "REST",
+            "executionModel": "{\"graphID\":null,\"clazz\":\"at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution\",\"endpoint\":\"http://10.155.211.77:8080/salsa-engine/rest/services/sensorTopo/nodes/sensorUnit/instances/0/action_queue/setProtocolDry\",\"method\":\"POST\",\"data\":\"\"}",
+            "parameters": []
+        },
+        {
+            "uuid": "1610edf9-8ed2-4f43-8891-82de4b74aee6.undeploy",
+            "name": "undeploy",
+            "executedBy": "SALSA",
+            "executionMethod": "REST",
+            "executionModel": "{\"graphID\":null,\"clazz\":\"at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution\",\"endpoint\":\"http://10.155.211.77:8080/salsa-engine/services/sensorTopo/topologies/SensorTopology/nodes/sensorUnit/instances/0\",\"method\":\"DELETE\",\"data\":\"\"}",
+            "parameters": []
+        },
+        {
+            "uuid": "1610edf9-8ed2-4f43-8891-82de4b74aee6.changeRate",
+            "name": "changeRate",
+            "executedBy": "SALSA",
+            "executionMethod": "REST",
+            "executionModel": "{\"graphID\":null,\"clazz\":\"at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution\",\"endpoint\":\"http://10.155.211.77:8080/salsa-engine/rest/services/sensorTopo/nodes/sensorUnit/instances/0/action_queue/changeRate\",\"method\":\"POST\",\"data\":\"\"}",
+            "parameters": []
+        },
+        {
+            "uuid": "1610edf9-8ed2-4f43-8891-82de4b74aee6.setProtocolCOAP",
+            "name": "setProtocolCOAP",
+            "executedBy": "SALSA",
+            "executionMethod": "REST",
+            "executionModel": "{\"graphID\":null,\"clazz\":\"at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution\",\"endpoint\":\"http://10.155.211.77:8080/salsa-engine/rest/services/sensorTopo/nodes/sensorUnit/instances/0/action_queue/setProtocolCOAP\",\"method\":\"POST\",\"data\":\"\"}",
+            "parameters": []
+        },
+        {
+            "uuid": "1610edf9-8ed2-4f43-8891-82de4b74aee6.stop",
+            "name": "stop",
+            "executedBy": "SALSA",
+            "executionMethod": "REST",
+            "executionModel": "{\"graphID\":null,\"clazz\":\"at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution\",\"endpoint\":\"http://10.155.211.77:8080/salsa-engine/rest/services/sensorTopo/nodes/sensorUnit/instances/0/action_queue/stop\",\"method\":\"POST\",\"data\":\"\"}",
+            "parameters": []
+        },
+        {
+            "uuid": "1610edf9-8ed2-4f43-8891-82de4b74aee6.setProtocolMQTT",
+            "name": "setProtocolMQTT",
+            "executedBy": "SALSA",
+            "executionMethod": "REST",
+            "executionModel": "{\"graphID\":null,\"clazz\":\"at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution\",\"endpoint\":\"http://10.155.211.77:8080/salsa-engine/rest/services/sensorTopo/nodes/sensorUnit/instances/0/action_queue/setProtocolMQTT\",\"method\":\"POST\",\"data\":\"\"}",
+            "parameters": []
+        },
+        {
+            "uuid": "1610edf9-8ed2-4f43-8891-82de4b74aee6.redirect",
+            "name": "redirect",
+            "executedBy": "SALSA",
+            "executionMethod": "REST",
+            "executionModel": "{\"graphID\":null,\"clazz\":\"at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution\",\"endpoint\":\"http://10.155.211.77:8080/salsa-engine/rest/services/sensorTopo/nodes/sensorUnit/instances/0/action_queue/redirect\",\"method\":\"POST\",\"data\":\"\"}",
+            "parameters": []
+        },
+        {
+            "uuid": "1610edf9-8ed2-4f43-8891-82de4b74aee6.deploy",
+            "name": "deploy",
+            "executedBy": "SALSA",
+            "executionMethod": "REST",
+            "executionModel": "{\"graphID\":null,\"clazz\":\"at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution\",\"endpoint\":\"http://10.155.211.77:8080/salsa-engine/services/sensorTopo/topologies/SensorTopology/nodes/sensorUnit/instance-count/{quantity}\",\"method\":\"POST\",\"data\":\"\"}",
+            "parameters": [
+                "1",
+                "quantity"
+            ]
+        }
+    ],
+    "domain": null,
+    "contract": null,
+    "extra": [],
+    "identification": {
+        "uuid": "1610edf9-8ed2-4f43-8891-82de4b74aee6",
+        "localIDs": [
+            {
+                "assignedBy": "SALSA",
+                "category": "software",
+                "idItems": {
+                    "SALSA_TOPOLOGY": "sensorTopo/SensorTopology",
+                    "SALSA_UNIT": "sensorTopo/sensorUnit",
+                    "SALSA_SERVICE": "sensorTopo",
+                    "SALSA_INSTANCE": "sensorTopo/sensorUnit/0"
+                }
+            }
+        ]
+    },
+    "state": "STAGING",
+    "hostedOn": {
+        "graphID": 3,
+        "uuid": null,
+        "name": null,
+        "category": null,
+        "capabilities": null,
+        "domain": null,
+        "contract": null,
+        "extra": null,
+        "identification": null,
+        "state": null,
+        "hostedOn": null,
+        "connectTo": []
+    },
+    "connectTo": [
+        {
+            "graphID": 6,
+            "uuid": null,
+            "name": null,
+            "category": null,
+            "capabilities": null,
+            "domain": null,
+            "contract": null,
+            "extra": null,
+            "identification": null,
+            "state": null,
+            "hostedOn": null,
+            "connectTo": []
+        }
+    ]
+}

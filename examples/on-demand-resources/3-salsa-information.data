@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<CloudService id="sensorTopo" uuid="504d1c6d-77be-4291-ad12-6f57ca7600d9" name="IoTSensors" state="DEPLOYED">
+    <ServiceTopology replica="0" id="SensorTopology" uuid="67450a47-ef90-46dc-9782-2f41a0d63ff9" state="DEPLOYED">
+        <ServiceUnit type="software" artifactType="sh" hostedId="SensorDocker" capabilityVars="" connecttoId="QueueUnit" idCounter="0" min="1" max="1" id="sensorUnit" uuid="17d8b0ef-aec9-40c4-9900-de383c36c1e8" state="DEPLOYED">
+            <Primitives>
+                <Primitive name="stop" type="SCRIPT">
+                    <executionREF>capabilities/stop.sh</executionREF>
+                    <executionParameter></executionParameter>
+                    <executionOutput></executionOutput>
+                </Primitive>
+                <Primitive name="setProtocolDry" type="SCRIPT">
+                    <executionREF>capabilities/setProtocolDry.sh</executionREF>
+                    <executionParameter></executionParameter>
+                    <executionOutput></executionOutput>
+                </Primitive>
+                <Primitive name="setProtocolCOAP" type="SCRIPT">
+                    <executionREF>capabilities/setProtocolCOAP.sh</executionREF>
+                    <executionParameter></executionParameter>
+                    <executionOutput></executionOutput>
+                </Primitive>
+                <Primitive name="start" type="SCRIPT">
+                    <executionREF>capabilities/start.sh</executionREF>
+                    <executionParameter></executionParameter>
+                    <executionOutput></executionOutput>
+                </Primitive>
+                <Primitive name="changeRate" type="SCRIPT">
+                    <executionREF>capabilities/changeRate.sh</executionREF>
+                    <executionParameter></executionParameter>
+                    <executionOutput></executionOutput>
+                </Primitive>
+                <Primitive name="redirect" type="SCRIPT">
+                    <executionREF>capabilities/redirect.sh</executionREF>
+                    <executionParameter></executionParameter>
+                    <executionOutput></executionOutput>
+                </Primitive>
+                <Primitive name="setProtocolMQTT" type="SCRIPT">
+                    <executionREF>capabilities/setProtocolMQTT.sh</executionREF>
+                    <executionParameter></executionParameter>
+                    <executionOutput></executionOutput>
+                </Primitive>
+            </Primitives>
+            <Replica replica="0" hostedId="1" extra="Configure script DONE: runSensor_gps1279_location.sh" uuid="1610edf9-8ed2-4f43-8891-82de4b74aee6" state="DEPLOYED"/>
+            <Artifacts>
+                <Artifacts name="Artifact_1da0765d-6610-4d4c-b67c-02b8038d0cc1" type="sh" reference="https://dl.dropboxusercontent.com/s/b7aeky5osdqzwth/runSensor_gps1279_location.sh"/>
+                <Artifacts name="Artifact_5c1bd188-0603-40da-8ec1-7ef065b91834" type="metadata" reference="https://dl.dropboxusercontent.com/s/w69krddj4qmqc2m/sensor.meta"/>
+                <Artifacts name="Artifact_c055fc94-32cb-42b5-a200-09aa8884e488" type="misc" reference="https://dl.dropboxusercontent.com/s/cmy6h6gbpyb4jib/sensor.tar.gz"/>
+            </Artifacts>
+            <properties/>
+        </ServiceUnit>
+        <ServiceUnit type="software" artifactType="sh" hostedId="MqttDocker" capabilityVars="brokerIp_Capability" connecttoId="" idCounter="0" min="1" max="1" id="QueueUnit" uuid="113b919a-56f6-4c3f-88b8-93ee49deab53" state="DEPLOYED">
+            <Replica replica="0" hostedId="1" extra="Configure script DONE: run_mqtt_broker.sh" uuid="0ca76d95-5609-440f-a8fa-e10eae56660b" state="DEPLOYED">
+                <Capabilities>
+                    <Capability id="brokerIp_Capability" value="172.17.0.3"/>
+                </Capabilities>
+            </Replica>
+            <Artifacts>
+                <Artifacts name="Artifact_d4ad0b4d-4824-4a0f-b2c0-cd1ed9e47d3e" type="sh" reference="https://dl.dropboxusercontent.com/s/dxfm1q1r3f464p7/run_mqtt_broker.sh"/>
+            </Artifacts>
+            <properties/>
+        </ServiceUnit>
+        <ServiceUnit type="docker" artifactType="dockerfile" hostedId="PersonalMachine" capabilityVars="" connecttoId="" idCounter="1" min="1" max="2147483647" id="SensorDocker" uuid="13056b19-0f1c-43fb-b7f1-6f8c0e205dec" state="DEPLOYED">
+            <Replica replica="1" hostedId="1" extra="Docker container is created." uuid="0c7920a7-66b4-4002-a285-5b323d36193c" state="DEPLOYED">
+                <Properties>
+                    <SalsaInstanceDescription_Docker>
+                        <provider>local@dockerhost</provider>
+                        <baseImage>salsa.ubuntu</baseImage>
+                        <id>6080c6de65b9415a9bad77b94386780778c8bd5230e7de7a8351e8e62eca1827</id>
+                        <privateIp>172.17.0.2</privateIp>
+                        <publicIP>172.17.0.2</publicIP>
+                        <state>RUNNING</state>
+                        <quota>0</quota>
+                        <dockername>/SensorDocker_1_180_19_21_57</dockername>
+                        <portmap></portmap>
+                    </SalsaInstanceDescription_Docker>
+                </Properties>
+            </Replica>
+            <Artifacts/>
+            <properties>
+                <SalsaInstanceDescription_Docker>
+                    <provider>localhost</provider>
+                    <baseImage>a82e054f-4f01-49f9-bc4c-77a98045739c</baseImage>
+                    <instanceType>000000512</instanceType>
+                    <quota>0</quota>
+                    <packages>
+                        <Package>ganglia-monitor gmetad</Package>
+                    </packages>
+                </SalsaInstanceDescription_Docker>
+            </properties>
+        </ServiceUnit>
+        <ServiceUnit type="docker" artifactType="dockerfile" hostedId="PersonalMachine" capabilityVars="" connecttoId="" idCounter="1" min="1" max="2147483647" id="MqttDocker" uuid="49812a76-e5d6-4b60-840f-26d2256fdeab" state="DEPLOYED">
+            <Replica replica="1" hostedId="1" extra="Pioneer is deployed" uuid="17838cba-1bbb-45c8-ab70-de0c33dea97f" state="DEPLOYED">
+                <Properties>
+                    <SalsaInstanceDescription_Docker>
+                        <provider>local@dockerhost</provider>
+                        <baseImage>salsa.ubuntu</baseImage>
+                        <id>dfef05787b5a5d3ad5e377d567d6320fdb8b70da7be7c6397e79fced66551b70</id>
+                        <privateIp>172.17.0.3</privateIp>
+                        <publicIP>172.17.0.3</publicIP>
+                        <state>RUNNING</state>
+                        <quota>0</quota>
+                        <dockername>/MqttDocker_1_180_19_21_57</dockername>
+                        <portmap></portmap>
+                    </SalsaInstanceDescription_Docker>
+                </Properties>
+            </Replica>
+            <Artifacts/>
+            <properties>
+                <SalsaInstanceDescription_Docker>
+                    <provider>localhost</provider>
+                    <baseImage>a82e054f-4f01-49f9-bc4c-77a98045739c</baseImage>
+                    <instanceType>000000512</instanceType>
+                    <quota>0</quota>
+                    <packages>
+                        <Package>ganglia-monitor gmetad</Package>
+                    </packages>
+                </SalsaInstanceDescription_Docker>
+            </properties>
+        </ServiceUnit>
+        <ServiceUnit type="os" hostedId="" capabilityVars="" connecttoId="" idCounter="1" min="1" max="2147483647" id="PersonalMachine" uuid="1a979849-c501-4568-81da-bd926726c290" state="DEPLOYED">
+            <Replica replica="1" hostedId="2147483647" extra="Pioneer is deployed" uuid="b7657a87-0fc4-436c-8350-39de4fb0cdd3" state="DEPLOYED">
+                <Properties>
+                    <SalsaInstanceDescription_VM>
+                        <provider>localhost</provider>
+                        <baseImage></baseImage>
+                        <instanceType></instanceType>
+                        <id>Hung-Laptop</id>
+                        <privateIp>localhost</privateIp>
+                        <publicIP>localhost</publicIP>
+                        <quota>0</quota>
+                        <packages>
+                            <Package></Package>
+                        </packages>
+                    </SalsaInstanceDescription_VM>
+                </Properties>
+            </Replica>
+            <Artifacts/>
+            <properties>
+                <SalsaInstanceDescription_VM>
+                    <provider>localhost</provider>
+                    <baseImage></baseImage>
+                    <instanceType></instanceType>
+                    <quota>0</quota>
+                    <packages>
+                        <Package></Package>
+                    </packages>
+                </SalsaInstanceDescription_VM>
+            </properties>
+        </ServiceUnit>
+    </ServiceTopology>
+</CloudService>

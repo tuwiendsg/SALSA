@@ -1,0 +1,19 @@
+1. Upload the artifact in "sensor" folder to a repository, e.g. github, Dropbox (see folder 1-sensor). The artifact includes:
+   - The sensor binary (includes also a set of capabilities).
+   - The sensor setup script.
+   - The metadata file: define how to call capabilities locally and some metadata.
+   
+2. Specify a topology with information (see SimpleSensorOnDocker.java and 2-sensor-topology.tosca.xml)
+   - Where to deploy the sensor (here: in a docker)
+   - Where the sensor connects to (here: a MQTT broker)
+   
+3. Deploy the sensor. Using SALSA, we can see the deployment status (3-salsa-information.data).
+
+4. Query information via ELISE API. The query for a sensor:
+   - Query the list of sensors (4-elise-query-services.json)
+$ curl http://localhost:8080/salsa-engine/rest/viewgenerator/cloudservice/json/compact/sensorTopo
+   - Query a specific sensor (file 4-elise-query-sensor.json)
+$ curl http://localhost:8080/salsa-engine/rest/elise/instance/1610edf9-8ed2-4f43-8891-82de4b74aee6
+
+5. Based on the runtime information, we can invoke the capability. E.g., the following command is extracted from step 4.
+$ curl -X POST http://10.155.211.77:8080/salsa-engine/rest/services/sensorTopo/nodes/sensorUnit/instances/0/action_queue/start

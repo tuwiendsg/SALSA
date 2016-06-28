@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:Definitions id="IoTSensors" name="IoTSensors" xmlns:ns2="http://docs.oasis-open.org/tosca/ns/2011/12">
+    <ns2:ServiceTemplate id="SensorTopology">
+        <ns2:TopologyTemplate>
+            <ns2:RelationshipTemplate id="SensorUnitOnDocker" type="HOSTON">
+                <ns2:SourceElement ref="sensorUnit"/>
+                <ns2:TargetElement ref="SensorDocker"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="sensorDockerOnVM" type="HOSTON">
+                <ns2:SourceElement ref="SensorDocker"/>
+                <ns2:TargetElement ref="PersonalMachine"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqttDockerOnVM" type="HOSTON">
+                <ns2:SourceElement ref="QueueUnit"/>
+                <ns2:TargetElement ref="MqttDocker"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="MqttUnitOnDocker" type="HOSTON">
+                <ns2:SourceElement ref="MqttDocker"/>
+                <ns2:TargetElement ref="PersonalMachine"/>
+            </ns2:RelationshipTemplate>
+            <ns2:RelationshipTemplate id="mqtt_broker" type="CONNECTTO">
+                <ns2:SourceElement ref="brokerIp_Capability"/>
+                <ns2:TargetElement ref="brokerIp_Requirement"/>
+            </ns2:RelationshipTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="sensorUnit" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements>
+                    <ns2:Requirement id="brokerIp_Requirement" type="variable"/>
+                </ns2:Requirements>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_1da0765d-6610-4d4c-b67c-02b8038d0cc1" artifactType="salsa:sh" artifactRef="Artifact_1da0765d-6610-4d4c-b67c-02b8038d0cc1" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_5c1bd188-0603-40da-8ec1-7ef065b91834" artifactType="salsa:metadata" artifactRef="Artifact_5c1bd188-0603-40da-8ec1-7ef065b91834" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                    <ns2:DeploymentArtifact name="Artifact_c055fc94-32cb-42b5-a200-09aa8884e488" artifactType="salsa:misc" artifactRef="Artifact_c055fc94-32cb-42b5-a200-09aa8884e488" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="1" id="QueueUnit" type="software">
+                <ns2:Properties>
+                    <MappingProperties/>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities>
+                    <ns2:Capability id="brokerIp_Capability" type="variable"/>
+                </ns2:Capabilities>
+                <ns2:Policies/>
+                <ns2:DeploymentArtifacts>
+                    <ns2:DeploymentArtifact name="Artifact_d4ad0b4d-4824-4a0f-b2c0-cd1ed9e47d3e" artifactType="salsa:sh" artifactRef="Artifact_d4ad0b4d-4824-4a0f-b2c0-cd1ed9e47d3e" xmlns:salsa="https://github.com/tuwiendsg/SALSA"/>
+                </ns2:DeploymentArtifacts>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="SensorDocker" type="docker">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">localhost</property>
+                            <property name="instanceType">000000512</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages">ganglia-monitor gmetad</property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="MqttDocker" type="docker">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">localhost</property>
+                            <property name="instanceType">000000512</property>
+                            <property name="baseImage">a82e054f-4f01-49f9-bc4c-77a98045739c</property>
+                            <property name="packages">ganglia-monitor gmetad</property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+            <ns2:NodeTemplate minInstances="1" maxInstances="2147483647" id="PersonalMachine" type="os">
+                <ns2:Properties>
+                    <MappingProperties>
+                        <MappingProperty type="os">
+                            <property name="provider">localhost</property>
+                            <property name="instanceType"/>
+                            <property name="baseImage"/>
+                            <property name="packages"></property>
+                        </MappingProperty>
+                    </MappingProperties>
+                </ns2:Properties>
+                <ns2:Requirements/>
+                <ns2:Capabilities/>
+                <ns2:Policies/>
+            </ns2:NodeTemplate>
+        </ns2:TopologyTemplate>
+    </ns2:ServiceTemplate>
+    <ns2:ArtifactTemplate id="Artifact_1da0765d-6610-4d4c-b67c-02b8038d0cc1" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="https://dl.dropboxusercontent.com/s/b7aeky5osdqzwth/runSensor_gps1279_location.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_5c1bd188-0603-40da-8ec1-7ef065b91834" type="metadata">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="https://dl.dropboxusercontent.com/s/w69krddj4qmqc2m/sensor.meta"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_c055fc94-32cb-42b5-a200-09aa8884e488" type="misc">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="https://dl.dropboxusercontent.com/s/cmy6h6gbpyb4jib/sensor.tar.gz"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+    <ns2:ArtifactTemplate id="Artifact_d4ad0b4d-4824-4a0f-b2c0-cd1ed9e47d3e" type="sh">
+        <ns2:Properties/>
+        <ns2:ArtifactReferences>
+            <ns2:ArtifactReference reference="https://dl.dropboxusercontent.com/s/dxfm1q1r3f464p7/run_mqtt_broker.sh"/>
+        </ns2:ArtifactReferences>
+    </ns2:ArtifactTemplate>
+</ns2:Definitions>
