@@ -9,16 +9,14 @@ import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.CapabilityManag
 import at.ac.tuwien.dsg.cloud.elise.master.RESTImp.EliseCommunicationInterface;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IoT.GatewayInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryRule;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseRepository;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 /**
  *
@@ -37,7 +35,7 @@ public class QueryAndInvokeCapability {
         manageProxy.getQueryProcessStatus(queryID); // block
 
         // the 2nd proxy to manage the information
-        EliseRepository localProxy = JAXRSClientFactory.create(endpoint, EliseRepository.class, Collections.singletonList(new JacksonJsonProvider()));
+        EliseRepository localProxy = JAXRSClientFactory.create(endpoint, EliseRepository.class, Collections.singletonList(new JacksonJaxbJsonProvider()));
         Set<UnitInstance> instances = localProxy.query(query);
         for (UnitInstance instance : instances) {
             Capability c = instance.getCapabilityByName("changeRate");

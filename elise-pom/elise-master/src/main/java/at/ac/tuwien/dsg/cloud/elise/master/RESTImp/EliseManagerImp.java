@@ -37,10 +37,10 @@ import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.neo4jAccess.ServiceTemplateRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  *

@@ -19,13 +19,13 @@ package at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils;
 
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
-import scala.collection.mutable.ArrayLike;
+
 
 /**
  *

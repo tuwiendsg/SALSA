@@ -18,11 +18,12 @@
 package at.ac.tuwien.dsg.cloud.elise.model.runtime;
 
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import org.codehaus.jackson.map.ObjectMapper;
+
 
 /**
  * The LocalIdentification is any kind of ID, assigned by a particular management service

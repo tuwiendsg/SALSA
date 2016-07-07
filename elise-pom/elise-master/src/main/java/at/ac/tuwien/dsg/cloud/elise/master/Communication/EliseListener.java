@@ -27,14 +27,12 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandl
 import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.ConductorDescription;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.EliseQueueTopic;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
-import java.io.IOException;
 import java.util.Collections;
 import javax.annotation.PostConstruct;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.slf4j.Logger;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseRepository;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  *

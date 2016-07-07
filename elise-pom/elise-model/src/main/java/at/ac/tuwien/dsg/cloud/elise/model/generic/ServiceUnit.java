@@ -23,15 +23,16 @@ import java.util.Set;
 
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
-import org.codehaus.jackson.annotate.JsonMethod;
-import org.codehaus.jackson.map.ObjectMapper;
+
 import org.springframework.data.neo4j.annotation.Fetch;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
@@ -41,8 +42,9 @@ import org.springframework.data.neo4j.annotation.RelatedTo;
  *
  * @author Duc-Hung Le
  *
- * This class contains generic information for different types of service units The other class should extend it, e.g. OfferedServiceUnit, ServiceUnitTemplate
- * and UnitInstance
+ * This class contains generic information for different types of service units
+ * The other class should extend it, e.g. OfferedServiceUnit,
+ * ServiceUnitTemplate and UnitInstance
  *
  */
 @NodeEntity
@@ -51,7 +53,8 @@ public class ServiceUnit implements HasUniqueId {
     @GraphId
     private Long graphID;
     /**
-     * This is the global ID in ELISE, is assigned at the time a service unit is created. The particular DomainID is stored in the DomainEntity of the
+     * This is the global ID in ELISE, is assigned at the time a service unit is
+     * created. The particular DomainID is stored in the DomainEntity of the
      * domain-models
      */
     protected String uuid;
@@ -65,7 +68,6 @@ public class ServiceUnit implements HasUniqueId {
     protected Set<Capability> capabilities;
 
     // the actual model of the service unit, using by SALSA
-    
     protected DomainEntity domain;
 
     @RelatedTo
@@ -175,7 +177,7 @@ public class ServiceUnit implements HasUniqueId {
 
     public String toJson() {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
+        mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
         try {
             return mapper.writeValueAsString(this);
         } catch (IOException ex) {

@@ -46,10 +46,11 @@ import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
 import java.util.Collections;
 import java.util.List;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.slf4j.Logger;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.State;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseRepository;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  * This enhance the action by adding information into ELISE database
@@ -127,7 +128,7 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
         logger.debug("Prepare to connect to EliseManager service: {}", EliseConfiguration.getRESTEndpointLocal());
         // TODO: add more local identification here to adapt with other management tool: SYBL, rtGovOps?
         // save the UnitInstance into the graph DB
-        EliseManager eliseManager = (EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJsonProvider()));
+        EliseManager eliseManager = (EliseManager) JAXRSClientFactory.create(EliseConfiguration.getRESTEndpointLocal(), EliseManager.class, Collections.singletonList(new JacksonJaxbJsonProvider()));
         logger.debug("It may be connectted or not ! Now cheking...");
 
         if (eliseManager != null) {

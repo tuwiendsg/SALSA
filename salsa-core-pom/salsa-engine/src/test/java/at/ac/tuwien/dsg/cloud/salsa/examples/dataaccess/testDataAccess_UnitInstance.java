@@ -11,19 +11,14 @@ import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import java.util.Arrays;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseRepository;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Capability;
-import at.ac.tuwien.dsg.cloud.elise.model.provider.Artifact;
-import at.ac.tuwien.dsg.cloud.elise.model.provider.ServiceTemplate;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.State;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.DomainEntity;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.VirtualMachineInfo;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  *

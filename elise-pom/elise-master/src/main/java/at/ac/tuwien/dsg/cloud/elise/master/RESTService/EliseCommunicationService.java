@@ -22,7 +22,6 @@ import at.ac.tuwien.dsg.cloud.elise.master.Communication.QueryManager;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.EliseQueueTopic;
 
 import at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.utils.EliseConfiguration;
-import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.elise.model.wrapper.UnitInstanceWrapper;
@@ -33,6 +32,9 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.SalsaMessageHandl
 import at.ac.tuwien.dsg.cloud.elise.collectorinterfaces.models.ConductorDescription;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryProcessNotification;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -47,22 +49,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.JavaType;
 import org.slf4j.Logger;
 
 /**
- * This service contains APIs to communicate with distributed collectors to gather information
+ * This service contains APIs to communicate with distributed collectors to
+ * gather information
  *
  * @author Duc-Hung Le
  */
@@ -76,7 +71,8 @@ public class EliseCommunicationService implements EliseCommunicationInterface {
     static int eliseCounter = 0;
 
     /**
-     * Get the information of available conductors and collectors which are running and registered.
+     * Get the information of available conductors and collectors which are
+     * running and registered.
      *
      * @return The description of all conductors.
      */
@@ -128,12 +124,15 @@ public class EliseCommunicationService implements EliseCommunicationInterface {
     String rtLogFile;
 
     /**
-     * Send a query to all the conductors, which then will trigger collector module, collect the information, and update to the central service.
+     * Send a query to all the conductors, which then will trigger collector
+     * module, collect the information, and update to the central service.
      *
      * @param query A query to specify which information to be collected
-     * @param isUpdated The information will be update continously or this is an one-time query
+     * @param isUpdated The information will be update continously or this is an
+     * one-time query
      * @param isNotified The change will be notify to the topic
-     * @return An UUID of the query, which can be used to trace the status of this query.
+     * @return An UUID of the query, which can be used to trace the status of
+     * this query.
      */
 //    @POST
 //    @Path("/queryUnitInstance")
@@ -319,7 +318,8 @@ public class EliseCommunicationService implements EliseCommunicationInterface {
      * Query the status of a query.
      *
      * @param queryUUID The UUID of the query
-     * @return A list of conductors that are working for this query and the status of each
+     * @return A list of conductors that are working for this query and the
+     * status of each
      */
 //    @GET
 //    @Path("/query/{queryUUID}")

@@ -23,72 +23,34 @@
             <type>jar</type>
         </dependency>
         
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.utilities</groupId>
             <artifactId>messaging-lightweight</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>-->
         
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.utilities</groupId>
             <artifactId>messaging-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>-->
         
         
-        
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
             <artifactId>salsa-common</artifactId>
-            <version>2.0</version>
         </dependency>
-        
-        <!--        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-jaxrs</artifactId>
-            <version>1.9.13</version>
-        </dependency>-->
-        <!--        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>1.9.13</version>
-        </dependency>-->
-        <!--        <dependency>
-                    <groupId>org.codehaus.jackson</groupId>
-                    <artifactId>jackson-xc</artifactId>                     
-                </dependency> 
-        -->
         
         <dependency>
             <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
             <artifactId>domainmodels</artifactId>
-            <version>2.0</version>
         </dependency>
-        
-        
+                
     </dependencies> 
     <repositories>
         <repository>
             <id>Eclipse Paho Repo</id>
             <url>https://repo.eclipse.org/content/repositories/paho-releases/</url>
-        </repository>
-<!--        <repository>
-            <id>salsa-mymaven-repository</id>
-            <name>salsa-mymaven-repository</name>
-            <url>https://mymavenrepo.com/repo/eYjnHcp57UrjNnt7Nzvu/</url>
-        </repository>-->
-        
-        
-        
-<!--        <repository>
-            <id>infosys-maven-dev</id>
-            <name>infosys-maven-releases</name>
-            <url>http://repo.infosys.tuwien.ac.at/artifactory/dev</url>
-        </repository>
-        <repository>
-            <id>infosys-maven-comot</id>
-            <name>infosys-maven-releases</name>
-            <url>http://repo.infosys.tuwien.ac.at/artifactory/comot</url>
-        </repository>-->
+        </repository>        
     </repositories>
 </project>

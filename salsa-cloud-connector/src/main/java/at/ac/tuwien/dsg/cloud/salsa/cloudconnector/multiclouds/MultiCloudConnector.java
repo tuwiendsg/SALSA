@@ -26,8 +26,6 @@ import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.CloudInterface;
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.CloudParameter;
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.CloudParametersUser;
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.InstanceDescription;
-import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.flexiant.FlexiantConnector;
-import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.flexiant.FlexiantParameterStrings;
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.localhost.LocalhostConnector;
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.openstack.OpenStackJcloud;
 import at.ac.tuwien.dsg.cloud.salsa.cloudconnector.openstack.OpenStackParameterStrings;
@@ -92,24 +90,6 @@ public class MultiCloudConnector {
 						+ " - " + param1.getParameter(StratuslabParameterStrings.username)
 						+ " - " + param1.getParameter(StratuslabParameterStrings.password)
 						+ " - " + user_public_key_file);
-				break;
-			}
-			case CELAR_FLEXIANT:
-			{
-				CloudParameter param = paramUser.getParameter("celar", "flexiant");
-				String email = param.getParameter(FlexiantParameterStrings.EMAIL);				
-				String customerUUID = param.getParameter(FlexiantParameterStrings.CUSTOMER_UUID);
-				String password = param.getParameter(FlexiantParameterStrings.PASSWORD);
-				String endpoint = param.getParameter(FlexiantParameterStrings.ENDPOINT);
-				String vdcUUID = param.getParameter(FlexiantParameterStrings.VDC_UUID);
-				
-				String defaultProductOfferUUID = param.getParameter(FlexiantParameterStrings.DEFAULT_PRODUCT_OFFER_UUID);
-				String clusterUUID = param.getParameter(FlexiantParameterStrings.CLUSTER_UUID);
-				String networkUUID = param.getParameter(FlexiantParameterStrings.NETWORK_UUID);
-				String sshKey = param.getParameter(FlexiantParameterStrings.SSH_KEY);
-				logger.info("Connection to Flexiant. Endpoint: " + endpoint +", uuid: " + customerUUID);
-				
-				cloud = new FlexiantConnector(logger, email, customerUUID, password, endpoint, vdcUUID, defaultProductOfferUUID, clusterUUID, networkUUID, sshKey);
 				break;
 			}
 			case LOCALHOST:

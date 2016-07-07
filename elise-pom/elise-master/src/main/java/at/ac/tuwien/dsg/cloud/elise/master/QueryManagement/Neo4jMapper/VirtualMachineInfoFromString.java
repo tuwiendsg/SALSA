@@ -6,11 +6,8 @@
 package at.ac.tuwien.dsg.cloud.elise.master.QueryManagement.Neo4jMapper;
 
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.VirtualMachineInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.core.convert.converter.Converter;
 
 /**
@@ -28,5 +25,5 @@ public class VirtualMachineInfoFromString implements Converter<String, VirtualMa
             return null;
         }
     }
-    
+
 }

@@ -17,9 +17,10 @@
  */
 package at.ac.tuwien.dsg.cloud.elise.model.runtime;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
-import org.codehaus.jackson.map.ObjectMapper;
+
 
 /**
  * Save the list of LocalIdentification and the global ID for a particular unit instance

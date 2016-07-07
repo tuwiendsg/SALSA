@@ -16,13 +16,11 @@
  *    limitations under the License.
  */
 package at.ac.tuwien.dsg.cloud.elise.model.provider;
-
 import java.util.HashSet;
 import java.util.Set;
-
 import at.ac.tuwien.dsg.cloud.elise.model.generic.HasUniqueId;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 

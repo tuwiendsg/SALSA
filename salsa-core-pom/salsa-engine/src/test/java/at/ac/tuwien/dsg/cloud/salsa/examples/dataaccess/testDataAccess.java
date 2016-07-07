@@ -5,20 +5,21 @@
  */
 package at.ac.tuwien.dsg.cloud.salsa.examples.dataaccess;
 
-import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
-import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
-import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
-import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
-import java.util.Arrays;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
+
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseRepository;
 import at.ac.tuwien.dsg.cloud.elise.model.provider.Artifact;
 import at.ac.tuwien.dsg.cloud.elise.model.provider.ServiceTemplate;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
+import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.IaaS.VirtualMachineInfo;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import java.util.Arrays;
 import java.util.Set;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 
 /**
  *

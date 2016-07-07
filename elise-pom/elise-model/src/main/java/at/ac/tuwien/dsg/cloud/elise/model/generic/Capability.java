@@ -19,6 +19,9 @@ package at.ac.tuwien.dsg.cloud.elise.model.generic;
 
 import at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.RestExecution;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.executionmodels.ScriptExecution;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
@@ -27,9 +30,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonMethod;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
@@ -69,7 +69,7 @@ public class Capability implements HasUniqueId {
         this.name = name;
         this.executionMethod = executeMethod;
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         try {
             this.executionModel = mapper.writeValueAsString(executionModel);
         } catch (IOException ex) {

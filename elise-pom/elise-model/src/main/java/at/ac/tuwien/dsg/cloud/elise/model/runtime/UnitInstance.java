@@ -22,10 +22,10 @@ import at.ac.tuwien.dsg.cloud.elise.model.generic.ServiceUnit;
 import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.ServiceCategory;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.Metric;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 
 /**

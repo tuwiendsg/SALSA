@@ -30,20 +30,16 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQuery;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.model.Elise.EliseQueryRule;
 import at.ac.tuwien.dsg.cloud.elise.model.relationships.ConnectToRelationshipInstance;
 import at.ac.tuwien.dsg.cloud.elise.model.relationships.HostOnRelationshipInstance;
-
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.GlobalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.LocalIdentification;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
 import at.ac.tuwien.dsg.cloud.elise.model.generic.ExtensibleModel;
 import java.util.ArrayList;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -52,6 +48,7 @@ import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseRepository;
 import at.ac.tuwien.dsg.cloud.elise.model.provider.Artifact;
 import at.ac.tuwien.dsg.cloud.elise.model.provider.Provider;
 import at.ac.tuwien.dsg.cloud.elise.model.provider.ServiceTemplate;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
  *

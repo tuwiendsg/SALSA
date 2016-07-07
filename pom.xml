@@ -16,6 +16,8 @@
         <yworks.uml.path>${basedir}/scripts/yworks-uml-doclet-3.0_02-jdk1.5</yworks.uml.path>        
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
+        <salsa.version>2.0</salsa.version>
+        <spring.version>4.0.4.RELEASE</spring.version>
     </properties>
 	
     <modules>
@@ -28,13 +30,37 @@
     
     <dependencyManagement>
         <dependencies>
-            <dependency>
+            <!--            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-framework-bom</artifactId>
                 <version>4.0.4.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>-->
+            
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+       
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            
             <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-neo4j</artifactId>
@@ -60,8 +86,32 @@
                 <artifactId>cxf-rt-transports-http-hc</artifactId>
                 <version>3.0.3</version>
             </dependency>
+                    
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.7.0</version>
+            </dependency>
             
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>2.7.0</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>2.7.0</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-json-provider</artifactId>
+                <version>2.7.4</version>
+            </dependency>
+            
+            <!--            <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-jaxrs</artifactId>            
                 <version>1.9.13</version>
@@ -75,7 +125,7 @@
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-xc</artifactId>     
                 <version>1.9.13</version>       
-            </dependency> 
+            </dependency> -->
             
             <dependency>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -94,7 +144,48 @@
                 <artifactId>javax.ws.rs-api</artifactId>
                 <version>2.0.1</version>        
             </dependency>
-
+            
+            <!--  dependency for SALSA itself  -->
+            <dependency>
+                <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+                <artifactId>domainmodels</artifactId>
+                <version>${salsa.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+                <artifactId>salsa-common</artifactId>
+                <version>${salsa.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+                <artifactId>salsa-messaging</artifactId>
+                <version>${salsa.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+                <artifactId>salsa-cloud-connector</artifactId>
+                <version>${salsa.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+                <artifactId>elise-data-model</artifactId>
+                <version>${salsa.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+                <artifactId>elise-model</artifactId>
+                <version>${salsa.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+                <artifactId>elise-conductor</artifactId>
+                <version>${salsa.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>at.ac.tuwien.dsg.cloud.salsa</groupId>
+                <artifactId>CollectorInterfaces</artifactId>
+                <version>${salsa.version}</version>
+            </dependency> 
         </dependencies>
     </dependencyManagement>
         
@@ -138,11 +229,11 @@
                     <doctitle>${project.name} (${project.version})</doctitle>
                     <show>protected</show>
                     <!-- UML -->
-                <!--    <doclet>ydoc.doclets.YStandard</doclet>
-                    <docletPath>${yworks.uml.path}/lib/ydoc.jar:${yworks.uml.path}/resources</docletPath>
-                    <additionalparam>-umlautogen</additionalparam>
-                -->
-<!--                    <docletArtifact>
+                    <!--    <doclet>ydoc.doclets.YStandard</doclet>
+                        <docletPath>${yworks.uml.path}/lib/ydoc.jar:${yworks.uml.path}/resources</docletPath>
+                        <additionalparam>-umlautogen</additionalparam>
+                    -->
+                    <!--                    <docletArtifact>
                         <groupId>com.yworks</groupId>
                         <artifactId>umldoclet</artifactId>
                         <version>3.0.02</version>
@@ -204,7 +295,7 @@
       
     </repositories>
     
-<!--    <distributionManagement>
+    <!--    <distributionManagement>
         <repository>
             <id>mymaven.repo</id>
             <url>https://mymavenrepo.com/repo/1nOwDrpLIJraVvWNCbCD/</url>

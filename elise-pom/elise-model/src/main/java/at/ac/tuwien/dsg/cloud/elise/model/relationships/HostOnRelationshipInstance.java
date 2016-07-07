@@ -18,8 +18,8 @@
 package at.ac.tuwien.dsg.cloud.elise.model.relationships;
 
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.UnitInstance;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.data.neo4j.annotation.EndNode;
 import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.RelationshipEntity;

@@ -53,17 +53,17 @@ import at.ac.tuwien.dsg.cloud.salsa.messaging.messageInterface.MessagePublishInt
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.cloud.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.cloud.salsa.tosca.extension.SalsaInstanceDescription_VM;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
+
 
 @Service
 @Path("/manager")
@@ -122,7 +122,7 @@ public class InternalManagement {
         map.put("pioneer_number", PioneerManager.count());
         map.put("pioneer_description", PioneerManager.describeShort());
 
-        EliseManager eliseManager = ((EliseManager) JAXRSClientFactory.create(SalsaConfiguration.getSalsaCenterEndpointLocalhost() + "/rest/elise", EliseManager.class, Collections.singletonList(new JacksonJsonProvider())));
+        EliseManager eliseManager = ((EliseManager) JAXRSClientFactory.create(SalsaConfiguration.getSalsaCenterEndpointLocalhost() + "/rest/elise", EliseManager.class, Collections.singletonList(new JacksonJaxbJsonProvider())));
         List<ConductorDescription> conductors = eliseManager.getConductorList();
         map.put("conductor_number", conductors.size());
         if (conductors.size() > 0) {
