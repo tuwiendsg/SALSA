@@ -21,7 +21,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
             <!--      <ref bean="neo4jBean" />-->
         </jaxrs:serviceBeans>
         <jaxrs:providers>
-            <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
         </jaxrs:providers>
         <!--        <jaxrs:providers>
             <bean class="org.apache.cxf.jaxrs.provider.JSONProvider"/>
