@@ -55,7 +55,8 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.io.FilenameUtils;
 
 /**
- * The class contain functionalities for preparing the task at salsa center, then request pioneer to execute it
+ * The class contain functionalities for preparing the task at salsa center,
+ * then request pioneer to execute it
  *
  * @author Duc-Hung Le
  */
@@ -72,9 +73,9 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
     }
 
     @Override
-    public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {        
+    public ServiceInstance deploy(String serviceId, String nodeId, int instanceId) throws SalsaException {
         EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.STARTED, "AppCapabilityBase", "Start the based deployment of software stacks");
-        
+
         setLock(nodeId + "/" + instanceId);
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         // find the hosted node of this node              
@@ -100,15 +101,14 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
                 ids += instanceTmp.getInstanceId() + ", ";
             }
             EngineLogger.logger.debug("And their IDs are: " + ids);
-            
+
             //Doing: check the hosteOn instance by : static: via max instance definition, dynamic: via a resource
-            
             boolean dynamicPlacementOn = SalsaConfiguration.getDynamicPlacementOn();
             boolean placeOnMe = false;
-            if (dynamicPlacementOn && unit.getMax()<=0){
-                float threadhold = SalsaConfiguration.getPlacementThreadhold();                
+            if (dynamicPlacementOn && unit.getMax() <= 0) {
+                float threadhold = SalsaConfiguration.getPlacementThreadhold();
                 EngineLogger.logger.debug("Dynamic placement. Threadhold: {}, instance:: {}/{}/{} ", threadhold, service.getId(), nodeId, instanceId);
-                if (DynamicPlacementHelper.checkMemoryUsageIsBelowThreadholdByInstanceID_NoDockerConcern(threadhold, service, hostedUnit.getId(), hostedInst.getInstanceId())){
+                if (DynamicPlacementHelper.checkMemoryUsageIsBelowThreadholdByInstanceID_NoDockerConcern(threadhold, service, hostedUnit.getId(), hostedInst.getInstanceId())) {
                     placeOnMe = true;
                 }
             } else {
@@ -117,7 +117,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
                     placeOnMe = true;
                 }
             }
-            
+
             if (placeOnMe) {
                 suitableHostedInstance = hostedInst;
                 hostInstanceId = hostedInst.getInstanceId();
@@ -180,7 +180,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
         EngineLogger.logger.debug("Hosted node: " + hostedUnit.getId() + "/"
                 + suitableHostedInstance.getInstanceId() + " type: "
                 + hostedUnit.getType());
-		// not release here : releaseLock();
+        // not release here : releaseLock();
 
         // if host in OS or DOCKER, set the status to STAGING. a Pioneer will take it
         if (hostedUnit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())
@@ -276,15 +276,20 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
 
             SalsaMsgConfigureArtifact command = new SalsaMsgConfigureArtifact(actionID, "deploy", pioneerID, SalsaConfiguration.getUserName(), serviceId, topologyId, nodeId, instanceId, InfoParser.mapOldAndNewCategory(SalsaEntityType.fromString(unit.getType())), "", "", SalsaArtifactType.fromString(unit.getArtifactType()), environment);
             String runByMe = "";
+
+            // add needed artifacts for the deployment
+            for (ServiceUnit.Artifacts art : unit.getArtifacts()) {
+                EngineLogger.logger.debug("Debug1605: artifact reference is: " + art.getReference());
+                command.hasArtifact(art.getName(), art.getType(), art.getReference());
+            }
+
             // if the deploy action is explicit define, RUN IT
             if (unit.getPrimitiveByName("deploy") != null) {
                 // TODO: consider to expand this part, this supports only SCRIPT type now
                 runByMe = unit.getPrimitiveByName("deploy").getExecutionREF();
             } // otherwise SALSA tries to detect via Artifact type
             else {
-                for (ServiceUnit.Artifacts art : unit.getArtifacts()) {
-                    EngineLogger.logger.debug("Debug1605: artifact reference is: "+art.getReference());
-                    command.hasArtifact(art.getName(), art.getType(), art.getReference());
+                for (ServiceUnit.Artifacts art : unit.getArtifacts()) {                    
                     EngineLogger.logger.debug("Comparing artifact type (" + art.getType() + ") and unit artifact type (" + unit.getArtifactType() + ")");
                     if (art.getType().equals(unit.getArtifactType()) && runByMe.isEmpty()) {
                         runByMe = FilenameUtils.getName(art.getReference());
@@ -321,15 +326,15 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
     }
 
     @Override
-    public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {        
+    public void remove(String serviceId, String nodeId, int instanceId) throws SalsaException {
         EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.REMOVE, INFOMessage.ACTION_STATUS.STARTED, "AppCapabilityBase", "Removing a software node somewhere");
         //set the state=STAGING and stagingAction=undeploy, the pioneer handle the rest			
         CloudService service = centerCon.getUpdateCloudServiceRuntime(serviceId);
         String topologyId = service.getTopologyOfNode(nodeId).getId();
-        ServiceUnit unit = service.getComponentById(nodeId);        
+        ServiceUnit unit = service.getComponentById(nodeId);
         centerCon.updateNodeState(serviceId, topologyId, nodeId, instanceId, SalsaEntityState.STAGING_ACTION, "Undeployment action is queued");
         centerCon.queueActions(serviceId, nodeId, instanceId, SalsaEntityActions.UNDEPLOY.getActionString());
-        
+
         SalsaEntityState state = SalsaEntityState.STAGING_ACTION;
         int count = 0;
         while (state != SalsaEntityState.UNDEPLOYED && count < 100) {	// wait until pioneer finish its job and inform undeployed or just wait 5 mins
@@ -355,7 +360,7 @@ public class AppCapabilityBase implements UnitCapabilityInterface {
         } catch (SalsaException e) {
             throw e;
         }
-        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.REMOVE, INFOMessage.ACTION_STATUS.DONE, "AppCapabilityBase", "Removed a software node");        
+        EventPublisher.publishInstanceEvent(Joiner.on("/").join(serviceId, nodeId, instanceId), INFOMessage.ACTION_TYPE.REMOVE, INFOMessage.ACTION_STATUS.DONE, "AppCapabilityBase", "Removed a software node");
     }
 
     static boolean orchestating = false;
