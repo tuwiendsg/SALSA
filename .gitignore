@@ -19,7 +19,6 @@ classes/
 *.iml
 *.iws
 
-package-info.java
 config_TOSCA/
 .externalToolBuilders/
 *.ini
