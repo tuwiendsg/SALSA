@@ -15,6 +15,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
         <jaxrs:serviceBeans>    	            
             <ref bean="EliseManagerImp" />            
             <ref bean="EliseRepositoryImpl" />
+            <ref bean="EliseExtraCDGRepositoryImpl" />
             <ref bean="EliseCommunicationService" />            
             <ref bean="EliseListenerForQueries" />
             <ref bean="conversionService" />
@@ -31,6 +32,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
     
     <bean id="EliseManagerImp" class="at.ac.tuwien.dsg.cloud.elise.master.RESTImp.EliseManagerImp" />      
     <bean id="EliseRepositoryImpl" class="at.ac.tuwien.dsg.cloud.elise.master.RESTImp.EliseRepositoryImpl" />
+    <bean id="EliseExtraCDGRepositoryImpl" class="at.ac.tuwien.dsg.cloud.elise.master.RESTImp.EliseExtraCDGRepositoryImpl" />
     <bean id="EliseCommunicationService" class="at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseCommunicationService" />
     <bean id="EliseListenerForQueries" class="at.ac.tuwien.dsg.cloud.elise.master.Communication.EliseListener" />
     

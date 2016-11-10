@@ -14,7 +14,7 @@ public class Contract {
 
     private String name;
 
-    private ContractTemplate template;
+    private String template;
 
     @Fetch
     private Set<ContractPartner> partners;
@@ -42,11 +42,11 @@ public class Contract {
         this.name = name;
     }
 
-    public ContractTemplate getTemplate() {
+    public String getTemplate() {
         return template;
     }
 
-    public void setTemplate(ContractTemplate template) {
+    public void setTemplate(String template) {
         this.template = template;
     }
 

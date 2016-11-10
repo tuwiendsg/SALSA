@@ -11,7 +11,7 @@ public class ContractTemplate {
     Long graphID;
     private String name;
 
-    private Set<ContractTerm> terms;
+    private Set<String> terms;
 
     public String getName() {
         return name;
@@ -21,11 +21,11 @@ public class ContractTemplate {
         this.name = name;
     }
 
-    public Set<ContractTerm> getTerms() {
+    public Set<String> getTerms() {
         return terms;
     }
 
-    public void setTerms(Set<ContractTerm> terms) {
+    public void setTerms(Set<String> terms) {
         this.terms = terms;
     }
 

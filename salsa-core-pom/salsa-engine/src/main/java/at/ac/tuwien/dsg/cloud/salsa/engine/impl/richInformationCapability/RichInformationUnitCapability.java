@@ -49,8 +49,15 @@ import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.slf4j.Logger;
 import at.ac.tuwien.dsg.cloud.elise.model.runtime.State;
 import at.ac.tuwien.dsg.cloud.elise.master.RESTService.EliseRepository;
+import at.ac.tuwien.dsg.cloud.elise.model.extra.contract.Contract;
+import at.ac.tuwien.dsg.cloud.salsa.common.cloudservice.model.ServiceUnit.Artifacts;
+import at.ac.tuwien.dsg.cloud.salsa.domainmodels.types.SalsaArtifactType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import java.io.IOException;
+import java.net.URL;
+import org.apache.commons.io.IOUtils;
 
 /**
  * This enhance the action by adding information into ELISE database
@@ -336,6 +343,25 @@ public class RichInformationUnitCapability implements UnitCapabilityInterface {
             unitInst.hasCapability(new Capability("deploy", Capability.ExecutionMethod.REST, new RestExecution(deploymore, RestExecution.RestMethod.POST, "")).hasParameters("quantity", "1").executedBy("SALSA"));
         }
         logger.debug("Creating domain info done: {}/{}/{}", service.getId(), unit.getId(), ins.getInstanceId());
+        
+        // add contract artifact if exist
+        logger.debug("Checking contract artifacts");
+        try {
+            for (Artifacts art : unit.getArtifacts()) {
+                if (art.getType().equals(SalsaArtifactType.contract.toString())) {
+                    String url = art.getReference();
+                    String contractJson = IOUtils.toString(new URL(url));
+                    logger.debug("Contract JSON: " + contractJson);
+                    ObjectMapper mapper = new ObjectMapper();
+                    Contract contract = mapper.readValue(contractJson, Contract.class);
+                    unitInst.setContract(contract);
+                }
+            }
+        } catch (IOException e) {
+            logger.error("Cannnot parse contract information. Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
         return unitInst;
     }
 

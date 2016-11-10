@@ -302,5 +302,12 @@
         </repository>
     </distributionManagement>-->
 
+<distributionManagement>
+    <repository>
+        <id>bintray-leduchung-maven</id>
+        <name>leduchung-maven</name>
+        <url>https://api.bintray.com/maven/leduchung/maven/salsa/;publish=1</url>
+    </repository>
+</distributionManagement>
 
 </project>

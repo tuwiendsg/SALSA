@@ -1,29 +1,43 @@
 package at.ac.tuwien.dsg.cloud.elise.model.extra.contract;
 
+import java.util.HashSet;
 import java.util.Set;
+import org.springframework.data.neo4j.annotation.Fetch;
+import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
 
+@NodeEntity
 public class ContractTerm {
+    
+    @GraphId
+    Long graphID;
 
     private String name;
 
-    private ContractTermType type;
+    private String type;
 
-    private Set<Constraint> contraints;
+    @RelatedTo
+    @Fetch
+    private Set<Constraint> constraints;
 
-    public ContractTermType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(ContractTermType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public Set<Constraint> getContraints() {
-        return contraints;
+    public Set<Constraint> getConstraints() {
+        return constraints;
     }
 
-    public void setContraints(Set<Constraint> contraints) {
-        this.contraints = contraints;
+    public void setConstraints(Set<Constraint> constraints) {
+        if (this.constraints == null) {
+            this.constraints = new HashSet<>();
+        }
+        this.constraints = constraints;
     }
 
     public String getName() {

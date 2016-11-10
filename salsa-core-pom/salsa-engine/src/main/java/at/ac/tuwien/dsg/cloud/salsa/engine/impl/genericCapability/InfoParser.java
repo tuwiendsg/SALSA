@@ -266,7 +266,8 @@ public class InfoParser {
                 } else if (node.getDeploymentArtifacts() != null && node.getDeploymentArtifacts().getDeploymentArtifact() != null) {
                     for (TDeploymentArtifact tArt : node.getDeploymentArtifacts().getDeploymentArtifact()) {
                         if (!tArt.getArtifactType().getLocalPart().equals(SalsaArtifactType.misc.getString())
-                                && !tArt.getArtifactType().getLocalPart().equals(SalsaArtifactType.metadata.getString())) {
+                                && !tArt.getArtifactType().getLocalPart().equals(SalsaArtifactType.metadata.getString())
+                                && !tArt.getArtifactType().getLocalPart().equals(SalsaArtifactType.contract.getString())) {
                             nodeData.setArtifactType(tArt.getArtifactType().getLocalPart());
                         }
                     }

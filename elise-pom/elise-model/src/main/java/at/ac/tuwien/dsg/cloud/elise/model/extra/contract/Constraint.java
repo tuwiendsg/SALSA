@@ -1,19 +1,30 @@
 package at.ac.tuwien.dsg.cloud.elise.model.extra.contract;
 
+import java.util.HashSet;
 import java.util.Set;
+import org.springframework.data.neo4j.annotation.Fetch;
+import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.NodeEntity;
+import org.springframework.data.neo4j.annotation.RelatedTo;
 
+@NodeEntity
 public class Constraint {
+    
+    @GraphId
+    Long graphID;
 
     private String name;
 
     private String type;
 
-    private Script enforcementScript;
+    private String enforcementScript;
 
-    private Script compositionScript;
+    private String compositionScript;
 
     private String description;
 
+    @RelatedTo
+    @Fetch
     private Set<ParameterTemplate> parameters;
 
     public String getName() {
@@ -32,19 +43,19 @@ public class Constraint {
         this.type = type;
     }
 
-    public Script getEnforcementScript() {
+    public String getEnforcementScript() {
         return enforcementScript;
     }
 
-    public void setEnforcementScript(Script enforcementScript) {
+    public void setEnforcementScript(String enforcementScript) {
         this.enforcementScript = enforcementScript;
     }
 
-    public Script getCompositionScript() {
+    public String getCompositionScript() {
         return compositionScript;
     }
 
-    public void setCompositionScript(Script compositionScript) {
+    public void setCompositionScript(String compositionScript) {
         this.compositionScript = compositionScript;
     }
 
@@ -61,6 +72,9 @@ public class Constraint {
     }
 
     public void setParameters(Set<ParameterTemplate> parameters) {
+        if (this.parameters == null) {
+            this.parameters = new HashSet<>();
+        }
         this.parameters = parameters;
     }
 

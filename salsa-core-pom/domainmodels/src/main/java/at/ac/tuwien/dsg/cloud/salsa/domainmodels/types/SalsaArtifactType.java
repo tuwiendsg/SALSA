@@ -32,6 +32,7 @@ public enum SalsaArtifactType {
     chefSolo("chef-solo"),
     war("war"),
     dockerfile("dockerfile"),
+    contract("contract"),
     metadata("metadata"),
     misc("misc");
 

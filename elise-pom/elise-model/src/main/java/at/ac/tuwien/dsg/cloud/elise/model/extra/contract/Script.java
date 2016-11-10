@@ -1,13 +1,28 @@
 package at.ac.tuwien.dsg.cloud.elise.model.extra.contract;
 
-public class Script {
+import java.io.IOException;
+import org.springframework.data.neo4j.annotation.GraphId;
+import org.springframework.data.neo4j.annotation.NodeEntity;
 
+@NodeEntity
+public class Script {
+    
+    @GraphId
+    private Long graphID;
+    
     private String name;
 
     private String code;
 
     private String version;
+    
+    public Script() {
+    }
 
+    public Script(String name) {
+        this.name = name;
+    }
+       
     public String getName() {
         return name;
     }

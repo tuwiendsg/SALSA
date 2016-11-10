@@ -6,8 +6,6 @@ import org.springframework.data.neo4j.annotation.NodeEntity;
 @NodeEntity
 public class Parameter extends ParameterTemplate {
 
-    @GraphId
-    Long graphID;
     private String value;
 
     public String getValue() {
