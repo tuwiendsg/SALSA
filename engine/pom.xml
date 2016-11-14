@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>SALSA-v3</artifactId>
+        <groupId>at.ac.tuwien.dsg.salsa</groupId>
+        <version>3.0</version>
+    </parent>
+
+    <groupId>at.ac.tuwien.dsg.salsa</groupId>
+    <artifactId>engine</artifactId>
+    <version>3.0</version>
+    <packaging>war</packaging>
+
+    <name>engine</name>
+
+    <properties>
+        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.version>4.3.2.RELEASE</spring.version>
+    </properties>
+    
+    <dependencies>
+        <!-- Apache CXF dependencies -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>  
+            <version>2.0.1</version>          
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+            <version>3.1.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>3.1.8</version>
+        </dependency>
+        
+        <dependency> 
+            <groupId>org.apache.cxf</groupId> 
+            <artifactId>cxf-rt-rs-client</artifactId> 
+            <version>3.1.1</version>
+        </dependency>         
+
+        <!--Spring Framework dependencies--> 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        
+        <!-- SALSA internal -->        
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.salsa</groupId>
+            <artifactId>model</artifactId>
+            <version>3.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.salsa</groupId>
+            <artifactId>messaging</artifactId>
+            <version>3.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.salsa</groupId>
+            <artifactId>database-neo4j</artifactId>
+            <version>3.0</version>
+        </dependency>
+        
+        <!-- SALSA module -->  
+        
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.salsa</groupId>
+            <artifactId>PlainMachine</artifactId>
+            <version>3.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.salsa</groupId>
+            <artifactId>OpenStack</artifactId>
+            <version>3.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>at.ac.tuwien.dsg.salsa</groupId>
+            <artifactId>Docker</artifactId>
+            <version>3.0</version>
+        </dependency>
+        
+        <!-- Jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+            
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        
+    </dependencies>
+
+    <build>
+        <finalName>salsa-engine</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>                
+                <version>3.2</version>                
+            </plugin>
+      
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <id>tomcat-create-exec-war</id>
+                        <goals>
+                            <goal>exec-war</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <path>/${project.build.finalName}</path>
+                            <systemProperties>
+                                <JAVA_OPTS>-Xms256m -Xmx512m -XX:MaxPermSize=256m</JAVA_OPTS>
+                            </systemProperties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,7 @@
+Spring + Neo4j versions that work:
+
+Spring-Data-Neo4j = 4.1.2.RELEASE
+neo4j-ogm = 2.0.3
+Embedded Driver = 2.0.3
+Spring = 4.3.2.RELEASE
+Neo4j Database = 2.3.1-Community
