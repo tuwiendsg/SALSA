@@ -28,9 +28,6 @@ import at.ac.tuwien.dsg.salsa.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.salsa.model.properties.Artifact;
 import at.ac.tuwien.dsg.salsa.model.properties.Capability;
 import at.ac.tuwien.dsg.salsa.model.relationship.RelationshipType;
-import at.ac.tuwien.dsg.salsa.model.toscaDomain.SalsaInstanceDescription_Docker;
-import at.ac.tuwien.dsg.salsa.model.toscaDomain.SalsaInstanceDescription_SystemProcess;
-import at.ac.tuwien.dsg.salsa.model.toscaDomain.SalsaInstanceDescription_VM;
 import at.ac.tuwien.dsg.salsa.model.toscaDomain.SalsaMappingProperties;
 import generated.oasis.tosca.TArtifactTemplate;
 import generated.oasis.tosca.TCapability;
@@ -153,13 +150,13 @@ public class InfoParser {
                 /**
                  * TRANSLATE CAPABILITIES FIELD
                  */
-                if (node.getCapabilities() != null && node.getCapabilities().getCapability() != null) {
-                    for (TCapability capa : node.getCapabilities().getCapability()) {
-                        if (!capa.getId().trim().isEmpty()) {
-                            nodeData.getCapabilityVars().add(capa.getId().trim());
-                        }
-                    }
-                }
+//                if (node.getCapabilities() != null && node.getCapabilities().getCapability() != null) {
+//                    for (TCapability capa : node.getCapabilities().getCapability()) {
+//                        if (!capa.getId().trim().isEmpty()) {
+//                            nodeData.getCapabilityVars().add(capa.getId().trim());
+//                        }
+//                    }
+//                }
                 if (node.getMaxInstances().equals("unbounded")) {
                     nodeData.setMax(100); // max for experiments
                 } else {
@@ -265,7 +262,7 @@ public class InfoParser {
                  */
                 SalsaMappingProperties mapProp = (SalsaMappingProperties) node.getProperties().getAny();
                 for (SalsaMappingProperties.SalsaMappingProperty p : mapProp.getProperties()) {
-                    nodeData.getProperties().putAll(p.getMapData());
+                    nodeData.writePropertiesFromMap(p.getMapData());
                 }
 
 //                if (node.getProperties() != null) {

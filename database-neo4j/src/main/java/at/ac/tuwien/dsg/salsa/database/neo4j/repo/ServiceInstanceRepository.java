@@ -27,25 +27,18 @@ import org.springframework.data.repository.query.Param;
  *
  * @author Duc-Hung Le
  */
-
 public interface ServiceInstanceRepository extends GraphRepository<ServiceInstance> {
 
-    @Query("match (n:UnitInstance) return n")
+    @Query("match (n:ServiceInstance) return n")
     Set<ServiceInstance> listUnitInstance();
 
-    @Query("match (n:UnitInstance) where n.uuid={uuid} return n")
+    @Query("match (n:ServiceInstance) where n.uuid={uuid} return n")
     ServiceInstance findByUniqueID(@Param(value = "uuid") String uuid);
 
-    @Query("match (n:UnitInstance) where n.name={name} return n")
+    @Query("match (n:ServiceInstance) where n.name={name} return n")
     ServiceInstance findByName(@Param(value = "name") String name);
 
-    @Query("match (n:UnitInstance) where n.category={category} return n")
-    Set<ServiceInstance> findByCategory(@Param(value = "category") String category);
-
-    @Query("match (n:UnitInstance)-[*]->x where n.id={id} WITH x MATCH x-[r]-() delete x,r")
-    Set<ServiceInstance> deleteUnitByID(@Param(value = "id") String id);
-    
-    @Query("match (n:UnitInstance)-[:HostOnRelationshipInstance]->(m:UnitInstance) where n.id={id} return n,m")
-    Set<ServiceInstance> findByHostOn(@Param(value = "id") String id);
+    @Query("match (n:ServiceInstance)-[*]->x where n.id={uuid} WITH x MATCH x-[r]-() delete x,r")
+    Set<ServiceInstance> deleteUnitByID(@Param(value = "uuid") String id);
 
 }

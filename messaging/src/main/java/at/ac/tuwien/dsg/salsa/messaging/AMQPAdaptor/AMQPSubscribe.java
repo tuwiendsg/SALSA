@@ -80,14 +80,14 @@ public class AMQPSubscribe extends AMQPConnector implements MessageSubscribeInte
                 while (true) {
                     logger.debug("Looping and waiting for the message ");
                     QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-                    logger.debug("A message arrived ");
+//                    logger.debug("A message arrived ");
                     String mm = new String(delivery.getBody());
-                    logger.debug(mm);
+//                    logger.debug(mm);
                     ObjectMapper mapper = new ObjectMapper();
                     SalsaMessage em = (SalsaMessage) mapper.readValue(mm, SalsaMessage.class);
                     this.topic = em.getTopic();
                     if (!topic.equals(SalsaMessageTopic.PIONEER_LOG)) {
-                        logger.debug("A message arrived. From: " + em.getFromSalsa() + ". MsgType: " + em.getMsgType() + ". Payload: " + em.getPayload());
+//                        logger.debug("A message arrived. From: " + em.getFromSalsa() + ". MsgType: " + em.getMsgType() + ". Payload: " + em.getPayload());
                     }
                     new Thread(new HandlingThread(handler, em)).start();
                 }

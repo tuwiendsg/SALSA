@@ -6,14 +6,19 @@
 package at.ac.tuwien.dsg.salsa.model;
 
 import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
+import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaEvent;
+import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaEvents;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  *
@@ -29,6 +34,14 @@ public class CloudService {
 
     Set<ServiceTopology> topologies;
     ConfigurationState state;
+
+    // we marshall/unmarshall in GET/SET function
+    String events;
+//    SalsaEvents events = new SalsaEvents();
+
+    public CloudService() {
+        this.uuid = UUID.randomUUID().toString();
+    }
 
     public String getName() {
         return name;
@@ -62,37 +75,57 @@ public class CloudService {
         this.state = state;
     }
 
+    public String getEvents() {
+        return events;
+    }
+
+    public void setEvents(String events) {
+        this.events = events;
+    }
+
+    public void addEvent(SalsaEvent event) {
+        SalsaEvents ssEvents = readEvents();
+        ssEvents.getEvents().add(event);
+        this.events = ssEvents.toJson();
+    }
+
+    public SalsaEvents readEvents() {
+        if (this.events != null && !this.events.isEmpty()) {
+            return SalsaEvents.fromJson(this.events);
+        }
+        return new SalsaEvents();
+    }
+
+    public void writeEvents(SalsaEvents events) {
+        if (events != null) {
+            this.events = events.toJson();
+        }
+    }
+
     public CloudService hasTopology(ServiceTopology topology) {
         if (this.topologies == null) {
             this.topologies = new HashSet<>();
         }
+        topology.setCloudServiceUuid(this.uuid);
         this.topologies.add(topology);
         return this;
     }
 
-    public ServiceTopology getComponentTopologyById(String topologyId) {
+    @JsonIgnore
+    public ServiceTopology getTopologyByName(String topologyName) {
         for (ServiceTopology topo : topologies) {
-            if (topo.getUuid().equals(topologyId)) {
+            if (topo.getName().equals(topologyName)) {
                 return topo;
             }
         }
         return null;
     }
 
-    public ServiceUnit getComponentByName(String topologyId, String nodeId) {
-        if (topologyId != null) {
-            ServiceTopology topo = getComponentTopologyById(topologyId);
-            if (topo != null) {
-                return topo.getComponentById(nodeId);
-            }
-        }
-        return null;
-    }
-
-    public ServiceUnit getComponentByName(String nodeName) {
+    @JsonIgnore
+    public ServiceUnit getUnitByName(String nodeName) {
         if (topologies != null) {
             for (ServiceTopology topo : topologies) {
-                ServiceUnit unit = getComponentByName(topo.getUuid(), nodeName);
+                ServiceUnit unit = topo.getUnitByName(nodeName);
                 if (unit != null) {
                     return unit;
                 }
@@ -101,6 +134,7 @@ public class CloudService {
         return null;
     }
 
+    @JsonIgnore
     public List<ServiceUnit> getAllComponent() {
         List<ServiceUnit> comList = new ArrayList<>();
         for (ServiceTopology topo : topologies) {
@@ -109,6 +143,7 @@ public class CloudService {
         return comList;
     }
 
+    @JsonIgnore
     public ServiceTopology getTopologyOfNode(String serviceUnitUuid) {
         for (ServiceTopology topo : topologies) {
             for (ServiceUnit tmpUnit : topo.getUnits()) {
@@ -132,4 +167,15 @@ public class CloudService {
         }
     }
 
+    public static CloudService fromJson(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+        try {
+            return mapper.readValue(json, CloudService.class);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
 }

@@ -31,7 +31,7 @@ public class PioneerManagementException extends SalsaException {
     }
 
     public enum Reason {
-
+        
         PIONEER_NOT_REGISTERED
     }
 

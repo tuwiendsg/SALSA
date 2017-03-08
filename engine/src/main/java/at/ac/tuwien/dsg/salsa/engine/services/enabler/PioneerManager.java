@@ -17,11 +17,11 @@
  */
 package at.ac.tuwien.dsg.salsa.engine.services.enabler;
 
-import at.ac.tuwien.dsg.salsa.messaging.model.Salsa.PioneerInfo;
 import at.ac.tuwien.dsg.salsa.model.CloudService;
 import at.ac.tuwien.dsg.salsa.model.ServiceInstance;
 import at.ac.tuwien.dsg.salsa.model.ServiceUnit;
 import at.ac.tuwien.dsg.salsa.model.enums.SalsaEntityType;
+import at.ac.tuwien.dsg.salsa.model.salsa.info.PioneerInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,16 +40,16 @@ public class PioneerManager {
     static Logger logger = LoggerFactory.getLogger("salsa");
     static Map<String, PioneerInfo> pioneerMap = new HashMap<>();
 
-    public static void addPioneer(String pioneerID, PioneerInfo fullInstanceID) {
-        logger.debug("Adding an pioneer: " + fullInstanceID.getId() + ", IP:" + fullInstanceID.getIp() + ", META:" + fullInstanceID.getService() + "/" + fullInstanceID.getTopology() + "/" + fullInstanceID.getUnit() + "/" + fullInstanceID.getInstance());
+    public static void addPioneer(String pioneerUUID, PioneerInfo theInfo) {
+        logger.debug("Adding an pioneer: " + theInfo.getUuid() + ", IP:" + theInfo.getIp() + ", META:" + theInfo.getService() + "/" + theInfo.getTopology() + "/" + theInfo.getUnit() + "/" + theInfo.getInstance());
         // remove duplicated pioneer
         for (Map.Entry<String, PioneerInfo> entry : pioneerMap.entrySet()) {
             System.out.println(entry.getKey() + "/" + entry.getValue());
-            if (entry.getValue().equals(fullInstanceID)) {
+            if (entry.getValue().equals(theInfo)) {
                 pioneerMap.remove(entry.getKey());
             }
         }
-        pioneerMap.put(pioneerID, fullInstanceID);
+        pioneerMap.put(pioneerUUID, theInfo);
     }
 
     public static void removePioneer(String pioneerID) {
@@ -68,7 +68,7 @@ public class PioneerManager {
             PioneerInfo ai = entry.getValue();
             logger.debug("Checking pioneer: {}/{}/{}/{} if it is in the service: {} ", ai.getUserName(), ai.getService(), ai.getUnit(), ai.getInstance(), serviceName);
             if (ai.getUserName().equals(userName) && ai.getService().equals(serviceName)) {
-                removing.add(ai.getId());
+                removing.add(ai.getUuid());
             }
         }
         for (String r : removing) {
@@ -100,13 +100,13 @@ public class PioneerManager {
 
     // check hosted on relationship, so properly return a pioneer, unless the node is not available
     public static PioneerInfo getPioneerIDForNode(String user, String serviceID, String unitID, int instanceID, CloudService cloudService) {
-        ServiceUnit unit = cloudService.getComponentByName(unitID);
+        ServiceUnit unit = cloudService.getUnitByName(unitID);
         ServiceInstance instance = unit.getInstanceByIndex(instanceID);
-        ServiceUnit hostedUnit = cloudService.getComponentByName(unit.getHostedUnitName());
+        ServiceUnit hostedUnit = cloudService.getUnitByName(unit.getHostedUnitName());
         ServiceInstance hostedInstance = hostedUnit.getInstanceByIndex(instance.getHostedInstanceIndex());
         while (!hostedUnit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())
                 && !hostedUnit.getType().endsWith(SalsaEntityType.DOCKER.getEntityTypeString())) {
-            hostedUnit = cloudService.getComponentByName(hostedUnit.getHostedUnitName());
+            hostedUnit = cloudService.getUnitByName(hostedUnit.getHostedUnitName());
             hostedInstance = hostedUnit.getInstanceByIndex(hostedInstance.getHostedInstanceIndex());
         }
         return getPioneer(user, serviceID, hostedUnit.getName(), hostedInstance.getIndex());
@@ -116,7 +116,7 @@ public class PioneerManager {
         String pioneers = "";
         for (Map.Entry<String, PioneerInfo> entry : pioneerMap.entrySet()) {
             PioneerInfo ai = entry.getValue();
-            pioneers += "Pioneer: ID=" + ai.getId() + ", IP=" + ai.getIp()
+            pioneers += "Pioneer: ID=" + ai.getUuid() + ", IP=" + ai.getIp()
                     + ", User:" + ai.getUserName()
                     + ", Instance:" + ai.getService() + "/" + ai.getTopology() + "/" + ai.getUnit() + "/" + ai.getInstance() + "; \n";
         }
@@ -127,7 +127,7 @@ public class PioneerManager {
         Map<String, String> map = new HashMap<>();
         for (Map.Entry<String, PioneerInfo> entry : pioneerMap.entrySet()) {
             PioneerInfo ai = entry.getValue();
-            map.put(ai.getId(), ai.getIp() + "," + ai.getService() + "/" + ai.getUnit() + "/" + ai.getInstance());
+            map.put(ai.getUuid(), ai.getIp() + "," + ai.getService() + "/" + ai.getUnit() + "/" + ai.getInstance());
         }
         return map;
     }
@@ -135,4 +135,13 @@ public class PioneerManager {
     public static int count() {
         return pioneerMap.size();
     }
+
+    public static Map<String, PioneerInfo> getPioneerMap() {
+        return pioneerMap;
+    }
+
+    public static void setPioneerMap(Map<String, PioneerInfo> pioneerMap) {
+        PioneerManager.pioneerMap = pioneerMap;
+    }
+
 }

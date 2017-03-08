@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+
+    </h:head>
+    <h:body>
+        <ui:composition template="layout.xhtml">
+
+            <ui:define name="content">
+                <div class="ui-fluid">
+
+                    <p:tabView dynamic="false">
+                        <p:tab title="Structure - tree" rendered="#{not empty GUIService.currentServiceName}">
+                            <p:tree value="#{GUIService.treeViewRoot}" var="node">
+                                <p:treeNode type="structure" icon="fa fa-share-alt">
+                                    <p:outputLabel value="#{node}" />
+                                </p:treeNode>
+                                <p:treeNode type="instance" icon="fa fa-cogs">
+                                    <p:outputLabel value="#{node}" />
+                                </p:treeNode>
+                            </p:tree>
+                        </p:tab>
+
+
+                        <p:tab title="Structure - table" rendered="#{not empty GUIService.currentServiceName}">
+                            <h:form>
+                                <p:treeTable value="#{GUIService.tableViewTreeRoot}" var="node">
+                                    <f:facet name="header">
+                                        Cloud service structure
+                                    </f:facet>
+                                    <p:column headerText="Name">
+                                        <h:outputText value="#{node.name}" />
+                                    </p:column>
+                                    <p:column headerText="Type">
+                                        <h:outputText value="#{node.type}" />
+                                    </p:column>
+                                    <p:column headerText="Status">
+                                        <h:outputText value="#{node.status}" />
+                                    </p:column>
+                                    <p:column headerText="Host on">
+                                        <h:outputText value="#{node.hostedOn}" />
+                                    </p:column>
+                                </p:treeTable>
+                            </h:form>
+                        </p:tab>
+
+                        <p:tab title="Timeline events" rendered="#{not empty GUIService.currentServiceName}">
+                            <p:timeline id="timeline" value="#{GUIService.timelineEvents}" height="250px" width="100%" 
+                                        selectable="false" 
+                                        zoomable="true" 
+                                        moveable="true" 
+                                        stackEvents="true"              
+                                        eventStyle="box" 
+                                        showCurrentTime="false" 
+                                        eventMargin="10" eventMarginAxis="0"    
+                                        showNavigation="false"> 
+                            </p:timeline>
+                        </p:tab>
+
+                        <p:tab title="Pioneers">
+                            <p:dataTable var="pi" value="#{GUIService.pioneers}" sortBy="#{pi.service}">
+                                <p:column headerText="uuid">
+                                    <h:outputText value="#{pi.uuid}" />
+                                </p:column>
+
+                                <p:column headerText="Hostname">
+                                    <h:outputText value="#{pi.hostname}" />
+                                </p:column>
+
+                                <p:column headerText="IP">
+                                    <h:outputText value="#{pi.ip}" />
+                                </p:column>
+
+                                <p:column headerText="Service">
+                                    <p:outputPanel rendered="#{not empty pi.service}">
+                                        <h:outputText value="#{pi.service}/#{pi.unit}/#{pi.instance}" />
+                                    </p:outputPanel>
+                                    <p:outputPanel rendered="#{empty pi.service}">
+                                        <h:outputText value="N/A" />
+                                    </p:outputPanel>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+
+                    </p:tabView>
+
+                    <p:outputLabel value="No service is selected" rendered="#{empty GUIService.currentServiceName}" />
+
+                </div>
+            </ui:define>
+
+
+
+        </ui:composition>
+    </h:body>
+</html>

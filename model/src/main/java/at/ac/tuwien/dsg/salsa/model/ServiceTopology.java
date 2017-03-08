@@ -8,6 +8,7 @@ package at.ac.tuwien.dsg.salsa.model;
 import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.salsa.model.relationship.Relationship;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +30,9 @@ public class ServiceTopology {
     // management info
     String cloudServiceUuid;
     ConfigurationState state;
+
+    public ServiceTopology() {
+    }
 
     public Set<ServiceUnit> getUnits() {
         return units;
@@ -82,20 +86,23 @@ public class ServiceTopology {
         if (this.units == null) {
             this.units = new HashSet<>();
         }
+        unit.setTopologyUuid(this.uuid);
         this.units.add(unit);
         return this;
     }
 
-    public ServiceUnit getComponentById(String id) {
+    @JsonIgnore
+    public ServiceUnit getUnitByName(String name) {
         for (ServiceUnit node : units) {
-            if (node.getUuid().equals(id)) {
+            if (node.getName().equals(name)) {
                 return node;
             }
         }
         return null;
     }
 
-    public List<ServiceUnit> getComponentsByType(SalsaEntityType type) {
+    @JsonIgnore
+    public List<ServiceUnit> getUnitsByType(SalsaEntityType type) {
         List<ServiceUnit> lst = new ArrayList<>();
         for (ServiceUnit node : units) {
             if (SalsaEntityType.fromString(node.getType()) == type) {

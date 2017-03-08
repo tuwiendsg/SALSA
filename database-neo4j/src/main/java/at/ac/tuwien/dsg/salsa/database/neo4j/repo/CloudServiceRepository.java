@@ -18,7 +18,6 @@
 package at.ac.tuwien.dsg.salsa.database.neo4j.repo;
 
 import at.ac.tuwien.dsg.salsa.model.CloudService;
-import at.ac.tuwien.dsg.salsa.model.ServiceInstance;
 import java.util.Set;
 import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.data.neo4j.repository.GraphRepository;
@@ -28,11 +27,13 @@ import org.springframework.data.repository.query.Param;
  *
  * @author Duc-Hung Le
  */
-
 public interface CloudServiceRepository extends GraphRepository<CloudService> {
 
-    @Query("match (n:UnitInstance) return n")
-    Set<CloudService> listCloudService();
+    @Query("match (n:CloudService) return n")
+    Set<CloudService> findAllService();
+
+    @Query("match (n:CloudService) return n.name")
+    Set<String> findAllServiceName();
 
     @Query("match (n:CloudService) where n.uuid={uuid} return n")
     CloudService findByUuid(@Param(value = "uuid") String uuid);
@@ -42,5 +43,5 @@ public interface CloudServiceRepository extends GraphRepository<CloudService> {
 
     @Query("match (n:CloudService)-[*]->x where n.id={id} WITH x MATCH x-[r]-() delete x,r")
     Set<CloudService> deleteUnitByID(@Param(value = "id") String id);
-    
+
 }

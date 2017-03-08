@@ -17,10 +17,10 @@
  */
 package at.ac.tuwien.dsg.salsa.model.salsa.info;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Objects;
-
 
 /**
  *
@@ -30,7 +30,8 @@ public class PioneerInfo {
 
     String userName;
 
-    String id;
+    String uuid;
+    String hostname;
     String ip;
     String service;
     String topology;
@@ -42,12 +43,17 @@ public class PioneerInfo {
 
     public PioneerInfo(String userName, String id, String ip, String service, String topology, String unit, int instance) {
         this.userName = userName;
-        this.id = id;
+        this.uuid = id;
         this.ip = ip;
         this.service = service;
         this.topology = topology;
         this.unit = unit;
         this.instance = instance;
+    }
+
+    @JsonIgnore
+    public boolean isFree() {
+        return (this.service == null && this.topology == null && this.unit == null) || (this.service.isEmpty() && this.topology.isEmpty() && this.unit.isEmpty());
     }
 
     public String getUserName() {
@@ -74,8 +80,16 @@ public class PioneerInfo {
         return instance;
     }
 
-    public String getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
 
     public String toJson() {
@@ -100,7 +114,7 @@ public class PioneerInfo {
 
     @Override
     public String toString() {
-        return "PioneerInfo{" + "id=" + id + ", ip=" + ip + ", instance=" + service+"/"+topology+"/"+unit+"/"+instance + '}';
+        return "PioneerInfo{" + "id=" + uuid + ", ip=" + ip + ", instance=" + service + "/" + topology + "/" + unit + "/" + instance + '}';
     }
 
     @Override
@@ -144,8 +158,5 @@ public class PioneerInfo {
         }
         return true;
     }
-    
-    
-    
 
 }

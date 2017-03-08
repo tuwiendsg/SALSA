@@ -64,6 +64,7 @@ public class SalsaMessage {
         salsa_updateNodeMetadata,
         salsa_shutdownPioneer,
         salsa_log, // for sending log
+        salsa_assign_pioneer,   // to assign pioneer to a service instance
 
         // for ELISE service        
         elise_queryManyInstances,

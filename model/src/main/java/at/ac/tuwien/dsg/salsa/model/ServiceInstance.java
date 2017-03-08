@@ -7,6 +7,10 @@ package at.ac.tuwien.dsg.salsa.model;
 
 import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.idmanager.GlobalIdentification;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -22,6 +26,13 @@ public class ServiceInstance {
     GlobalIdentification identification; // composition of identification
     ConfigurationState state;
     int hostedInstanceIndex;
+
+    // custom properties: marshall/unmarshall this field manually. String is better than generic Object.
+    // we use String because data persistance layer using JPA or Neo4j cannot write Map
+    String context;
+
+    public ServiceInstance() {
+    }
 
     public String getServiceUnitUuid() {
         return serviceUnitUuid;
@@ -69,6 +80,83 @@ public class ServiceInstance {
 
     public void setHostedInstanceIndex(int hostedInstanceIndex) {
         this.hostedInstanceIndex = hostedInstanceIndex;
+    }
+
+    /**
+     * Get properties as String. Use read/write property instead.
+     *
+     * @return
+     */
+    public String getContext() {
+        return context;
+    }
+
+    /**
+     * Set properties as String. Use read/write property instead.
+     *
+     * @param context
+     */
+    public void setContext(String context) {
+        this.context = context;
+    }
+
+    /**
+     * Get context
+     *
+     * @return a Map of key/value of context
+     */
+    public Map<String, String> readContextAsMap() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            if (this.context != null) {
+                return mapper.readValue(this.context, HashMap.class);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Add a set of context
+     *
+     * @param context
+     */
+    public void writeContextFromMap(Map<String, String> context) {
+        Map<String, String> map = readContextAsMap();
+        if (map == null) {
+            map = new HashMap<>();
+        }
+        if (context != null && !context.isEmpty()) {
+            map.putAll(context);
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                this.context = mapper.writeValueAsString(context);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Add a single property
+     *
+     * @param key
+     * @param value
+     */
+    public void writeContext(String key, String value) {
+        Map<String, String> map = readContextAsMap();
+        if (map == null) {
+            map = new HashMap<>();
+        }
+        map.put(key, value);
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            this.context = mapper.writeValueAsString(context);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
 }

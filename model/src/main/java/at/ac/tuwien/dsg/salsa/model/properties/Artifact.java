@@ -23,6 +23,9 @@ public class Artifact {
     RepoType repoType = RepoType.HTTP; // default, how to download
     String tags;
 
+    public Artifact() {
+    }
+
     public Artifact(String name, String artifactType, String reference) {
         this.name = name;
         this.artifactType = artifactType;

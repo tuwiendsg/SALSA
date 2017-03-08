@@ -87,7 +87,7 @@ public class SalsaConfiguration {
     }
 
     private static String getSALSA_CENTER_IP() {
-        return getGenericParameter("SALSA_CENTER_IP", SystemFunctions.getEth0IPAddress());
+        return getGenericParameter("SALSA_CENTER_IP", "localhost");
     }
 
     private static String getSALSA_CENTER_PORT() {

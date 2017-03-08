@@ -5,34 +5,18 @@
  */
 package at.ac.tuwien.dsg.salsa.engine.services.algorithms;
 
-import at.ac.tuwien.dsg.salsa.engine.services.enabler.InfoGenerator;
+import at.ac.tuwien.dsg.salsa.database.neo4j.repo.CloudServiceRepository;
+import at.ac.tuwien.dsg.salsa.database.neo4j.repo.ServiceInstanceRepository;
+import at.ac.tuwien.dsg.salsa.database.neo4j.repo.ServiceUnitRepository;
 import at.ac.tuwien.dsg.salsa.engine.services.enabler.PioneerManager;
-import at.ac.tuwien.dsg.salsa.engine.utils.ActionIDManager;
-import at.ac.tuwien.dsg.salsa.engine.utils.SalsaConfiguration;
-import at.ac.tuwien.dsg.salsa.messaging.messageInterface.MessageClientFactory;
-import at.ac.tuwien.dsg.salsa.messaging.messageInterface.MessagePublishInterface;
-import at.ac.tuwien.dsg.salsa.messaging.model.Salsa.PioneerInfo;
-import at.ac.tuwien.dsg.salsa.messaging.protocol.SalsaMessage;
-import at.ac.tuwien.dsg.salsa.messaging.protocol.SalsaMessageTopic;
+
 import at.ac.tuwien.dsg.salsa.model.CloudService;
 import at.ac.tuwien.dsg.salsa.model.ServiceInstance;
-import at.ac.tuwien.dsg.salsa.model.ServiceTopology;
 import at.ac.tuwien.dsg.salsa.model.ServiceUnit;
-import at.ac.tuwien.dsg.salsa.model.enums.SalsaArtifactType;
-import at.ac.tuwien.dsg.salsa.model.enums.SalsaCommonActions;
-import at.ac.tuwien.dsg.salsa.model.enums.SalsaEntityType;
-import at.ac.tuwien.dsg.salsa.model.properties.Artifact;
-import at.ac.tuwien.dsg.salsa.model.salsa.confparameters.PlainMachineParameters;
-import at.ac.tuwien.dsg.salsa.model.salsa.confparameters.ShellScriptParameters;
-import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureTask;
-import at.ac.tuwien.dsg.salsa.model.salsa.interfaces.ConfigurationModule;
-import at.ac.tuwien.dsg.salsa.modules.plainmachine.LocalMachineConfigurator;
+import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,148 +36,71 @@ public class OrchestrationProcess_RoundCheck implements OrchestrationProcess {
 
     // Map store service unit uuid --> number of instances to be deployed
     Map<ServiceUnit, Integer> instancesNeeded = new HashMap<>();
+    int cycle = 0;
+
+    CloudServiceRepository cloudRepo;
+    ServiceUnitRepository unitRepo;
+    ServiceInstanceRepository instanceRepo;
+
+    public OrchestrationProcess_RoundCheck(CloudServiceRepository cloudRepo, ServiceUnitRepository unitRepo, ServiceInstanceRepository instanceRepo) {
+        this.cloudRepo = cloudRepo;
+        this.unitRepo = unitRepo;
+        this.instanceRepo = instanceRepo;
+    }
 
     @Override
     public void deployCloudservice(CloudService service) {
+        UnitCapabilityInterface unitCapa = new BaseUnitCapability(service.getName(), cloudRepo, instanceRepo);
+
         logger.debug("Start round check configuration");
         this.cloudService = service;
         List<ServiceUnit> allUnits = service.getAllComponent();
 
         // build the list of needed instances
+        int remainSteps = 0;
         for (ServiceUnit unit : allUnits) {
             instancesNeeded.put(unit, unit.getMin());
+            remainSteps += unit.getMin();
         }
 
-        while (!instancesNeeded.isEmpty()) {
+        while (remainSteps > 0) {
+            logOrchestrationStatus();
             for (ServiceUnit unit : instancesNeeded.keySet()) {
-                if (!needHostedInstance(unit)) {
-                    int instanceindex = unit.nextIdCounter();
-                    deployVM(unit, instanceindex);
-                } else {
-                    ServiceInstance hostedInstance = getHostInstance(unit);
-                    String hostedUnitName = unit.getHostedUnitName();
-                    PioneerInfo pioneer = PioneerManager.getPioneer(SalsaConfiguration.getUserName(), cloudService.getName(), hostedUnitName, hostedInstance.getIndex());
-                    if (pioneer != null) {
-                        logger.debug("Found pioneer: " + pioneer.toString() + " to deploy: " + cloudService.getName() + "/" + unit.getName());
-                        int instanceindex = unit.nextIdCounter();
-                        deployArtifact(unit, pioneer, instanceindex);
+                if (instancesNeeded.get(unit) > 0) {
+                    try {
+                        ServiceInstance instance = unitCapa.deploy(service.getName(), unit.getName());
+                        if (instance != null) {
+                            remainSteps = remainSteps - 1;
+                            logger.debug("Orchestration is done for unit: {}/{}, {} steps left", cloudService.getName(), unit.getName(), remainSteps);
+                            instancesNeeded.put(unit, instancesNeeded.get(unit) - 1);
+                        } else {
+                            logger.debug("This round, unit {}/{}", service.getName(), unit.getName());
+                        }
+                    } catch (SalsaException ex) {
+                        ex.printStackTrace();
                     }
                 }
-            }
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
 
-    // = true with docker & artifacts, = false with VM
-    private boolean needHostedInstance(ServiceUnit unit) {
-        String hostedUnitName = unit.getHostedUnitName();
-        if (hostedUnitName != null) {
-            return true;
-        }
-        return false;
-    }
-
-    // try to find the instance to host
-    private ServiceInstance getHostInstance(ServiceUnit unit) {
-        // in the case of host unit ready, check if pioneer is ready?
-        // hostedUnitName should not be null here
-        String hostedUnitName = unit.getHostedUnitName();
-        ServiceUnit hostedUnit = cloudService.getComponentByName(hostedUnitName);
-        Set<ServiceInstance> possibleHostedInstances = hostedUnit.getInstances();
-        ServiceInstance hostedInstance = null;
-        if (possibleHostedInstances != null) {
-            for (ServiceInstance possibleHoster : possibleHostedInstances) {
-                Integer numberInstAlreadyOn = unit.getInstanceHostOn(hostedUnitName, possibleHoster.getIndex()).size();
-                logger.debug("Check if instance: " + unit.getName() + " can be hosted on: " + hostedUnit + "/" + possibleHoster.getIndex());
-                if (numberInstAlreadyOn < hostedUnit.getMax()) {
-                    logger.debug("  --> Yes, instance: " + hostedUnit + "/" + possibleHoster.getIndex());
-                    hostedInstance = possibleHoster;
-                    break;
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
                 }
             }
         }
-        // if there is no candidate of the hosted instance + task list has no candidate, put one task
-        if (hostedInstance == null && instancesNeeded.get(hostedUnit) == null) {
-            instancesNeeded.put(hostedUnit, 1);
-        }
-        return hostedInstance;
+        logger.debug("Rough check orchestation has finished !");
     }
 
-    // these functions are hard code at the moment only
-    public void deployVM(ServiceUnit unit, int instanceindex) {
-        ServiceTopology topo = cloudService.getTopologyOfNode(unit.getUuid());
-        int instanceIndex = unit.getIdCounter();
-
-        if (unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
-            Map<String, String> properties = unit.getProperties();
-            String providerName = properties.get("provider");
-            logger.debug("Deploying machine, provider: " + providerName);
-            if (providerName.endsWith("@openstack")) {
-                // TODO: implement this: read parameters, etc
-            }
-            if (providerName.equals("localhost")) {
-                String userData = InfoGenerator.prepareUserData(SalsaConfiguration.getUserName(), cloudService.getName(), topo.getName(), unit.getName(), instanceindex);
-                properties.put(PlainMachineParameters.userData, userData);
-
-                SalsaConfigureTask task = new SalsaConfigureTask();
-                task.hasActionId(UUID.randomUUID().toString())
-                        .hasActionName(SalsaCommonActions.deploy)
-                        .hasServiceName(cloudService.getName())
-                        .hasTopologyName(topo.getName())
-                        .hasUnitName(unit.getName())
-                        .hasInstanceIndex(instanceIndex)
-                        .hasUser(SalsaConfiguration.getUserName());
-
-                // call the configuration module for localhost
-                ConfigurationModule module = new LocalMachineConfigurator();
-                module.configureArtifact(task, properties);
-            }
-        } else {
-            logger.error("THe unit: " + unit.getName() + " is not a VM, but the deployVM function is call !");
+    private void logOrchestrationStatus() {
+        logger.debug("============================");
+        logger.debug("Orchestration service: " + cloudService.getName() + ": " + cycle++);
+        StringBuffer queue = new StringBuffer();
+        for (Map.Entry<ServiceUnit, Integer> entry : instancesNeeded.entrySet()) {
+            queue.append(entry.getKey().getName()).append(":").append(entry.getValue()).append(" -- ");
         }
+
+        logger.debug(" - Instance queue: " + queue.toString());
+        logger.debug(" - Pioneer list: " + PioneerManager.describe());
 
     }
-
-    // send the configuration task to the Pioneer
-    public void deployArtifact(ServiceUnit unit, PioneerInfo pioneer, int instanceindex) {
-        ServiceTopology topo = cloudService.getTopologyOfNode(unit.getUuid());
-        int instanceIndex = unit.getIdCounter();
-        String actionID = UUID.randomUUID().toString();
-
-        // task are shell script 
-        SalsaConfigureTask task = new SalsaConfigureTask();
-        task.hasActionId(actionID)
-                .hasActionName(SalsaCommonActions.deploy)
-                .hasServiceName(cloudService.getName())
-                .hasTopologyName(topo.getName())
-                .hasUnitName(unit.getName())
-                .hasInstanceIndex(instanceIndex)
-                .hasUser(SalsaConfiguration.getUserName());
-        for (Artifact a : unit.getArtifacts()) {
-            task.hasArtifact(a.getName(), a.getArtifactType(), a.getReference());
-            if (a.getArtifactType().equals(SalsaArtifactType.sh.getString()) || a.getArtifactType().equals(SalsaArtifactType.shcont.getString())) {
-                String runByMe = FilenameUtils.getName(a.getReference());
-                task.hasParam(ShellScriptParameters.runByMe, a.getName());
-                logger.debug(" -- Yes, the runByMe should be: " + runByMe);
-            }
-        }
-        // refine runbyme if needed
-        if (unit.getCapabilityByName(SalsaCommonActions.deploy) != null) {
-            String runByMe = unit.getCapabilityByName(SalsaCommonActions.deploy).getExecutionREF();
-            task.hasParam(ShellScriptParameters.runByMe, runByMe);
-        }
-
-        // Register an action ID, send message to Pioneer
-        ActionIDManager.addAction(actionID, task);
-        SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_deploy, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.getPioneerTopicByID(pioneer.getId()), null, task.toJson());
-
-        MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBroker(), SalsaConfiguration.getBrokerType());
-        MessagePublishInterface publish = factory.getMessagePublisher();
-        publish.pushMessage(msg);
-    }
-
 }

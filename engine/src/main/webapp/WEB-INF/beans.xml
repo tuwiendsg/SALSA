@@ -13,15 +13,54 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
     <jaxrs:server id="engineService" address="/">
         <jaxrs:serviceBeans>
             <ref bean="engineBean" />
+            <ref bean="pioneerMngBean" />
+            <ref bean="EngineListener" />
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="ExceptionMapper" />
-            <ref bean="Jackson" />
-        </jaxrs:providers>  	
+            <ref bean="jacksonProvider"/>
+            <ref bean="conversionService" />
+        </jaxrs:providers>
+        <jaxrs:features>
+            <ref bean="swagger2Feature_Core"/>
+        </jaxrs:features>
     </jaxrs:server>
  
+    <bean id="jacksonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider"/>
+    <!--<bean id="jacksonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>-->
     <bean id="engineBean" class="at.ac.tuwien.dsg.salsa.engine.services.ConfigurationServiceImp" />
+    <bean id="pioneerMngBean" class="at.ac.tuwien.dsg.salsa.engine.services.InternalManagement" />
     <bean id="ExceptionMapper" class="at.ac.tuwien.dsg.salsa.engine.services.SalsaExceptionResponseMapper" />
-    <bean id="Jackson" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+    <bean id="EngineListener" class="at.ac.tuwien.dsg.salsa.engine.services.SalsaEngineListener" />
+    
+    
+    <bean id="swagger2Feature_Core" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">
+        <property name="basePath" value="/salsa-engine/rest"/>
+        <property name="scan" value="true"/>
+        <property name="resourcePackage" value="at.ac.tuwien.dsg.salsa.engine.services"/>
+        <property name="contact" value=""/>
+        <property name="description"
+                  value="SALSA-Dynamic configuration for IoT Cloud Applications"/>
+        <property name="title" value="SALSA Engine API"/>
+        <property name="version" value="3.0"/>
+    </bean>
+
+    
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="at.ac.tuwien.dsg.salsa.database.neo4j.mapper.ClassFromString"/>
+                <bean class="at.ac.tuwien.dsg.salsa.database.neo4j.mapper.ClassToString"/>
+                <bean class="at.ac.tuwien.dsg.salsa.database.neo4j.mapper.GlobalIdentificationFromString"/>
+                <bean class="at.ac.tuwien.dsg.salsa.database.neo4j.mapper.GlobalIdentificationToString"/>
+                <bean class="at.ac.tuwien.dsg.salsa.database.neo4j.mapper.DateFromString"/>
+                <bean class="at.ac.tuwien.dsg.salsa.database.neo4j.mapper.DateToString"/>                
+                <bean class="at.ac.tuwien.dsg.salsa.database.neo4j.mapper.MapFromString"/>
+                <bean class="at.ac.tuwien.dsg.salsa.database.neo4j.mapper.MapToString"/>
+                <bean class="at.ac.tuwien.dsg.salsa.database.neo4j.mapper.HashmapFromString"/>
+                <bean class="at.ac.tuwien.dsg.salsa.database.neo4j.mapper.HashmapToString"/>
+            </set>
+        </property>
+    </bean>
    
 </beans>

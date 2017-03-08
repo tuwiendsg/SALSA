@@ -15,6 +15,9 @@ public class Relationship {
     String sourceUuid;
     String targetUuid;
 
+    public Relationship() {
+    }
+
     public RelationshipType getType() {
         return type;
     }

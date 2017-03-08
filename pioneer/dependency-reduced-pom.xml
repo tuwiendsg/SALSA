@@ -33,7 +33,7 @@
               </filters>
               <transformers>
                 <transformer>
-                  <mainClass>at.ac.tuwien.dsg.cloud.salsa.pioneer.Main</mainClass>
+                  <mainClass>at.ac.tuwien.dsg.salsa.pioneer.Main</mainClass>
                 </transformer>
                 <transformer>
                   <resource>META-INF/tools.service.validator.xml</resource>

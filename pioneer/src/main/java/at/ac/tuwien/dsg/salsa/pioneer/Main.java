@@ -26,12 +26,12 @@ import at.ac.tuwien.dsg.salsa.messaging.messageInterface.MessageClientFactory;
 import at.ac.tuwien.dsg.salsa.messaging.messageInterface.SalsaMessageHandling;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureTask;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureResult;
-import at.ac.tuwien.dsg.salsa.messaging.model.Salsa.SalsaMsgUpdateMetadata;
+
 import at.ac.tuwien.dsg.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.salsa.model.enums.SalsaArtifactType;
 import at.ac.tuwien.dsg.salsa.model.salsa.confparameters.ShellScriptParameters;
-import at.ac.tuwien.dsg.salsa.model.toscaDomain.ScriptArtifactProperties;
+import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaMsgUpdateMetadata;
 import at.ac.tuwien.dsg.salsa.pioneer.utils.PioneerConfiguration;
 import at.ac.tuwien.dsg.salsa.pioneer.utils.SystemFunctions;
 import at.ac.tuwien.dsg.salsa.shellscript.BashContinuousInstrument;
@@ -52,6 +52,7 @@ import java.util.Queue;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -59,7 +60,7 @@ import org.slf4j.Logger;
  */
 public class Main {
 
-    static Logger logger = PioneerConfiguration.logger;
+    static Logger logger = LoggerFactory.getLogger("salsa");
     static Queue<SalsaConfigureTask> deploymentQueue = new LinkedList<>();
     static final MessageClientFactory factory = new MessageClientFactory(PioneerConfiguration.getBroker(), PioneerConfiguration.getBrokerType());
 
@@ -74,18 +75,27 @@ public class Main {
         MessageSubscribeInterface subscribeSalsaEngineRequests = factory.getMessageSubscriber(new SalsaMessageHandling() {
             @Override
             public void handleMessage(SalsaMessage msg) {
+                logger.debug("A private message arrive: " + msg.toJson() + ", message type is: " + msg.getMsgType());
                 switch (msg.getMsgType()) {
                     case salsa_deploy: {
+                        logger.debug("Processing deployment request ...");
                         SalsaConfigureTask confInfo = SalsaConfigureTask.fromJson(msg.getPayload());
+                        logger.debug("Configuration info: actionID : {}, parameters: {}", confInfo.getActionID(), confInfo.getParameters().toString());
+                        if (confInfo.getPioneerID() == null) {
+                            logger.error("The request does not specify pioneer ID, not I am not sure if it is for me !");
+                            break;
+                        }
                         if (!confInfo.getPioneerID().equals(PioneerConfiguration.getPioneerID())) {
                             logger.debug("Received a message but not for me, it is for pioneer: " + confInfo.getPioneerID());
                             break;
                         }
+                        logger.debug("Adding a configuration task to the queue. Current queue size: " + deploymentQueue.size());
                         deploymentQueue.add(confInfo);
                         logger.debug("Received message for DEPLOYMENT: " + msg.toJson() + ", put in queue. QueueSize: " + deploymentQueue.size());
                         break;
                     }
                     case salsa_reconfigure: {
+                        logger.debug("Processing reconfiguration request ...");
                         SalsaConfigureTask cmd = SalsaConfigureTask.fromJson(msg.getPayload());
                         logger.debug("Received a reconfiguration command for: " + cmd.getUser() + "/" + cmd.getService() + "/" + cmd.getUnit() + "/" + cmd.getInstance() + ". ActionName: " + cmd.getActionName() + ", ActionID: " + cmd.getActionID());
                         // send back message that the pioneer received the command
@@ -134,6 +144,7 @@ public class Main {
         MessageSubscribeInterface subscribePublicChannel = factory.getMessageSubscriber(new SalsaMessageHandling() {
             @Override
             public void handleMessage(SalsaMessage salsaMessage) {
+                logger.debug("A public message arrive: " + salsaMessage.toJson());
                 // send information of this pioneer when get Discover command
                 if (salsaMessage.getMsgType().equals(SalsaMessage.MESSAGE_TYPE.discover)) {
                     MessagePublishInterface publish = factory.getMessagePublisher();
@@ -145,9 +156,15 @@ public class Main {
 
         // send information of this pioneer
         MessagePublishInterface publish = factory.getMessagePublisher();
-        publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_pioneerActivated, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT, null, PioneerConfiguration.getPioneerInfo().toJson()));
+        String pioneerJson = PioneerConfiguration.getPioneerInfo().toJson();
+        publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_pioneerActivated, PioneerConfiguration.getPioneerID(), SalsaMessageTopic.PIONEER_REGISTER_AND_HEARBEAT, null, pioneerJson));
 
+        logger.debug("Pioneer start \n: " + pioneerJson);
+        
         new Thread(new TaskHandleThread()).start();
+
+        
+
         // also start an elise conductor
         //new Thread(new EliseConductorThread()).start();
     }
@@ -166,7 +183,7 @@ public class Main {
                     count = 0;
                 } else {
                     try {
-                        if (count <= 2) {
+                        if (count <= 3) {
                             count += 1;
                             logger.debug("TASKQUEUE is empty (show {}/3).", count);
                         }
@@ -190,7 +207,9 @@ public class Main {
         publish_deploy.pushMessage(notifyMsg);
 
         logger.debug("The command is attracted: Target to pioneer {}, and mine is {}!", confInfo.getPioneerID(), PioneerConfiguration.getPioneerID());
+
         if (confInfo.getPioneerID().equals(PioneerConfiguration.getPioneerID())) {
+            logger.debug("Now write system variable");
             SystemFunctions.writeSystemVariable(confInfo.getEnvironment());
             logger.debug("Executing the first deployment ! ConfInfo: " + confInfo.toJson());
 
@@ -337,7 +356,7 @@ public class Main {
         String actionName = cmd.getActionName();
         logger.debug("Found a custom action: " + actionName);
 
-        if (cmd.getParameters(ShellScriptParameters.preRunByMe)== null || !cmd.getParameters(ShellScriptParameters.preRunByMe).trim().isEmpty()) { // something need to to be run first
+        if (cmd.getParameters(ShellScriptParameters.preRunByMe) == null || !cmd.getParameters(ShellScriptParameters.preRunByMe).trim().isEmpty()) { // something need to to be run first
             int code = SystemFunctions.executeCommandGetReturnCode(cmd.getParameters(ShellScriptParameters.preRunByMe), PioneerConfiguration.getWorkingDirOfInstance(cmd.getUnit(), cmd.getInstance()), PioneerConfiguration.getPioneerID());
             if (code != 0) {
                 logger.error("Error when execute the pre-action: " + cmd.getParameters(ShellScriptParameters.preRunByMe) + ". The process still will be continued !");

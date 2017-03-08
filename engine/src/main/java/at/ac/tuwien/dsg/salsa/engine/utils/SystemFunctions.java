@@ -51,44 +51,44 @@ public class SystemFunctions {
     static Logger logger = LoggerFactory.getLogger("salsa");
     static private String localIP = null;
 
-    public static String getEth0IPAddress() {
-        if (localIP != null) {
-            logger.debug("Return local IP address:" + localIP);
-            return localIP;
-        }
-        // copy the getEth0IPv4 to /tmp and execute it, return the value        
-        URL inputUrl = SystemFunctions.class.getResource("/scripts/getEth0IPv4.sh");
-        logger.debug("Search script: " + inputUrl);
-        File dest = new File("/tmp/getEth0IPv4.sh");
-        try {
-            FileUtils.copyURLToFile(inputUrl, dest);
-        } catch (IOException ex) {
-            logger.error("Cannot create template script file from: " + inputUrl + " to: " + dest.getPath());
-        }
-        localIP = executeCommandGetOutput("/bin/bash /tmp/getEth0IPv4.sh", "/tmp", null);
-        localIP = localIP.trim();
-        if (isIPv4Address(localIP)) {
-            logger.debug("The {} is IPv4 !", localIP);
-            return localIP;
-        } else {
-            logger.debug("Cannot get IPv4, the command return: {}", localIP);
-            localIP = null;
-            return "localhost";
-        }
-    }
-
-    public static boolean isIPv4Address(String address) {
-        if (address.isEmpty()) {
-            return false;
-        }
-        try {
-            Object res = InetAddress.getByName(address);
-            return (res.getClass().equals(Inet4Address.class));
-        } catch (final UnknownHostException ex) {
-            logger.error("Cannot get the host IP address. The captured address is: {}. Error: {}", address, ex.getMessage());
-            return false;
-        }
-    }
+//    public static String getEth0IPAddress() {
+//        if (localIP != null) {
+//            logger.debug("Return local IP address:" + localIP);
+//            return localIP;
+//        }
+//        // copy the getEth0IPv4 to /tmp and execute it, return the value        
+//        URL inputUrl = SystemFunctions.class.getResource("/scripts/getEth0IPv4.sh");
+//        logger.debug("Search script: " + inputUrl);
+//        File dest = new File("/tmp/getEth0IPv4.sh");
+//        try {
+//            FileUtils.copyURLToFile(inputUrl, dest);
+//        } catch (IOException ex) {
+//            logger.error("Cannot create template script file from: " + inputUrl + " to: " + dest.getPath());
+//        }
+//        localIP = executeCommandGetOutput("/bin/bash /tmp/getEth0IPv4.sh", "/tmp", null);
+//        localIP = localIP.trim();
+//        if (isIPv4Address(localIP)) {
+//            logger.debug("The {} is IPv4 !", localIP);
+//            return localIP;
+//        } else {
+//            logger.debug("Cannot get IPv4, the command return: {}", localIP);
+//            localIP = null;
+//            return "localhost";
+//        }
+//    }
+//
+//    public static boolean isIPv4Address(String address) {
+//        if (address.isEmpty()) {
+//            return false;
+//        }
+//        try {
+//            Object res = InetAddress.getByName(address);
+//            return (res.getClass().equals(Inet4Address.class));
+//        } catch (final UnknownHostException ex) {
+//            logger.error("Cannot get the host IP address. The captured address is: {}. Error: {}", address, ex.getMessage());
+//            return false;
+//        }
+//    }
 
     public static void executeCommandSimple(String cmd, String workingDir) {
         logger.debug("Running command: {} in folder: {}", cmd, workingDir);

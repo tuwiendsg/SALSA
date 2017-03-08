@@ -17,11 +17,21 @@
  */
 package at.ac.tuwien.dsg.salsa.database.neo4j;
 
+import at.ac.tuwien.dsg.salsa.database.neo4j.mapper.HashmapFromString;
+import at.ac.tuwien.dsg.salsa.database.neo4j.mapper.HashmapToString;
+import at.ac.tuwien.dsg.salsa.database.neo4j.mapper.MapFromString;
+import at.ac.tuwien.dsg.salsa.database.neo4j.mapper.MapToString;
 import java.io.File;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.converter.ConverterRegistry;
+import org.springframework.core.convert.support.DefaultConversionService;
 
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
@@ -53,6 +63,23 @@ public class PersistenceContext extends Neo4jConfiguration {
     public SessionFactory getSessionFactory() {
         System.out.println("DEBUG_SPRING -- get Session Factory..");
         return new SessionFactory(getConfiguration(), "at.ac.tuwien.dsg.salsa");
+    }
+
+    @Bean
+    protected ConversionService neo4jConversionService() throws Exception {
+        ConversionService conversionService = new DefaultConversionService();
+        ConverterRegistry registry = (ConverterRegistry) conversionService;
+        registry.removeConvertible(Map.class, String.class);
+        registry.removeConvertible(String.class, Map.class);
+        registry.removeConvertible(HashMap.class, String.class);
+        registry.removeConvertible(String.class, HashMap.class);
+        //add your own converters like this
+        registry.addConverter(new MapFromString());
+        registry.addConverter(new MapToString());
+        registry.addConverter(new HashmapToString());
+        registry.addConverter(new HashmapFromString());
+
+        return conversionService;
     }
 
 }

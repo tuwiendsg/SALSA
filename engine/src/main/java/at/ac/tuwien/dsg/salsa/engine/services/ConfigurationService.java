@@ -5,7 +5,14 @@
  */
 package at.ac.tuwien.dsg.salsa.engine.services;
 
+import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureResult;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.License;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -22,10 +29,24 @@ import javax.ws.rs.core.Response;
  * @author hungld
  */
 @Path("/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+@Api(value = "Salsa Engine API")
+@SwaggerDefinition(
+        info = @Info(
+                title = "Salsa Engine API",
+                version = "3.0",
+                description = "This API provides functions manage cloud services and salsa system.",
+                license = @License(name = "Apache 2.0", url = "https://www.apache.org/licenses/LICENSE-2.0")),
+        tags = @Tag(name = "Public", description = "This API is for public usage"),
+        schemes = (SwaggerDefinition.Scheme.HTTP),
+        consumes = {"application/json"},
+        produces = {"application/json"}
+)
 public interface ConfigurationService {
 
     //////////////////////////////////////////
-    // API for the whole cloud service
+    // WHOLE CLOUD SERVICE API
     //////////////////////////////////////////
     /**
      * Submit and deploy a service. The TOSCA is the data of the request.
@@ -36,7 +57,38 @@ public interface ConfigurationService {
      */
     @PUT
     @Path("/services/xml")
+    @ApiOperation(value = "Deploy a service from an XML",
+            notes = "The XML is plain text in the data of the posted message.",
+            response = Response.class,
+            responseContainer = "String")
     public Response deployServiceFromXML(String uploadedInputStream) throws SalsaException;
+
+    @PUT
+    @Path("/services/{serviceName}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @ApiOperation(value = "Deploy a service from a TOSCA file.",
+            notes = "The TOSCA is in HTML form",
+            response = Response.class,
+            responseContainer = "String")
+    public Response deployServiceFromXML(String formTosca, @PathParam("serviceName") String serviceName) throws SalsaException;
+
+    /**
+     * Create a cloud service from a list of pioneers. This will be used for
+     * deployed other services.
+     *
+     * @param pioneerIDs list of PioneerID separated by space
+     * @param serviceName name of the service to be created
+     * @return service id
+     * @throws SalsaException If pioneer is not registered
+     */
+    @PUT
+    @Path("/services/pioneerfarm/{serviceName}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @ApiOperation(value = "Create a service from a list of pioneers.",
+            notes = "A set of UUID is provided, separated by space.",
+            response = Response.class,
+            responseContainer = "String")
+    public Response deployServiceFromPioneers(String pioneerIDs, @PathParam("serviceName") String serviceName) throws SalsaException;
 
     /**
      * Redeploy the service
@@ -47,6 +99,10 @@ public interface ConfigurationService {
      */
     @POST
     @Path("/services/{serviceId}/redeploy")
+    @ApiOperation(value = "Undeploy and deploy again a service.",
+            notes = "The service must be deployed",
+            response = Response.class,
+            responseContainer = "String")
     public Response redeployService(@PathParam("serviceId") String serviceId) throws SalsaException;
 
     /**
@@ -58,6 +114,10 @@ public interface ConfigurationService {
      */
     @DELETE
     @Path("/services/{serviceId}")
+    @ApiOperation(value = "Undeploy a service.",
+            notes = "The service will be deleted.",
+            response = Response.class,
+            responseContainer = "String")
     public Response undeployService(@PathParam("serviceId") String serviceId) throws SalsaException;
 
     /**
@@ -69,12 +129,36 @@ public interface ConfigurationService {
      */
     @GET
     @Path("/services/{serviceId}")
-    @Produces(MediaType.TEXT_XML)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get data of a service.",
+            notes = "The data is in JSON format.",
+            response = Response.class,
+            responseContainer = "String")
     public Response getService(@PathParam("serviceId") String serviceID) throws SalsaException;
 
+    @GET
+    @Path("/serviceslist")
+    @Produces(MediaType.TEXT_PLAIN)
+    @ApiOperation(value = "Get list of service UUID.",
+            notes = "Service UUIDs are separated by spaces",
+            response = Response.class,
+            responseContainer = "String")
+    public String getServiceNames();
+
     //////////////////////////////////////////
-    // API for the whole service instance
+    // SERVICE UNIT API
     //////////////////////////////////////////
+    @PUT
+    @Path("/services/{serviceId}/nodes/{nodeId}/")
+    @ApiOperation(value = "Update unit data.",
+            notes = "Is used by SALSA Pioneer.",
+            response = Response.class,
+            responseContainer = "String")
+    public Response updateUnitMeta(
+            String metadata,
+            @PathParam("serviceId") String serviceId,
+            @PathParam("nodeId") String nodeId) throws SalsaException;
+
     /**
      * Deploy one or more instances
      *
@@ -86,10 +170,17 @@ public interface ConfigurationService {
      */
     @POST
     @Path("/services/{serviceId}/nodes/{nodeId}/instance-count/{quantity}")
+    @ApiOperation(value = "Create new Service Instance of a Service Unit.",
+            notes = "The service unit must be register first",
+            response = Response.class,
+            responseContainer = "String")
     public Response spawnInstance(@PathParam("serviceId") String serviceId,
             @PathParam("nodeId") String nodeId,
             @PathParam("quantity") int quantity) throws SalsaException;
 
+    //////////////////////////////////////////
+    // SERVICE INSTANCE API
+    //////////////////////////////////////////
     /**
      * Undeploy one instance
      *
@@ -101,9 +192,36 @@ public interface ConfigurationService {
      */
     @DELETE
     @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}")
+    @ApiOperation(value = "Delete a Service Instance.",
+            notes = "The undeployment script will be executed.",
+            response = Response.class,
+            responseContainer = "String")
     public Response destroyInstance(@PathParam("serviceId") String serviceId,
             @PathParam("nodeId") String nodeId,
             @PathParam("instanceId") int instanceId) throws SalsaException;
+
+    @PUT
+    @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/state/{state}")
+    @ApiOperation(value = "Change state of a Service Instance.",
+            notes = "Is used by SALSA Pioneer",
+            response = Response.class,
+            responseContainer = "String")
+    public Response updateInstanceState(@PathParam("serviceId") String serviceId,
+            @PathParam("nodeId") String nodeId,
+            @PathParam("instanceId") int instanceId,
+            @PathParam("state") String state);
+
+    @PUT
+    @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/properties")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Update instance data.",
+            notes = "Is used by SALSA Pioneer.",
+            response = Response.class,
+            responseContainer = "String")
+    public Response updateInstanceProperties(SalsaConfigureResult data,
+            @PathParam("serviceId") String serviceId,
+            @PathParam("nodeId") String nodeId,
+            @PathParam("instanceId") int instanceId);
 
     /**
      * Reconfigure an instance. The configuration action is put in the queue to
@@ -118,6 +236,10 @@ public interface ConfigurationService {
      */
     @POST
     @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/action_queue/{actionName}")
+    @ApiOperation(value = "Request to execute an action on the Service Instance.",
+            notes = "The action is sent to the queue of the pioneer.",
+            response = Response.class,
+            responseContainer = "String")
     public Response queueAction(
             @PathParam("serviceId") String serviceId,
             @PathParam("nodeId") String nodeId,
@@ -127,6 +249,10 @@ public interface ConfigurationService {
     // Note: the parameters are separated by ,    
     @POST
     @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/action_queue/{actionName}/parameters/{parameters}")
+    @ApiOperation(value = "Request to execute an action on the Service Instance with parameters.",
+            notes = "Is used by SALSA Pioneer.",
+            response = Response.class,
+            responseContainer = "String")
     public Response queueActionWithParameter(
             @PathParam("serviceId") String serviceId,
             @PathParam("nodeId") String nodeId,
@@ -136,5 +262,10 @@ public interface ConfigurationService {
 
     @GET
     @Path("/health")
+    @Produces(MediaType.TEXT_PLAIN)
+    @ApiOperation(value = "Check if the SALSA Engine is running.",
+            notes = "To check if the RESTful API is working properly.",
+            response = Response.class,
+            responseContainer = "String")
     public String health();
 }

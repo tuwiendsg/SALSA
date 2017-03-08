@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.ac.tuwien.dsg.salsa.messaging.model.Salsa;
+package at.ac.tuwien.dsg.salsa.model.salsa.info;
 
-import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureTask;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -16,15 +15,17 @@ import java.util.HashMap;
  * @author hungld
  */
 public class SalsaMsgUpdateMetadata {
+
     String user;
     String service;
     String topology;
     String unit;
     int instance;
     HashMap<String, String> actions;
-   
-    public SalsaMsgUpdateMetadata() {}
-    
+
+    public SalsaMsgUpdateMetadata() {
+    }
+
     public SalsaMsgUpdateMetadata(String user, String service, String topology, String unit, int instance, HashMap<String, String> actions) {
         this.user = user;
         this.service = service;
@@ -33,8 +34,8 @@ public class SalsaMsgUpdateMetadata {
         this.instance = instance;
         this.actions = actions;
     }
-    
-    public SalsaMsgUpdateMetadata(SalsaConfigureTask confInfo, HashMap<String,String> actions){
+
+    public SalsaMsgUpdateMetadata(SalsaConfigureTask confInfo, HashMap<String, String> actions) {
         this.user = confInfo.getUser();
         this.service = confInfo.getService();
         this.topology = confInfo.getTopology();
@@ -66,8 +67,8 @@ public class SalsaMsgUpdateMetadata {
     public HashMap<String, String> getActions() {
         return actions;
     }
-    
-    public String toJson(){
+
+    public String toJson() {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(this);
@@ -75,8 +76,8 @@ public class SalsaMsgUpdateMetadata {
             return "Cannot convert to JSON";
         }
     }
-    
-    public static SalsaMsgUpdateMetadata fromJson(String json){
+
+    public static SalsaMsgUpdateMetadata fromJson(String json) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(json, SalsaMsgUpdateMetadata.class);
@@ -85,6 +86,5 @@ public class SalsaMsgUpdateMetadata {
             return null;
         }
     }
-    
-    
+
 }

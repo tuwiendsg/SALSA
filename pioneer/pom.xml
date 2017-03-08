@@ -90,7 +90,7 @@
                             </filters>	                    		
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>at.ac.tuwien.dsg.cloud.salsa.pioneer.Main</mainClass>
+                                    <mainClass>at.ac.tuwien.dsg.salsa.pioneer.Main</mainClass>
                                 </transformer>		
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
                                     <resource>META-INF/tools.service.validator.xml</resource>

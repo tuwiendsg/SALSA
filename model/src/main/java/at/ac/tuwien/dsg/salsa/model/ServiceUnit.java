@@ -8,12 +8,18 @@ package at.ac.tuwien.dsg.salsa.model;
 import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.properties.Artifact;
 import at.ac.tuwien.dsg.salsa.model.properties.Capability;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -41,13 +47,17 @@ public class ServiceUnit {
     ConfigurationState state;
 
     // custom properties: marshall/unmarshall this field manually. String is better than generic Object.
-    Map<String, String> properties = new HashMap<>();
+    // we use String because data persistance layer using JPA or Neo4j cannot write Map
+    String properties;
+//    Map<String, String> properties = new HashMap<>();
 
     // capability var to store properties that it will share
-    List<String> capabilityVars = new ArrayList<>();
-
+//    List<String> capabilityVars = new ArrayList<>();
     // this field is for determining deployment artifact to be used. Should be remove later
     String mainArtifactType;
+
+    public ServiceUnit() {
+    }
 
     public ServiceUnit(String uuid, String type) {
         this.uuid = uuid;
@@ -151,14 +161,6 @@ public class ServiceUnit {
         this.state = state;
     }
 
-    public List<String> getCapabilityVars() {
-        return capabilityVars;
-    }
-
-    public void setCapabilityVars(List<String> capabilityVars) {
-        this.capabilityVars = capabilityVars;
-    }
-
     public String getHostedUnitName() {
         return hostedUnitName;
     }
@@ -183,14 +185,85 @@ public class ServiceUnit {
         this.mainArtifactType = mainArtifactType;
     }
 
-    public Map<String, String> getProperties() {
+    /**
+     * Get properties as String. Use read/write property instead.
+     *
+     * @return
+     */
+    public String getProperties() {
         return properties;
     }
 
-    public void setProperties(Map<String, String> properties) {
+    /**
+     * Set properties as String. Use read/write property instead.
+     *
+     * @param properties
+     */
+    public void setProperties(String properties) {
         this.properties = properties;
     }
 
+    /**
+     * Get properties
+     *
+     * @return a Map of key/value of properties
+     */
+    public Map<String, String> readPropertiesAsMap() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            if (this.properties != null) {
+                return mapper.readValue(this.properties, HashMap.class);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Add a set of properties
+     *
+     * @param properties
+     */
+    public void writePropertiesFromMap(Map<String, String> properties) {
+        Map<String, String> map = readPropertiesAsMap();
+        if (map == null) {
+            map = new HashMap<>();
+        }
+        if (properties != null && !properties.isEmpty()) {
+            map.putAll(properties);
+
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                this.properties = mapper.writeValueAsString(properties);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Add a single property
+     *
+     * @param key
+     * @param value
+     */
+    public void writeProperty(String key, String value) {
+        Map<String, String> map = readPropertiesAsMap();
+        if (map == null) {
+            map = new HashMap<>();
+        }
+        map.put(key, value);
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            this.properties = mapper.writeValueAsString(properties);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @JsonIgnore
     public ServiceInstance getInstanceByIndex(int index) {
         for (ServiceInstance instance : instances) {
             if (instance.getIndex() == index) {
@@ -200,6 +273,7 @@ public class ServiceUnit {
         return null;
     }
 
+    @JsonIgnore
     // what instances of this service unit is hosting on a nother instance?
     public List<ServiceInstance> getInstanceHostOn(String hosterUnitUuid, int hosterInstanceIndex) {
         List<ServiceInstance> newLst = new ArrayList<>();
@@ -234,6 +308,16 @@ public class ServiceUnit {
         return this;
     }
 
+    public ServiceUnit hasInstance(ServiceInstance instance) {
+        if (this.instances == null) {
+            this.instances = new HashSet<>();
+        }
+        instance.setServiceUnitUuid(this.uuid);
+        this.instances.add(instance);
+        return this;
+    }
+
+    @JsonIgnore
     public Capability getCapabilityByName(String capaName) {
         if (capabilities != null) {
             for (Capability po : capabilities) {
@@ -243,6 +327,21 @@ public class ServiceUnit {
             }
         }
         return null;
+    }
+
+    public void readCapabilityFromJson(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+        TypeReference<Set<Capability>> mapType = new TypeReference<Set<Capability>>() {
+        };
+        try {
+            Set<Capability> capaList = mapper.readValue(json, mapType);
+            if (this.capabilities == null) {
+                capaList = new HashSet<>();
+            }
+            this.capabilities.addAll(capaList);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
 }

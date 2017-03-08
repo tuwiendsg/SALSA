@@ -13,7 +13,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <dependencies>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-neo4j</artifactId> 
             <version>4.1.4.RELEASE</version>
@@ -24,5 +24,7 @@
             <version>2.8.4</version>
             <type>jar</type>
         </dependency>
+        
+       
     </dependencies>
 </project>

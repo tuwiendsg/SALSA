@@ -17,7 +17,7 @@
  */
 package at.ac.tuwien.dsg.salsa.pioneer.utils;
 
-import at.ac.tuwien.dsg.salsa.messaging.model.Salsa.PioneerInfo;
+import at.ac.tuwien.dsg.salsa.model.salsa.info.PioneerInfo;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,17 +34,11 @@ import org.slf4j.LoggerFactory;
  */
 public class PioneerConfiguration {
 
-    public static final Logger logger;
-
     private static final String CURRENT_DIR = System.getProperty("user.dir");
     private static final String CONFIG_FILE = CURRENT_DIR + "/salsa.variables";
 
     // if the pioneer is restarted, this will generate another ID
     private static final String PIONEER_ID = UUID.randomUUID().toString();
-
-    static {
-        logger = LoggerFactory.getLogger("salsa");
-    }
 
     public static String getPioneerID() {
         return PIONEER_ID;
@@ -75,14 +69,15 @@ public class PioneerConfiguration {
     }
 
     public static PioneerInfo getPioneerInfo() {
-        return new PioneerInfo(getGenericParameter("SALSA_USER_NAME", "salsa-default"),
-                PIONEER_ID, SystemFunctions.getEth0IPAddress(),
+        PioneerInfo info = new PioneerInfo(getGenericParameter("SALSA_USER_NAME", "salsa-default"),
+                PIONEER_ID, SystemFunctions.getIPAdressLocalhost(),
                 getGenericParameter("SALSA_SERVICE_ID", null),
                 getGenericParameter("SALSA_TOPOLOGY_ID", null),
                 getGenericParameter("SALSA_NODE_ID", null),
-                Integer.parseInt(getGenericParameter("SALSA_REPLICA", null)));
+                Integer.parseInt(getGenericParameter("SALSA_REPLICA", "0")));
+        info.setHostname(SystemFunctions.getHostNameLocalhost());
+        return info;
     }
-    
 
     public static String getPioneerID_Structure() {
         PioneerInfo pi = getPioneerInfo();
@@ -102,7 +97,7 @@ public class PioneerConfiguration {
             // load a properties file
             prop.load(input);
             String param = prop.getProperty(key);
-            if (param != null) {   // just return default MQTT
+            if (param != null && !param.isEmpty()) {   // just return default MQTT
                 return param;
             }
         } catch (FileNotFoundException ex) {

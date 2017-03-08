@@ -25,10 +25,10 @@ import java.io.PrintWriter;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +40,10 @@ public class SystemFunctions {
     // write to a /etc/profile.d and the /etc/environment
     // the format is metric=value;metric2=value2
     public static void writeSystemVariable(String keyAndValue) {
+        if (keyAndValue == null || keyAndValue.isEmpty()) {
+            logger.debug("There is no environment variable to write, fine.");
+            return;
+        }
         try {
             String[] pairs = keyAndValue.split(";");
             PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(envFileGlobal.getPath(), true)));
@@ -53,16 +57,23 @@ public class SystemFunctions {
         }
     }
 
-    public static String getEth0IPAddress() {
-        // copy the getEth0IPv4 to /tmp and execute it, return the value        
-        URL inputUrl = SystemFunctions.class.getResource("/scripts/getEth0IPv4.sh");
-        File dest = new File("/tmp/getEth0IPv4.sh");
+    public static String getHostNameLocalhost() {
         try {
-            FileUtils.copyURLToFile(inputUrl, dest);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            InetAddress ip = InetAddress.getLocalHost();
+            return ip.getHostName();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return "unknown";
         }
-        return executeCommandGetFirstLineOutput("/bin/bash /tmp/getEth0IPv4.sh", "/tmp", null);
+    }
+
+    public static String getIPAdressLocalhost() {
+        try {
+            return InetAddress.getLocalHost().toString();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return "unknown";
+        }
     }
 
     /**
