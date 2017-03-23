@@ -72,7 +72,7 @@ public class BaseUnitCapability implements UnitCapabilityInterface {
 
             deployVM(unit, instanceindex);
 
-            cloudService.addEvent(new SalsaEvent(unit.getName() + "-" + newInstance.getIndex(), start, new Date(), "deploy"));
+            cloudService.hasEvent(new SalsaEvent(unit.getName() + "-" + newInstance.getIndex(), start, new Date(), "deploy"));
             cloudRepo.save(cloudService);
 
             logger.debug(" -- Deployed and now remove unit from queue: " + unit.getName());
@@ -102,7 +102,7 @@ public class BaseUnitCapability implements UnitCapabilityInterface {
 
                     deployArtifact(unit, pioneer, instanceindex);
 
-                    cloudService.addEvent(new SalsaEvent(unit.getName() + "-" + newInstance.getIndex(), start, new Date(), "deploy"));
+                    cloudService.hasEvent(new SalsaEvent(unit.getName() + "-" + newInstance.getIndex(), start, new Date(), "deploy"));
                     cloudRepo.save(cloudService);
                     return newInstance;
                 }
@@ -166,7 +166,7 @@ public class BaseUnitCapability implements UnitCapabilityInterface {
         ServiceTopology topo = cloudService.getTopologyOfNode(unit.getUuid());
 
         if (unit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())) {
-            Map<String, String> properties = unit.readPropertiesAsMap();
+            Map<String, String> properties = unit.getProperties();
             String providerName = properties.get("provider");
             logger.debug("Deploying machine, provider: " + providerName);
             if (providerName.endsWith("@openstack")) {

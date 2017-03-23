@@ -271,8 +271,8 @@ public class GUIService {
             CloudService service = CloudService.fromJson(json);
             if (service != null) {
                 logger.debug("Service to get the event: " + service.getName());
-                logger.debug("Number of events: " + service.readEvents().getEvents().size());
-                for (SalsaEvent event : service.readEvents().getEvents()) {
+                logger.debug("Number of events: " + service.getEvents().getEvents().size());
+                for (SalsaEvent event : service.getEvents().getEvents()) {
                     logger.debug("-- adding event: " + event.getName());
                     model.add(new TimelineEvent(event.getName(), event.getStart(), event.getEnd()));
                 }

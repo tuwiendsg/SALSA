@@ -7,13 +7,13 @@ package at.ac.tuwien.dsg.salsa.model.salsa.info;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import lombok.Data;
 
 /**
  *
  * @author hungld
  */
+@Data
 public class INFOMessage {
 
     public static enum SERVICE_LEVEL {
@@ -50,34 +50,6 @@ public class INFOMessage {
         this.extra = extra;
     }
 
-    public ACTION_STATUS getStatus() {
-        return status;
-    }
-
-    public String getExtra() {
-        return extra;
-    }
-
-    public ACTION_TYPE getAction() {
-        return action;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public SERVICE_LEVEL getLevel() {
-        return level;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public String getProducer() {
-        return producer;
-    }
-
     public String toJson() {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -86,8 +58,8 @@ public class INFOMessage {
             return "error-message";
         }
     }
-    
-    public static INFOMessage fromJson(String json){
+
+    public static INFOMessage fromJson(String json) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(json, INFOMessage.class);

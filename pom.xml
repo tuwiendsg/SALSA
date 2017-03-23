@@ -10,9 +10,8 @@
         <module>messaging</module>
         <module>pioneer</module>
     <module>engine</module>
-        <module>modules</module>
-        <module>database-neo4j</module>
-  </modules>
+        <module>database-orientdb</module>
+    </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>

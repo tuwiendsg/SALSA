@@ -262,7 +262,7 @@ public class InfoParser {
                  */
                 SalsaMappingProperties mapProp = (SalsaMappingProperties) node.getProperties().getAny();
                 for (SalsaMappingProperties.SalsaMappingProperty p : mapProp.getProperties()) {
-                    nodeData.writePropertiesFromMap(p.getMapData());
+                    nodeData.setProperties(p.getMapData());
                 }
 
 //                if (node.getProperties() != null) {

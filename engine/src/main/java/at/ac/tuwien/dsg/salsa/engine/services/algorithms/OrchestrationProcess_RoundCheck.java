@@ -54,7 +54,7 @@ public class OrchestrationProcess_RoundCheck implements OrchestrationProcess {
 
         logger.debug("Start round check configuration");
         this.cloudService = service;
-        List<ServiceUnit> allUnits = service.getAllComponent();
+        List<ServiceUnit> allUnits = service.getAllUnits();
 
         // build the list of needed instances
         int remainSteps = 0;

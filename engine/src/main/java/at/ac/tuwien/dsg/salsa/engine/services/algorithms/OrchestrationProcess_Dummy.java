@@ -44,7 +44,7 @@ public class OrchestrationProcess_Dummy implements OrchestrationProcess {
         UnitCapabilityInterface unitCapa = new BaseUnitCapability(service.getName(), cloudRepo, instanceRepo);
 
         logger.debug("Start round check configuration");
-        List<ServiceUnit> allUnits = service.getAllComponent();
+        List<ServiceUnit> allUnits = service.getAllUnits();
 
         for (ServiceUnit unit : allUnits) {
             Date start = new Date();
@@ -63,7 +63,7 @@ public class OrchestrationProcess_Dummy implements OrchestrationProcess {
                 ex.printStackTrace();
             }
 
-            service.addEvent(new SalsaEvent(unit.getName() + "-" + instance.getIndex(), start, new Date(), "deploy"));
+            service.hasEvent(new SalsaEvent(unit.getName() + "-" + instance.getIndex(), start, new Date(), "deploy"));
         }
         cloudRepo.save(service);
         logger.debug("Saved service done. Now recheck ...");

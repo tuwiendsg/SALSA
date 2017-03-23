@@ -243,7 +243,7 @@ public class ConfigurationServiceImp implements ConfigurationService {
         try {
             CloudService service = cloudServiceRepo.findByName(serviceId);
             ServiceInstance instance = service.getUnitByName(nodeId).getInstanceByIndex(instanceId);
-            instance.writeContextFromMap(data.getEffects());
+            instance.setContext(data.getEffects());
             cloudServiceRepo.save(service);
             return Response.status(200).entity("Properties of : " + serviceId + "/" + nodeId + "/" + instanceId + " is set with: " + data.toJson()).build();
         } catch (Exception e) {

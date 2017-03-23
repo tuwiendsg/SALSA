@@ -10,34 +10,24 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import lombok.Data;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
  * @author hungld
  */
-@Data
-public class Artifact {
+public class CapabilitiesWrapper {
 
-    public enum RepoType {
-        HTTP, GIT
+    Set<Capability> capabilities = new HashSet<>();
+
+    public CapabilitiesWrapper() {
     }
 
-    Long id;
-
-    String name;
-    String artifactType;
-    String reference;
-    RepoType repoType = RepoType.HTTP; // default, how to download
-    String tags;
-
-    public Artifact() {
-    }
-
-    public Artifact(String name, String artifactType, String reference) {
-        this.name = name;
-        this.artifactType = artifactType;
-        this.reference = reference;
+    public CapabilitiesWrapper(Set<Capability> capas) {
+        if (capas != null) {
+            this.capabilities = capas;
+        }
     }
 
     public String toJson() {
@@ -52,16 +42,24 @@ public class Artifact {
         }
     }
 
-    public static Capability fromJson(String json) {
+    public static CapabilitiesWrapper fromJson(String json) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         try {
-            return mapper.readValue(json, Capability.class);
+            return mapper.readValue(json, CapabilitiesWrapper.class);
         } catch (IOException ex) {
             ex.printStackTrace();
             return null;
         }
+    }
+
+    public Set<Capability> getCapabilities() {
+        return capabilities;
+    }
+
+    public void setCapabilities(Set<Capability> capabilities) {
+        this.capabilities = capabilities;
     }
 
 }

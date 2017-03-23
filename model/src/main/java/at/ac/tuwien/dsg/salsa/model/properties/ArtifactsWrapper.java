@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Data;
 
 /**
@@ -17,27 +19,17 @@ import lombok.Data;
  * @author hungld
  */
 @Data
-public class Artifact {
+public class ArtifactsWrapper {
 
-    public enum RepoType {
-        HTTP, GIT
+    Set<Artifact> artifacts = new HashSet<>();
+
+    public ArtifactsWrapper() {
     }
 
-    Long id;
-
-    String name;
-    String artifactType;
-    String reference;
-    RepoType repoType = RepoType.HTTP; // default, how to download
-    String tags;
-
-    public Artifact() {
-    }
-
-    public Artifact(String name, String artifactType, String reference) {
-        this.name = name;
-        this.artifactType = artifactType;
-        this.reference = reference;
+    public ArtifactsWrapper(Set<Artifact> artifacts) {
+        if (artifacts != null) {
+            this.artifacts = artifacts;
+        }
     }
 
     public String toJson() {
@@ -52,12 +44,12 @@ public class Artifact {
         }
     }
 
-    public static Capability fromJson(String json) {
+    public static ArtifactsWrapper fromJson(String json) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         try {
-            return mapper.readValue(json, Capability.class);
+            return mapper.readValue(json, ArtifactsWrapper.class);
         } catch (IOException ex) {
             ex.printStackTrace();
             return null;

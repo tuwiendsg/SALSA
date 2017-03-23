@@ -21,11 +21,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Objects;
+import lombok.Data;
 
 /**
  *
  * @author Duc-Hung Le
  */
+@Data
 public class PioneerInfo {
 
     String userName;
@@ -54,42 +56,6 @@ public class PioneerInfo {
     @JsonIgnore
     public boolean isFree() {
         return (this.service == null && this.topology == null && this.unit == null) || (this.service.isEmpty() && this.topology.isEmpty() && this.unit.isEmpty());
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public String getService() {
-        return service;
-    }
-
-    public String getTopology() {
-        return topology;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public int getInstance() {
-        return instance;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public String getHostname() {
-        return hostname;
-    }
-
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
     }
 
     public String toJson() {

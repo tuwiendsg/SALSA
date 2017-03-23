@@ -41,5 +41,11 @@ public interface ConfigurationModule {
      * @return A custom description of the status
      */
     public String getStatus(SalsaConfigureTask configInfo);
+    
+    /**
+     * Name of the configuration module will be in the description
+     * @return a name in String
+     */
+    public String getName();
 
 }

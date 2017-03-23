@@ -19,11 +19,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import lombok.Data;
 
 /**
  *
  * @author hungld
  */
+@Data
 public class CloudService {
 
     // used for persistent layer, e.g. Neo4J
@@ -33,73 +35,18 @@ public class CloudService {
     String uuid; // global identification
 
     Set<ServiceTopology> topologies;
-    ConfigurationState state;
+    ConfigurationState state = ConfigurationState.UNKNOWN;
 
-    // we marshall/unmarshall in GET/SET function
-    String events;
-//    SalsaEvents events = new SalsaEvents();
+    // log configuration events
+    SalsaEvents events = new SalsaEvents();
 
     public CloudService() {
         this.uuid = UUID.randomUUID().toString();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public Set<ServiceTopology> getTopologies() {
-        return topologies;
-    }
-
-    public void setTopologies(Set<ServiceTopology> topologies) {
-        this.topologies = topologies;
-    }
-
-    public ConfigurationState getState() {
-        return state;
-    }
-
-    public void setState(ConfigurationState state) {
-        this.state = state;
-    }
-
-    public String getEvents() {
-        return events;
-    }
-
-    public void setEvents(String events) {
-        this.events = events;
-    }
-
-    public void addEvent(SalsaEvent event) {
-        SalsaEvents ssEvents = readEvents();
-        ssEvents.getEvents().add(event);
-        this.events = ssEvents.toJson();
-    }
-
-    public SalsaEvents readEvents() {
-        if (this.events != null && !this.events.isEmpty()) {
-            return SalsaEvents.fromJson(this.events);
-        }
-        return new SalsaEvents();
-    }
-
-    public void writeEvents(SalsaEvents events) {
-        if (events != null) {
-            this.events = events.toJson();
-        }
+    public CloudService hasEvent(SalsaEvent event) {
+        this.events.hasEvent(event);
+        return this;
     }
 
     public CloudService hasTopology(ServiceTopology topology) {
@@ -135,7 +82,7 @@ public class CloudService {
     }
 
     @JsonIgnore
-    public List<ServiceUnit> getAllComponent() {
+    public List<ServiceUnit> getAllUnits() {
         List<ServiceUnit> comList = new ArrayList<>();
         for (ServiceTopology topo : topologies) {
             comList.addAll(topo.getUnits());

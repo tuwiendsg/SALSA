@@ -52,4 +52,9 @@ public class BashInstrument implements ConfigurationModule {
         return "Unknown";
     }
 
+    @Override
+    public String getName() {
+        return "bash";
+    }
+
 }

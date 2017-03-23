@@ -5,68 +5,50 @@
  */
 package at.ac.tuwien.dsg.salsa.model.properties;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Data;
 
 /**
  *
  * @author hungld
  */
+@Data
 public class Capability {
-
-    public enum ExecutionType {
-        SCRIPT, REST;
-    }
 
     Long id;
 
+    // the name of the action
     String name;
+    // name of the configuration module, will be map to the class
+    String configModule;
+
     String command;
-    ExecutionType type = ExecutionType.SCRIPT;
+    // the parameters to enforce
+    Map<String, String> parameters = new HashMap<>();
 
-    String conditions;
-    String effect;
+    Map<String, String> conditions = new HashMap<>();
+    Map<String, String> effects = new HashMap<>();
 
-//    Map<String, String> conditions = new HashMap<>();
-//    Map<String, String> effects = new HashMap<>();
     public Capability() {
     }
 
-    public Capability(String name, String cmd) {
+    public Capability(String name, String configModule) {
         this.name = name;
-        this.command = cmd;
+        this.configModule = configModule;
     }
 
-    // manually marchall/unmarshall conditions
-    public Map<String, String> readConditionsAsMap() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            if (this.conditions != null) {
-                return mapper.readValue(this.conditions, HashMap.class);
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+    public Capability hasParameter(String key, String value) {
+        if (this.parameters == null) {
+            this.parameters = new HashMap<>();
         }
-        return null;
-    }
-
-    public void writeConditionsFromMap(Map<String, String> conditionMap) {
-        Map<String, String> map = readConditionsAsMap();
-        if (map == null) {
-            map = new HashMap<>();
-        }
-        if (conditionMap != null && !conditionMap.isEmpty()) {
-            map.putAll(conditionMap);
-
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                this.conditions = mapper.writeValueAsString(conditionMap);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
+        this.parameters.put(key, value);
+        return this;
     }
 
     /**
@@ -77,106 +59,44 @@ public class Capability {
      * @return
      */
     public Capability hasCondition(String key, String value) {
-        Map<String, String> map = readConditionsAsMap();
-        if (map == null) {
-            map = new HashMap<>();
+        if (this.conditions == null) {
+            this.conditions = new HashMap<>();
         }
-        map.put(key, value);
+        this.conditions.put(key, value);
 
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            this.conditions = mapper.writeValueAsString(map);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
         return this;
-    }
-
-    // manual marchall/unmarshall conditions
-    public Map<String, String> readEffectsAsMap() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            if (this.effect != null) {
-                return mapper.readValue(this.effect, HashMap.class);
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-
-    public void writeEffectFromMap(Map<String, String> effectMap) {
-        Map<String, String> map = readEffectsAsMap();
-        if (map == null) {
-            map = new HashMap<>();
-        }
-        if (effectMap != null && !effectMap.isEmpty()) {
-            map.putAll(effectMap);
-
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                this.effect = mapper.writeValueAsString(effectMap);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
     }
 
     public Capability hasEffect(String key, String value) {
-        Map<String, String> map = readEffectsAsMap();
-        if (map == null) {
-            map = new HashMap<>();
+        if (this.effects == null) {
+            this.effects = new HashMap<>();
         }
-        map.put(key, value);
+        this.effects.put(key, value);
 
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            this.effect = mapper.writeValueAsString(map);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
         return this;
     }
 
-    // GET/ SET
-    public String getName() {
-        return name;
+    public String toJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        try {
+            return mapper.writeValueAsString(this);
+        } catch (JsonProcessingException ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public static Capability fromJson(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        try {
+            return mapper.readValue(json, Capability.class);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
-
-    public String getCommand() {
-        return command;
-    }
-
-    public void setCommand(String command) {
-        this.command = command;
-    }
-
-    public ExecutionType getType() {
-        return type;
-    }
-
-    public void setType(ExecutionType type) {
-        this.type = type;
-    }
-
-    public String getConditions() {
-        return conditions;
-    }
-
-    public void setConditions(String conditions) {
-        this.conditions = conditions;
-    }
-
-    public String getEffect() {
-        return effect;
-    }
-
-    public void setEffect(String effect) {
-        this.effect = effect;
-    }
-
 }

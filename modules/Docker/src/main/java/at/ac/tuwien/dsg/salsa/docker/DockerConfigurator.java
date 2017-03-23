@@ -420,4 +420,9 @@ public class DockerConfigurator implements ConfigurationModule {
         }
     }
 
+    @Override
+    public String getName() {
+        return "docker";
+    }
+
 }
