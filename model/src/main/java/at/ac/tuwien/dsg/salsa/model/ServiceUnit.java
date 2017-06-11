@@ -40,10 +40,11 @@ public class ServiceUnit {
     int max = 1;
     String reference;
     Set<Artifact> artifacts;
-    Set<Capability> capabilities;
-    String hostedUnitName;
-    List<String> connecttoUnitName = new ArrayList<>();
+    Map<String, Capability> capabilities;
+    String hostedOn;
+    List<String> connectTo = new ArrayList<>();
     String type;
+    List<String> pioneerIds = new ArrayList<>();
 
     // management info
     String topologyUuid;
@@ -104,9 +105,9 @@ public class ServiceUnit {
 
     public ServiceUnit hasCapability(Capability capability) {
         if (this.capabilities == null) {
-            this.capabilities = new HashSet<>();
+            this.capabilities = new HashMap<>();
         }
-        this.capabilities.add(capability);
+        this.capabilities.put(capability.getName(), capability);
         return this;
     }
 
@@ -125,33 +126,6 @@ public class ServiceUnit {
         instance.setServiceUnitUuid(this.uuid);
         this.instances.add(instance);
         return this;
-    }
-
-    @JsonIgnore
-    public Capability getCapabilityByName(String capaName) {
-        if (capabilities != null) {
-            for (Capability po : capabilities) {
-                if (po.getName().equals(capaName)) {
-                    return po;
-                }
-            }
-        }
-        return null;
-    }
-
-    public void readCapabilityFromJson(String json) {
-        ObjectMapper mapper = new ObjectMapper();
-        TypeReference<Set<Capability>> mapType = new TypeReference<Set<Capability>>() {
-        };
-        try {
-            Set<Capability> capaList = mapper.readValue(json, mapType);
-            if (this.capabilities == null) {
-                capaList = new HashSet<>();
-            }
-            this.capabilities.addAll(capaList);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
 
 }

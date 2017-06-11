@@ -1,0 +1,29 @@
+name: "myService"
+service:
+  Component02:
+    
+  Component01:    
+    artifacts:
+    - source: "test.sh"
+      fetch: "PACKED"
+    - source: "test.conf"
+      fetch: "PACKED"
+      target: "/etc/test.conf"
+    capabilities:
+      init:
+        effects:
+          state: ON
+      turn-off:        
+        command: "test.sh off"        
+        conditions:
+          state: "ON"
+        effects:
+          '@component2.state': "OFF"
+          state: "OFF"
+      turn-on:        
+        command: "test.sh on"       
+        conditions:
+          state: "OFF"
+        effects:
+          state: "ON"
+    connectTo: []    

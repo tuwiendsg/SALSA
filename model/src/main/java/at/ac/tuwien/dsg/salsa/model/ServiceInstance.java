@@ -31,6 +31,8 @@ public class ServiceInstance {
     GlobalIdentification identification; // composition of identification
     ConfigurationState state = ConfigurationState.UNKNOWN;
     int hostedInstanceIndex;
+    
+    String pioneer = "";
 
     // custom properties, internal and external properties
     Map<String, String> context;

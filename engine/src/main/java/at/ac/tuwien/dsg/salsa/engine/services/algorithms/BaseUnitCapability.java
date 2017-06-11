@@ -80,7 +80,7 @@ public class BaseUnitCapability implements UnitCapabilityInterface {
             return newInstance;
 
         } else {
-            String hostedUnitName = unit.getHostedUnitName();
+            String hostedUnitName = unit.getHostedOn();
             ServiceInstance hostedInstance = getHostInstance(cloudService, unit);
 
             if (hostedInstance != null) {
@@ -123,7 +123,7 @@ public class BaseUnitCapability implements UnitCapabilityInterface {
 
     // = true with docker & artifacts, = false with VM
     private boolean needHostedInstance(ServiceUnit unit) {
-        String hostedUnitName = unit.getHostedUnitName();
+        String hostedUnitName = unit.getHostedOn();
         if (hostedUnitName != null) {
             return true;
         }
@@ -138,7 +138,7 @@ public class BaseUnitCapability implements UnitCapabilityInterface {
     private ServiceInstance getHostInstance(CloudService cloudService, ServiceUnit unit) {
         // in the case of host unit ready, check if pioneer is ready?
         // hostedUnitName should not be null here
-        String hostedUnitName = unit.getHostedUnitName();
+        String hostedUnitName = unit.getHostedOn();
         ServiceUnit hostedUnit = cloudService.getUnitByName(hostedUnitName);
         Set<ServiceInstance> possibleHostedInstances = hostedUnit.getInstances();
         ServiceInstance hostedInstance = null;
@@ -213,7 +213,7 @@ public class BaseUnitCapability implements UnitCapabilityInterface {
                 .hasPioneerUUID(pioneer.getUuid())
                 .hasUser(SalsaConfiguration.getUserName());
         for (Artifact a : unit.getArtifacts()) {
-            task.hasArtifact(a.getName(), a.getArtifactType(), a.getReference());
+            task.hasArtifact(a.getSource(), a.getFetch().toString(), a.getTarget());
             if (a.getArtifactType().equals(SalsaArtifactType.sh.getString()) || a.getArtifactType().equals(SalsaArtifactType.shcont.getString())) {
                 String runByMe = "/bin/bash " + FilenameUtils.getName(a.getReference());
                 task.hasParam(ShellScriptParameters.runByMe, runByMe);

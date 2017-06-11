@@ -44,7 +44,9 @@ public class SensorCapability {
         }
 
         ServiceUnit unit = new ServiceUnit(UUID.randomUUID().toString(), "sensor");
-        unit.setCapabilities(capaSet);
+        for (Capability capa : capaSet) {
+            unit.hasCapability(capa);
+        }
         System.out.println("----------------");
         System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(unit));
 

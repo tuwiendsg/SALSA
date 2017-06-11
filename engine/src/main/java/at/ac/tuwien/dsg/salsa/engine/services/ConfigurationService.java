@@ -56,21 +56,12 @@ public interface ConfigurationService {
      * @throws SalsaException
      */
     @PUT
-    @Path("/services/xml")
-    @ApiOperation(value = "Deploy a service from an XML",
-            notes = "The XML is plain text in the data of the posted message.",
+    @Path("/services/yml")
+    @ApiOperation(value = "Deploy a service from an YML description",
+            notes = "The YML is plain text in the data of the posted message.",
             response = Response.class,
             responseContainer = "String")
-    public Response deployServiceFromXML(String uploadedInputStream) throws SalsaException;
-
-    @PUT
-    @Path("/services/{serviceName}")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @ApiOperation(value = "Deploy a service from a TOSCA file.",
-            notes = "The TOSCA is in HTML form",
-            response = Response.class,
-            responseContainer = "String")
-    public Response deployServiceFromXML(String formTosca, @PathParam("serviceName") String serviceName) throws SalsaException;
+    public Response deployServiceFromYML(String uploadedInputStream) throws SalsaException;
 
     /**
      * Create a cloud service from a list of pioneers. This will be used for
@@ -137,7 +128,7 @@ public interface ConfigurationService {
     public Response getService(@PathParam("serviceId") String serviceID) throws SalsaException;
 
     @GET
-    @Path("/serviceslist")
+    @Path("/services")
     @Produces(MediaType.TEXT_PLAIN)
     @ApiOperation(value = "Get list of service UUID.",
             notes = "Service UUIDs are separated by spaces",
@@ -149,7 +140,7 @@ public interface ConfigurationService {
     // SERVICE UNIT API
     //////////////////////////////////////////
     @PUT
-    @Path("/services/{serviceId}/nodes/{nodeId}/")
+    @Path("/services/{serviceId}/nodes/{nodeId}")
     @ApiOperation(value = "Update unit data.",
             notes = "Is used by SALSA Pioneer.",
             response = Response.class,
@@ -169,14 +160,13 @@ public interface ConfigurationService {
      * @throws SalsaException
      */
     @POST
-    @Path("/services/{serviceId}/nodes/{nodeId}/instance-count/{quantity}")
+    @Path("/services/{serviceId}/nodes/{nodeId}")
     @ApiOperation(value = "Create new Service Instance of a Service Unit.",
             notes = "The service unit must be register first",
             response = Response.class,
             responseContainer = "String")
     public Response spawnInstance(@PathParam("serviceId") String serviceId,
-            @PathParam("nodeId") String nodeId,
-            @PathParam("quantity") int quantity) throws SalsaException;
+            @PathParam("nodeId") String nodeId) throws SalsaException;
 
     //////////////////////////////////////////
     // SERVICE INSTANCE API
@@ -201,24 +191,12 @@ public interface ConfigurationService {
             @PathParam("instanceId") int instanceId) throws SalsaException;
 
     @PUT
-    @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/state/{state}")
+    @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}")
     @ApiOperation(value = "Change state of a Service Instance.",
             notes = "Is used by SALSA Pioneer",
             response = Response.class,
             responseContainer = "String")
-    public Response updateInstanceState(@PathParam("serviceId") String serviceId,
-            @PathParam("nodeId") String nodeId,
-            @PathParam("instanceId") int instanceId,
-            @PathParam("state") String state);
-
-    @PUT
-    @Path("/services/{serviceId}/nodes/{nodeId}/instances/{instanceId}/properties")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Update instance data.",
-            notes = "Is used by SALSA Pioneer.",
-            response = Response.class,
-            responseContainer = "String")
-    public Response updateInstanceProperties(SalsaConfigureResult data,
+    public Response updateInstanceState(String json,
             @PathParam("serviceId") String serviceId,
             @PathParam("nodeId") String nodeId,
             @PathParam("instanceId") int instanceId);
@@ -261,7 +239,7 @@ public interface ConfigurationService {
             @PathParam("parameters") String parameters) throws SalsaException;
 
     @GET
-    @Path("/health")
+    @Path("/healthcheck")
     @Produces(MediaType.TEXT_PLAIN)
     @ApiOperation(value = "Check if the SALSA Engine is running.",
             notes = "To check if the RESTful API is working properly.",

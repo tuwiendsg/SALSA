@@ -26,7 +26,7 @@ public class ServiceUnitMapper implements DTOMapperInterface<ServiceUnit> {
 
         unit.setArtifacts(ArtifactsWrapper.fromJson(String.valueOf(doc.field("artifacts"))).getArtifacts());
         unit.setCapabilities(CapabilitiesWrapper.fromJson(String.valueOf(doc.field("capabilities"))).getCapabilities());
-        unit.setHostedUnitName(String.valueOf(doc.field("hostedUnitName")));
+        unit.setHostedOn(String.valueOf(doc.field("hostedUnitName")));
         unit.setCloudServiceUuid(String.valueOf("cloudServiceUuid"));
         unit.setIdCounter(Integer.parseInt(String.valueOf(doc.field("idCounter"))));
         unit.setMax(Integer.parseInt(String.valueOf(doc.field("max"))));
@@ -49,7 +49,7 @@ public class ServiceUnitMapper implements DTOMapperInterface<ServiceUnit> {
 
         doc.field("artifacts", new ArtifactsWrapper(object.getArtifacts()).toJson());
         doc.field("capabilities", new CapabilitiesWrapper(object.getCapabilities()).toJson());
-        doc.field("hostedUnitName", object.getHostedUnitName());
+        doc.field("hostedUnitName", object.getHostedOn());
         doc.field("cloudServiceUuid", object.getCloudServiceUuid());
         doc.field("idCounter", object.getIdCounter());
         doc.field("max", object.getMax());

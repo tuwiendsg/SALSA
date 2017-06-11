@@ -8,7 +8,6 @@ package at.ac.tuwien.dsg.salsa.engine.services;
 import at.ac.tuwien.dsg.salsa.database.neo4j.repo.CloudServiceRepository;
 import at.ac.tuwien.dsg.salsa.database.neo4j.repo.ServiceInstanceRepository;
 import at.ac.tuwien.dsg.salsa.database.neo4j.repo.ServiceUnitRepository;
-import at.ac.tuwien.dsg.salsa.engine.dataprocessing.ToscaXmlProcess;
 import at.ac.tuwien.dsg.salsa.engine.exceptions.AppDescriptionException;
 import at.ac.tuwien.dsg.salsa.engine.exceptions.PioneerManagementException;
 import at.ac.tuwien.dsg.salsa.engine.services.enabler.OrchestrationManager;
@@ -48,7 +47,6 @@ import org.springframework.stereotype.Service;
  *
  * @author hungld
  */
-@Service
 public class ConfigurationServiceImp implements ConfigurationService {
 
     static Logger logger = LoggerFactory.getLogger("salsa");
@@ -70,67 +68,7 @@ public class ConfigurationServiceImp implements ConfigurationService {
         MessagePublishInterface publish = SalsaConfiguration.getMessageClientFactory().getMessagePublisher();
         publish.pushMessage(msg);
     }
-
-    @Override
-    public Response deployServiceFromXML(String toscaXML, String serviceName) throws SalsaException {
-        try {
-            TDefinitions def = ToscaXmlProcess.readToscaXML(toscaXML);
-
-            // convert from Tosca
-            try {
-                CloudService serviceData = InfoParser.buildRuntimeDataFromTosca(def);
-                serviceData.setUuid(UUID.randomUUID().toString());
-                if (serviceName == null || serviceName.isEmpty()) {
-                    serviceData.setName(def.getId());
-                    serviceName = def.getId();
-                } else {
-                    serviceData.setName(serviceName);
-                }
-                if (!checkForServiceNameOk(serviceName)) {
-                    return Response.status(404).entity("Error. Service Name is bad: " + serviceName).build();
-                }
-
-                CloudService service = cloudServiceRepo.save(serviceData);
-                logger.debug("Saved cloud service: \n " + service.toJson());
-
-                OrchestrationProcess orchestrator = new OrchestrationProcess_RoundCheck(cloudServiceRepo, unitRepo, instanceRepo);
-                OrchestrationManager.startDeployment(serviceData, orchestrator);
-
-                // here run the orchestration algorithm
-            } catch (Exception e) {
-                throw new AppDescriptionException("TOSCA description", "Cannot build the cloud service model from input TOSCA. Please check: ID consistency, relationship orders.", e);
-            }
-
-            // return 201: resource created
-            return Response.status(201).entity(serviceName).build();
-        } catch (JAXBException e) {
-            logger.error("Error when parsing Tosca: " + e);
-
-            // return 400: bad request, the XML is malformed and could not process
-            return Response.status(400).entity("Unable to parse the Tosca XML. Error: " + e).build();
-        } catch (IOException e) {
-            logger.error("Error reading file:. Error: " + e);
-            return Response.status(500).entity("Error when process Tosca file. Error: " + e).build();
-        }
-    }
-
-    @Override
-    public Response deployServiceFromXML(String toscaXML) throws SalsaException {
-        String tmpID = UUID.randomUUID().toString();
-
-        TDefinitions def;
-        try {
-            def = ToscaXmlProcess.readToscaXML(toscaXML);
-            String serviceId = def.getId();
-            return deployServiceFromXML(toscaXML, serviceId);
-        } catch (JAXBException ex) {
-            logger.error("Error when parsing Tosca: " + ex);
-            return Response.status(400).entity("Unable to parse the Tosca XML. Error: " + ex).build();
-        } catch (IOException ex) {
-            logger.error("Error: " + ex);
-            return Response.status(500).entity("Error when process Tosca file. Error: " + ex).build();
-        }
-    }
+   
 
     @Override
     public Response deployServiceFromPioneers(String pioneerIDs, String serviceName) throws SalsaException {

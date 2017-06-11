@@ -1,0 +1,38 @@
+{
+  "service" : {
+    "Component02" : {      
+    },
+    "Component01" : {      
+      "artifacts" : [ {
+        "source" : "test.sh",
+        "fetch" : "PACKED"
+      } ],
+      "capabilities" : {
+        "turn-off" : {
+          "name" : "turn-off",
+          "command" : "test.sh off",
+          "parameters" : { },
+          "conditions" : {
+            "state" : "ON"
+          },
+          "effects" : {
+            "@component2.state" : "OFF",
+            "state" : "OFF"
+          }
+        },
+        "turn-on" : {
+          "name" : "turn-on",
+          "command" : "test.sh on",
+          "parameters" : { },
+          "conditions" : {
+            "state" : "OFF"
+          },
+          "effects" : {
+            "state" : "ON"
+          }
+        }
+      },      
+      "deployAction" : "turn-on"      
+    }
+  }
+}

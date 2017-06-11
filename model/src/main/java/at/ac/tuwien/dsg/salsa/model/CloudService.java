@@ -34,7 +34,7 @@ public class CloudService {
     String name; // identification in one scope
     String uuid; // global identification
 
-    Set<ServiceTopology> topologies;
+    Set<ServiceTopology> topos;
     ConfigurationState state = ConfigurationState.UNKNOWN;
 
     // log configuration events
@@ -50,17 +50,17 @@ public class CloudService {
     }
 
     public CloudService hasTopology(ServiceTopology topology) {
-        if (this.topologies == null) {
-            this.topologies = new HashSet<>();
+        if (this.topos == null) {
+            this.topos = new HashSet<>();
         }
         topology.setCloudServiceUuid(this.uuid);
-        this.topologies.add(topology);
+        this.topos.add(topology);
         return this;
     }
 
     @JsonIgnore
     public ServiceTopology getTopologyByName(String topologyName) {
-        for (ServiceTopology topo : topologies) {
+        for (ServiceTopology topo : topos) {
             if (topo.getName().equals(topologyName)) {
                 return topo;
             }
@@ -70,8 +70,8 @@ public class CloudService {
 
     @JsonIgnore
     public ServiceUnit getUnitByName(String nodeName) {
-        if (topologies != null) {
-            for (ServiceTopology topo : topologies) {
+        if (topos != null) {
+            for (ServiceTopology topo : topos) {
                 ServiceUnit unit = topo.getUnitByName(nodeName);
                 if (unit != null) {
                     return unit;
@@ -84,16 +84,16 @@ public class CloudService {
     @JsonIgnore
     public List<ServiceUnit> getAllUnits() {
         List<ServiceUnit> comList = new ArrayList<>();
-        for (ServiceTopology topo : topologies) {
-            comList.addAll(topo.getUnits());
+        for (ServiceTopology topo : topos) {
+            comList.addAll(topo.getUnits().values());
         }
         return comList;
     }
 
     @JsonIgnore
     public ServiceTopology getTopologyOfNode(String serviceUnitUuid) {
-        for (ServiceTopology topo : topologies) {
-            for (ServiceUnit tmpUnit : topo.getUnits()) {
+        for (ServiceTopology topo : topos) {
+            for (ServiceUnit tmpUnit : topo.getUnits().values()) {
                 if (tmpUnit.getUuid().equals(serviceUnitUuid)) {
                     return topo;
                 }
@@ -107,7 +107,7 @@ public class CloudService {
         mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
         mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
         try {
-            return mapper.writeValueAsString(this);
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException ex) {
             ex.printStackTrace();
             return null;

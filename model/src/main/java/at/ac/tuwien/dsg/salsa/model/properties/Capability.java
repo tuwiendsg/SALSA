@@ -25,22 +25,28 @@ public class Capability {
 
     // the name of the action
     String name;
-    // name of the configuration module, will be map to the class
-    String configModule;
-
+    
+    // the script for main operation
     String command;
+    
+    // the script for validation
+    String validate;    
+    
     // the parameters to enforce
     Map<String, String> parameters = new HashMap<>();
 
+    // the condition to execute the main operation
     Map<String, String> conditions = new HashMap<>();
+    
+    // the effect if the main operation is DONE and validation is DONE
     Map<String, String> effects = new HashMap<>();
 
     public Capability() {
     }
 
-    public Capability(String name, String configModule) {
+    public Capability(String name, String command) {
         this.name = name;
-        this.configModule = configModule;
+        this.command = command;
     }
 
     public Capability hasParameter(String key, String value) {

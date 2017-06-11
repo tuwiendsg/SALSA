@@ -43,7 +43,7 @@ public class CloudServiceDAO extends AbstractDAO<CloudService> {
         System.out.println("Saving CloudService without topos and units done: " + serviceDoc.toJSON());
         System.out.println("///////////////////////////////////");
 
-        topoDAO.saveAll(service.getTopologies());
+        topoDAO.saveAll(service.getTopos());
         unitDAO.saveAll(service.getAllUnits());
 
         long time2 = (new Date()).getTime();
@@ -76,10 +76,10 @@ public class CloudServiceDAO extends AbstractDAO<CloudService> {
                 String instanceWhereCondition = "serviceUnitUuid='" + unit.getUuid() + "'";
                 List<ServiceInstance> instances = instanceDAO.readWithCondition(instanceWhereCondition);
                 unit.setInstances(new HashSet<>(instances));
-            }
-            topo.setUnits(new HashSet<>(units));
+                topo.hasUnit(unit);
+            }            
         }
-        service.setTopologies(new HashSet<>(topos));
+        service.setTopos(new HashSet<>(topos));
         return service;
     }
 

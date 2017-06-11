@@ -1,0 +1,8 @@
+{
+  "serviceName" : "cloudService1",
+  "name" : "my deploy 1",
+  "placements" : {
+    "Component02" : [ "pioneer1", "pioneer2" ],
+    "Component01" : [ "pioneer1" ]
+  }
+}

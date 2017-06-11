@@ -10,7 +10,9 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,12 +21,12 @@ import java.util.Set;
  */
 public class CapabilitiesWrapper {
 
-    Set<Capability> capabilities = new HashSet<>();
+    Map<String, Capability> capabilities = new HashMap<>();
 
     public CapabilitiesWrapper() {
     }
 
-    public CapabilitiesWrapper(Set<Capability> capas) {
+    public CapabilitiesWrapper(Map<String, Capability> capas) {
         if (capas != null) {
             this.capabilities = capas;
         }
@@ -54,11 +56,11 @@ public class CapabilitiesWrapper {
         }
     }
 
-    public Set<Capability> getCapabilities() {
+    public Map<String, Capability> getCapabilities() {
         return capabilities;
     }
 
-    public void setCapabilities(Set<Capability> capabilities) {
+    public void setCapabilities(Map<String, Capability> capabilities) {
         this.capabilities = capabilities;
     }
 

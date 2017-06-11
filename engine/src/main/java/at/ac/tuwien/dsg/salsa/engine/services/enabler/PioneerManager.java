@@ -102,11 +102,11 @@ public class PioneerManager {
     public static PioneerInfo getPioneerIDForNode(String user, String serviceID, String unitID, int instanceID, CloudService cloudService) {
         ServiceUnit unit = cloudService.getUnitByName(unitID);
         ServiceInstance instance = unit.getInstanceByIndex(instanceID);
-        ServiceUnit hostedUnit = cloudService.getUnitByName(unit.getHostedUnitName());
+        ServiceUnit hostedUnit = cloudService.getUnitByName(unit.getHostedOn());
         ServiceInstance hostedInstance = hostedUnit.getInstanceByIndex(instance.getHostedInstanceIndex());
         while (!hostedUnit.getType().equals(SalsaEntityType.OPERATING_SYSTEM.getEntityTypeString())
                 && !hostedUnit.getType().endsWith(SalsaEntityType.DOCKER.getEntityTypeString())) {
-            hostedUnit = cloudService.getUnitByName(hostedUnit.getHostedUnitName());
+            hostedUnit = cloudService.getUnitByName(hostedUnit.getHostedOn());
             hostedInstance = hostedUnit.getInstanceByIndex(hostedInstance.getHostedInstanceIndex());
         }
         return getPioneer(user, serviceID, hostedUnit.getName(), hostedInstance.getIndex());

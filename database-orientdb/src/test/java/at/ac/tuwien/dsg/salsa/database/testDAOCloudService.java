@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sinc.hinc.repository;
+package at.ac.tuwien.dsg.salsa.database;
 
 import at.ac.tuwien.dsg.salsa.database.orientdb.DAO.AbstractDAO;
 import at.ac.tuwien.dsg.salsa.database.orientdb.DAO.CloudServiceDAO;
@@ -31,7 +31,7 @@ import org.junit.runners.MethodSorters;
  * @author hungld
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class testDAOSDGateway {
+public class testDAOCloudService {
 
     @Test
     public void test1_dropDB() {

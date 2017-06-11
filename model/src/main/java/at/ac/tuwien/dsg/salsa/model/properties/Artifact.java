@@ -23,21 +23,25 @@ public class Artifact {
         HTTP, GIT
     }
 
-    Long id;
+    public enum FetchProtocol {
+        PACKED, LOCAL, HTTP, GIT
+    }
 
-    String name;
-    String artifactType;
-    String reference;
-    RepoType repoType = RepoType.HTTP; // default, how to download
-    String tags;
+    String source;
+    FetchProtocol fetch = FetchProtocol.PACKED;
+    String target;
 
     public Artifact() {
     }
 
-    public Artifact(String name, String artifactType, String reference) {
-        this.name = name;
-        this.artifactType = artifactType;
-        this.reference = reference;
+    public Artifact(String source) {
+        this.source = source;
+    }
+
+    public Artifact(String source, String target, FetchProtocol fetch) {
+        this.source = source;
+        this.target = target;
+        this.fetch = fetch;
     }
 
     public String toJson() {

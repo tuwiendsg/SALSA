@@ -8,7 +8,9 @@ package at.ac.tuwien.dsg.salsa.model;
 import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.relationship.Relationship;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import lombok.Data;
 
@@ -23,7 +25,7 @@ public class ServiceTopology {
     Long id;
     String uuid;
     String name;
-    Set<ServiceUnit> units;
+    Map<String,ServiceUnit> units;
     Set<Relationship> relationships;
 
     // management info
@@ -35,21 +37,16 @@ public class ServiceTopology {
 
     public ServiceTopology hasUnit(ServiceUnit unit) {
         if (this.units == null) {
-            this.units = new HashSet<>();
+            this.units = new HashMap<>();
         }
         unit.setTopologyUuid(this.uuid);
-        this.units.add(unit);
+        this.units.put(unit.getName(), unit);
         return this;
     }
 
     @JsonIgnore
     public ServiceUnit getUnitByName(String name) {
-        for (ServiceUnit node : units) {
-            if (node.getName().equals(name)) {
-                return node;
-            }
-        }
-        return null;
+        return units.get(name);
     }
 
 }

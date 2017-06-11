@@ -157,12 +157,12 @@ public class GUIService {
             logger.debug("Ok, service is load: " + service.getName());
 
             TreeNode root = new DefaultTreeNode("structure", service.getName(), null);
-            for (ServiceTopology topo : service.getTopologies()) {
+            for (ServiceTopology topo : service.getTopos()) {
                 TreeNode treeTopo = new DefaultTreeNode("structure", topo.getName(), root);
                 logger.debug(" - " + topo.getName());
                 treeTopo.setExpanded(true);
 //                root.getChildren().add(treeTopo);
-                for (ServiceUnit theUnit : topo.getUnits()) {
+                for (ServiceUnit theUnit : topo.getUnits().values()) {
                     logger.debug(" -- " + theUnit.getName());
                     TreeNode treeUnit = new DefaultTreeNode("structure", theUnit.getName(), treeTopo);
                     treeUnit.setExpanded(true);
@@ -220,24 +220,24 @@ public class GUIService {
             logger.debug("Ok, service is load: " + service.getName());
 
             TreeNode root = new DefaultTreeNode(new ViewTreeNode(service.getName(), "Service", "-", "-"), null);
-            for (ServiceTopology topo : service.getTopologies()) {
+            for (ServiceTopology topo : service.getTopos()) {
                 TreeNode treeTopo = new DefaultTreeNode(new ViewTreeNode(topo.getName(), "Topology", "-", "-"), root);
                 logger.debug(" - Node topo: {} ", topo.getName());
                 treeTopo.setExpanded(true);
 //                root.getChildren().add(treeTopo);
-                for (ServiceUnit theUnit : topo.getUnits()) {
-                    logger.debug(" -- Generate Unit: {}, hostedon: {}", theUnit.getName(), theUnit.getHostedUnitName());
-                    ViewTreeNode unitNode = new ViewTreeNode(theUnit.getName(), "Unit", "-", theUnit.getHostedUnitName());
+                for (ServiceUnit theUnit : topo.getUnits().values()) {
+                    logger.debug(" -- Generate Unit: {}, hostedon: {}", theUnit.getName(), theUnit.getHostedOn());
+                    ViewTreeNode unitNode = new ViewTreeNode(theUnit.getName(), "Unit", "-", theUnit.getHostedOn());
                     TreeNode treeUnit = new DefaultTreeNode(unitNode, treeTopo);
                     treeUnit.setExpanded(true);
                     if (theUnit.getInstances() != null && !theUnit.getInstances().isEmpty()) {
                         for (ServiceInstance theInstance : theUnit.getInstances()) {
-                            logger.debug(" --- Generate instance: {}, hosted on: {}", theUnit.getName() + "-" + theInstance.getIndex(), theUnit.getHostedUnitName() + "-" + theInstance.getHostedInstanceIndex());
+                            logger.debug(" --- Generate instance: {}, hosted on: {}", theUnit.getName() + "-" + theInstance.getIndex(), theUnit.getHostedOn()+ "-" + theInstance.getHostedInstanceIndex());
                             String hostedInstanceLabel = "";
-                            if (theUnit.getHostedUnitName() == null) {
+                            if (theUnit.getHostedOn()== null) {
                                 hostedInstanceLabel = "-";
                             } else {
-                                hostedInstanceLabel = theUnit.getHostedUnitName() + "-" + theInstance.getHostedInstanceIndex();
+                                hostedInstanceLabel = theUnit.getHostedOn()+ "-" + theInstance.getHostedInstanceIndex();
                             }
                             ViewTreeNode instanceNode = new ViewTreeNode(theUnit.getName() + "-" + theInstance.getIndex(), "Instance", theInstance.getState().toString(), hostedInstanceLabel);
                             TreeNode treeInstance = new DefaultTreeNode(instanceNode, treeUnit);
