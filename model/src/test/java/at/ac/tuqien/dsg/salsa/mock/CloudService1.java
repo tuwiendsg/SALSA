@@ -43,7 +43,7 @@ public class CloudService1 {
         System.out.println(def.toYaml());
         
         
-        System.out.println(def.toJson());
+//        System.out.println(def.toJson());
         
     }
 }

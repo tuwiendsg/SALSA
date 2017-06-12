@@ -19,11 +19,13 @@ import static at.ac.tuwien.dsg.salsa.engine.services.ConfigurationServiceImp.log
 import at.ac.tuwien.dsg.salsa.model.ServiceInstance;
 import at.ac.tuwien.dsg.salsa.model.ServiceTopology;
 import at.ac.tuwien.dsg.salsa.model.ServiceUnit;
+import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.PioneerInfo;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.Response;
@@ -35,12 +37,12 @@ import org.slf4j.LoggerFactory;
  * @author hungld
  */
 public class ConfigurationImplementation implements ConfigurationService {
-    
+
     static Logger logger = LoggerFactory.getLogger("salsa");
-    
+
     CloudServiceDAO cloudServiceDao = new CloudServiceDAO();
     AbstractDAO<ServiceUnit> unitDao = new AbstractDAO<>(ServiceUnit.class);
-    
+
     @PostConstruct
     public void init() {
         logger.debug("Sending message to sync pioneers ...");
@@ -55,20 +57,20 @@ public class ConfigurationImplementation implements ConfigurationService {
         // read YML to file
         logger.debug("Loading YAML file: \n" + uploadedInputStream);
         ServiceFile salsaFile = ServiceFile.fromYaml(uploadedInputStream);
-        if (salsaFile == null){
+        if (salsaFile == null) {
             return Response.status(401).entity("Cannot load the YAML data").build();
         }
         CloudService service = salsaFile.toCloudService();
-        
+
         return Response.status(200).entity("Service is created and in deployment process: " + salsaFile.getName()).build();
     }
-    
+
     private boolean checkForServiceNameOk(String serviceName) {
         if (serviceName.equals("")) {
             logger.debug("service name is empty");
             return false;
         }
-        List<CloudService> service = cloudServiceDao.readWithCondition("name="+serviceName);
+        List<CloudService> service = cloudServiceDao.readWithCondition("name=" + serviceName);
         return (service == null || service.isEmpty());
     }
 
@@ -105,7 +107,7 @@ public class ConfigurationImplementation implements ConfigurationService {
         ODocument odoc = cloudServiceDao.save(service);
         logger.debug("Create a service of pioneerfarm done ! Service output is: " + odoc.toString());
         return Response.status(200).entity("Create a service of pioneerfarm done ! Service name:  " + serviceName).build();
-        
+
     }
 
     @Override
@@ -119,30 +121,64 @@ public class ConfigurationImplementation implements ConfigurationService {
     }
 
     @Override
-    public Response getService(String serviceUUID) throws SalsaException {
+    public Response getService(String serviceName) throws SalsaException {
         List<CloudService> services = cloudServiceDao.readAll();
-        if (services != null && !services.isEmpty()){
-            for (CloudService s:services){
-                if (s.getName().equals(serviceUUID)){
-                    return Response.status(201).entity(s.getName()).build();;
+        if (services != null && !services.isEmpty()) {
+            for (CloudService s : services) {
+                if (s.getName().equals(serviceName)) {
+                    return Response.status(201).entity(s.getName()).build();
                 }
             }
         }
-        if (service != null) {
-            return Response.status(201).entity(service).build();
-        } else {
-            return Response.status(500).entity("Service not found: " + serviceName).build();
-        }
+        return Response.status(500).entity("Service not found: " + serviceName).build();
     }
 
     @Override
     public String getServiceNames() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<CloudService> services = cloudServiceDao.readAll();
+
+        StringBuilder sb = new StringBuilder();
+        for (CloudService s : services) {
+            sb.append(s.getName()).append(",");
+        }
+        logger.debug("All available services: " + sb.toString());
+        return sb.toString();
+    }
+
+    private CloudService getCloudServiceByName(String serviceName) {
+        List<CloudService> services = cloudServiceDao.readAll();
+        CloudService service = null;
+        for (CloudService s : services) {
+            if (s.getName().trim().equals(serviceName.trim())) {
+                service = s;
+                break;
+            }
+        }
+        return service;
+    }
+    
+    private ServiceUnit getUnitByName(String serviceName, String unitName){
+        CloudService service = getCloudServiceByName(serviceName);
+        if (service !=null){
+            return service.getUnitByName(unitName);
+        }
+        return null;
     }
 
     @Override
-    public Response updateUnitMeta(String metadata, String serviceId, String nodeId) throws SalsaException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Response updateUnitMeta(String metadata, String serviceName, String nodeId) throws SalsaException {
+        try {
+            logger.debug("Updating unit metadata for {}/{}, data: {}", serviceName, nodeId, metadata);
+            CloudService service = getCloudServiceByName(serviceName);
+            ServiceUnit unit = getUnitByName(serviceName, nodeId);
+            // todo: set metadata
+            
+            unitDao.save(unit);
+            return Response.status(200).entity("Metadata of : " + serviceName + "/" + nodeId + " is set to: " + metadata).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500).entity(e.getMessage()).build();
+        }
     }
 
     @Override
@@ -174,5 +210,5 @@ public class ConfigurationImplementation implements ConfigurationService {
     public String health() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }
