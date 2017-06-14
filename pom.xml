@@ -11,6 +11,7 @@
         <module>pioneer</module>
         <module>database-orientdb</module>
         <module>engine</module>
+        <module>modules</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

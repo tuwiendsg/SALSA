@@ -71,4 +71,9 @@ public class WarInstrument implements ConfigurationModule {
         return "Error: not support";
     }
 
+    @Override
+    public String getName() {
+        return "webapp";
+    }
+
 }

@@ -88,4 +88,9 @@ public class BashContinuousInstrument extends BashContinuousManagement implement
         }
     }
 
+    @Override
+    public String getName() {
+        return "BashContinuous";
+    }
+
 }

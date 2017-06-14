@@ -14,6 +14,7 @@ import at.ac.tuwien.dsg.salsa.messaging.protocol.SalsaMessage;
 import at.ac.tuwien.dsg.salsa.messaging.protocol.SalsaMessageTopic;
 import at.ac.tuwien.dsg.salsa.model.CloudService;
 import at.ac.tuwien.dsg.salsa.description.ServiceFile;
+import at.ac.tuwien.dsg.salsa.engine.exceptions.IllegalConfigurationAPICallException;
 import at.ac.tuwien.dsg.salsa.engine.exceptions.PioneerManagementException;
 import static at.ac.tuwien.dsg.salsa.engine.services.ConfigurationServiceImp.logger;
 import at.ac.tuwien.dsg.salsa.model.ServiceInstance;
@@ -33,6 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * The implementation of central configuration service using OrientDB and DAO to
+ * persist data
  *
  * @author hungld
  */
@@ -156,10 +159,10 @@ public class ConfigurationImplementation implements ConfigurationService {
         }
         return service;
     }
-    
-    private ServiceUnit getUnitByName(String serviceName, String unitName){
+
+    private ServiceUnit getUnitByName(String serviceName, String unitName) {
         CloudService service = getCloudServiceByName(serviceName);
-        if (service !=null){
+        if (service != null) {
             return service.getUnitByName(unitName);
         }
         return null;
@@ -172,7 +175,7 @@ public class ConfigurationImplementation implements ConfigurationService {
             CloudService service = getCloudServiceByName(serviceName);
             ServiceUnit unit = getUnitByName(serviceName, nodeId);
             // todo: set metadata
-            
+
             unitDao.save(unit);
             return Response.status(200).entity("Metadata of : " + serviceName + "/" + nodeId + " is set to: " + metadata).build();
         } catch (Exception e) {
@@ -182,8 +185,16 @@ public class ConfigurationImplementation implements ConfigurationService {
     }
 
     @Override
-    public Response spawnInstance(String serviceId, String nodeId) throws SalsaException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Response spawnInstance(String serviceName, String nodeId) throws SalsaException {
+        logger.debug("Spawning new instance: {}/{}, quantity: {}" + serviceName, nodeId);
+        CloudService service = getCloudServiceByName(serviceName);
+        ServiceUnit node = service.getUnitByName(nodeId);
+        if (node == null) {
+            throw new IllegalConfigurationAPICallException("Cannot spawn instance for node: " + serviceName + "/" + nodeId + ". Invalid node name.");
+        }
+        node.setIdCounter(node.getIdCounter() + 1);
+        return Response.status(200).entity("Request sent to pioneer to deploy instance: " + serviceName + "/" + nodeId + "/" + node.getIdCounter()).build();
+
     }
 
     @Override

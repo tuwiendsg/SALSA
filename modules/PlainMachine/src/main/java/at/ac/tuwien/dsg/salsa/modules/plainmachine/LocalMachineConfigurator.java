@@ -95,4 +95,9 @@ public class LocalMachineConfigurator implements ConfigurationModule {
 
     }
 
+    @Override
+    public String getName() {
+        return "localmachine";
+    }
+
 }

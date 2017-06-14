@@ -191,11 +191,11 @@
             <version>3.0</version>
         </dependency>
         
-        <dependency>
+<!--        <dependency>
             <groupId>at.ac.tuwien.dsg.salsa</groupId>
             <artifactId>database-neo4j</artifactId>
             <version>3.0</version>
-        </dependency>
+        </dependency>-->
         
         <dependency>
             <groupId>at.ac.tuwien.dsg.salsa</groupId>

@@ -42,4 +42,9 @@ public class BinaryExecutionInstrument implements ConfigurationModule {
         return "Unknown";
     }
 
+    @Override
+    public String getName() {
+        return "BinaryExecution";
+    }
+
 }
