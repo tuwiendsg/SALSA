@@ -5,8 +5,8 @@
  */
 package at.ac.tuwien.dsg.salsa.engine.services.algorithms;
 
-import at.ac.tuwien.dsg.salsa.database.neo4j.repo.CloudServiceRepository;
-import at.ac.tuwien.dsg.salsa.database.neo4j.repo.ServiceInstanceRepository;
+import at.ac.tuwien.dsg.salsa.database.orientdb.DAO.AbstractDAO;
+import at.ac.tuwien.dsg.salsa.database.orientdb.DAO.CloudServiceDAO;
 import static at.ac.tuwien.dsg.salsa.engine.services.algorithms.OrchestrationProcess_RoundCheck.logger;
 import at.ac.tuwien.dsg.salsa.engine.services.enabler.InfoGenerator;
 import at.ac.tuwien.dsg.salsa.engine.services.enabler.PioneerManager;
@@ -45,10 +45,10 @@ import org.apache.commons.io.FilenameUtils;
 public class BaseUnitCapability implements UnitCapabilityInterface {
 
     String cloudServiceName;
-    CloudServiceRepository cloudRepo;
-    ServiceInstanceRepository instanceRepo;
+    CloudServiceDAO cloudRepo;
+    AbstractDAO<ServiceInstance> instanceRepo;
 
-    public BaseUnitCapability(String cloudServiceName, CloudServiceRepository cloudRepo, ServiceInstanceRepository instanceRepo) {
+    public BaseUnitCapability(String cloudServiceName, CloudServiceDAO cloudRepo, AbstractDAO<ServiceInstance> instanceRepo) {
         this.cloudServiceName = cloudServiceName;
         this.cloudRepo = cloudRepo;
         this.instanceRepo = instanceRepo;
@@ -131,7 +131,7 @@ public class BaseUnitCapability implements UnitCapabilityInterface {
     }
 
     private CloudService getUpdatedCloudService() {
-        return cloudRepo.findByName(cloudServiceName);
+        return cloudRepo.readWithCondition("name=" + cloudServiceName).get(0);
     }
 
     // try to find the instance to host
@@ -214,11 +214,10 @@ public class BaseUnitCapability implements UnitCapabilityInterface {
                 .hasUser(SalsaConfiguration.getUserName());
         for (Artifact a : unit.getArtifacts()) {
             task.hasArtifact(a.getSource(), a.getFetch().toString(), a.getTarget());
-            if (a.getArtifactType().equals(SalsaArtifactType.sh.getString()) || a.getArtifactType().equals(SalsaArtifactType.shcont.getString())) {
-                String runByMe = "/bin/bash " + FilenameUtils.getName(a.getReference());
-                task.hasParam(ShellScriptParameters.runByMe, runByMe);
-                logger.debug(" -- Yes, the runByMe should be: " + runByMe);
-            }
+            String runByMe = "/bin/bash " + FilenameUtils.getName(a.getTarget());
+            task.hasParam(ShellScriptParameters.runByMe, runByMe);
+            logger.debug(" -- Yes, the runByMe should be: " + runByMe);
+
         }
         // refine runbyme if needed
         if (unit.getCapabilityByName(SalsaCommonActions.deploy) != null) {
@@ -228,7 +227,7 @@ public class BaseUnitCapability implements UnitCapabilityInterface {
 
         // Register an action ID, send message to Pioneer
         ActionIDManager.addAction(actionID, task);
-        SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_deploy, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.getPioneerTopicByID(pioneer.getUuid()), null, task.toJson());
+        SalsaMessage msg = new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_deploy_instance, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.getPioneerTopicByID(pioneer.getUuid()), null, task.toJson());
 
         MessageClientFactory factory = MessageClientFactory.getFactory(SalsaConfiguration.getBroker(), SalsaConfiguration.getBrokerType());
         MessagePublishInterface publish = factory.getMessagePublisher();

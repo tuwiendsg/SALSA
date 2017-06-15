@@ -17,6 +17,8 @@
  */
 package at.ac.tuwien.dsg.salsa.model.salsa.info;
 
+import at.ac.tuwien.dsg.salsa.model.CloudService;
+import at.ac.tuwien.dsg.salsa.model.ServiceUnit;
 import at.ac.tuwien.dsg.salsa.model.enums.SalsaArtifactType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -24,16 +26,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  *
  * @author Duc-Hung Le
  */
 public class SalsaConfigureTask {
-
-    public enum CommonTasks {
-        deploy, undeploy, start, stop
-    }
 
     // to identify an configuration action and who will execute it
     String actionID;
@@ -48,23 +47,11 @@ public class SalsaConfigureTask {
     int instance;
     String unitType;   // see ServiceCategory, for managing
 
-    // how to configure. RunByMe simply a list of command, which separate by ";"
-//    String preRunByMe;
-//    String runByMe;
-    // parameters contain all needed parameters
+    // parameters contain all needed parameters for specific artifact type
     Map<String, String> parameters;
     SalsaArtifactType artifactType;    // e.g. Bash, bash continuous, chef solo, apt-get etc. For configuring artifact.
     String environment;
     List<DeploymentArtifact> artifacts;
-
-    public enum ConfigurationModules {
-
-        APT_GET,
-        BASH,
-        BASH_CONTINUOUS,
-        WAR,
-        DOCKER,
-    }
 
     // what is required
     public static class DeploymentArtifact {
@@ -93,14 +80,13 @@ public class SalsaConfigureTask {
         public String getReference() {
             return reference;
         }
-
     }
 
     public SalsaConfigureTask() {
     }
 
-    public SalsaConfigureTask(String actionID, String actionName, String pioneerID, String user, String service, String topology, String unit, int instance, String unitType, SalsaArtifactType artifactType, String environment) {
-        this.actionID = actionID;
+    public SalsaConfigureTask(String actionName, String pioneerID, String user, String service, String topology, String unit, int instance, SalsaArtifactType artifactType) {
+        this.actionID = UUID.randomUUID().toString();
         this.actionName = actionName;
         this.pioneerID = pioneerID;
         this.user = user;
@@ -108,9 +94,7 @@ public class SalsaConfigureTask {
         this.topology = topology;
         this.unit = unit;
         this.instance = instance;
-        this.unitType = unitType;
         this.artifactType = artifactType;
-        this.environment = environment;
     }
 
     public SalsaConfigureTask hasActionId(String actionId) {

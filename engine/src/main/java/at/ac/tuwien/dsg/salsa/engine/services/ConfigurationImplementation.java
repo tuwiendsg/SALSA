@@ -16,22 +16,28 @@ import at.ac.tuwien.dsg.salsa.model.CloudService;
 import at.ac.tuwien.dsg.salsa.description.ServiceFile;
 import at.ac.tuwien.dsg.salsa.engine.exceptions.IllegalConfigurationAPICallException;
 import at.ac.tuwien.dsg.salsa.engine.exceptions.PioneerManagementException;
-import static at.ac.tuwien.dsg.salsa.engine.services.ConfigurationServiceImp.logger;
+import at.ac.tuwien.dsg.salsa.messaging.messageInterface.MessageClientFactory;
 import at.ac.tuwien.dsg.salsa.model.ServiceInstance;
 import at.ac.tuwien.dsg.salsa.model.ServiceTopology;
 import at.ac.tuwien.dsg.salsa.model.ServiceUnit;
-import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
+import at.ac.tuwien.dsg.salsa.model.enums.SalsaArtifactType;
 import at.ac.tuwien.dsg.salsa.model.enums.SalsaEntityType;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.PioneerInfo;
+import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureResult;
+import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureTask;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.Response;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * The implementation of central configuration service using OrientDB and DAO to
@@ -39,12 +45,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author hungld
  */
+@Service
 public class ConfigurationImplementation implements ConfigurationService {
 
     static Logger logger = LoggerFactory.getLogger("salsa");
 
     CloudServiceDAO cloudServiceDao = new CloudServiceDAO();
+    AbstractDAO<ServiceInstance> instanceDao = new AbstractDAO<>(ServiceInstance.class);
     AbstractDAO<ServiceUnit> unitDao = new AbstractDAO<>(ServiceUnit.class);
+    MessageClientFactory factory = new MessageClientFactory(SalsaConfiguration.getBroker(), SalsaConfiguration.getBrokerType());
 
     @PostConstruct
     public void init() {
@@ -56,12 +65,21 @@ public class ConfigurationImplementation implements ConfigurationService {
     }
 
     @Override
-    public Response deployServiceFromYML(String uploadedInputStream) throws SalsaException {
+    public Response initServiceFiles(String serviceName) throws SalsaException {
         // read YML to file
-        logger.debug("Loading YAML file: \n" + uploadedInputStream);
-        ServiceFile salsaFile = ServiceFile.fromYaml(uploadedInputStream);
+        String serviceFolder = SalsaConfiguration.getServiceStorageDir(serviceName);
+        logger.debug("Initiate service in the folder: {} \n", serviceFolder);
+        String salsafile_str = "";
+        try {
+            salsafile_str = FileUtils.readFileToString(new File(serviceFolder + "/Salsafile.yml"), "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            logger.debug("Cannot read Salsafile at: {}", serviceFolder + "/Salsafile.yml");
+            return Response.status(401).entity("Cannot read Salsafile at: " + serviceFolder + "/Salsafile.yml").build();
+        }
+        ServiceFile salsaFile = ServiceFile.fromYaml(salsafile_str);
         if (salsaFile == null) {
-            return Response.status(401).entity("Cannot load the YAML data").build();
+            return Response.status(401).entity("Cannot load the YAML data.").build();
         }
         CloudService service = salsaFile.toCloudService();
 
@@ -172,7 +190,6 @@ public class ConfigurationImplementation implements ConfigurationService {
     public Response updateUnitMeta(String metadata, String serviceName, String nodeId) throws SalsaException {
         try {
             logger.debug("Updating unit metadata for {}/{}, data: {}", serviceName, nodeId, metadata);
-            CloudService service = getCloudServiceByName(serviceName);
             ServiceUnit unit = getUnitByName(serviceName, nodeId);
             // todo: set metadata
 
@@ -185,31 +202,71 @@ public class ConfigurationImplementation implements ConfigurationService {
     }
 
     @Override
-    public Response spawnInstance(String serviceName, String nodeId) throws SalsaException {
+    public Response deployInstance(String serviceName, String nodeId) throws SalsaException {
         logger.debug("Spawning new instance: {}/{}, quantity: {}" + serviceName, nodeId);
         CloudService service = getCloudServiceByName(serviceName);
+        ServiceTopology topo = service.getTopologyOfNode(nodeId);
         ServiceUnit node = service.getUnitByName(nodeId);
         if (node == null) {
             throw new IllegalConfigurationAPICallException("Cannot spawn instance for node: " + serviceName + "/" + nodeId + ". Invalid node name.");
         }
+        MessagePublishInterface publish = factory.getMessagePublisher();
+        String pioneerID_to_deploy = node.getPioneerIds().get(0);
         node.setIdCounter(node.getIdCounter() + 1);
-        return Response.status(200).entity("Request sent to pioneer to deploy instance: " + serviceName + "/" + nodeId + "/" + node.getIdCounter()).build();
+        SalsaConfigureTask confTask = new SalsaConfigureTask("deploy", pioneerID_to_deploy, SalsaConfiguration.getUserName(), serviceName, topo.getName(), nodeId, 0, SalsaArtifactType.salsa_internal_deploy);
 
+        publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_deploy_instance, pioneerID_to_deploy, SalsaMessageTopic.CENTER_REQUEST_PIONEER, "", confTask.toJson()));
+        return Response.status(200).entity("Request sent to pioneer to deploy instance: " + serviceName + "/" + nodeId + "/" + node.getIdCounter()).build();
     }
 
     @Override
-    public Response destroyInstance(String serviceId, String nodeId, int instanceId) throws SalsaException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Response destroyInstance(String serviceName, String nodeId, int instanceId) throws SalsaException {
+        logger.debug("Spawning new instance: {}/{}, quantity: {}" + serviceName, nodeId);
+        CloudService service = getCloudServiceByName(serviceName);
+        ServiceTopology topo = service.getTopologyOfNode(nodeId);
+        ServiceUnit node = service.getUnitByName(nodeId);
+        if (node == null) {
+            throw new IllegalConfigurationAPICallException("Cannot spawn instance for node: " + serviceName + "/" + nodeId + ". Invalid node name.");
+        }
+        MessagePublishInterface publish = factory.getMessagePublisher();
+        String pioneerID_to_deploy = node.getPioneerIds().get(0);
+        node.setIdCounter(node.getIdCounter() + 1);
+        SalsaConfigureTask confTask = new SalsaConfigureTask("undeploy", pioneerID_to_deploy, SalsaConfiguration.getUserName(), serviceName, topo.getName(), nodeId, 0, SalsaArtifactType.salsa_internal_deploy);
+
+        publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_reconfigure_instance, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.CENTER_REQUEST_PIONEER, "", confTask.toJson()));
+        return Response.status(200).entity("Request sent to pioneer to deploy instance: " + serviceName + "/" + nodeId + "/" + node.getIdCounter()).build();
     }
 
     @Override
     public Response updateInstanceState(String json, String serviceId, String nodeId, int instanceId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            logger.debug("Updating instance state: {}/{}/{}", serviceId, nodeId, instanceId);
+            CloudService service = getCloudServiceByName(serviceId);
+            SalsaConfigureResult confResult = SalsaConfigureResult.fromJson(json);
+            logger.debug("Updating state: " + confResult.toJson());
+            ServiceInstance instance = service.getUnitByName(nodeId).getInstanceByIndex(instanceId);
+            instance.updateState(confResult);
+            instanceDao.save(instance);
+
+            return Response.status(200).entity("State of : " + serviceId + "/" + nodeId + "/" + instanceId + " is set to: " + confResult.toJson()).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500).entity(e.getMessage()).build();
+        }
     }
 
     @Override
     public Response queueAction(String serviceId, String nodeId, int instanceId, String actionName) throws SalsaException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        logger.debug("Sending an action to pioneer to queue up: {}/{}/{}/{}", serviceId, nodeId, instanceId, actionName);
+        CloudService service = getCloudServiceByName(serviceId);
+        ServiceTopology topo = service.getTopologyOfNode(nodeId);
+        ServiceUnit unit = service.getUnitByName(nodeId);
+        ServiceInstance instance = unit.getInstanceByIndex(instanceId);
+        SalsaConfigureTask confTask = new SalsaConfigureTask(actionName, instance.getPioneer(), SalsaConfiguration.getUserName(), serviceId, topo.getName(), nodeId, instanceId, SalsaArtifactType.sh);
+        MessagePublishInterface publish = factory.getMessagePublisher();
+        publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_reconfigure_instance, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.CENTER_REQUEST_PIONEER, "", confTask.toJson()));
+        logger.debug("Queue an action done: {}/{}/{}/{} to Pioneer: {}", serviceId, nodeId, instanceId, actionName, instance.getPioneer());
+        return Response.status(200).entity("Queue action is done for pioneer: " + instance.getId()).build();
     }
 
     @Override
@@ -219,7 +276,7 @@ public class ConfigurationImplementation implements ConfigurationService {
 
     @Override
     public String health() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "healthy";
     }
 
 }

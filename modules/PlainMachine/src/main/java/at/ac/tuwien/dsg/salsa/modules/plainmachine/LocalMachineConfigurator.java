@@ -5,6 +5,7 @@
  */
 package at.ac.tuwien.dsg.salsa.modules.plainmachine;
 
+import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureResult;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureTask;
 import at.ac.tuwien.dsg.salsa.model.salsa.interfaces.ConfigurationModule;
@@ -13,8 +14,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -49,7 +48,7 @@ public class LocalMachineConfigurator implements ConfigurationModule {
             logger.debug("Error when configuring pioneer on localhost");
         }
         String id = "localhost-" + UUID.randomUUID().toString();
-        return new SalsaConfigureResult(configInfo.getActionID(), SalsaConfigureResult.CONFIGURATION_STATE.SUCCESSFUL, 0, "Pioneer is started in localhost");
+        return new SalsaConfigureResult(configInfo.getActionID(), ConfigurationState.SUCCESSFUL, 0, "Pioneer is started in localhost");
     }
 
     @Override

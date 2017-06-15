@@ -32,8 +32,6 @@ import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.INFOMessage;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.PioneerInfo;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureResult;
-import static at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureResult.CONFIGURATION_STATE.PROCESSING;
-import static at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureResult.CONFIGURATION_STATE.SUCCESSFUL;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureTask;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaException;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaMsgUpdateMetadata;
@@ -113,11 +111,11 @@ public class SalsaEngineListener {
                     case SUCCESSFUL: {
                         if (task.getActionName().equals("deploy")) {
                             logger.debug("The deploy action for unit {}/{}/{}/{} is successful", task.getUser(), task.getService(), task.getUnit(), task.getInstance());
-                            try {
-                                updateInstanceCapability(task, confResult);
-                            } catch (SalsaException ex) {
-                                ex.printStackTrace();
-                            }
+//                            try {
+//                                updateInstanceCapability(task, confResult);
+//                            } catch (SalsaException ex) {
+//                                ex.printStackTrace();
+//                            }
 
                             salsaState = ConfigurationState.DEPLOYED;
                             EventPublisher.publishInstanceEvent(Joiner.on("/").join(task.getService(), task.getUnit(), task.getInstance()), INFOMessage.ACTION_TYPE.DEPLOY, INFOMessage.ACTION_STATUS.DONE, "EventListener", "The instance deployment is finished");
@@ -138,7 +136,7 @@ public class SalsaEngineListener {
                     break;
                 }
 
-                restConf.updateInstanceState(task.getService(), task.getUnit(), task.getInstance(), salsaState.toString());
+                restConf.updateInstanceState(confResult.toJson(), task.getService(), task.getUnit(), task.getInstance());
 
             }
         }
@@ -155,7 +153,7 @@ public class SalsaEngineListener {
                     if (piInfo.getUserName().equals(SalsaConfiguration.getUserName())) {
                         PioneerManager.addPioneer(piInfo.getUuid(), piInfo);
                         if (!piInfo.isFree()) {
-                            restConf.updateInstanceState(piInfo.getService(), piInfo.getUnit(), piInfo.getInstance(), ConfigurationState.DEPLOYED.toString());
+                            restConf.updateInstanceState(ConfigurationState.DEPLOYED.toString(), piInfo.getService(), piInfo.getUnit(), piInfo.getInstance());
                         }
                     }
 
@@ -185,8 +183,8 @@ public class SalsaEngineListener {
 
     }
 
-    private void updateInstanceCapability(SalsaConfigureTask confRequest, SalsaConfigureResult confState) throws SalsaException {
-        restConf.updateInstanceProperties(confState, confRequest.getService(), confRequest.getUnit(), confRequest.getInstance());
-
-    }
+//    private void updateInstanceCapability(SalsaConfigureTask confRequest, SalsaConfigureResult confState) throws SalsaException {
+//        restConf.updateInstanceProperties(confState, confRequest.getService(), confRequest.getUnit(), confRequest.getInstance());
+//
+//    }
 }

@@ -17,6 +17,7 @@
  */
 package at.ac.tuwien.dsg.salsa.model.salsa.info;
 
+import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ import java.util.Map;
 public class SalsaConfigureResult {
 
     String actionID;
-    CONFIGURATION_STATE state;
+    ConfigurationState state;
     int returnCode; // if available
     String domainID;
     String extra; // extra message in plain text to show to user
@@ -38,16 +39,10 @@ public class SalsaConfigureResult {
     // effects can be used to store custom information, e.g. assigned IP, etc.
     Map<String, String> effects;
 
-    public enum CONFIGURATION_STATE {
-        SUCCESSFUL,
-        ERROR,
-        PROCESSING
-    }
-
     public SalsaConfigureResult() {
     }
 
-    public SalsaConfigureResult(String actionID, CONFIGURATION_STATE state, int returnCode, String extra) {
+    public SalsaConfigureResult(String actionID, ConfigurationState state, int returnCode, String extra) {
         this.actionID = actionID;
         this.state = state;
         this.returnCode = returnCode;
@@ -72,7 +67,7 @@ public class SalsaConfigureResult {
         return this;
     }
 
-    public CONFIGURATION_STATE getState() {
+    public ConfigurationState getState() {
         return state;
     }
 

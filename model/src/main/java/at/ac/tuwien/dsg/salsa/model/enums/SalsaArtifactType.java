@@ -34,6 +34,7 @@ public enum SalsaArtifactType {
     dockerfile("dockerfile"),
     contract("contract"),
     metadata("metadata"),
+    salsa_internal_deploy("salsa_internal_deploy"),
     misc("misc");
 
     private String prop;

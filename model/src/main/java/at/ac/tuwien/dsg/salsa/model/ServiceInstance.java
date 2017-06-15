@@ -7,6 +7,8 @@ package at.ac.tuwien.dsg.salsa.model;
 
 import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.idmanager.GlobalIdentification;
+import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureResult;
+import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
 
@@ -31,13 +33,21 @@ public class ServiceInstance {
     GlobalIdentification identification; // composition of identification
     ConfigurationState state = ConfigurationState.UNKNOWN;
     int hostedInstanceIndex;
-    
+
     String pioneer = "";
 
     // custom properties, internal and external properties
     Map<String, String> context;
 
     public ServiceInstance() {
+    }
+
+    public void updateState(SalsaConfigureResult confResult) {
+        this.state = confResult.getState();
+        if (this.context == null) {
+            this.context = new HashMap<>();
+        }
+        this.context.putAll(confResult.getEffects());
     }
 
 }

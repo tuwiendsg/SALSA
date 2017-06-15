@@ -5,9 +5,8 @@
  */
 package at.ac.tuwien.dsg.salsa.engine.services.algorithms;
 
-import at.ac.tuwien.dsg.salsa.database.neo4j.repo.CloudServiceRepository;
-import at.ac.tuwien.dsg.salsa.database.neo4j.repo.ServiceInstanceRepository;
-import at.ac.tuwien.dsg.salsa.database.neo4j.repo.ServiceUnitRepository;
+import at.ac.tuwien.dsg.salsa.database.orientdb.DAO.AbstractDAO;
+import at.ac.tuwien.dsg.salsa.database.orientdb.DAO.CloudServiceDAO;
 import at.ac.tuwien.dsg.salsa.engine.services.enabler.PioneerManager;
 
 import at.ac.tuwien.dsg.salsa.model.CloudService;
@@ -38,11 +37,11 @@ public class OrchestrationProcess_RoundCheck implements OrchestrationProcess {
     Map<ServiceUnit, Integer> instancesNeeded = new HashMap<>();
     int cycle = 0;
 
-    CloudServiceRepository cloudRepo;
-    ServiceUnitRepository unitRepo;
-    ServiceInstanceRepository instanceRepo;
+    CloudServiceDAO cloudRepo;
+    AbstractDAO<ServiceUnit> unitRepo ;
+    AbstractDAO<ServiceInstance> instanceRepo ;
 
-    public OrchestrationProcess_RoundCheck(CloudServiceRepository cloudRepo, ServiceUnitRepository unitRepo, ServiceInstanceRepository instanceRepo) {
+    public OrchestrationProcess_RoundCheck(CloudServiceDAO cloudRepo, AbstractDAO<ServiceUnit> unitRepo, AbstractDAO<ServiceInstance> instanceRepo) {
         this.cloudRepo = cloudRepo;
         this.unitRepo = unitRepo;
         this.instanceRepo = instanceRepo;

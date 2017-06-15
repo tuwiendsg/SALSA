@@ -17,6 +17,7 @@
  */
 package at.ac.tuwien.dsg.salsa.shellscript;
 
+import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.salsa.confparameters.ShellScriptParameters;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureTask;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureResult;
@@ -70,10 +71,10 @@ public class BashContinuousInstrument extends BashContinuousManagement implement
             System.out.println("Execute Command output: " + output.toString().trim());
 
             logger.debug("The configuration script is RUNNING. Action ID: " + configInfo.getActionID() + ", runByMe: " + configInfo.getParameters(ShellScriptParameters.runByMe));
-            return new SalsaConfigureResult(configInfo.getActionID(), SalsaConfigureResult.CONFIGURATION_STATE.SUCCESSFUL, 0, "Configure script DONE: " + configInfo.getParameters(ShellScriptParameters.runByMe));
+            return new SalsaConfigureResult(configInfo.getActionID(), ConfigurationState.SUCCESSFUL, 0, "Configure script DONE: " + configInfo.getParameters(ShellScriptParameters.runByMe));
         } catch (IOException e1) {
             e1.printStackTrace();
-            return new SalsaConfigureResult(configInfo.getActionID(), SalsaConfigureResult.CONFIGURATION_STATE.ERROR, 0, "Configure script get an IOException: " + configInfo.getParameters(ShellScriptParameters.runByMe));
+            return new SalsaConfigureResult(configInfo.getActionID(), ConfigurationState.ERROR, 0, "Configure script get an IOException: " + configInfo.getParameters(ShellScriptParameters.runByMe));
         }
 
     }

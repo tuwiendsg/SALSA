@@ -5,6 +5,7 @@
  */
 package at.ac.tuwien.dsg.salsa.shellscript;
 
+import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.salsa.confparameters.ShellScriptParameters;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureTask;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureResult;
@@ -31,9 +32,9 @@ public class BinaryExecutionInstrument implements ConfigurationModule {
         int returnCode = SystemFunctions.executeCommandGetReturnCode(cmd, workingDir, configInfo.getActionID());
         logger.debug("Command is done, return code is : " + returnCode);
         if (returnCode == 0) {
-            return new SalsaConfigureResult(configInfo.getActionID(), SalsaConfigureResult.CONFIGURATION_STATE.SUCCESSFUL, returnCode, "Configure script DONE: " + configInfo.getParameters(ShellScriptParameters.runByMe));
+            return new SalsaConfigureResult(configInfo.getActionID(), ConfigurationState.SUCCESSFUL, returnCode, "Configure script DONE: " + configInfo.getParameters(ShellScriptParameters.runByMe));
         } else {
-            return new SalsaConfigureResult(configInfo.getActionID(), SalsaConfigureResult.CONFIGURATION_STATE.ERROR, returnCode, "Configure script FAILED: " + configInfo.getParameters(ShellScriptParameters.runByMe));
+            return new SalsaConfigureResult(configInfo.getActionID(), ConfigurationState.ERROR, returnCode, "Configure script FAILED: " + configInfo.getParameters(ShellScriptParameters.runByMe));
         }
     }
 

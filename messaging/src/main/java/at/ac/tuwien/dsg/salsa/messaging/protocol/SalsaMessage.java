@@ -57,8 +57,8 @@ public class SalsaMessage {
         salsa_pioneerActivated, // a pioneer register itself
 
         // for SALSA core
-        salsa_deploy, // first time deployment
-        salsa_reconfigure, // call a lifecycle action                
+        salsa_deploy_instance, // first time deployment
+        salsa_reconfigure_instance, // call a lifecycle action                
         salsa_configurationStateUpdate, // update configuration stats, report error
         salsa_messageReceived, // simple notify that a message is received        
         salsa_updateNodeMetadata,

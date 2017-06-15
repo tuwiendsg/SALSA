@@ -5,9 +5,8 @@
  */
 package at.ac.tuwien.dsg.salsa.engine.services.algorithms;
 
-import at.ac.tuwien.dsg.salsa.database.neo4j.repo.CloudServiceRepository;
-import at.ac.tuwien.dsg.salsa.database.neo4j.repo.ServiceInstanceRepository;
-import at.ac.tuwien.dsg.salsa.database.neo4j.repo.ServiceUnitRepository;
+import at.ac.tuwien.dsg.salsa.database.orientdb.DAO.AbstractDAO;
+import at.ac.tuwien.dsg.salsa.database.orientdb.DAO.CloudServiceDAO;
 import at.ac.tuwien.dsg.salsa.model.CloudService;
 import at.ac.tuwien.dsg.salsa.model.ServiceInstance;
 import at.ac.tuwien.dsg.salsa.model.ServiceUnit;
@@ -26,11 +25,11 @@ import org.slf4j.LoggerFactory;
 public class OrchestrationProcess_Dummy implements OrchestrationProcess {
 
     static Logger logger = LoggerFactory.getLogger("salsa");
-    CloudServiceRepository cloudRepo;
-    ServiceUnitRepository unitRepo;
-    ServiceInstanceRepository instanceRepo;
+    CloudServiceDAO cloudRepo;
+    AbstractDAO<ServiceUnit> unitRepo;
+    AbstractDAO<ServiceInstance> instanceRepo;
 
-    public OrchestrationProcess_Dummy(CloudServiceRepository cloudRepo, ServiceUnitRepository unitRepo, ServiceInstanceRepository instanceRepo) {
+    public OrchestrationProcess_Dummy(CloudServiceDAO cloudRepo, AbstractDAO<ServiceUnit> unitRepo, AbstractDAO<ServiceInstance> instanceRepo) {
         this.cloudRepo = cloudRepo;
         this.unitRepo = unitRepo;
         this.instanceRepo = instanceRepo;
@@ -67,7 +66,7 @@ public class OrchestrationProcess_Dummy implements OrchestrationProcess {
         }
         cloudRepo.save(service);
         logger.debug("Saved service done. Now recheck ...");
-        CloudService persistedService = cloudRepo.findByUuid(service.getUuid());
+        CloudService persistedService = cloudRepo.readWithCondition("uuid=" + service.getUuid()).get(0);
         logger.debug("Here we have: " + service.toJson());
         logger.debug("Dummy orchestration DONE !");
     }

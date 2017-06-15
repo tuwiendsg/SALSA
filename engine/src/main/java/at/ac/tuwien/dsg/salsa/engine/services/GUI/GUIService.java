@@ -8,6 +8,7 @@ package at.ac.tuwien.dsg.salsa.engine.services.GUI;
 import at.ac.tuwien.dsg.salsa.engine.services.ConfigurationService;
 import at.ac.tuwien.dsg.salsa.engine.services.enabler.PioneerManager;
 import at.ac.tuwien.dsg.salsa.engine.utils.SalsaConfiguration;
+import at.ac.tuwien.dsg.salsa.engine.utils.SystemFunctions;
 import at.ac.tuwien.dsg.salsa.model.CloudService;
 import at.ac.tuwien.dsg.salsa.model.ServiceInstance;
 import at.ac.tuwien.dsg.salsa.model.ServiceTopology;
@@ -22,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.ws.rs.core.Response;
 import org.apache.commons.io.IOUtils;
@@ -90,13 +92,19 @@ public class GUIService {
         logger.debug("Handling file upload...");
         if (submitedFile != null) {
             logger.debug("Got the file: " + submitedFile.getFileName());
-            byte[] fileContentByte = submitedFile.getContents();
-            String fileContent = new String(fileContentByte);
-            logger.debug("Submited service name: {} with a tosca: {}", submitedServiceName, fileContent);
             if (submitedServiceName != null) {
                 try {
-                    restConf.deployServiceFromXML(fileContent, submitedServiceName);
+                    String serviceFolder = SalsaConfiguration.getServiceStorageDir(submitedServiceName);
+                    String uploadFile = serviceFolder + "/" + submitedFile.getFileName();
+                    submitedFile.write(uploadFile);
+                    if (submitedFile.getFileName().endsWith("tar.gz")) {
+                        SystemFunctions.executeCommandGetReturnCode("tar -xvzf " + uploadFile, serviceFolder, "SalsafileUploadHandler");
+                    }
+                    restConf.initServiceFiles(submitedServiceName);
                 } catch (SalsaException ex) {
+                    ex.printStackTrace();
+                    logger.error("Cannot deploy service. Error: " + ex.getMessage());
+                } catch (Exception ex) {
                     ex.printStackTrace();
                     logger.error("Cannot deploy service. Error: " + ex.getMessage());
                 }
@@ -232,12 +240,12 @@ public class GUIService {
                     treeUnit.setExpanded(true);
                     if (theUnit.getInstances() != null && !theUnit.getInstances().isEmpty()) {
                         for (ServiceInstance theInstance : theUnit.getInstances()) {
-                            logger.debug(" --- Generate instance: {}, hosted on: {}", theUnit.getName() + "-" + theInstance.getIndex(), theUnit.getHostedOn()+ "-" + theInstance.getHostedInstanceIndex());
+                            logger.debug(" --- Generate instance: {}, hosted on: {}", theUnit.getName() + "-" + theInstance.getIndex(), theUnit.getHostedOn() + "-" + theInstance.getHostedInstanceIndex());
                             String hostedInstanceLabel = "";
-                            if (theUnit.getHostedOn()== null) {
+                            if (theUnit.getHostedOn() == null) {
                                 hostedInstanceLabel = "-";
                             } else {
-                                hostedInstanceLabel = theUnit.getHostedOn()+ "-" + theInstance.getHostedInstanceIndex();
+                                hostedInstanceLabel = theUnit.getHostedOn() + "-" + theInstance.getHostedInstanceIndex();
                             }
                             ViewTreeNode instanceNode = new ViewTreeNode(theUnit.getName() + "-" + theInstance.getIndex(), "Instance", theInstance.getState().toString(), hostedInstanceLabel);
                             TreeNode treeInstance = new DefaultTreeNode(instanceNode, treeUnit);

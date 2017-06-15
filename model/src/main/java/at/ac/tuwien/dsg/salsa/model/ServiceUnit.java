@@ -8,7 +8,10 @@ package at.ac.tuwien.dsg.salsa.model;
 import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.properties.Artifact;
 import at.ac.tuwien.dsg.salsa.model.properties.Capability;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -126,6 +129,34 @@ public class ServiceUnit {
         instance.setServiceUnitUuid(this.uuid);
         this.instances.add(instance);
         return this;
+    }
+    
+     public String toJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        try {
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public static CloudService fromJson(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        try {
+            return mapper.readValue(json, CloudService.class);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    public Capability getCapabilityByName(String name){
+        return this.capabilities.get(name);
     }
 
 }

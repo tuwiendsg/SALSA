@@ -19,7 +19,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
         <jaxrs:providers>
             <ref bean="ExceptionMapper" />
             <ref bean="jacksonProvider"/>
-            <ref bean="conversionService" />
+            <!--<ref bean="conversionService" />-->
         </jaxrs:providers>
         <jaxrs:features>
             <ref bean="swagger2Feature_Core"/>
@@ -28,7 +28,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
  
     <bean id="jacksonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider"/>
     <!--<bean id="jacksonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>-->
-    <bean id="engineBean" class="at.ac.tuwien.dsg.salsa.engine.services.ConfigurationServiceImp" />
+    <bean id="engineBean" class="at.ac.tuwien.dsg.salsa.engine.services.ConfigurationImplementation" />
     <bean id="pioneerMngBean" class="at.ac.tuwien.dsg.salsa.engine.services.InternalManagement" />
     <bean id="ExceptionMapper" class="at.ac.tuwien.dsg.salsa.engine.services.SalsaExceptionResponseMapper" />
     <bean id="EngineListener" class="at.ac.tuwien.dsg.salsa.engine.services.SalsaEngineListener" />
@@ -46,7 +46,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
     </bean>
 
     
-    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+<!--    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <set>
                 <bean class="at.ac.tuwien.dsg.salsa.database.neo4j.mapper.ClassFromString"/>
@@ -61,6 +61,6 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
                 <bean class="at.ac.tuwien.dsg.salsa.database.neo4j.mapper.HashmapToString"/>
             </set>
         </property>
-    </bean>
+    </bean>-->
    
 </beans>

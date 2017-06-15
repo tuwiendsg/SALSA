@@ -2,7 +2,7 @@
 name: "myService"
 service:
   Component02:
-    topologyUuid: "topouuid"
+    topologyUuid: "topo1"
   Component01:
     artifacts:
     - source: "test.sh"
@@ -26,5 +26,5 @@ service:
         effects:
           state: "ON"
     pioneerIds: []
-    topologyUuid: "topouuid"
+    topologyUuid: "topo2"
     properties: {}

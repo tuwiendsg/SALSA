@@ -24,7 +24,7 @@
                     <p:inputText value="#{GUIService.submitedServiceName}" id="name" />
                     <br />
                     <p:fileUpload mode="simple" multiple="false" skinSimple="true" value="#{GUIService.submitedFile}" label="Browse"/>
-
+                    <p:outputLabel value="File can be a SALSA YML description or a SALSA package in tar.gz format" />
                     <br />
                     <p:commandButton value="Submit" ajax="false" actionListener="#{GUIService.handleUpload()}"  />
                 </h:form>
@@ -35,7 +35,7 @@
                     </f:facet>
                     <a href="/salsa-engine/index.xhtml?service=#{serviceName}">#{serviceName}</a>
                 </p:dataList>
-                
+
                 <p:outputPanel style="position: absolute; bottom: 0">
                     <a href="/salsa-engine/swagger/index.html?url=/salsa-engine/rest/swagger.json">API Manager</a>
                 </p:outputPanel>

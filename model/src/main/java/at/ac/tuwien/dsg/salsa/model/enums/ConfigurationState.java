@@ -23,9 +23,15 @@ package at.ac.tuwien.dsg.salsa.model.enums;
  * @author Duc-Hung LE
  */
 public enum ConfigurationState {
+    // state of the configuration action
+    DONE,
+    PROCESSING,
+    SUCCESSFUL,
+    
+    // state of instances - will be obsolete
     UNDEPLOYED,
     ALLOCATING,
-    STAGING,
+    STAGING,    
     CONFIGURING,
     DEPLOYED,
     RUNNING,

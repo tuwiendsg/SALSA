@@ -12,5 +12,11 @@ import at.ac.tuwien.dsg.salsa.messaging.protocol.SalsaMessage;
  * @author Duc-Hung LE
  */
 public interface SalsaMessageHandling {
+
+    /**
+     * Do something on a message. The handler manually publish the reply
+     *
+     * @param salsaMessage the message to recieve
+     */
     public void handleMessage(SalsaMessage salsaMessage);
 }

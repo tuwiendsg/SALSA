@@ -6,6 +6,7 @@
  */
 package at.ac.tuwien.dsg.salsa.openstack;
 
+import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.enums.SalsaCommonActions;
 import at.ac.tuwien.dsg.salsa.model.salsa.interfaces.ConfigurationModule;
 import at.ac.tuwien.dsg.salsa.model.salsa.info.SalsaConfigureResult;
@@ -75,7 +76,7 @@ public class OpenStackVMConfigurator implements ConfigurationModule {
                 return removeInstance(configInfo.getActionID(), parameters);
             }
             default:
-                return new SalsaConfigureResult(configInfo.getActionName(), SalsaConfigureResult.CONFIGURATION_STATE.ERROR, 1, "Unknown action name: " + configInfo.getActionName());
+                return new SalsaConfigureResult(configInfo.getActionName(), ConfigurationState.ERROR, 1, "Unknown action name: " + configInfo.getActionName());
         }
 
     }
@@ -113,14 +114,14 @@ public class OpenStackVMConfigurator implements ConfigurationModule {
                 Thread.sleep(5000);
                 tryee += 1;
                 if (tryee >= maxtry) {
-                    SalsaConfigureResult result = new SalsaConfigureResult(actionID, SalsaConfigureResult.CONFIGURATION_STATE.ERROR, 0, "VM created failed after " + maxtry + " tries. ID: " + serverCreated.getId());
+                    SalsaConfigureResult result = new SalsaConfigureResult(actionID, ConfigurationState.ERROR, 0, "VM created failed after " + maxtry + " tries. ID: " + serverCreated.getId());
                     return result;
                 }
             } catch (InterruptedException e) {
                 LOGGER.error(e.toString());
             }
         }
-        SalsaConfigureResult result = new SalsaConfigureResult(actionID, SalsaConfigureResult.CONFIGURATION_STATE.SUCCESSFUL, 0, "VM created. Server ID: " + serverCreated.getId());
+        SalsaConfigureResult result = new SalsaConfigureResult(actionID, ConfigurationState.SUCCESSFUL, 0, "VM created. Server ID: " + serverCreated.getId());
         addEffectToLaunchResult(serverCreated.getId(), result);
         return result;
     }
@@ -162,9 +163,9 @@ public class OpenStackVMConfigurator implements ConfigurationModule {
     public SalsaConfigureResult removeInstance(String actionID, Map<String, String> parameters) {
         String instanceToTerminateID = parameters.get("instanceid");
         if (serverApi.delete(instanceToTerminateID)) {
-            return new SalsaConfigureResult(actionID, SalsaConfigureResult.CONFIGURATION_STATE.SUCCESSFUL, 0, "Remove VM done !");
+            return new SalsaConfigureResult(actionID, ConfigurationState.SUCCESSFUL, 0, "Remove VM done !");
         } else {
-            return new SalsaConfigureResult(actionID, SalsaConfigureResult.CONFIGURATION_STATE.ERROR, 0, "Failed to delete VM: Instance: " + instanceToTerminateID + ". Action ID: " + actionID);
+            return new SalsaConfigureResult(actionID, ConfigurationState.ERROR, 0, "Failed to delete VM: Instance: " + instanceToTerminateID + ". Action ID: " + actionID);
         }
     }
 

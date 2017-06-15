@@ -18,6 +18,7 @@
 package at.ac.tuwien.dsg.salsa.docker;
 
 
+import at.ac.tuwien.dsg.salsa.model.enums.ConfigurationState;
 import at.ac.tuwien.dsg.salsa.model.enums.SalsaArtifactType;
 import at.ac.tuwien.dsg.salsa.model.salsa.confparameters.DockerParameters;
 import java.io.BufferedReader;
@@ -103,10 +104,10 @@ public class DockerConfigurator implements ConfigurationModule {
             containerID = installDockerNodeWithSALSA(configInfo.getUnit(), configInfo.getInstance(), configInfo.getParameters(DockerParameters.preRunByMe));
         }
         if (containerID == null || containerID.isEmpty()) {
-            return new SalsaConfigureResult(configInfo.getActionID(), SalsaConfigureResult.CONFIGURATION_STATE.ERROR, 0, "Docker container is failed to created").hasDomainID(containerID);
+            return new SalsaConfigureResult(configInfo.getActionID(), ConfigurationState.ERROR, 0, "Docker container is failed to created").hasDomainID(containerID);
         } else {
             // the successful status must be updated by the pioneer
-            return new SalsaConfigureResult(configInfo.getActionID(), SalsaConfigureResult.CONFIGURATION_STATE.PROCESSING, 0, "Docker container is created.").hasDomainID(containerID);
+            return new SalsaConfigureResult(configInfo.getActionID(), ConfigurationState.PROCESSING, 0, "Docker container is created.").hasDomainID(containerID);
         }
     }
 

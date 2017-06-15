@@ -159,6 +159,13 @@ public class SalsaConfiguration {
         return createFolderIfNotExisted(CURRENT_DIR + "/services");
     }
 
+    public static String getServiceStorageDir(String serviceName) {
+        if (serviceName != null && !serviceName.isEmpty()) {
+            return createFolderIfNotExisted(CURRENT_DIR + "/services/" + serviceName);
+        }
+        return null;
+    }
+
     public static String getArtifactStorage() {
         return createFolderIfNotExisted(CURRENT_DIR + "/artifacts");
     }

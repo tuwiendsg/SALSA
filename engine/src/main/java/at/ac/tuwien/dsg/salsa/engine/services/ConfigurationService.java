@@ -49,19 +49,19 @@ public interface ConfigurationService {
     // WHOLE CLOUD SERVICE API
     //////////////////////////////////////////
     /**
-     * Submit and deploy a service. The TOSCA is the data of the request.
+     * Submit a service description including a Salsafile.yml and capabilities.
      *
-     * @param uploadedInputStream The XML String of the TOSCA
+     * @param serviceName
      * @return The ID of the service
      * @throws SalsaException
      */
     @PUT
-    @Path("/services/yml")
-    @ApiOperation(value = "Deploy a service from an YML description",
-            notes = "The YML is plain text in the data of the posted message.",
+    @Path("/services/{serviceName}")
+    @ApiOperation(value = "Initiate the service on Salsa by reading Salsafile and checking package.",
+            notes = "This method assumes that service data is uploaded (Salsafile, capability).",
             response = Response.class,
             responseContainer = "String")
-    public Response deployServiceFromYML(String uploadedInputStream) throws SalsaException;
+    public Response initServiceFiles(@PathParam("serviceName") String serviceName) throws SalsaException;
 
     /**
      * Create a cloud service from a list of pioneers. This will be used for
@@ -128,7 +128,7 @@ public interface ConfigurationService {
     public Response getService(@PathParam("serviceId") String serviceID) throws SalsaException;
 
     @GET
-    @Path("/services")
+    @Path("/services/list")
     @Produces(MediaType.TEXT_PLAIN)
     @ApiOperation(value = "Get list of service UUID.",
             notes = "Service UUIDs are separated by spaces",
@@ -151,7 +151,8 @@ public interface ConfigurationService {
             @PathParam("nodeId") String nodeId) throws SalsaException;
 
     /**
-     * Deploy one or more instances
+     * Deploy one instance. Deployment mean setup all artifacts and run init
+     * capability if available.
      *
      * @param serviceId The ID of the service
      * @param nodeId The ID of the service unit
@@ -161,11 +162,11 @@ public interface ConfigurationService {
      */
     @POST
     @Path("/services/{serviceId}/nodes/{nodeId}")
-    @ApiOperation(value = "Create new Service Instance of a Service Unit.",
+    @ApiOperation(value = "Deploy new Service Instance of a Service Unit.",
             notes = "The service unit must be register first",
             response = Response.class,
             responseContainer = "String")
-    public Response spawnInstance(@PathParam("serviceId") String serviceId,
+    public Response deployInstance(@PathParam("serviceId") String serviceId,
             @PathParam("nodeId") String nodeId) throws SalsaException;
 
     //////////////////////////////////////////
