@@ -84,6 +84,7 @@ public class CloudService {
     @JsonIgnore
     public List<ServiceUnit> getAllUnits() {
         List<ServiceUnit> comList = new ArrayList<>();
+        System.out.println("getAllUnit: topos is: " + topos);
         for (ServiceTopology topo : topos) {
             comList.addAll(topo.getUnits().values());
         }

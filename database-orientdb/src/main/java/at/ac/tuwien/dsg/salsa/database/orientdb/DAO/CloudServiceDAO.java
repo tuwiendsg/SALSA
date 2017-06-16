@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /*
@@ -27,7 +29,7 @@ public class CloudServiceDAO extends AbstractDAO<CloudService> {
     AbstractDAO<ServiceTopology> topoDAO = new AbstractDAO<>(ServiceTopology.class);
     AbstractDAO<ServiceUnit> unitDAO = new AbstractDAO<>(ServiceUnit.class);
     AbstractDAO<ServiceInstance> instanceDAO = new AbstractDAO<>(ServiceInstance.class);
-
+    
     public CloudServiceDAO() {
         super(CloudService.class);
     }
@@ -36,18 +38,19 @@ public class CloudServiceDAO extends AbstractDAO<CloudService> {
     public ODocument save(CloudService service) {
 
         long time1 = (new Date()).getTime();
-        System.out.println("Start saving CloudService to DB: " + service.getUuid() + ", " + service.getName());
+        logger.debug("Start saving CloudService to DB: " + service.getUuid() + ", " + service.getName());
+        logger.debug(service.toJson());
 
         ODocument serviceDoc = serviceDAO.save(service);
-        System.out.println("///////////////////////////////////");
-        System.out.println("Saving CloudService without topos and units done: " + serviceDoc.toJSON());
-        System.out.println("///////////////////////////////////");
-
+        logger.debug("///////////////////////////////////");
+        logger.debug("Saving CloudService without topos and units done: " + serviceDoc.toJSON());
+        logger.debug("///////////////////////////////////");
+        
         topoDAO.saveAll(service.getTopos());
         unitDAO.saveAll(service.getAllUnits());
 
         long time2 = (new Date()).getTime();
-        System.out.println("Saving to DB done, take: " + (((double) time2 - (double) time1) / 1000) + " seconds");
+        logger.debug("Saving to DB done, take: " + (((double) time2 - (double) time1) / 1000) + " seconds");
         return serviceDoc;
     }
 

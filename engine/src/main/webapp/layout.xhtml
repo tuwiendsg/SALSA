@@ -20,11 +20,13 @@
 
             <p:layoutUnit position="west" style="position: relative">
                 <h:form enctype="multipart/form-data">
-                    <p:outputLabel value="Name" for="name" />
+                    
+                    <b><p:outputLabel value="Submit a new cloud service" /> </b><br /><br />
+                    <p:outputLabel value="Service name: " for="name" />
                     <p:inputText value="#{GUIService.submitedServiceName}" id="name" />
                     <br />
+                    <p:outputLabel value="Upoad a Salsafile.yml or a tar.gz" /><br />
                     <p:fileUpload mode="simple" multiple="false" skinSimple="true" value="#{GUIService.submitedFile}" label="Browse"/>
-                    <p:outputLabel value="File can be a SALSA YML description or a SALSA package in tar.gz format" />
                     <br />
                     <p:commandButton value="Submit" ajax="false" actionListener="#{GUIService.handleUpload()}"  />
                 </h:form>

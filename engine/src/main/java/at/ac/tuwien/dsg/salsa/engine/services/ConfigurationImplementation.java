@@ -82,6 +82,7 @@ public class ConfigurationImplementation implements ConfigurationService {
             return Response.status(401).entity("Cannot load the YAML data.").build();
         }
         CloudService service = salsaFile.toCloudService();
+        cloudServiceDao.save(service);
 
         return Response.status(200).entity("Service is created and in deployment process: " + salsaFile.getName()).build();
     }
