@@ -29,7 +29,7 @@ public class CloudServiceDAO extends AbstractDAO<CloudService> {
     AbstractDAO<ServiceTopology> topoDAO = new AbstractDAO<>(ServiceTopology.class);
     AbstractDAO<ServiceUnit> unitDAO = new AbstractDAO<>(ServiceUnit.class);
     AbstractDAO<ServiceInstance> instanceDAO = new AbstractDAO<>(ServiceInstance.class);
-    
+
     public CloudServiceDAO() {
         super(CloudService.class);
     }
@@ -45,7 +45,7 @@ public class CloudServiceDAO extends AbstractDAO<CloudService> {
         logger.debug("///////////////////////////////////");
         logger.debug("Saving CloudService without topos and units done: " + serviceDoc.toJSON());
         logger.debug("///////////////////////////////////");
-        
+
         topoDAO.saveAll(service.getTopos());
         unitDAO.saveAll(service.getAllUnits());
 
@@ -80,7 +80,7 @@ public class CloudServiceDAO extends AbstractDAO<CloudService> {
                 List<ServiceInstance> instances = instanceDAO.readWithCondition(instanceWhereCondition);
                 unit.setInstances(new HashSet<>(instances));
                 topo.hasUnit(unit);
-            }            
+            }
         }
         service.setTopos(new HashSet<>(topos));
         return service;
@@ -89,6 +89,34 @@ public class CloudServiceDAO extends AbstractDAO<CloudService> {
     @Override
     public List<CloudService> readAll() {
         List<CloudService> services = serviceDAO.readAll();
-        return services;
+        List<CloudService> result = new ArrayList<>();
+        for (CloudService s : services) {
+            result.add(this.read(s.getUuid()));
+        }
+        return result;
+    }
+
+    public CloudService readByName(String name) {
+        List<CloudService> services = serviceDAO.readWithCondition("name='" + name + "'");
+        if (services == null || services.isEmpty()) {
+            return null;
+        }
+        CloudService service = (CloudService) serviceDAO.readWithCondition("name='" + name + "'").get(0);
+        String uuid = service.getUuid();
+        // read all the service topology belong to the service        
+        String whereCondition = "cloudServiceUUID='" + uuid + "'";
+        List<ServiceTopology> topos = topoDAO.readWithCondition(whereCondition);
+        for (ServiceTopology topo : topos) {
+            String unitWhereCondition = "topologyUuid='" + topo.getUuid() + "'";
+            List<ServiceUnit> units = unitDAO.readWithCondition(unitWhereCondition);
+            for (ServiceUnit unit : units) {
+                String instanceWhereCondition = "serviceUnitUuid='" + unit.getUuid() + "'";
+                List<ServiceInstance> instances = instanceDAO.readWithCondition(instanceWhereCondition);
+                unit.setInstances(new HashSet<>(instances));
+                topo.hasUnit(unit);
+            }
+        }
+        service.setTopos(new HashSet<>(topos));
+        return service;
     }
 }

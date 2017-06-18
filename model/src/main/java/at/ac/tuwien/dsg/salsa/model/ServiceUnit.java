@@ -64,8 +64,7 @@ public class ServiceUnit {
     public ServiceUnit() {
     }
 
-    public ServiceUnit(String uuid, String name) {
-        this.uuid = uuid;
+    public ServiceUnit(String name) {
         this.name = name;
     }
 
@@ -130,8 +129,8 @@ public class ServiceUnit {
         this.instances.add(instance);
         return this;
     }
-    
-     public String toJson() {
+
+    public String toJson() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
@@ -154,8 +153,8 @@ public class ServiceUnit {
             return null;
         }
     }
-    
-    public Capability getCapabilityByName(String name){
+
+    public Capability getCapabilityByName(String name) {
         return this.capabilities.get(name);
     }
 

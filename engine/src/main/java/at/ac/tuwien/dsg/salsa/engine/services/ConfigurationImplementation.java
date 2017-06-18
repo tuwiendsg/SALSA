@@ -31,10 +31,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.Response;
 import org.apache.commons.io.FileUtils;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -81,10 +82,32 @@ public class ConfigurationImplementation implements ConfigurationService {
         if (salsaFile == null) {
             return Response.status(401).entity("Cannot load the YAML data.").build();
         }
+        logger.debug("Load service file: " + salsaFile.toJson());
         CloudService service = salsaFile.toCloudService();
+        service.updateMissingUUID();
+        if (serviceName != null && !serviceName.isEmpty()) {
+            service.setName(serviceName);
+        }
+        logger.debug("Loaded service: " + service.toJson());
+
         cloudServiceDao.save(service);
 
         return Response.status(200).entity("Service is created and in deployment process: " + salsaFile.getName()).build();
+    }
+
+    @Override
+    public Response uploadServiceFile(String serviceName, MultipartBody body) throws SalsaException {
+        try {
+            String serviceFolder = SalsaConfiguration.getServiceStorageDir(serviceName);
+            for (Attachment attachment : body.getAllAttachments()) {
+                logger.debug("Uploaded file: " + attachment);
+                attachment.transferTo(new File(serviceFolder + attachment.toString()));
+            }
+            return Response.ok("File upload done!").build();
+        } catch (Exception ex) {
+            logger.error("uploadFile.error():", ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     private boolean checkForServiceNameOk(String serviceName) {
@@ -110,7 +133,7 @@ public class ConfigurationImplementation implements ConfigurationService {
         topo.setName("pioneerfarm");
         service.hasTopology(topo);
 
-        ServiceUnit unit = new ServiceUnit(UUID.randomUUID().toString(), SalsaEntityType.OPERATING_SYSTEM.toString());
+        ServiceUnit unit = new ServiceUnit(SalsaEntityType.OPERATING_SYSTEM.toString());
         topo.hasUnit(unit);
 
         String[] pis = pioneerIDs.split(" ");
@@ -126,6 +149,7 @@ public class ConfigurationImplementation implements ConfigurationService {
             instance.setIndex(unit.nextIdCounter());
             unit.hasInstance(instance);
         }
+        service.updateMissingUUID();
         ODocument odoc = cloudServiceDao.save(service);
         logger.debug("Create a service of pioneerfarm done ! Service output is: " + odoc.toString());
         return Response.status(200).entity("Create a service of pioneerfarm done ! Service name:  " + serviceName).build();
@@ -133,34 +157,42 @@ public class ConfigurationImplementation implements ConfigurationService {
     }
 
     @Override
-    public Response redeployService(String serviceId) throws SalsaException {
+    public Response redeployService(String serviceName) throws SalsaException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Response undeployService(String serviceId) throws SalsaException {
+    public Response undeployService(String serviceName) throws SalsaException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public Response getService(String serviceName) throws SalsaException {
-        List<CloudService> services = cloudServiceDao.readAll();
-        if (services != null && !services.isEmpty()) {
-            for (CloudService s : services) {
-                if (s.getName().equals(serviceName)) {
-                    return Response.status(201).entity(s.getName()).build();
-                }
-            }
+        CloudService service = cloudServiceDao.readByName(serviceName);
+        if (service != null) {
+            return Response.status(201).entity(service.toJson()).build();
+        } else {
+            return Response.status(500).entity("Service not found: " + serviceName).build();
         }
-        return Response.status(500).entity("Service not found: " + serviceName).build();
+//        
+//        List<CloudService> services = cloudServiceDao.readAll();
+//        if (services != null && !services.isEmpty()) {
+//            for (CloudService s : services) {
+//                if (s.getName().equals(serviceName)) {
+//                    return Response.status(201).entity(s.toJson()).build();
+//                }
+//            }
+//        }
+//        return Response.status(500).entity("Service not found: " + serviceName).build();
     }
 
     @Override
     public String getServiceNames() {
         List<CloudService> services = cloudServiceDao.readAll();
-
+        logger.debug("Get list of cloud service name: " + services.size());
         StringBuilder sb = new StringBuilder();
         for (CloudService s : services) {
+            logger.debug("Reading service: " + s.getName() + "/" + s.getUuid());
             sb.append(s.getName()).append(",");
         }
         logger.debug("All available services: " + sb.toString());
@@ -188,14 +220,14 @@ public class ConfigurationImplementation implements ConfigurationService {
     }
 
     @Override
-    public Response updateUnitMeta(String metadata, String serviceName, String nodeId) throws SalsaException {
+    public Response updateUnitMeta(String metadata, String serviceName, String nodeName) throws SalsaException {
         try {
-            logger.debug("Updating unit metadata for {}/{}, data: {}", serviceName, nodeId, metadata);
-            ServiceUnit unit = getUnitByName(serviceName, nodeId);
+            logger.debug("Updating unit metadata for {}/{}, data: {}", serviceName, nodeName, metadata);
+            ServiceUnit unit = getUnitByName(serviceName, nodeName);
             // todo: set metadata
 
             unitDao.save(unit);
-            return Response.status(200).entity("Metadata of : " + serviceName + "/" + nodeId + " is set to: " + metadata).build();
+            return Response.status(200).entity("Metadata of : " + serviceName + "/" + nodeName + " is set to: " + metadata).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500).entity(e.getMessage()).build();
@@ -203,53 +235,65 @@ public class ConfigurationImplementation implements ConfigurationService {
     }
 
     @Override
-    public Response deployInstance(String serviceName, String nodeId) throws SalsaException {
-        logger.debug("Spawning new instance: {}/{}, quantity: {}" + serviceName, nodeId);
+    public Response deployInstance(String serviceName, String nodeName, String pioneerUUID) throws SalsaException {
+        logger.debug("Spawning new instance: {}/{}, quantity: {}" + serviceName, nodeName);
         CloudService service = getCloudServiceByName(serviceName);
-        ServiceTopology topo = service.getTopologyOfNode(nodeId);
-        ServiceUnit node = service.getUnitByName(nodeId);
+        ServiceTopology topo = service.getTopologyOfNode(nodeName);
+        ServiceUnit node = service.getUnitByName(nodeName);
         if (node == null) {
-            throw new IllegalConfigurationAPICallException("Cannot spawn instance for node: " + serviceName + "/" + nodeId + ". Invalid node name.");
+            throw new IllegalConfigurationAPICallException("Cannot spawn instance for node: " + serviceName + "/" + nodeName + ". Invalid node name.");
         }
         MessagePublishInterface publish = factory.getMessagePublisher();
-        String pioneerID_to_deploy = node.getPioneerIds().get(0);
-        node.setIdCounter(node.getIdCounter() + 1);
-        SalsaConfigureTask confTask = new SalsaConfigureTask("deploy", pioneerID_to_deploy, SalsaConfiguration.getUserName(), serviceName, topo.getName(), nodeId, 0, SalsaArtifactType.salsa_internal_deploy);
+        String pioneerID_to_deploy;
+        if (pioneerUUID == null || pioneerUUID.isEmpty()) {
+            if (node.getPioneerIds() == null || node.getPioneerIds().isEmpty()) {
+                return Response.status(401).entity("No pioneer found to handle deployment of: " + serviceName + "/" + nodeName).build();
+            } else {
+                pioneerID_to_deploy = node.getPioneerIds().get(0);
+            }
+        } else {
+            pioneerID_to_deploy = pioneerUUID;
+        }
 
-        publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_deploy_instance, pioneerID_to_deploy, SalsaMessageTopic.CENTER_REQUEST_PIONEER, "", confTask.toJson()));
-        return Response.status(200).entity("Request sent to pioneer to deploy instance: " + serviceName + "/" + nodeId + "/" + node.getIdCounter()).build();
+        node.setIdCounter(node.getIdCounter() + 1);
+        SalsaConfigureTask confTask = new SalsaConfigureTask("deploy", pioneerID_to_deploy, SalsaConfiguration.getUserName(), serviceName, topo.getName(), nodeName, 0, SalsaArtifactType.salsa_internal_deploy);
+
+        publish.pushMessage(
+                new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_deploy_instance, pioneerID_to_deploy, SalsaMessageTopic.CENTER_REQUEST_PIONEER, "", confTask.toJson()));
+        return Response.status(
+                200).entity("Request sent to pioneer to deploy instance: " + serviceName + "/" + nodeName + "/" + node.getIdCounter()).build();
     }
 
     @Override
-    public Response destroyInstance(String serviceName, String nodeId, int instanceId) throws SalsaException {
-        logger.debug("Spawning new instance: {}/{}, quantity: {}" + serviceName, nodeId);
+    public Response destroyInstance(String serviceName, String nodeName, int instanceId) throws SalsaException {
+        logger.debug("Spawning new instance: {}/{}, quantity: {}" + serviceName, nodeName);
         CloudService service = getCloudServiceByName(serviceName);
-        ServiceTopology topo = service.getTopologyOfNode(nodeId);
-        ServiceUnit node = service.getUnitByName(nodeId);
+        ServiceTopology topo = service.getTopologyOfNode(nodeName);
+        ServiceUnit node = service.getUnitByName(nodeName);
         if (node == null) {
-            throw new IllegalConfigurationAPICallException("Cannot spawn instance for node: " + serviceName + "/" + nodeId + ". Invalid node name.");
+            throw new IllegalConfigurationAPICallException("Cannot spawn instance for node: " + serviceName + "/" + nodeName + ". Invalid node name.");
         }
         MessagePublishInterface publish = factory.getMessagePublisher();
         String pioneerID_to_deploy = node.getPioneerIds().get(0);
         node.setIdCounter(node.getIdCounter() + 1);
-        SalsaConfigureTask confTask = new SalsaConfigureTask("undeploy", pioneerID_to_deploy, SalsaConfiguration.getUserName(), serviceName, topo.getName(), nodeId, 0, SalsaArtifactType.salsa_internal_deploy);
+        SalsaConfigureTask confTask = new SalsaConfigureTask("undeploy", pioneerID_to_deploy, SalsaConfiguration.getUserName(), serviceName, topo.getName(), nodeName, 0, SalsaArtifactType.salsa_internal_deploy);
 
         publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_reconfigure_instance, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.CENTER_REQUEST_PIONEER, "", confTask.toJson()));
-        return Response.status(200).entity("Request sent to pioneer to deploy instance: " + serviceName + "/" + nodeId + "/" + node.getIdCounter()).build();
+        return Response.status(200).entity("Request sent to pioneer to deploy instance: " + serviceName + "/" + nodeName + "/" + node.getIdCounter()).build();
     }
 
     @Override
-    public Response updateInstanceState(String json, String serviceId, String nodeId, int instanceId) {
+    public Response updateInstanceState(String json, String serviceName, String nodeName, int instanceId) {
         try {
-            logger.debug("Updating instance state: {}/{}/{}", serviceId, nodeId, instanceId);
-            CloudService service = getCloudServiceByName(serviceId);
+            logger.debug("Updating instance state: {}/{}/{}", serviceName, nodeName, instanceId);
+            CloudService service = getCloudServiceByName(serviceName);
             SalsaConfigureResult confResult = SalsaConfigureResult.fromJson(json);
             logger.debug("Updating state: " + confResult.toJson());
-            ServiceInstance instance = service.getUnitByName(nodeId).getInstanceByIndex(instanceId);
+            ServiceInstance instance = service.getUnitByName(nodeName).getInstanceByIndex(instanceId);
             instance.updateState(confResult);
             instanceDao.save(instance);
 
-            return Response.status(200).entity("State of : " + serviceId + "/" + nodeId + "/" + instanceId + " is set to: " + confResult.toJson()).build();
+            return Response.status(200).entity("State of : " + serviceName + "/" + nodeName + "/" + instanceId + " is set to: " + confResult.toJson()).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500).entity(e.getMessage()).build();
@@ -257,21 +301,21 @@ public class ConfigurationImplementation implements ConfigurationService {
     }
 
     @Override
-    public Response queueAction(String serviceId, String nodeId, int instanceId, String actionName) throws SalsaException {
-        logger.debug("Sending an action to pioneer to queue up: {}/{}/{}/{}", serviceId, nodeId, instanceId, actionName);
-        CloudService service = getCloudServiceByName(serviceId);
-        ServiceTopology topo = service.getTopologyOfNode(nodeId);
-        ServiceUnit unit = service.getUnitByName(nodeId);
+    public Response queueAction(String serviceName, String nodeName, int instanceId, String actionName) throws SalsaException {
+        logger.debug("Sending an action to pioneer to queue up: {}/{}/{}/{}", serviceName, nodeName, instanceId, actionName);
+        CloudService service = getCloudServiceByName(serviceName);
+        ServiceTopology topo = service.getTopologyOfNode(nodeName);
+        ServiceUnit unit = service.getUnitByName(nodeName);
         ServiceInstance instance = unit.getInstanceByIndex(instanceId);
-        SalsaConfigureTask confTask = new SalsaConfigureTask(actionName, instance.getPioneer(), SalsaConfiguration.getUserName(), serviceId, topo.getName(), nodeId, instanceId, SalsaArtifactType.sh);
+        SalsaConfigureTask confTask = new SalsaConfigureTask(actionName, instance.getPioneer(), SalsaConfiguration.getUserName(), serviceName, topo.getName(), nodeName, instanceId, SalsaArtifactType.sh);
         MessagePublishInterface publish = factory.getMessagePublisher();
         publish.pushMessage(new SalsaMessage(SalsaMessage.MESSAGE_TYPE.salsa_reconfigure_instance, SalsaConfiguration.getSalsaCenterEndpoint(), SalsaMessageTopic.CENTER_REQUEST_PIONEER, "", confTask.toJson()));
-        logger.debug("Queue an action done: {}/{}/{}/{} to Pioneer: {}", serviceId, nodeId, instanceId, actionName, instance.getPioneer());
+        logger.debug("Queue an action done: {}/{}/{}/{} to Pioneer: {}", serviceName, nodeName, instanceId, actionName, instance.getPioneer());
         return Response.status(200).entity("Queue action is done for pioneer: " + instance.getId()).build();
     }
 
     @Override
-    public Response queueActionWithParameter(String serviceId, String nodeId, int instanceId, String actionName, String parameters) throws SalsaException {
+    public Response queueActionWithParameter(String serviceName, String nodeName, int instanceId, String actionName, String parameters) throws SalsaException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

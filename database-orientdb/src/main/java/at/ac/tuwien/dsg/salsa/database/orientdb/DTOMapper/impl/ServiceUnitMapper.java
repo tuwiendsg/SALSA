@@ -27,7 +27,7 @@ public class ServiceUnitMapper implements DTOMapperInterface<ServiceUnit> {
         unit.setArtifacts(ArtifactsWrapper.fromJson(String.valueOf(doc.field("artifacts"))).getArtifacts());
         unit.setCapabilities(CapabilitiesWrapper.fromJson(String.valueOf(doc.field("capabilities"))).getCapabilities());
         unit.setHostedOn(String.valueOf(doc.field("hostedUnitName")));
-        unit.setCloudServiceUuid(String.valueOf("cloudServiceUuid"));
+        unit.setCloudServiceUuid(String.valueOf(doc.field("cloudServiceUuid")));
         unit.setIdCounter(Integer.parseInt(String.valueOf(doc.field("idCounter"))));
         unit.setMax(Integer.parseInt(String.valueOf(doc.field("max"))));
         unit.setMin(Integer.parseInt(String.valueOf(doc.field("min"))));
@@ -35,7 +35,7 @@ public class ServiceUnitMapper implements DTOMapperInterface<ServiceUnit> {
         unit.setProperties(Utils.jsonToMap(String.valueOf(doc.field("properties"))));
         unit.setReference(String.valueOf(doc.field("reference")));
         unit.setState(ConfigurationState.valueOf(String.valueOf(doc.field("state"))));
-        unit.setTopologyUuid(String.valueOf("topologyUuid"));
+        unit.setTopologyUuid(String.valueOf(doc.field("topologyUuid")));
         unit.setType(String.valueOf("type"));
         unit.setUuid(String.valueOf("uuid"));
 

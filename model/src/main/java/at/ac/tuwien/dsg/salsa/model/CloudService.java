@@ -58,6 +58,29 @@ public class CloudService {
         return this;
     }
 
+    public void updateMissingUUID() {
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID().toString();
+        }
+        if (this.getTopos() != null) {
+            for (ServiceTopology topo : this.topos) {
+                if (topo.getUuid() == null) {
+                    topo.setUuid(UUID.randomUUID().toString());
+                }
+                topo.setCloudServiceUuid(this.uuid);
+                if (topo.getUnits() != null) {
+                    for (ServiceUnit unit : topo.getUnits().values()) {
+                        if (unit.getUuid() == null) {
+                            unit.setUuid(UUID.randomUUID().toString());
+                        }
+                        unit.setTopologyUuid(topo.getUuid());
+                        unit.setCloudServiceUuid(this.uuid);
+                    }
+                }
+            }
+        }
+    }
+
     @JsonIgnore
     public ServiceTopology getTopologyByName(String topologyName) {
         for (ServiceTopology topo : topos) {

@@ -239,7 +239,7 @@ public class SalsaConfiguration {
     }
 
     public static String getGenericParameter(String key, String theDefault) {
-        String fileNames[] = {CURRENT_DIR + "/salsa.engine.properties", "/etc/salsa.engine.properties"};
+        String fileNames[] = {CURRENT_DIR + "/salsa.engine.properties"};
         return getGenericParameterFromFile(fileNames, key, theDefault);
     }
 
@@ -257,6 +257,7 @@ public class SalsaConfiguration {
             File f = new File(file);
             try {
                 if (!f.exists()) {
+                    logger.debug("Trying to create file: " + f.getAbsolutePath());
                     f.createNewFile();
                 }
                 prop.load(new FileReader(f));

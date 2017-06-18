@@ -45,6 +45,8 @@ import io.swagger.annotations.License;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -190,6 +192,28 @@ public class InternalManagement {
                     .build();
         }
         throw new EngineMisconfiguredException(fileName, "Not found the bootstrap script artifact at: " + SalsaConfiguration.getPioneerBootstrapScript());
+    }
+
+    @GET
+    @Path("/meta")
+    public String getMetadata() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("endpoint", SalsaConfiguration.getSalsaCenterEndpoint());
+        map.put("version", SalsaConfiguration.getSalsaVersion());
+        map.put("build_time", SalsaConfiguration.getBuildTime());
+        map.put("broker", SalsaConfiguration.getBroker());
+        map.put("broker_type", SalsaConfiguration.getBrokerType());
+        map.put("user", SalsaConfiguration.getUserName());
+        map.put("pioneer_number", PioneerManager.count());
+        map.put("pioneer_description", PioneerManager.describeShort());
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(map);
+        } catch (IOException ex) {
+            return null;
+        }
+
     }
 
 }

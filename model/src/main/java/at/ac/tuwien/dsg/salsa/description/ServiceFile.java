@@ -55,12 +55,22 @@ public class ServiceFile {
     public CloudService toCloudService(){
         CloudService cloudService = new CloudService();
         cloudService.setName(this.name);
-        ServiceTopology topo = new ServiceTopology();
-        topo.setName("DefaultTopo");
+        Map<String, ServiceTopology> topos = new HashMap<>();                
         for (Map.Entry<String, ServiceUnit> entry: this.service.entrySet()){
             entry.getValue().setName(entry.getKey());
+            String topoName = entry.getValue().getTopologyUuid();
+            if (topoName == null) {
+                topoName = "DefaultTopo";
+            }
+            ServiceTopology topo = topos.get(topoName);
+            if (topo == null){
+                topo = new ServiceTopology();
+                topo.setName(topoName);
+                topos.put(topoName, topo);
+            }
             topo.hasUnit(entry.getValue());
-        }
+            cloudService.hasTopology(topo);
+        }        
         return cloudService;        
     }
 

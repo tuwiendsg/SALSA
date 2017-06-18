@@ -43,7 +43,7 @@ public class SensorCapability {
             ex.printStackTrace();
         }
 
-        ServiceUnit unit = new ServiceUnit(UUID.randomUUID().toString(), "sensor");
+        ServiceUnit unit = new ServiceUnit("sensor");
         for (Capability capa : capaSet) {
             unit.hasCapability(capa);
         }

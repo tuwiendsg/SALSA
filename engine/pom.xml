@@ -16,6 +16,7 @@
 
 <!-- note: Spring 4.3.2-RELEASE should go with jackson 2.8.1 -->
     <properties>
+         <timestamp>${maven.build.timestamp}</timestamp>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>4.3.2.RELEASE</spring.version>
@@ -191,7 +192,7 @@
             <version>3.0</version>
         </dependency>
         
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>at.ac.tuwien.dsg.salsa</groupId>
             <artifactId>database-neo4j</artifactId>
             <version>3.0</version>
