@@ -68,6 +68,7 @@ public interface ConfigurationService {
      * Upload service files. E.g. Salsafile.yml or SalsaPackage.tar.gz
      *
      * @param serviceName The name of the service
+     * @param body the file data
      * @return
      * @throws SalsaException
      */

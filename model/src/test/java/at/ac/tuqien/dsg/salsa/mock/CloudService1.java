@@ -11,9 +11,6 @@ import at.ac.tuwien.dsg.salsa.model.ServiceUnit;
 import at.ac.tuwien.dsg.salsa.description.ServiceFile;
 import at.ac.tuwien.dsg.salsa.model.properties.Artifact;
 import at.ac.tuwien.dsg.salsa.model.properties.Capability;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.IOException;
 
 /**

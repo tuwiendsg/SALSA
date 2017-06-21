@@ -44,13 +44,13 @@ public class RestHandler {
             conn.setRequestMethod(method.toString());
 
             if (accept == null || accept.equals("")) {
-                conn.setRequestProperty("Accept", MediaType.TEXT_PLAIN);
+                conn.setRequestProperty("Accept", MediaType.APPLICATION_JSON);
             } else {
                 conn.setRequestProperty("Accept", accept);
             }
 
             if (type == null || type.equals("")) {
-                conn.setRequestProperty("Content-Type", MediaType.TEXT_PLAIN);
+                conn.setRequestProperty("Content-Type", MediaType.APPLICATION_JSON);
             } else {
                 conn.setRequestProperty("Content-Type", type);
             }

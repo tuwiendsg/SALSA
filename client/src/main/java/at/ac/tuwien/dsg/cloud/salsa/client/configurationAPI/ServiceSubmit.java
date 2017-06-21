@@ -7,6 +7,7 @@ package at.ac.tuwien.dsg.cloud.salsa.client.configurationAPI;
 
 import at.ac.tuwien.dsg.cloud.salsa.client.CommandHandler;
 import at.ac.tuwien.dsg.cloud.salsa.client.Main;
+import at.ac.tuwien.dsg.cloud.salsa.client.RestHandler;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -30,18 +31,25 @@ public class ServiceSubmit implements CommandHandler {
         Process p;
         if (salsaFile.exists() && !salsaFile.isDirectory()) {
             try {
-                String cmd = "curl -i -X POST -H 'Content-Type: multipart/form-data' -F '" + salsaFile + "' " + Main.getSalsaAPI("/services/" + serviceName);
-                p = Runtime.getRuntime().exec(cmd);
+                String cmd = "curl -i -X POST -H \"Content-Type: multipart/form-data\" -F \"file=@" + salsaFile + "\" " + Main.getSalsaAPI("/services/" + serviceName);
+                System.out.println("Running command: " + cmd);
+                String[] cmds = new String[] {"curl", "-i", "-X", "POST", "-H", "Content-Type: multipart/form-data", "-F", "file=@" + salsaFile, Main.getSalsaAPI("/services/" + serviceName)};
+                p = Runtime.getRuntime().exec(cmds);
 
                 p.waitFor();
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                StringBuilder sb = new StringBuilder();
+                BufferedReader reader1 = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 String line;
-                while ((line = reader.readLine()) != null) {
+                while ((line = reader1.readLine()) != null) {
                     System.out.println(line);
-                    sb.append(line).append("\n");
                 }
+                BufferedReader reader2 = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+                while ((line = reader2.readLine()) != null) {
+                    System.out.println(line);
+                }
+                System.out.println("Upload file done, now initiate service.");
+                RestHandler.callRest(Main.getSalsaAPI("/services/" + serviceName), RestHandler.HttpVerb.PUT, null, null, null);
+                System.out.println("Service initiation done.");
             } catch (IOException | InterruptedException ex) {
                 ex.printStackTrace();
             }

@@ -16,6 +16,7 @@ import at.ac.tuwien.dsg.salsa.model.CloudService;
 import at.ac.tuwien.dsg.salsa.description.ServiceFile;
 import at.ac.tuwien.dsg.salsa.engine.exceptions.IllegalConfigurationAPICallException;
 import at.ac.tuwien.dsg.salsa.engine.exceptions.PioneerManagementException;
+import at.ac.tuwien.dsg.salsa.engine.utils.SystemFunctions;
 import at.ac.tuwien.dsg.salsa.messaging.messageInterface.MessageClientFactory;
 import at.ac.tuwien.dsg.salsa.model.ServiceInstance;
 import at.ac.tuwien.dsg.salsa.model.ServiceTopology;
@@ -99,10 +100,17 @@ public class ConfigurationImplementation implements ConfigurationService {
     public Response uploadServiceFile(String serviceName, MultipartBody body) throws SalsaException {
         try {
             String serviceFolder = SalsaConfiguration.getServiceStorageDir(serviceName);
+            logger.debug("Number of attachment: " + body.getAllAttachments().size());
+            logger.debug("Attachment type: " + body.getType().toString());
             for (Attachment attachment : body.getAllAttachments()) {
-                logger.debug("Uploaded file: " + attachment);
-                attachment.transferTo(new File(serviceFolder + attachment.toString()));
+                String fileName = attachment.getContentDisposition().getFilename();
+                logger.debug("Uploaded file: " + fileName + ", content type: " + attachment.getContentType());
+                attachment.transferTo(new File(serviceFolder + "/" + fileName));
+                if (fileName.endsWith("tar.gz")) {
+                    SystemFunctions.executeCommandGetReturnCode("tar -xvzf " + fileName, serviceFolder, "uploadServiceFileService");
+                }
             }
+
             return Response.ok("File upload done!").build();
         } catch (Exception ex) {
             logger.error("uploadFile.error():", ex);
@@ -152,7 +160,8 @@ public class ConfigurationImplementation implements ConfigurationService {
         service.updateMissingUUID();
         ODocument odoc = cloudServiceDao.save(service);
         logger.debug("Create a service of pioneerfarm done ! Service output is: " + odoc.toString());
-        return Response.status(200).entity("Create a service of pioneerfarm done ! Service name:  " + serviceName).build();
+        return Response.status(200).entity("Create a service of pioneerfarm done ! Service name0"
+                + "53.9+363+:  " + serviceName).build();
 
     }
 

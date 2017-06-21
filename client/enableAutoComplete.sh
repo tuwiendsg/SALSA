@@ -4,8 +4,8 @@ _foo()
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    #opts="meta syn service-submit service-remove service-status service-list unit-deploy instance-status instance-remove instance-list instance-query"
-    opts=`java -jar salsa-client.jar list-commands`
+    #opts="meta syn service-submit service-remove service-status service-list unit-deploy instance-status instance-remove instance-list"
+    opts=`salsa-client list-commands`
     case "${prev}" in
 	service-submit)
 	    _filedir
